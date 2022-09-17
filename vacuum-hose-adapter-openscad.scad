@@ -1,7 +1,21 @@
-// Hose connector
+// Hose connector 
+// version 2022-09-17
 
-/* [Parameters] */
+/* [General ] */
 Wall_Thickness = 2;
+
+/* [Allignmet Ring] */
+//draw just the allignment ring
+Draw_Allignmet_Ring = "no"; //[end1: Draw end 1, end2: Draw end 2, no: Dont draw]
+
+//lip depth in to flange
+Lip_Depth = 2;
+
+//lip width at widest part
+Lip_Width = 3;
+
+//lip clearance to give nice fit.
+Lip_Clearance = 0.25;
 
 /* [Connector 1] */
 //The style of the end
@@ -31,19 +45,19 @@ End1_StopLength = 5;
 End1_Magnets_Count = 8;
 
 //The diameter of the magnets (mm)
-End1_Magnet_Diameter = 12;
+End1_Magnet_Diameter = 10.5;
 
 //The thickness of the magnets (mm)
 End1_Magnet_Thickness = 3;
 
 //Size of the material around the magnets (mm)
-End1_Magnet_Border = 4;
+End1_Magnet_Border = 2;
 
 // Thickness of the magnet flange (mm)
 End1_Magnet_Flange_Thickness = 7;
 
 // Include a flange alignment lip
-End1_Lip = "no"; //[no: No alignment lip, protruding: protruding lip, recessed: Resessed lip]
+End1_Lip = "no"; //[no: No alignment lip, protruding: protruding lip, recessed: Recessed lip]
 
 /* [Transition] */
 //Length of the transition between the two ends
@@ -83,21 +97,23 @@ End2_Magnet_Diameter = 12;
 End2_Magnet_Thickness = 3;
 
 //Size of the material around the magnets
-End2_Magnet_Border = 4;
+End2_Magnet_Border = 2;
 
 // Inner diameter of the Magnet flange
 End2_Magnet_Flange_Thickness = 10;
 
 // Include a flange alignment lip
-End2_Lip = "no"; //[no: No alignment lip, protruding: Protruding lip, recessed: Resessed lip]
+End2_Lip = "no"; //[no: No alignment lip, protruding: Protruding lip, recessed: Recessed lip]
 
 
 /* [Hidden] */
 //Stops visual clipping when one object is subtracted from another
 adjustment = 0.02;
 
+
+
 //Detail
-$fn=100 *1;
+$fn=25;
 
 end1InnerDiameter = End1_Measurement == "inner" ? End1_Diameter : End1_Diameter - Wall_Thickness * 2;
 end2InnerDiameter = End2_Measurement == "inner" ? End2_Diameter : End2_Diameter - Wall_Thickness * 2;
@@ -109,8 +125,7 @@ end1InnerEndDiameter = end1InnerDiameter + End1_Taper / 2;
 //Apply taper, from big to small
 end2InnerStartDiameter = end2InnerDiameter + End2_Taper / 2;
 end2InnerEndDiameter = end2InnerDiameter - End2_Taper / 2;
-
-
+      
 //diameter1: Inner start diameter.
 //diameter2: Inner end diameter.
 //length: pipe length
@@ -163,7 +178,7 @@ module StraightPipe(diameter, length, wallThickness, zPosition)
         zPosition);
 }
 
-module ConePipe(diameter, length, wallThickness1, wallThickness2, zPosition)
+module HalfConePipe(diameter, length, wallThickness1, wallThickness2, zPosition)
 {
     Pipe (
         diameter,
@@ -173,6 +188,27 @@ module ConePipe(diameter, length, wallThickness1, wallThickness2, zPosition)
         wallThickness2,
         zPosition);
 }
+
+module ConeRing(centerDiameter, length, wallThickness1, wallThickness2, zPosition)
+{
+    difference () 
+    {
+        //outer cylinder
+        translate([0, 0, zPosition])
+        cylinder(
+            d1=centerDiameter+wallThickness1, 
+            d2=centerDiameter+wallThickness2, 
+            h=length);
+    
+        //Inner cylinder to remove
+        translate([0, 0, zPosition-adjustment])
+        cylinder(
+            d1=centerDiameter-wallThickness1, 
+            d2=centerDiameter-wallThickness2, 
+            h=length + 2*adjustment);
+    }
+}
+
 
 module MagneticConnector(
     innerStartDiameter,
@@ -184,14 +220,17 @@ module MagneticConnector(
     magnetBorder,
     flangeThickness,
     magnetCount,
-    alignmentLip
+    alignmentLip,
+    lipDepth,
+    lipWidth,
+    lipClearance,
 )
 {
-    magnetPosition = (innerStartDiameter + magnetDiameter) / 2 + magnetBorder;
-    
-    lipDepth = 2;
-    lipWidth = 2;
-    lipClearance = 0.5;
+
+    lipBorder = alignmentLip != "no" ? magnetBorder/2 : 0;
+    magnetPosition = (innerStartDiameter + magnetDiameter) / 2 + magnetBorder +
+        (alignmentLip != "no" ? lipBorder + lipWidth : 0);
+  
     fillet = flangeThickness;
     
     difference () 
@@ -216,15 +255,15 @@ module MagneticConnector(
             if(alignmentLip == "protruding")
             {
                 // Create extruding lip
-                ConePipe (
-                    diameter = innerStartDiameter, 
+                ConeRing (
+                    centerDiameter = innerStartDiameter + lipBorder*2 + lipWidth + lipClearance, 
                     length = lipDepth, 
-                    wallThickness1 = lipWidth/2 - lipClearance/2, 
-                    wallThickness2 = lipWidth - lipClearance/2, 
+                    wallThickness1 = lipWidth/2 - lipClearance/2 , 
+                    wallThickness2= lipWidth - lipClearance/2 , 
                     zPosition = -lipDepth);
             }
             
-            ConePipe (
+            HalfConePipe (
                 diameter = innerEndDiameter,
                 length = fillet,
                 wallThickness1 = fillet - adjustment,
@@ -250,16 +289,40 @@ module MagneticConnector(
         if(alignmentLip == "recessed")
         {
             // Create recessed lip
-            ConePipe (
-                diameter = 0, 
+            ConeRing (
+                centerDiameter = innerStartDiameter + lipBorder*2 + lipWidth + lipClearance, 
                 length = lipDepth, 
-                wallThickness2 = lipWidth/2 + lipClearance/2 + innerStartDiameter / 2 , 
-                wallThickness1 = lipWidth + lipClearance/2 + innerStartDiameter / 2, 
-                zPosition = 0- adjustment);
+                wallThickness1 = lipWidth + lipClearance/2 , 
+                wallThickness2 = lipWidth/2 + lipClearance/2 , 
+                zPosition = 0 - adjustment);
         }
     }
 }
 
+module AllignmentRing(
+    centerDiameter,
+    lipDepth,
+    lipWidth,
+    lipClearance,
+    magnetBorder
+)
+{
+    !union() 
+    {
+        ConeRing (
+            centerDiameter = end1InnerStartDiameter + End1_Magnet_Border/2 + lipWidth/2, 
+            length = lipDepth, 
+            wallThickness1 = lipWidth - lipClearance/2 , 
+            wallThickness2 = lipWidth/2 - lipClearance/2 , 
+            zPosition = 0 - adjustment);   
+        ConeRing (
+            centerDiameter = end1InnerStartDiameter + End1_Magnet_Border/2 + lipWidth/2, 
+            length = lipDepth, 
+            wallThickness2= lipWidth - lipClearance/2 , 
+            wallThickness1 = lipWidth/2 - lipClearance/2 , 
+            zPosition = -lipDepth);
+   } 
+}
 module HoseConnector(
     innerStartDiameter,
     innerEndDiameter,
@@ -285,13 +348,34 @@ module HoseConnector(
             stopWidth + wallThickness/2 + adjustment,
             length - stopLength);
         
-        ConePipe (
+        HalfConePipe (
             innerEndDiameter + wallThickness,
             stopLength,
             0,
             stopWidth + wallThickness/2 + adjustment,
             length - stopLength*2);
     }
+}
+
+
+if(Draw_Allignmet_Ring == "end1")
+{
+    !AllignmentRing(
+        centerDiameter = end1InnerStartDiameter + End1_Magnet_Border/2 + Lip_Width/2,
+        lipDepth = Lip_Depth,
+        lipWidth = Lip_Width,
+        lipClearance = Lip_Clearance,
+        magnetBorder = End1_Magnet_Border);
+}
+
+if(Draw_Allignmet_Ring == "end2")
+{
+    !AllignmentRing(
+        centerDiameter = end2InnerStartDiameter + End2_Magnet_Border/2 + Lip_Width/2,
+        lipDepth = Lip_Depth,
+        lipWidth = Lip_Width,
+        lipClearance = Lip_Clearance,
+        magnetBorder = End2_Magnet_Border);
 }
 
 //Create the start connector
@@ -310,7 +394,10 @@ if(End1_Length > 0)
             magnetBorder = End1_Magnet_Border,
             flangeThickness = End1_Magnet_Flange_Thickness,
             magnetCount = End1_Magnets_Count,
-            alignmentLip = End1_Lip);
+            alignmentLip = End1_Lip,
+            lipDepth = Lip_Depth,
+            lipWidth = Lip_Width,
+            lipClearance = Lip_Clearance);
     }
 
     if(End1_Style == "hose")
@@ -357,8 +444,10 @@ if(End2_Length > 0)
                     magnetBorder = End2_Magnet_Border,
                     flangeThickness = End2_Magnet_Flange_Thickness,
                     magnetCount = End2_Magnets_Count,
-                    alignmentLip = End2_Lip
-                );
+                    alignmentLip = End2_Lip,
+                    lipDepth = Lip_Depth,
+                    lipWidth = Lip_Width,
+                    lipClearance = Lip_Clearance);
         }
         
         if(End2_Style == "hose")
