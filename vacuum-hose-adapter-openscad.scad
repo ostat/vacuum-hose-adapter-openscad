@@ -42,6 +42,9 @@ End1_Magnet_Border = 4;
 // Thickness of the magnet flange (mm)
 End1_Magnet_Flange_Thickness = 7;
 
+// Include a flange alignment lip
+End1_Lip = "no"; //[no: No alignment lip, protruding: protruding lip, recessed: Resessed lip]
+
 /* [Transition] */
 //Length of the transition between the two ends
 Transition_Length = 50;
@@ -85,8 +88,12 @@ End2_Magnet_Border = 4;
 // Inner diameter of the Magnet flange
 End2_Magnet_Flange_Thickness = 10;
 
+// Include a flange alignment lip
+End2_Lip = "no"; //[no: No alignment lip, protruding: Protruding lip, recessed: Resessed lip]
+
+
 /* [Hidden] */
-//Stops clipping when one object is subtracted from another
+//Stops visual clipping when one object is subtracted from another
 adjustment = 0.02;
 
 //Detail
@@ -107,33 +114,10 @@ end2InnerEndDiameter = end2InnerDiameter - End2_Taper / 2;
 //diameter1: Inner start diameter.
 //diameter2: Inner end diameter.
 //length: pipe length
-//wallThicknessL Thickness of the walls
+//wallThickness1 Thickness of the walls at the start
+//wallThickness2 Thickness of the walls at the end
 //zPosition: Start Z position.
-module Pipe(diameter1, diameter2, length, wallThickness, zPosition)
-{
-    difference () 
-    {
-        //outer cylinder
-        translate([0, 0, zPosition])
-        {
-            cylinder(
-                d1=diameter1+2*wallThickness, 
-                d2=diameter2+2*wallThickness, 
-                h=length);
-        }
-        
-        //Inner cylinder to remove
-        translate([0, 0, zPosition-adjustment])
-        {
-             cylinder(
-                d1=diameter1, 
-                d2=diameter2,
-                h=length + 2*adjustment);
-        }
-    }
-}
-
-module ConePipe(diameter1, diameter2, length, wallThickness1, wallThickness2, zPosition)
+module Pipe(diameter1, diameter2, length, wallThickness1, wallThickness2, zPosition)
 {
     difference () 
     {
@@ -157,144 +141,235 @@ module ConePipe(diameter1, diameter2, length, wallThickness1, wallThickness2, zP
     }
 }
 
-
-
-module StartFlange()
+module TaperedPipe(diameter1, diameter2, length, wallThickness, zPosition)
 {
-    magnetPosition = (end1InnerDiameter + End1_Magnet_Diameter) / 2 + End1_Magnet_Border;
+    Pipe (
+        diameter1,
+        diameter2,
+        length,
+        wallThickness,
+        wallThickness,
+        zPosition);
+}
+
+module StraightPipe(diameter, length, wallThickness, zPosition)
+{
+    Pipe (
+        diameter,
+        diameter,
+        length,
+        wallThickness,
+        wallThickness,
+        zPosition);
+}
+
+module ConePipe(diameter, length, wallThickness1, wallThickness2, zPosition)
+{
+    Pipe (
+        diameter,
+        diameter,
+        length,
+        wallThickness1,
+        wallThickness2,
+        zPosition);
+}
+
+module MagneticConnector(
+    innerStartDiameter,
+    innerEndDiameter,
+    length,
+    wallThickness,
+    magnetDiameter,
+    magnetThickness,
+    magnetBorder,
+    flangeThickness,
+    magnetCount,
+    alignmentLip
+)
+{
+    magnetPosition = (innerStartDiameter + magnetDiameter) / 2 + magnetBorder;
+    
+    lipDepth = 2;
+    lipWidth = 2;
+    lipClearance = 0.5;
+    fillet = flangeThickness;
     
     difference () 
     {
         //flange
-        hull () {
-            for (i = [0: End1_Magnets_Count-1]) {
-                rotate ([0, 0, i * (360 / End1_Magnets_Count)]) 
-                translate ([magnetPosition, 0, 0]) 
-                cylinder (d = End1_Magnet_Diameter + End1_Magnet_Border * 2, End1_Magnet_Flange_Thickness);
+        union() {
+            TaperedPipe (
+                innerStartDiameter,
+                innerEndDiameter,
+                length,
+                wallThickness,
+                0);
+
+            hull () {
+                for (i = [0: magnetCount-1]) {
+                    rotate ([0, 0, i * (360 / magnetCount)]) 
+                    translate ([magnetPosition, 0, 0]) 
+                    cylinder (d = magnetDiameter + magnetBorder * 2, flangeThickness);
+                }
             }
+            
+            if(alignmentLip == "protruding")
+            {
+                // Create extruding lip
+                ConePipe (
+                    diameter = innerStartDiameter, 
+                    length = lipDepth, 
+                    wallThickness1 = lipWidth/2 - lipClearance/2, 
+                    wallThickness2 = lipWidth - lipClearance/2, 
+                    zPosition = -lipDepth);
+            }
+            
+            ConePipe (
+                diameter = innerEndDiameter,
+                length = fillet,
+                wallThickness1 = fillet - adjustment,
+                wallThickness2 = 0,
+                zPosition= flangeThickness - adjustment);  
+            
         }
         
         //Magnet cut out
-        for (i = [0: End1_Magnets_Count-1]) {
-            rotate ([0, 0, i* 360 / End1_Magnets_Count]) 
+        for (i = [0: magnetCount-1]) {
+            rotate ([0, 0, i* 360 / magnetCount]) 
             translate ([magnetPosition, 0, - adjustment]) 
-            cylinder (d = End1_Magnet_Diameter, h = End1_Magnet_Thickness + adjustment);
+            cylinder (d = magnetDiameter, h = magnetThickness + adjustment);
         }
 
         //Flange inner  
         translate([0, 0, -adjustment])
             cylinder (
-                d1 = end1InnerStartDiameter, 
-                d2 = end1InnerEndDiameter,
-                h = End1_Length + 2 * adjustment);   
+                d1 = innerStartDiameter, 
+                d2 = innerEndDiameter,
+                h = length + 2 * adjustment);
+        
+        if(alignmentLip == "recessed")
+        {
+            // Create recessed lip
+            ConePipe (
+                diameter = 0, 
+                length = lipDepth, 
+                wallThickness2 = lipWidth/2 + lipClearance/2 + innerStartDiameter / 2 , 
+                wallThickness1 = lipWidth + lipClearance/2 + innerStartDiameter / 2, 
+                zPosition = 0- adjustment);
+        }
     }
 }
 
-module EndFlange()
+module HoseConnector(
+    innerStartDiameter,
+    innerEndDiameter,
+    length,
+    wallThickness,
+    stopLength,
+    stopWidth
+)
 {
-    magnetPosition = (end2InnerDiameter + End2_Magnet_Diameter) / 2 + End2_Magnet_Border;
-    
-    flangeZPosition = end2StartZ + End2_Length - End2_Magnet_Flange_Thickness;
-    magnetZPosition = flangeZPosition + End2_Magnet_Flange_Thickness - End2_Magnet_Thickness;
-    
-    
-    difference () 
-    {
-        //Flange
-        hull () {
-            for (i = [0: End2_Magnets_Count-1]) {
-                rotate ([0, 0, i * (360 / End2_Magnets_Count)]) 
-                translate ([magnetPosition, 0, flangeZPosition]) 
-                cylinder (d = End2_Magnet_Diameter + End2_Magnet_Border * 2, End2_Magnet_Flange_Thickness);
-            }
-        }
+    union() {
+        //hose connector
+        TaperedPipe (
+            innerStartDiameter,
+            innerEndDiameter,
+            length,
+            wallThickness,
+            0);
         
-        //Magnet cut out
-        for (i = [0: End2_Magnets_Count-1]) {
-            rotate ([0, 0, i* 360 / End2_Magnets_Count]) 
-            translate ([magnetPosition, 0, magnetZPosition + adjustment]) 
-            cylinder (d = End2_Magnet_Diameter, h = End2_Magnet_Thickness + adjustment);
-        }
-
-        //Flange inner  
-        translate([0, 0, end2StartZ-adjustment])
-            cylinder (
-                d1 = end2InnerStartDiameter, 
-                d2 = end2InnerEndDiameter,
-                h = End2_Length + 2 * adjustment);   
+        // Create the hose stop
+        StraightPipe (
+            innerEndDiameter + wallThickness,
+            stopLength,
+            stopWidth + wallThickness/2 + adjustment,
+            length - stopLength);
+        
+        ConePipe (
+            innerEndDiameter + wallThickness,
+            stopLength,
+            0,
+            stopWidth + wallThickness/2 + adjustment,
+            length - stopLength*2);
     }
 }
 
 //Create the start connector
-if(End1_Style == "mag")
+if(End1_Length > 0)
 {
-    //Create the flange on end 1
-    StartFlange(); 
-}
+    if(End1_Style == "mag")
+    {
+        //Create the flange on end 1
+        MagneticConnector(
+            innerStartDiameter = end1InnerStartDiameter,
+            innerEndDiameter = end1InnerEndDiameter,
+            length = End1_Length,
+            wallThickness = Wall_Thickness,
+            magnetDiameter = End1_Magnet_Diameter,
+            magnetThickness = End1_Magnet_Thickness,
+            magnetBorder = End1_Magnet_Border,
+            flangeThickness = End1_Magnet_Flange_Thickness,
+            magnetCount = End1_Magnets_Count,
+            alignmentLip = End1_Lip);
+    }
 
-if(End1_Style == "hose")
-{
-    // Create the hose stop
-    Pipe (
-    end1InnerEndDiameter + Wall_Thickness /2,
-    end1InnerEndDiameter+ Wall_Thickness /2,
-    End1_StopLength,
-    End1_StopThickness + adjustment,
-    End1_Length - End1_StopLength);
-    
-    ConePipe (
-    end1InnerEndDiameter + Wall_Thickness /2,
-    end1InnerEndDiameter + Wall_Thickness /2,
-    End1_StopLength,
-    0,
-    End1_StopThickness + adjustment,
-    End1_Length - End1_StopLength*2);
+    if(End1_Style == "hose")
+    {
+        HoseConnector(
+            innerStartDiameter = end1InnerStartDiameter,
+            innerEndDiameter = end1InnerEndDiameter,
+            length = End1_Length,
+            wallThickness = Wall_Thickness,
+            stopLength = End1_StopLength,
+            stopWidth = End1_StopThickness);
+    }
 }
-//End1 hose connector
-Pipe (
-    end1InnerStartDiameter,
-    end1InnerEndDiameter,
-    End1_Length,
-    Wall_Thickness,
-    0); 
 
 //Transition between connections
-Pipe (
-    end1InnerEndDiameter,
-    end2InnerStartDiameter,
-    Transition_Length,
-    Wall_Thickness,
-    End1_Length);
+if(End2_Length > 0)
+{
+    TaperedPipe(
+        diameter1 = end1InnerEndDiameter, 
+        diameter2 = end2InnerStartDiameter, 
+        length = Transition_Length, 
+        wallThickness = Wall_Thickness, 
+        zPosition = End1_Length);
+}
 
 // Create the end connector
-end2StartZ = End1_Length + Transition_Length;
-  
-if(End2_Style == "mag")
+if(End2_Length > 0)
 {
-    EndFlange(); 
-}
-if(End2_Style == "hose")
-{
-    // Create the hose stop
-    Pipe (
-    end2InnerStartDiameter + Wall_Thickness /2,
-    end2InnerStartDiameter+ Wall_Thickness /2,
-    End2_StopLength,
-    End2_StopThickness + adjustment,
-    end2StartZ);
-    
-    ConePipe (
-    end2InnerStartDiameter + Wall_Thickness /2,
-    end2InnerStartDiameter + Wall_Thickness /2,
-    End2_StopLength,
-    End2_StopThickness + adjustment,
-    0,
-    end2StartZ + End2_StopLength);
-}
+    end2StartZ = End1_Length + Transition_Length;
 
-Pipe (
-    end2InnerStartDiameter,
-    end2InnerEndDiameter,
-    End2_Length,
-    Wall_Thickness,
-    end2StartZ); 
+    translate([0, 0, end2StartZ+End2_Length])
+    mirror ([0,0,1])    
+    union() {    
+        if(End2_Style == "mag")
+        {
+                MagneticConnector(
+                    //Start and End are reversed as the flange is mirrored.
+                    innerStartDiameter = end2InnerEndDiameter, 
+                    innerEndDiameter = end2InnerStartDiameter,
+                    length = End2_Length,
+                    wallThickness = Wall_Thickness,
+                    magnetDiameter = End2_Magnet_Diameter,
+                    magnetThickness = End2_Magnet_Thickness,
+                    magnetBorder = End2_Magnet_Border,
+                    flangeThickness = End2_Magnet_Flange_Thickness,
+                    magnetCount = End2_Magnets_Count,
+                    alignmentLip = End2_Lip
+                );
+        }
+        
+        if(End2_Style == "hose")
+        {
+            HoseConnector(
+                innerStartDiameter = end2InnerEndDiameter,
+                innerEndDiameter = end2InnerStartDiameter,
+                length = End2_Length,
+                wallThickness = Wall_Thickness,
+                stopLength = End2_StopLength,
+                stopWidth = End2_StopThickness);
+        }
+    }
+}
