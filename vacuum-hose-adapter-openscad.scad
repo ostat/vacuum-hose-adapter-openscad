@@ -1,5 +1,5 @@
 // Hose connector
-// version 2022-09-24
+// version 2022-09-26
 
 include <vacuum-hose-adapter-modules.scad>
 
@@ -74,6 +74,12 @@ Transition_Style = "tapered"; //[tapered, flat]
 //Length of the transition between the two ends
 Transition_Length = 10;
 
+// Radius of transition bend (mm)
+Transition_Bend_Radius = 0;
+
+//Angle of bend through the transition section.
+Transition_Angle = 0;
+
 /* [Connector 2] */
 End2_Style="hose"; // [mag: Magnetic Flange, hose: Hose connector]
 
@@ -91,10 +97,10 @@ End2_Taper = 2;
 
 /* [Connector 2 - Hose connector] */
 //Thickness of hose stop
-End2_StopThickness = 6;
+End2_StopThickness = 0;
 
 //Length of hose stop
-End2_StopLength = 5;
+End2_StopLength = 0;
     
 /* [Connector 2 - Magnetic Flange] */
 
@@ -145,6 +151,8 @@ HoseAdapter(
     connector1Ring = End1_Ring,
     transitionStyle = Transition_Style,
     transitionLength = Transition_Length,
+    transitionBendRadius = Transition_Bend_Radius,
+    transitionAngle = Transition_Angle,
     connector2Style = End2_Style,
     connector2Measurement = End2_Measurement,
     connector2Diameter = End2_Diameter,
