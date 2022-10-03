@@ -1,6 +1,5 @@
 ﻿#version 2022-10-02
 $Script:transitionAngles = (0, 30, 45, 90)
-#$Script:transitionAngles = (90)
 
 $Script:transitionStyles = ("tapered", "sweep")
 

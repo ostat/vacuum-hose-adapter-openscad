@@ -6,11 +6,20 @@
 # montage is created by imagemagick
 # https://imagemagick.org/script/montage.php
 #
-#version 2022-10-02
+# version 2022-10-04
 
 $script:SourceFolder = (Get-Item $MyInvocation.MyCommand.Source).Directory
 $script:ImageMagickPath = 'C:\Program Files\ImageMagick-7.1.0-Q16-HDRI\magick.exe'
 $script:StlThumbPath = 'C:\bin\stl-thumb\stl-thumb.exe'
+
+# online colour picker https://colorpicker.me/
+$script:HueMin = 0 #min value is 0
+$script:HueMax = 360 #max value is 360
+
+
+$Script:ForceRegeneration = $false
+
+#List of sizes that will be used to pick the hue colour.
 $SourceFolders = @(
     @{
         Path = (Join-Path $script:SourceFolder '\generated\hoseadapter\');
@@ -44,12 +53,6 @@ $SourceFolders = @(
              '90degsweep');
         }
 )
-
-
-$Script:ForceRegeneration = $false
-
-#List of sizes that will be used to pick the hue colour.
-
 
 function CreateFolderIfNeeded([string] $path) {
 
@@ -146,18 +149,31 @@ $SourceFolders | ForEach-Object {
         $targetFolder = "$($angle)\thumb\$($size)"
         CreateFolderIfNeeded $targetFolder
     
-        $targetName = Join-Path $targetFolder "$($stl.BaseName).png"
-        if(!(Test-Path $targetName) -or $Script:ForceRegeneration)
-        {
+        $targetPath= Join-Path $targetFolder "$($stl.BaseName).png"
+
+        $generateThumb = $false
+        if(Test-Path $targetPath) {
+            $targetItem = Get-Item $targetPath
+            if($stl.LastWriteTimeUtc -gt $targetItem.LastWriteTimeUtc) {
+                $generateThumb = $true
+            }
+        }
+        else {
+            $generateThumb = $true
+        }
+
+        if($generateThumb -or $Script:ForceRegeneration) {
             # Pick hue based on the size and position in the array, I want each size to be a different colour.
             # Hue 0 and 360 are both red, dont subtract 1 from legth
-            $hue = [Math]::Floor([array]::indexof($Options,$size) *360 / $Options.Length)
+
+
+            $hue = $script:HueMin + [Math]::Floor([array]::indexof($Options,$size) * ($script:HueMax - $script:HueMin) / $Options.Length)
 
             $colour = ConvertFrom-Hsl $hue 50 60 -ABGR
             $colour2 = ConvertFrom-Hsl $hue 50 20 -ABGR
 
             write-host "$($stl.FullName) $colour2 $colour"
-            & $script:StlThumbPath --material $colour2 $colour 111111 $($stl.FullName) $targetName
+            & $script:StlThumbPath --material $colour2 $colour 111111 $($stl.FullName) $targetPath
         }
     }
 
