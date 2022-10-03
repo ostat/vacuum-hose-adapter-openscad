@@ -1,5 +1,5 @@
 // Hose connector
-// version 2022-09-26
+// version 2022-09-27
 
 include <vacuum-hose-adapter-modules.scad>
 
@@ -69,7 +69,7 @@ End1_Ring = "no"; //[no: No alignment ring, protruding: protruding ring, recesse
 
 /* [Transition] */
 // tapered for hose connections, flat for attaching to a device
-Transition_Style = "tapered"; //[tapered, flat]
+Transition_Style = "tapered"; //[tapered, flat, sweep]
 
 //Length of the transition between the two ends
 Transition_Length = 10;

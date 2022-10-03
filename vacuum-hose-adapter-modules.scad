@@ -1,5 +1,9 @@
 // Hose connector modules
-// version 2022-09-26
+// version 2022-09-27
+
+use <dotSCAD/ring_extrude.scad>
+use <dotSCAD/shape_circle.scad>
+// https://justinsdk.github.io/dotSCAD/
 
 fudgeFactor = 0.015;
 
@@ -99,28 +103,58 @@ module BentPipe(
 
     translate([-(outerCircleRadius - outerPipeDiameter), 0, zPosition])
         rotate([90, 0, 0])
-        // bent pipe
         difference() {
-            // outer ring
-            rotate_extrude()
-                    translate([outerCircleRadius - outerPipeDiameter, 0, 0])
-                    circle(d=outerPipeDiameter);
-
-            // torus cutout
-            rotate_extrude()
+            rotate_extrude(angle=pipeAngle, convexity=10)
+                translate([outerCircleRadius - outerPipeDiameter, 0, 0])
+                circle(d=outerPipeDiameter);
+            
+            rotate_extrude(angle=pipeAngle+1,convexity=10)
                     translate([outerCircleRadius - outerPipeDiameter, 0, 0])
                     circle(d=innerPipeDiameter);
+        }
+}
 
+module TaperedBentPipe(
+    bendRadius,
+    end1InnerPipeDiameter,
+    end2InnerPipeDiameter,
+    wallThickness,
+    pipeAngle,
+    zPosition
+)
+{
+    outerPipeDiameter  = end1InnerPipeDiameter + wallThickness * 2;
+    outerCircleRadius = bendRadius + outerPipeDiameter;
+  
+    sizeStart = end1InnerPipeDiameter / 2 + wallThickness ;
+    sizeEnd = end2InnerPipeDiameter / 2 + wallThickness ;
 
-            // lower cutout
-            rotate([0, 0, 0])
-                    translate([-outerCircleRadius * ((pipeAngle <= 180)?1:0), -outerCircleRadius, -outerPipeDiameter])
-                    cube([outerCircleRadius*2,outerCircleRadius, outerPipeDiameter * 2]);
-            // upper cutout
-            rotate([0, 0, pipeAngle])
-                    translate([-outerCircleRadius * ((pipeAngle <= 180)?1:0), 0, -outerPipeDiameter])
-                    cube([outerCircleRadius*2, outerCircleRadius, outerPipeDiameter * 2]);
-    } 
+    shapeOuter = shape_circle(sizeStart);
+    shapeInner = shape_circle(sizeStart-wallThickness);
+    
+    translate([0, 0, zPosition])
+    difference(){
+        translate([-(outerCircleRadius - outerPipeDiameter), 0, 0])
+        rotate([90, 0, 0])
+        difference(){
+            ring_extrude(shapeOuter, radius = bendRadius, angle = pipeAngle, scale = (sizeEnd/sizeStart));
+            ring_extrude(shapeInner, radius = bendRadius, angle = pipeAngle, scale = ((sizeEnd-wallThickness)/(sizeStart-wallThickness)));
+        }
+        
+        //Clear start from clipping
+        translate([0, 0, -fudgeFactor])
+        cylinder(
+            d=end1InnerPipeDiameter, 
+            h=2*fudgeFactor);
+        
+        //Clear end of the pipe from clipping
+        translate([-bendRadius+fudgeFactor, 0, 0])
+        rotate([0, -pipeAngle, 0])
+            translate([bendRadius, 0, 0])
+            cylinder(
+                d=end2InnerPipeDiameter, 
+                h=2*fudgeFactor);
+    }
 }
 
 
@@ -383,8 +417,6 @@ module HoseAdapter(
     //If the connector hose is not showm the stop has no thickenss
     connector1StopThickness = (connector1Length <= 0 || connector1Style == "mag") ? 0 : connector1StopThickness;
     connector2StopThickness = (connector2Length <= 0 || connector2Style == "mag") ? 0 : connector2StopThickness;
-    echo(connector1Length, " ", connector1Style, " ", connector1StopThickness);
-    echo(connector2Length, " ", connector2Style, " ", connector2StopThickness);
     
     //If the stop has no thickness, it needs no length
     connector1StopLength = connector1StopThickness > 0 ? connector1StopLength : 0;
@@ -453,17 +485,57 @@ module HoseAdapter(
         }
     }
 
+    //Total length of connector 1
     endConnector1 = connector1Length + connector1StopLength;
 
-    bendRadius = end1InnerEndDiameter/2 + wallThickness * 2 + transitionBendRadius;
-
-    BentPipe(
-        bendRadius = bendRadius,
-        innerPipeDiameter = end1InnerEndDiameter,
-        wallThickness = wallThickness,
-        pipeAngle = transitionAngle,
-        zPosition = endConnector1);
+    //Calculate the bend radius
+    //Sweep, the '0' value must be max of connector 1 or 2 diameter, plus the wall thickness * 2 otherwise it will clip, then addd provided radius.
+    //transition the '0' value must be end 1 diameter/2 + wall thickenss *2 to prevent clipping, then addd provided radius.
+    bendRadius = transitionStyle == "sweep" 
+        ? max(end1InnerEndDiameter, end2InnerEndDiameter) + wallThickness * 2 + transitionBendRadius
+        : end1InnerEndDiameter/2 + wallThickness * 2 + transitionBendRadius;
     
+    // transitionLength is not wanted for sweep
+    transitionLength = transitionStyle == "sweep" ? 0 : transitionLength;
+    
+    if(transitionAngle > 0){
+        if(transitionStyle == "sweep")
+        {
+            //Bent pipe that tapers through the bend.
+            TaperedBentPipe(
+                bendRadius = bendRadius,
+                end1InnerPipeDiameter = end1InnerEndDiameter,
+                end2InnerPipeDiameter = end2InnerStartDiameter,
+                wallThickness = wallThickness,
+                pipeAngle = transitionAngle,
+                zPosition = endConnector1);
+        }
+        else
+        {
+            //Tapered transition
+            
+            //the bent pipe section, diameter matches connector 1.
+            BentPipe(
+                bendRadius = bendRadius,
+                innerPipeDiameter = end1InnerEndDiameter,
+                wallThickness = wallThickness,
+                pipeAngle = transitionAngle,
+                zPosition = endConnector1);
+          
+          //Tapered section position to the end of the bent pipe
+          translate([-bendRadius, 0, endConnector1])
+            rotate([0, -transitionAngle, 0])
+            translate([bendRadius, 0, 0])
+                TaperedPipe(
+                diameter1 = end1InnerEndDiameter, 
+                diameter2 = end2InnerStartDiameter, 
+                length = transitionLength, 
+                wallThickness = wallThickness, 
+                zPosition = 0);     
+        }
+    }
+    
+
     translate([-bendRadius, 0, endConnector1])
     rotate([0, -transitionAngle, 0])
     translate([bendRadius, 0, 0])
@@ -476,11 +548,11 @@ module HoseAdapter(
             {
                 transDiameter = min(end1InnerEndDiameter,  end2InnerStartDiameter);
                 transThickness = abs(end1InnerEndDiameter - end2InnerStartDiameter)/2 + wallThickness;
-            StraightPipe(
-                diameter = transDiameter, 
-                length = transitionLength, 
-                wallThickness = transThickness, 
-                zPosition = 0);
+                StraightPipe(
+                    diameter = transDiameter, 
+                    length = transitionLength, 
+                    wallThickness = transThickness, 
+                    zPosition = 0);
             }
             else
             {

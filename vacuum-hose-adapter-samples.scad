@@ -4,9 +4,12 @@
 include <vacuum-hose-adapter-modules.scad>
 
 fudgeFactor = 0.015;
-$fn=120;
+//$fn=120;
 
-part = "50to30"; //[50to30: 50mm hose to 30mm hose, 50to30bend: 50mm hose to 30mm hose bent by 45deg, 50to100: 50mm hose to 100mm hose, 50to100bend: 50mm hose to 100mm hose bent by 90deg, 50toflat: flat plate to 50mm hose, mag50to40: 50mm magnet to 40mm, mag50to100: 50mm magnet to 100mm, mag50toflat: 50mm magnet to flat plate with connector, mag50toflat120: 50mm magnet to flat plate, 50ring: 50m magnet flange alignment ring, mag100to100: 100m magnet flange to 100mm hose, mag100to50: 100m magnet flange to 50mm hose, 100ring: 100m magnet flange alignment ring, mag50tomag100: 50mm magnet to 100mm magnet]
+$fs = 1;
+$fa = 6;
+
+part = "50to30"; //[50to30: 50mm hose to 30mm hose, 50to30bend45deg: 50mm hose to 30mm hose bent by 45deg, 50to30bend45degsweep: 50mm hose to 30mm hose bent by 45deg sweep ,50to100: 50mm hose to 100mm hose, 50to100bend90deg: 50mm hose to 100mm hose bent by 90deg, 50to100bend90degsweep: 50mm hose to 100mm hose bent by 90deg sweep, 50toflat: flat plate to 50mm hose, mag50to40: 50mm magnet to 40mm, mag50to100: 50mm magnet to 100mm, mag50toflat: 50mm magnet to flat plate with connector, mag50toflat120: 50mm magnet to flat plate, 50ring: 50m magnet flange alignment ring, mag100to100: 100m magnet flange to 100mm hose, mag100to50: 100m magnet flange to 50mm hose, 100ring: 100m magnet flange alignment ring, mag50tomag100: 50mm magnet to 100mm magnet]
 
 if (part == "mag50to40") {
     HoseAdapter(
@@ -144,7 +147,7 @@ if (part == "50to30") {
         connector2Length = 40,
         connector2Taper = 2);
 }
-if (part == "50to30bend") {
+if (part == "50to30bend45deg") {
     HoseAdapter(
         wallThickness = 2,
         connector1Style = "hose",
@@ -154,6 +157,25 @@ if (part == "50to30bend") {
         connector1StopThickness = 4,
         connector1StopLength = 8,
         transitionStyle = "tapered",
+        transitionLength = 10,
+        transitionBendRadius = 10,
+        transitionAngle = 45,
+        connector2Style = "hose",
+        connector2Measurement = "outer",
+        connector2Diameter = 40,
+        connector2Length = 40,
+        connector2Taper = 2);
+}
+if (part == "50to30bend45degsweep") {
+    HoseAdapter(
+        wallThickness = 2,
+        connector1Style = "hose",
+        connector1Measurement = "outer",
+        connector1Diameter = 50,
+        connector1Length = 40,
+        connector1StopThickness = 4,
+        connector1StopLength = 8,
+        transitionStyle = "sweep",
         transitionLength = 10,
         transitionBendRadius = 10,
         transitionAngle = 45,
@@ -181,7 +203,7 @@ if (part == "50to100") {
         connector2StopThickness = 4,
         connector2StopLength = 8);
 }
-if (part == "50to100bend") {
+if (part == "50to100bend90deg") {
     HoseAdapter(
         wallThickness = 2,
         connector1Style = "hose",
@@ -190,6 +212,26 @@ if (part == "50to100bend") {
         connector1Length = 40,
         connector1Taper = 2,
         transitionStyle = "tapered",
+        transitionLength = 50,
+        transitionBendRadius = 15,
+        transitionAngle = 90,
+        connector2Style = "hose",
+        connector2Measurement = "outer",
+        connector2Diameter = 100,
+        connector2Length = 50,
+        connector2Taper = 2,
+        connector2StopThickness = 4,
+        connector2StopLength = 8);
+}
+if (part == "50to100bend90degsweep") {
+    HoseAdapter(
+        wallThickness = 2,
+        connector1Style = "hose",
+        connector1Measurement = "outer",
+        connector1Diameter = 50,
+        connector1Length = 40,
+        connector1Taper = 2,
+        transitionStyle = "sweep",
         transitionLength = 50,
         transitionBendRadius = 15,
         transitionAngle = 90,
