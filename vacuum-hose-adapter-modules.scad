@@ -157,6 +157,81 @@ module TaperedBentPipe(
     }
 }
 
+module FlangeConnector(
+    innerStartDiameter,
+    innerEndDiameter,
+    length,
+    wallThickness,
+    flangeThickness,
+    flangeOuterDiameter,
+    screwCount,
+    screwDiameter
+)
+{
+    fillet = flangeThickness;
+   
+    screwPositionRadius = (innerStartDiameter+fillet*2 + (flangeOuterDiameter - innerStartDiameter-fillet*2)/2)/2;
+    echo("FlangeConnector", " screwCount:", screwCount, " screwDiameter:", screwDiameter, "screwPosition", screwPosition);
+    echo("FlangeConnector", " screwPositionRadius:", screwPositionRadius, " fillet:", fillet, "flangeOuterDiameter", flangeOuterDiameter, " innerStartDiameter:", innerStartDiameter);
+  
+    difference () 
+    {
+        //flange
+        union() {
+            TaperedPipe (
+                innerStartDiameter,
+                innerEndDiameter,
+                length,
+                wallThickness,
+                0);
+
+            // flange aound the magnets
+            cylinder (d = flangeOuterDiameter, flangeThickness);
+
+            *hull () {
+                for (i = [0: screwCount-1]) {
+                    rotate ([0, 0, i * (360 / screwCount)]) 
+                    translate ([screwPosition, 0, 0]) 
+                    cylinder (d = screwDiameter + 10 * 2, flangeThickness);
+                }
+            }
+                     
+            // taper 
+            intersection()
+            {
+                HalfConePipe (
+                    diameter = innerEndDiameter,
+                    length = fillet,
+                    wallThickness1 = fillet - fudgeFactor,
+                    wallThickness2 = 0,
+                    zPosition= flangeThickness - fudgeFactor);  
+                
+                translate([0, 0, 0])
+                {
+                    // incase the connector is less 
+                    cylinder(
+                        d=innerEndDiameter*2, 
+                        h=length);
+                }
+            }
+        }
+        
+        //Screw cut out
+        for (i = [0: screwCount-1]) {
+            rotate ([fudgeFactor, 0, i* 360 / screwCount]) 
+            translate ([screwPositionRadius, 0, - fudgeFactor]) 
+            cylinder (d = screwCount, h = flangeThickness + fudgeFactor*2);
+        }
+
+        //Flange inner  
+        translate([0, 0, -fudgeFactor])
+            cylinder (
+                d1 = innerStartDiameter, 
+                d2 = innerEndDiameter,
+                h = length + 2 * fudgeFactor);
+    }
+}
+
 
 module MagneticConnector(
     innerStartDiameter,
@@ -384,6 +459,10 @@ module HoseAdapter(
     connector1MagnetBorder = 0,
     connector1MagnetFlangeThickness = 0,
     connector1Ring= "no",
+    connector1FlangeOuterDiameter = 0,
+    connector1FlangeThickness = 0,
+    connector1FlangeScrewCount = 0,
+    connector1FlangeScrewDiameter = 0,
     transitionStyle = "tapered",
     transitionLength = 0,
     transitionBendRadius = 0,
@@ -415,8 +494,8 @@ module HoseAdapter(
     end2InnerEndDiameter = end2InnerDiameter - connector2Taper / 2;
 
     //If the connector hose is not showm the stop has no thickenss
-    connector1StopThickness = (connector1Length <= 0 || connector1Style == "mag") ? 0 : connector1StopThickness;
-    connector2StopThickness = (connector2Length <= 0 || connector2Style == "mag") ? 0 : connector2StopThickness;
+    connector1StopThickness = (connector1Length <= 0 || connector1Style == "mag" || connector1Style == "flange") ? 0 : connector1StopThickness;
+    connector2StopThickness = (connector2Length <= 0 || connector2Style == "mag" || connector2Style == "flange") ? 0 : connector2StopThickness;
     
     //If the stop has no thickness, it needs no length
     connector1StopLength = connector1StopThickness > 0 ? connector1StopLength : 0;
@@ -473,6 +552,23 @@ module HoseAdapter(
                 alignmentDepthClearance = alignmentDepthClearance);
         }
 
+        if(connector1Style == "flange")
+        {
+            connector1StopLength = 0;
+            connector1StopThickness = 0;
+            
+            //Create the flange on end 1
+          FlangeConnector(
+            innerStartDiameter = end1InnerStartDiameter,
+            innerEndDiameter = end1InnerEndDiameter,
+            length = connector1Length,
+            wallThickness = wallThickness,
+            flangeThickness = connector1FlangeThickness,
+            flangeOuterDiameter = connector1FlangeOuterDiameter,
+            screwCount = connector1FlangeScrewCount,
+            screwDiameter = connector1FlangeScrewDiameter);
+        }
+        
         if(connector1Style == "hose")
         {
             HoseConnector(
