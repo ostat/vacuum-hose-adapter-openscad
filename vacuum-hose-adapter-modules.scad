@@ -218,7 +218,8 @@ module FlangeConnector(
         
         //Screw cut out
         for (i = [0: screwCount-1]) {
-            rotate ([fudgeFactor, 0, i* 360 / screwCount]) 
+            // The rotation should try to avoid the screw being under the bent hose.
+            rotate ([fudgeFactor, 0, 180/screwCount * (i * 2 - 1 + screwCount)]) 
             translate ([screwPositionRadius, 0, - fudgeFactor]) 
             cylinder (d = screwCount, h = flangeThickness + fudgeFactor*2);
         }

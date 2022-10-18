@@ -118,9 +118,9 @@ if (part == "screwflange50") {
     HoseAdapter(
         wallThickness = 2,
         connector1Style = "flange",
-        connector1Measurement = "inner",
-        connector1Diameter = 50,
-        connector1Length = 15,
+        connector1Measurement = "outer",
+        connector1Diameter = 51,
+        connector1Length = 10,
         connector1FlangeOuterDiameter = 80,
         connector1FlangeThickness = 5,
         connector1FlangeScrewCount = 4,
@@ -130,7 +130,8 @@ if (part == "screwflange50") {
         connector2Style = "hose",
         connector2Measurement = "outer",
         connector2Diameter = 50,
-        connector2Length = 40);
+        connector2Length = 20,
+        connector2Taper = 1);
 }
 if (part == "50ring") {
     HoseAdapter(
