@@ -321,6 +321,112 @@ Param(
         Write-Verbose "Skipping $($filename)"
     }
 }
+
+function CreateFlange {
+Param(
+    [decimal]$SizeExternalDiameter,
+    [string]$Unit,
+    [int]$transitionAngle,
+    [string]$transitionStyle
+)
+    $wallThickness = 2
+
+    $FlangeOuter = $($c1Size+30)
+    $FlangeThickness = 5
+    $c1Length = 10
+    $ScrewCount = 6
+    $ScrewDiameter = 5
+    
+    $transitionBendRadius = 10
+    $transLength = 5
+    
+    $c2Length = 20
+    $c2Taper = 1
+        
+    if($TransitionStyle -eq "sweep")
+    {
+        $displayAngle = "$($transitionAngle)degsweep"
+    }
+    else
+    {
+        $displayAngle = "$($transitionAngle)deg"
+    }
+
+
+    if($transitionAngle -gt 0)
+    {
+        $filename = "Flange_$($SizeExternalDiameter)$($Unit)_$($displayAngle)"
+    }
+    else
+    {
+        $filename = "Flange_$($SizeExternalDiameter)$($Unit)"
+    }
+   
+    $folder = Join-Path $script:SourceFolder "generated\flange\$($displayAngle)"
+    CreateFolderIfNeeded $folder
+   
+    $target = Join-Path $folder "$($filename).stl"
+    if(!(Test-Path $target) -or $Script:ForceRegeneration)
+    {
+        Write-Host "Generating magnetic $($filename)"
+
+        #invoke openscad
+        $args = ""
+        $args = "-o `"$($target)`""
+        $args += " -D `"Wall_Thickness=$($wallThickness)`""
+        $args += " -D `"Draw_Alignment_Ring=`"`"no`"`"`""
+        $args += " -D `"Alignment_Depth=2`""
+        $args += " -D `"Alignment_Upper_Width=2`""
+        $args += " -D `"Alignment_Lower_Width=0.5`""
+        $args += " -D `"Alignment_Side_Clearance=0.25`""
+        $args += " -D `"Alignment_Side_Clearance=0.75`""
+
+        $args += " -D `"End1_Style=`"`"flange`"`"`""
+        $args += " -D `"End1_Measurement=`"`"outer`"`"`""
+        $args += " -D `"End1_Diameter=$($SizeExternalDiameter + 1)`""
+        $args += " -D `"End1_Length=$c1Length`""
+        $args += " -D `"End1_Taper=0`""
+        $args += " -D `"End1_StopThickness=0`""
+        $args += " -D `"End1_StopLength=0`""
+        $args += " -D `"End1_Magnets_Count=0`""
+        $args += " -D `"End1_Magnet_Diameter=0`""
+        $args += " -D `"End1_Magnet_Thickness=0`""
+        $args += " -D `"End1_Magnet_Border=0`""
+        $args += " -D `"End1_Flange_Thickness=$FlangeThickness`""
+        $args += " -D `"End1_Screw_Count=$ScrewCount`""
+        $args += " -D `"End1_Screw_Diameter=$ScrewDiameter`""
+        $args += " -D `"End1_Flange_Outer_Diameter=$FlangeOuter`""
+        
+        $args += " -D `"Transition_Style=`"`"$($TransitionStyle)`"`"`""
+        $args += " -D `"Transition_Length=$($transLength)`""
+        $args += " -D `"Transition_Bend_Radius=$($transitionBendRadius)`""
+        $args += " -D `"Transition_Angle=$($transitionAngle)`""
+
+        $args += " -D `"End2_Style=`"`"hose`"`"`""
+        $args += " -D `"End2_Measurement=`"`"outer`"`"`""
+        $args += " -D `"End2_Diameter=$($SizeExternalDiameter)`""
+        $args += " -D `"End2_Length=$($c2Length)`""
+        $args += " -D `"End2_Taper=$($c2Taper)`""
+        $args += " -D `"End2_StopThickness=0`""
+        $args += " -D `"End2_StopLength=0`""
+        $args += " -D `"End2_Magnets_Count=0`""
+        $args += " -D `"End2_Magnet_Diameter=0`""
+        $args += " -D `"End2_Magnet_Thickness=0`""
+        $args += " -D `"End2_Magnet_Border=0`""
+        $args += " -D `"End2_Magnet_Flange_Thickness=0`""
+        $args += " -D `"End2_Ring=`"`"recessed`"`"`""
+
+        $args += " $($script:ScadScriptPath)"
+        $executionTime =  $args | Measure-Command { Start-Process $script:ScadExePath -ArgumentList $_ -wait }
+    
+        Write-host "done $executionTime"
+    }
+    else
+    {
+        Write-Verbose "Skipping $($filename)"
+    }
+}
+
 $Script:transitionStyles | ForEach-Object { 
     $transitionStyle = $_
     $Script:transitionAngles | ForEach-Object { 
@@ -373,6 +479,10 @@ $Script:transitionStyles | ForEach-Object {
                 CreateMagneticAdapter -c1Size 50 -MagentCount 8 -c2Size $c1Size -c2ExternalDiamete $c1['ExternalDiameter'] -c2Unit $c1Unit -transitionAngle $transitionAngle -transitionStyle $transitionStyle
                 # Creates 100mm Magentic adapter to c1
                 CreateMagneticAdapter -c1Size 100 -MagentCount 12 -c2Size $c1Size -c2ExternalDiamete $c1['ExternalDiameter'] -c2Unit $c1Unit -transitionAngle $transitionAngle -transitionStyle $transitionStyle
+                if($transitionStyle -ine 'sweep')
+                {
+                    CreateFlange -SizeExternalDiameter $c1Size -Unit $c1Unit  -transitionAngle $transitionAngle -transitionStyle $transitionStyle
+                }
             }
         }
     }

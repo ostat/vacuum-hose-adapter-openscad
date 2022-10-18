@@ -13,9 +13,8 @@ $script:ImageMagickPath = 'C:\Program Files\ImageMagick-7.1.0-Q16-HDRI\magick.ex
 $script:StlThumbPath = 'C:\bin\stl-thumb\stl-thumb.exe'
 
 # online colour picker https://colorpicker.me/
-$script:HueMin = 0 #min value is 0
-$script:HueMax = 360 #max value is 360
-
+$script:HueMin = 0   #min value is 0
+$script:HueMax = 220 #max value is 360
 
 $Script:ForceRegeneration = $false
 
@@ -43,7 +42,7 @@ $SourceFolders = @(
              '114.3mm(4.5in)');
     },
     @{
-        Path = (Join-Path $script:SourceFolder '\generated\magneticadapter');
+        Path = (Join-Path $script:SourceFolder '\generated\magneticadapter\');
         Options = @('0deg'         
              '30deg'     
              '30degsweep'                
@@ -51,7 +50,14 @@ $SourceFolders = @(
              '45degsweep'                
              '90deg' 
              '90degsweep');
-        }
+    },
+    @{
+        Path = (Join-Path $script:SourceFolder '\generated\flange\');
+        Options = @('0deg'         
+             '30deg'     
+             '45deg'   
+             '90deg');
+    }
 )
 
 function CreateFolderIfNeeded([string] $path) {
@@ -60,6 +66,59 @@ function CreateFolderIfNeeded([string] $path) {
     {
         New-Item $path -ItemType Directory
     }
+}
+
+Function IIf($If, $Right, $Wrong) {if ($If) { return $Right } else { return $Wrong }}
+
+function GenerationNeeded($targetPath, $sourceItem) {
+    if(Test-Path $targetPath) {
+        $targetItem = Get-Item $targetPath
+        if($sourceItem.LastWriteTimeUtc -gt $targetItem.LastWriteTimeUtc) {
+            Write-Verbose "Regenerating $targetPath targetItem:$($targetItem.LastWriteTimeUtc) newestFile:$($sourceItem.LastWriteTimeUtc)"
+            return $true
+        }
+        else{
+            Write-Verbose "Skip regenerating $targetPath targetItem:$($targetItem.LastWriteTimeUtc) newestFile:$($sourceItem.LastWriteTimeUtc)"
+        }
+    }
+    else {
+        Write-Verbose "Target does not exist $targetPath"
+        return $true
+    }
+    return $false
+}
+
+function Create-Montage{
+    param(
+        [string]$Path,
+        [string]$TargetFilename,
+        [string]$Title,
+        [int]$PointRatio,
+        $Files
+    )
+
+    cd $Path
+    #create the montage of the images.
+    # montage, trim to remove white space from inages, -geometry256x256+2+2 add small border and keep all images the same size
+    & $script:ImageMagickPath montage -geometry 256x256+2+2 -trim $Files $TargetFilename
+    Start-Sleep -Seconds 3
+    
+    #get the image size
+    $width = [System.Convert]::ToInt16((& $script:ImageMagickPath identify -format %w $TargetFilename))
+    $height = [System.Convert]::ToInt16((& $script:ImageMagickPath identify -format %h $TargetFilename))
+    $MaxWidth = 2536
+    if($width -gt $MaxWidth){
+        $percentage = [math]::Round(($MaxWidth / $width * 100),1)
+    }
+    else
+    {
+        $percentage = 100
+    }
+
+    $ofset = [math]::Floor(($height)/6) *$percentage/100
+    $pointsize = [math]::Floor(($width)/$PointRatio)
+    Write-Verbose "height:$height, width:$width, percentage:$percentage ofset:$ofset pointsize:$pointsize"
+    & $script:ImageMagickPath convert -resize "$($percentage)%" -background '#000b' -geometry "+0+$($ofset)" -fill white -gravity center -pointsize $pointsize -size $width caption:"$($Title)" $TargetFilename +swap -gravity south -composite $TargetFilename    
 }
 
 function ConvertFrom-Hsl {
@@ -140,6 +199,14 @@ $SourceFolders | ForEach-Object {
     $Options =  $_.Options
     $sourceFolderItem = Get-Item $sourceFolder
 
+    $SizeDesc = '25.4mm(1in) to 114mm(4.5in)'
+    switch ( $sourceFolderItem.Name )
+    {
+        'hoseadapter' { $connectorType = 'Hose Adapters' }
+        'magneticadapter' { $connectorType = 'Magnetic Connectors' }
+        default { $connectorType = 'Flange'}
+    }
+
     # Create a PNG from the STL
     Get-ChildItem -LiteralPath $SourceFolder -Recurse -Filter '*.stl' | ForEach-Object {
         $stl = $_
@@ -147,27 +214,15 @@ $SourceFolders | ForEach-Object {
         $angle = $stl.Directory.Parent.FullName
         $size = $stl.Directory.Name
         $targetFolder = "$($angle)\thumb\$($size)"
+
         CreateFolderIfNeeded $targetFolder
     
         $targetPath= Join-Path $targetFolder "$($stl.BaseName).png"
-
-        $generateThumb = $false
-        if(Test-Path $targetPath) {
-            $targetItem = Get-Item $targetPath
-            if($stl.LastWriteTimeUtc -gt $targetItem.LastWriteTimeUtc) {
-                $generateThumb = $true
-            }
-        }
-        else {
-            $generateThumb = $true
-        }
+        $generateThumb = GenerationNeeded $targetPath $stl.
 
         if($generateThumb -or $Script:ForceRegeneration) {
             # Pick hue based on the size and position in the array, I want each size to be a different colour.
-            # Hue 0 and 360 are both red, dont subtract 1 from legth
-
-
-            $hue = $script:HueMin + [Math]::Floor([array]::indexof($Options,$size) * ($script:HueMax - $script:HueMin) / $Options.Length)
+            $hue = $script:HueMax - [Math]::Floor([array]::indexof($Options,$size) * ($script:HueMax - $script:HueMin) / ($Options.Length - 1))
 
             $colour = ConvertFrom-Hsl $hue 50 60 -ABGR
             $colour2 = ConvertFrom-Hsl $hue 50 20 -ABGR
@@ -180,9 +235,48 @@ $SourceFolders | ForEach-Object {
     # Create thunbnail sets
     Get-ChildItem -LiteralPath $SourceFolder -Recurse -Filter 'thumb' -Directory | ForEach-Object { 
         $thumbFolder = $_
-
         $angle = $thumbFolder.Parent.Name
-        $title = "$angle $($sourceFolderItem.Name)"
+
+        # Thunbnails for sub folders.
+        Get-ChildItem -LiteralPath $thumbFolder.FullName -Directory  | ForEach-Object {
+            $folder = $_
+
+            $size = $folder.Name
+
+            switch ( $sourceFolderItem.Name )
+            {
+                'flange' { $title = "$connectorType $size\n$SizeDesc" }
+                default { $title = "$connectorType\n$size $angle" }
+            }
+            
+            Write-Host "$($folder.FullName) | $title"
+
+      
+            $targetFileName = "$($size)_display.webp"
+            $newestFile = Get-ChildItem -LiteralPath $folder.FullName | Sort-Object LastAccessTime -Descending | Select-Object -First 1
+            $generateThumb = GenerationNeeded (Join-Path $thumbFolder.FullName $targetFileName) $newestFile
+
+            if($generateThumb -or $Script:ForceRegeneration) {
+                # montage, trim to remove white space from inages, -geometry +2+2 add small border
+                #& $script:ImageMagickPath montage -adjoin -geometry +2+2 -trim -title "$($title)" 
+                Create-Montage -Path $thumbFolder.FullName `
+                    -TargetFilename $targetFileName `
+                    -PointRatio 17 `
+                    -Title $title `
+                    -Files "$($size)\*.png"  
+            }
+            else{
+                Write-Verbose "Skipping file set $($title)"
+            }
+        }
+
+        $stlCount = (Get-ChildItem $thumbFolder.Parent.FullName -Recurse -Filter *.stl).Length
+
+        switch ( $sourceFolderItem.Name )
+        {
+            'flange' { $title = "$connectorType\n$SizeDesc" }
+            default { $title = "$($connectorType)\n$angle" }
+        }
 
         # for each child folder add wild card search, sort them by the number value (so 20 comes before 100)
         $files = Get-ChildItem -LiteralPath $thumbFolder.FullName -Directory | Select-Object @{name='Name';expression={"$($_.Name)\*.png"}} | Select-Object -ExpandProperty Name | Sort-Object {[decimal]($_ -replace '(\d+\.?\d*).*', '$1')}
@@ -190,21 +284,33 @@ $SourceFolders | ForEach-Object {
 
         Write-Host "$($thumbFolder.FullName) | $title"
 
-        # montage, trim to remove white space from inages, -geometry256x256+2+2 add small border and keep all images the same size
-        cd $thumbFolder.FullName
-        & $script:ImageMagickPath montage -geometry 256x256+2+2 -pointsize 24 -trim -title "$($title)" $files display.webp
     
-        # Thunbnails for sub folders.
-        Get-ChildItem -LiteralPath $thumbFolder.FullName -Directory  | ForEach-Object {
-            $folder = $_
+        $targetFileName = "display.webp"
+        $targetPath = (Join-Path $thumbFolder.FullName $targetFileName)
+       
+        $newestFile = Get-ChildItem $thumbFolder.Parent.FullName -Recurse -Filter *.stl | Sort-Object LastAccessTime -Descending | Select-Object -First 1
+        $generateCompleteSet = GenerationNeeded $targetPath $newestFile
+        if($generateCompleteSet -or $Script:ForceRegeneration) {
+            # montage, trim to remove white space from inages, -geometry256x256+2+2 add small border and keep all images the same size
+            #& $script:ImageMagickPath montage -geometry 256x256+2+2 -pointsize 24 -trim -title "$($title)" $files display.webp
+            Create-Montage -Path $thumbFolder.FullName `
+                -TargetFilename $targetFileName `
+                -PointRatio 14 `
+                -Title $title `
+                -Files $files 
 
-            $size = $folder.Name
-            $title = "$size $angle $($sourceFolderItem.Name)"
-
-            Write-Host "$($folder.FullName) | $title"
-
-            # montage, trim to remove white space from inages, -geometry +2+2 add small border
-            & $script:ImageMagickPath montage -adjoin -geometry +2+2 -trim -title "$($title)" "$($size)\*.png" "$($size)_display.webp"
+            # thumb for a random selection
+            $takeCount = 36
+            $files = Get-ChildItem -LiteralPath $thumbFolder.FullName -Recurse -Filter '*.png' | Sort-Object { Get-Random } | select -First $takeCount | Select-Object @{name='Name';expression={"$($_.Directory.Name)\$($_.Name)"}} | Select-Object -ExpandProperty Name
+            Write-Host "$($thumbFolder.FullName) | $title | thunbnail summary set $takeCount"
+            Create-Montage -Path $thumbFolder.FullName `
+                -TargetFilename "display_$takeCount.webp" `
+                -PointRatio 14 `
+                -Title $title `
+                -Files $files 
+        }
+        else{
+            Write-Verbose "Skipping thunbnail complete set $($title)"
         }
     }
 }
