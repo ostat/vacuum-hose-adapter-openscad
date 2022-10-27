@@ -1,5 +1,5 @@
 // Hose connector
-// version 2022-09-27
+// version 2022-10-27
 
 include <vacuum-hose-adapter-modules.scad>
 
@@ -27,7 +27,7 @@ Alignment_Depth_Clearance = .75;  //0.01
 
 /* [Connector 1] */
 //The style of the end
-End1_Style="flange"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector]
+End1_Style="flange"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, dyson: Dyson connector]
 
 // Is the measurement the adapter's outside or inside diameter?
 End1_Measurement = "inner"; //[inner, outer]
@@ -88,13 +88,13 @@ Transition_Style = "tapered"; //[tapered, flat, sweep]
 Transition_Length = 10;  //1
 
 // Radius of transition bend (mm)
-Transition_Bend_Radius = 0;  //1
+Transition_Bend_Radius = 10;  //1
 
 //Angle of bend through the transition section.
-Transition_Angle = 0;  //1
+Transition_Angle = 45;  //1
 
 /* [Connector 2] */
-End2_Style="hose"; // [mag: Magnetic Flange, hose: Hose connector]
+End2_Style="nozzle"; // [mag: Magnetic Flange, hose: Hose connector, nozzle: Nozzle attachement]
 
 // Is the measurement the adapter's outside or inside diameter?
 End2_Measurement = "outer"; //[inner, outer]
@@ -134,6 +134,19 @@ End2_Magnet_Flange_Thickness = 10;  //0.1
 
 // Include a flange alignment ring
 End2_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recessed: Recessed ring]
+
+/* [Connector 2 - Nozzle] */
+// Is the measurement the adapter's outside or inside diameter?
+End2_Nozzle_Shape = "square"; //[square, circle]
+End2_Nozzle_Square_Width = 40; //0.1
+End2_Nozzle_Square_Depth = 20; //0.1
+End2_Nozzle_Tip_Wall_Thickness = 0; //0.1
+End2_Nozzle_Radius = 5;
+End2_Nozzle_Length = 100;
+End2_Nozzle_xOffset = 0;
+End2_Nozzle_yOffset = 0;
+End2_Nozzle_Chamfer_Percentage = 0;
+End2_Nozzle_Chamfer_Angle = 0;
 
 /* [Hidden] */
 fudgeFactor = 0.015;
@@ -182,5 +195,15 @@ HoseAdapter(
     connector2MagnetThickness = End2_Magnet_Thickness,
     connector2MagnetBorder = End2_Magnet_Border,
     connector2MagnetFlangeThickness = End2_Magnet_Flange_Thickness,
-    connector2Ring = End2_Ring
+    connector2Ring = End2_Ring,
+    connector2NozzleShape = End2_Nozzle_Shape,
+    connector2NozzleSquareWidth = End2_Nozzle_Square_Width,
+    connector2NozzleSquareDepth = End2_Nozzle_Square_Depth,
+    connector2NozzleTipWallThickness = End2_Nozzle_Tip_Wall_Thickness,
+    connector2NozzleRadius = End2_Nozzle_Radius,
+    connector2NozzleLength = End2_Nozzle_Length,
+    connector2NozzlexOffset = End2_Nozzle_xOffset,
+    connector2NozzleyOffset = End2_Nozzle_yOffset,
+    connector2NozzleChamferPercentage = End2_Nozzle_Chamfer_Percentage,
+    connector2NozzleChamferAngle = End2_Nozzle_Chamfer_Angle
 );
