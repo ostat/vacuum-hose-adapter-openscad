@@ -8,7 +8,7 @@
 #
 # version 2022-10-04
 
-$script:SourceFolder = (Get-Item $MyInvocation.MyCommand.Source).Directory
+$script:ScriptFolder = (Get-Item $MyInvocation.MyCommand.Source).Directory
 $script:ImageMagickPath = 'C:\Program Files\ImageMagick-7.1.0-Q16-HDRI\magick.exe'
 $script:StlThumbPath = 'C:\bin\stl-thumb\stl-thumb.exe'
 
@@ -21,7 +21,7 @@ $Script:ForceRegeneration = $false
 #List of sizes that will be used to pick the hue colour.
 $SourceFolders = @(
     @{
-        Path = (Join-Path $script:SourceFolder '\generated\hoseadapter\');
+        Path = (Join-Path $script:ScriptFolder '\generated\hoseadapter\');
         Options = @('25.4mm(1in)'         
              '31.75mm(1.25in)'     
              '32mm'                
@@ -42,7 +42,7 @@ $SourceFolders = @(
              '114.3mm(4.5in)');
     },
     @{
-        Path = (Join-Path $script:SourceFolder '\generated\magneticadapter\');
+        Path = (Join-Path $script:ScriptFolder '\generated\magneticadapter\');
         Options = @('0deg'         
              '30deg'     
              '30degsweep'                
@@ -52,11 +52,15 @@ $SourceFolders = @(
              '90degsweep');
     },
     @{
-        Path = (Join-Path $script:SourceFolder '\generated\flange\');
+        Path = (Join-Path $script:ScriptFolder '\generated\flange\');
         Options = @('0deg'         
              '30deg'     
              '45deg'   
              '90deg');
+    },
+    @{
+        Path = (Join-Path $script:ScriptFolder '\generated\dyson\');
+        Options = @();
     }
 )
 
@@ -204,7 +208,9 @@ $SourceFolders | ForEach-Object {
     {
         'hoseadapter' { $connectorType = 'Hose Adapters' }
         'magneticadapter' { $connectorType = 'Magnetic Connectors' }
-        default { $connectorType = 'Flange'}
+        'dyson' { $connectorType = 'Dyson V6' }
+        'flange' { $connectorType = 'Flange' }
+        default { $connectorType = 'Generic'}
     }
 
     # Create a PNG from the STL
@@ -221,8 +227,15 @@ $SourceFolders | ForEach-Object {
         $generateThumb = GenerationNeeded $targetPath $stl.
 
         if($generateThumb -or $Script:ForceRegeneration) {
+            if($options.count -eq 0){
+                $folderOptions = (Get-ChildItem -LiteralPath $stl.Directory.Parent.FullName -Directory ) | Where-Object {$_.Name -ne 'thumb'} | Select-Object -ExpandProperty Name
+            }
+            else{
+                $folderOptions = $options     
+            }
+
             # Pick hue based on the size and position in the array, I want each size to be a different colour.
-            $hue = $script:HueMax - [Math]::Floor([array]::indexof($Options,$size) * ($script:HueMax - $script:HueMin) / ($Options.Length - 1))
+            $hue = $script:HueMax - [Math]::Floor([array]::indexof($folderOptions,$size) * ($script:HueMax - $script:HueMin) / ($folderOptions.Length - 1))
 
             $colour = ConvertFrom-Hsl $hue 50 60 -ABGR
             $colour2 = ConvertFrom-Hsl $hue 50 20 -ABGR
@@ -246,6 +259,7 @@ $SourceFolders | ForEach-Object {
             switch ( $sourceFolderItem.Name )
             {
                 'flange' { $title = "$connectorType $size\n$SizeDesc" }
+                'dyson' { $title = "$connectorType $size\n25.4mm(1in) to 60mm" }
                 default { $title = "$connectorType\n$size $angle" }
             }
             
@@ -275,6 +289,7 @@ $SourceFolders | ForEach-Object {
         switch ( $sourceFolderItem.Name )
         {
             'flange' { $title = "$connectorType\n$SizeDesc" }
+            'dyson' { $title = "$connectorType\n25.4mm(1in) to 50.8mm(2in)" }
             default { $title = "$($connectorType)\n$angle" }
         }
 
@@ -285,7 +300,7 @@ $SourceFolders | ForEach-Object {
         Write-Host "$($thumbFolder.FullName) | $title"
 
     
-        $targetFileName = "display.webp"
+        $targetFileName = "display.jpg"
         $targetPath = (Join-Path $thumbFolder.FullName $targetFileName)
        
         $newestFile = Get-ChildItem $thumbFolder.Parent.FullName -Recurse -Filter *.stl | Sort-Object LastAccessTime -Descending | Select-Object -First 1
@@ -304,7 +319,7 @@ $SourceFolders | ForEach-Object {
             $files = Get-ChildItem -LiteralPath $thumbFolder.FullName -Recurse -Filter '*.png' | Sort-Object { Get-Random } | select -First $takeCount | Select-Object @{name='Name';expression={"$($_.Directory.Name)\$($_.Name)"}} | Select-Object -ExpandProperty Name
             Write-Host "$($thumbFolder.FullName) | $title | thunbnail summary set $takeCount"
             Create-Montage -Path $thumbFolder.FullName `
-                -TargetFilename "display_$takeCount.webp" `
+                -TargetFilename "display_$takeCount.jpg" `
                 -PointRatio 14 `
                 -Title $title `
                 -Files $files 
@@ -314,3 +329,19 @@ $SourceFolders | ForEach-Object {
         }
     }
 }
+
+
+$title = 'hose connectors'
+
+# thumb for a random selection
+$takeCount = 36
+$path = (Join-Path $script:ScriptFolder '\generated')
+cd $path
+$files = Get-ChildItem -LiteralPath $path -Recurse -Filter '*.png' | Sort-Object { Get-Random } | select -First $takeCount | Select-Object @{name='Name';expression={"$($_.Directory.FullName)\$($_.Name)"}} | Select-Object -ExpandProperty Name
+Write-Host "$($thumbFolder.FullName) | $title | thunbnail summary set $takeCount"
+Create-Montage -Path $path `
+    -TargetFilename "display_$takeCount.jpg" `
+    -PointRatio 10 `
+    -Title $title `
+    -Files $files 
+

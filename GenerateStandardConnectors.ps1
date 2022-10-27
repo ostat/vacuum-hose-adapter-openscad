@@ -85,6 +85,49 @@ $Script:Hoses =
         ExternalDiameter = 100
     }
 
+$Script:CustomAdapters = 
+    @{
+        Folder = (Join-Path $script:SourceFolder 'generated\dyson\nozzle');
+        scenario = 'dyson_nozzle_square'
+        transitionAngles = (0, 30, 45);
+        End1_Style='dyson'; End1_Measurement='inner'; End1_Diameter=25;
+        End2_Style='nozzle'; End2_Measurement='inner'; End2_Diameter=25; End2_Length=60;
+        End2_Nozzle_Shape='square'; End2_Nozzle_Square_Width='140'; End2_Nozzle_Square_Height=10; End2_Nozzle_Radius=5; End2_Nozzle_Length=20; End2_Nozzle_Tip_Wall_Thickness=0.8; End2_Nozzle_Chamfer_Percentage=80;  End2_Nozzle_Chamfer_Angle=25;
+    }, 
+    @{
+        Folder = (Join-Path $script:SourceFolder 'generated\dyson\nozzle');
+        scenario = 'dyson_nozzle_square_small'
+        transitionAngles = (0, 30, 45);
+        End1_Style='dyson'; End1_Measurement='inner'; End1_Diameter=25;
+        End2_Style='nozzle'; End2_Measurement='inner'; End2_Diameter=25; End2_Length=60;
+        End2_Nozzle_Shape='square'; End2_Nozzle_Square_Width='40'; End2_Nozzle_Square_Height=20; End2_Nozzle_Radius=5; End2_Nozzle_Length=60; End2_Nozzle_Tip_Wall_Thickness=0.8; End2_Nozzle_Chamfer_Percentage=60;  End2_Nozzle_Chamfer_Angle=25;
+    }, 
+    @{
+        Folder = (Join-Path $script:SourceFolder 'generated\dyson\nozzle');
+        scenario = 'dyson_nozzle_round'
+        transitionAngles = (0, 30, 45);
+        End1_Style='dyson'; End1_Measurement='inner'; End1_Diameter=25;
+        End2_Style='nozzle'; End2_Measurement='inner'; End2_Diameter=25; End2_Length=20;
+        End2_Nozzle_Shape='circle'; End2_Nozzle_Radius=5; End2_Nozzle_Length=80; End2_Nozzle_Tip_Wall_Thickness=0.8; End2_Nozzle_Chamfer_Percentage=80;  End2_Nozzle_Chamfer_Angle=25;
+   }
+   #,@{
+   #     targetFolder = (Join-Path $script:SourceFolder 'generated\dyson\custom');
+   #     scenario = 'dyson3'
+   #     Wall_Thickness = 2;
+   #     Draw_Alignment_Ring='no'; Alignment_Depth=2; Alignment_Upper_Width=2; Alignment_Lower_Width=.05; Alignment_Side_Clearance=0.25;#[decimal]$Alignment_Side_Clearance=0.75,
+   #
+   #     End1_Style='dyson'; End1_Measurement='outer'; End1_Diameter=40; End1_Length=20;
+   #     End1_Taper=2; End1_StopThickness=0; End1_StopLength=0;
+   #     End1_Magnets_Count=0; End1_Magnet_Diameter=0; End1_Magnet_Thickness=0; End1_Magnet_Border=0;
+   #     End1_Flange_Thickness=5; End1_Screw_Count=6; End1_Screw_Diameter=5; End1_Flange_Outer_Diameter=0;
+   #     
+   #     Transition_Style='sweep'; Transition_Length=10; Transition_Bend_Radius=10; Transition_Angle=0;
+   #
+   #     End2_Style='hose'; End2_Measurement='outer'; End2_Diameter=50; End2_Length=20;
+   #     End2_Taper=2; End2_StopThickness=0; End2_StopLength=0;
+   #     End2_Magnets_Count=0; End2_Magnet_Diameter=0; End2_Magnet_Thickness=0; End2_Magnet_Border=0; End2_Magnet_Flange_Thickness=0; End2_Ring='recessed'; Nozzle_Chamfer_Percentage=0; End2_Nozzle_Chamfer_Angle=0;
+   # }
+
 function CreateFolderIfNeeded([string] $path) {
 
     if(!(Test-Path -LiteralPath $path))
@@ -322,7 +365,7 @@ Param(
     }
 }
 
-function CreateFlange {
+function CreateDyson {
 Param(
     [decimal]$SizeExternalDiameter,
     [string]$Unit,
@@ -331,18 +374,16 @@ Param(
 )
     $wallThickness = 2
 
-    $FlangeOuter = $($c1Size+30)
-    $FlangeThickness = 5
     $c1Length = 10
-    $ScrewCount = 6
-    $ScrewDiameter = 5
-    
+    $c1Size = 30
     $transitionBendRadius = 10
-    $transLength = 5
     
     $c2Length = 20
     $c2Taper = 1
-        
+
+    
+    $transLength = [Math]::Max([Math]::Min([Math]::Ceiling([Math]::Abs($c1Size - $SizeExternalDiameter)), 40),5)
+
     if($TransitionStyle -eq "sweep")
     {
         $displayAngle = "$($transitionAngle)degsweep"
@@ -355,47 +396,29 @@ Param(
 
     if($transitionAngle -gt 0)
     {
-        $filename = "Flange_$($SizeExternalDiameter)$($Unit)_$($displayAngle)"
+        $filename = "Dyson_$($SizeExternalDiameter)$($Unit)_$($displayAngle)"
     }
     else
     {
-        $filename = "Flange_$($SizeExternalDiameter)$($Unit)"
+        $filename = "Dyson_$($SizeExternalDiameter)$($Unit)"
     }
    
-    $folder = Join-Path $script:SourceFolder "generated\flange\$($displayAngle)"
+    $folder = Join-Path $script:SourceFolder "generated\dyson\$($displayAngle)"
     CreateFolderIfNeeded $folder
    
     $target = Join-Path $folder "$($filename).stl"
     if(!(Test-Path $target) -or $Script:ForceRegeneration)
     {
-        Write-Host "Generating magnetic $($filename)"
+        Write-Host "Generating $($filename)"
 
         #invoke openscad
         $args = ""
         $args = "-o `"$($target)`""
         $args += " -D `"Wall_Thickness=$($wallThickness)`""
-        $args += " -D `"Draw_Alignment_Ring=`"`"no`"`"`""
-        $args += " -D `"Alignment_Depth=2`""
-        $args += " -D `"Alignment_Upper_Width=2`""
-        $args += " -D `"Alignment_Lower_Width=0.5`""
-        $args += " -D `"Alignment_Side_Clearance=0.25`""
-        $args += " -D `"Alignment_Side_Clearance=0.75`""
 
-        $args += " -D `"End1_Style=`"`"flange`"`"`""
-        $args += " -D `"End1_Measurement=`"`"outer`"`"`""
-        $args += " -D `"End1_Diameter=$($SizeExternalDiameter + 1)`""
-        $args += " -D `"End1_Length=$c1Length`""
-        $args += " -D `"End1_Taper=0`""
-        $args += " -D `"End1_StopThickness=0`""
-        $args += " -D `"End1_StopLength=0`""
-        $args += " -D `"End1_Magnets_Count=0`""
-        $args += " -D `"End1_Magnet_Diameter=0`""
-        $args += " -D `"End1_Magnet_Thickness=0`""
-        $args += " -D `"End1_Magnet_Border=0`""
-        $args += " -D `"End1_Flange_Thickness=$FlangeThickness`""
-        $args += " -D `"End1_Screw_Count=$ScrewCount`""
-        $args += " -D `"End1_Screw_Diameter=$ScrewDiameter`""
-        $args += " -D `"End1_Flange_Outer_Diameter=$FlangeOuter`""
+        $args += " -D `"End1_Style=`"`"dyson`"`"`""
+        $args += " -D `"End1_Measurement=`"`"inner`"`"`""
+        $args += " -D `"End1_Diameter=$($c1Size)`""
         
         $args += " -D `"Transition_Style=`"`"$($TransitionStyle)`"`"`""
         $args += " -D `"Transition_Length=$($transLength)`""
@@ -407,14 +430,124 @@ Param(
         $args += " -D `"End2_Diameter=$($SizeExternalDiameter)`""
         $args += " -D `"End2_Length=$($c2Length)`""
         $args += " -D `"End2_Taper=$($c2Taper)`""
-        $args += " -D `"End2_StopThickness=0`""
-        $args += " -D `"End2_StopLength=0`""
-        $args += " -D `"End2_Magnets_Count=0`""
-        $args += " -D `"End2_Magnet_Diameter=0`""
-        $args += " -D `"End2_Magnet_Thickness=0`""
-        $args += " -D `"End2_Magnet_Border=0`""
-        $args += " -D `"End2_Magnet_Flange_Thickness=0`""
-        $args += " -D `"End2_Ring=`"`"recessed`"`"`""
+
+        $args += " $($script:ScadScriptPath)"
+        $executionTime =  $args | Measure-Command { Start-Process $script:ScadExePath -ArgumentList $_ -wait }
+    
+        Write-host "done $executionTime"
+    }
+    else
+    {
+        Write-Verbose "Skipping $($filename)"
+    }
+}
+
+function CreateFlange {
+Param(
+    [string]$scenario,
+    [decimal]$Wall_Thickness = 2,
+    [string]$Draw_Alignment_Ring = 'no',
+    [decimal]$Alignment_Depth=2,
+    [decimal]$Alignment_Upper_Width=2,
+    [decimal]$Alignment_Lower_Width=.05,
+    [decimal]$Alignment_Side_Clearance=0.25,
+    #[decimal]$Alignment_Side_Clearance=0.75,
+
+    [string]$End1_Style,
+    [string]$End1_Measurement='outer',
+    [decimal]$End1_Diameter=40,
+    [decimal]$End1_Length=20,
+    [decimal]$End1_Taper=2,
+    [decimal]$End1_StopThickness=0,
+    [decimal]$End1_StopLength=0,
+    [decimal]$End1_Magnets_Count=0,
+    [decimal]$End1_Magnet_Diameter=0,
+    [decimal]$End1_Magnet_Thickness=0,
+    [decimal]$End1_Magnet_Border=0,
+    [decimal]$End1_Flange_Thickness=5,
+    [decimal]$End1_Screw_Count=6,
+    [decimal]$End1_Screw_Diameter=5,
+    [decimal]$End1_Flange_Outer_Diameter,
+        
+    [string]$Transition_Style='sweep',
+    [decimal]$Transition_Length=10,
+    [decimal]$Transition_Bend_Radius=10,
+    [decimal]$Transition_Angle=0,
+
+    [string]$End2_Style='hose',
+    [string]$End2_Measurement='outer',
+    [decimal]$End2_Diameter=50,
+    [decimal]$End2_Length=20,
+    [decimal]$End2_Taper=2,
+    [decimal]$End2_StopThickness=0,
+    [decimal]$End2_StopLength=0,
+    [decimal]$End2_Magnets_Count=0,
+    [decimal]$End2_Magnet_Diameter=0,
+    [decimal]$End2_Magnet_Thickness=0,
+    [decimal]$End2_Magnet_Border=0,
+    [decimal]$End2_Magnet_Flange_Thickness=0,
+    [string]$End2_Ring='recessed'
+
+)
+
+    $FlangeOuter = IIF($End1_Flange_Outer_Diameter -eq 0, $($End1_Diameter+30),$End1_Flange_Outer_Diameter)
+
+    $filename = "$($End1_Style)_$($End2_Style)_$($scenario)"
+   
+    $targetFolder = Join-Path $script:SourceFolder "generated\flange"
+    $folder = $targetFolder
+    CreateFolderIfNeeded $folder
+   
+    $target = Join-Path $folder "$($filename).stl"
+    if(!(Test-Path $target) -or $Script:ForceRegeneration)
+    {
+        Write-Host "Generating flange adapter $($filename)"
+
+        #invoke openscad
+        $args = ""
+        $args = "-o `"$($target)`""
+        $args += " -D `"Wall_Thickness=$($Wall_Thickness)`""
+        $args += " -D `"Draw_Alignment_Ring=`"`"$($Draw_Alignment_Ring)`"`"`""
+        $args += " -D `"Alignment_Depth=$($Alignment_Depth)`""
+        $args += " -D `"Alignment_Upper_Width=$($Alignment_Upper_Width)`""
+        $args += " -D `"Alignment_Lower_Width=$($Alignment_Lower_Width)`""
+        $args += " -D `"Alignment_Side_Clearance=$($Alignment_Side_Clearance)`""
+        $args += " -D `"Alignment_Side_Clearance=$($Alignment_Side_Clearance)`""
+
+        $args += " -D `"End1_Style=`"`"$($End1_Style)`"`"`""
+        $args += " -D `"End1_Measurement=`"`"$($End1_Measurement)`"`"`""
+        $args += " -D `"End1_Diameter=$($End1_Diameter)`""
+        $args += " -D `"End1_Length=$($End1_Length)`""
+        $args += " -D `"End1_Taper=$($End1_Taper)`""
+        $args += " -D `"End1_StopThickness=$($End1_StopThickness)`""
+        $args += " -D `"End1_StopLength=$($End1_StopLength)`""
+        $args += " -D `"End1_Magnets_Count=$($End1_Magnets_Count)`""
+        $args += " -D `"End1_Magnet_Diameter=$($End1_Magnet_Diameter)`""
+        $args += " -D `"End1_Magnet_Thickness=$($End1_Magnet_Thickness)`""
+        $args += " -D `"End1_Magnet_Border=$($End1_Magnet_Border)`""
+        $args += " -D `"End1_Flange_Thickness=$($End1_Flange_Thickness)`""
+        $args += " -D `"End1_Screw_Count=$($End1_Screw_Count)`""
+        $args += " -D `"End1_Screw_Diameter=$($End1_Screw_Diameter)`""
+        $args += " -D `"End1_Flange_Outer_Diameter=$($End1_Flange_Outer_Diameter)`""
+        
+        $args += " -D `"Transition_Style=`"`"$($Transition_Style)`"`"`""
+        $args += " -D `"Transition_Length=$($Transition_Length)`""
+        $args += " -D `"Transition_Bend_Radius=$($Transition_Bend_Radius)`""
+        $args += " -D `"Transition_Angle=$($Transition_Angle)`""
+
+        $args += " -D `"End2_Style=`"`"$($End2_Style)`"`"`""
+        $args += " -D `"End2_Measurement=`"`"$($End2_Measurement)`"`"`""
+        $args += " -D `"End2_Diameter=$($End2_Diameter)`""
+        $args += " -D `"End2_Length=$($End2_Length)`""
+        $args += " -D `"End2_Taper=$($End2_Taper)`""
+        $args += " -D `"End2_StopThickness=$($End2_StopThickness)`""
+        $args += " -D `"End2_StopLength=$($End2_StopLength)`""
+        $args += " -D `"End2_Magnets_Count=$($End2_Magnets_Count)`""
+        $args += " -D `"End2_Magnet_Diameter=$($End2_Magnet_Diameter)`""
+        $args += " -D `"End2_Magnet_Thickness=$($End2_Magnet_Thickness)`""
+        $args += " -D `"End2_Magnet_Border=$($End2_Magnet_Border)`""
+        $args += " -D `"End2_Magnet_Flange_Thickness=$($End2_Magnet_Flange_Thickness)`""
+        $args += " -D `"End2_Ring=`"`"$($End2_Ring)`"`"`""
 
         $args += " $($script:ScadScriptPath)"
         $executionTime =  $args | Measure-Command { Start-Process $script:ScadExePath -ArgumentList $_ -wait }
@@ -483,7 +616,137 @@ $Script:transitionStyles | ForEach-Object {
                 {
                     CreateFlange -SizeExternalDiameter $c1Size -Unit $c1Unit  -transitionAngle $transitionAngle -transitionStyle $transitionStyle
                 }
+
+                if( $c1Size -lt 55)
+                {
+                    CreateDyson -SizeExternalDiameter $c1Size -Unit $c1Unit  -transitionAngle $transitionAngle -transitionStyle $transitionStyle
+                }
             }
         }
     }
+}
+
+Function AddArgs($cmdArgs, $value, $argValue) {
+if (![string]::IsNullOrEmpty($value)) { 
+    $cmdArgs += $argValue
+}
+return $cmdArgs
+}
+
+$Script:CustomAdapters | ForEach-Object { 
+    $adapter = $_
+    $Script:transitionStyles | ForEach-Object { 
+        $transitionStyle = $_
+        $adapter.transitionAngles | ForEach-Object { 
+        $transitionAngle = $_
+
+        if($transitionStyle -ieq 'sweep' -and $transitionAngle -eq 0)
+        {
+            Write-Verbose "Skipping as sweep 0 is not valid, transitionStyle: $transitionStyle transitionAngle: $transitionAngle"
+        }
+        else
+        {
+            Write-Host "transitionStyle $($transitionStyle) | transitionAngle $($transitionAngle) "
+    
+            #$FlangeOuter = IIF($End1_Flange_Outer_Diameter -eq 0, $($End1_Diameter+30),$End1_Flange_Outer_Diameter)
+
+            if($TransitionStyle -eq "sweep")
+            {
+                $displayAngle = "$($transitionAngle)degsweep"
+            }
+            else
+            {
+                $displayAngle = "$($transitionAngle)deg"
+            }
+
+            if($adapter.End2_Nozzle_Shape -eq 'nozzle' -and $adapter.End2_Nozzle_Chamfer_Angle -eq 0 -and $adapter.Nozzle_Chamfer_Percentage -gt 0 ){
+                $adapter.End2_Nozzle_Chamfer_Angle -eq $transitionAngle;
+            }
+            
+
+            #$transLength = [Math]::Max([Math]::Min([Math]::Ceiling([Math]::Abs($c1Size - $SizeExternalDiameter)), 40),5)
+
+
+            $filename = "$($adapter.End1_Style)_$($adapter.End2_Style)_$($adapter.scenario)_$displayAngle"
+   
+            #$targetFolder Join-Path $script:SourceFolder "generated\flange"
+            $folder = $adapter.Folder
+            CreateFolderIfNeeded $folder
+   
+            $target = Join-Path $folder "$($filename).stl"
+            if(!(Test-Path $target) -or $Script:ForceRegeneration)
+            {
+                Write-Host "Generating generic adapter $($filename)"
+
+                #invoke openscad
+                $cmdArgs = ""
+                $cmdArgs = "-o `"$($target)`""
+
+                $cmdArgs = AddArgs $cmdArgs $adapter.Wall_Thickness " -D `"Wall_Thickness=$($adapter.Wall_Thickness)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.Draw_Alignment_Ring " -D `"Draw_Alignment_Ring=`"`"$($adapter.Draw_Alignment_Ring)`"`"`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.Alignment_Depth " -D `"Alignment_Depth=$($adapter.Alignment_Depth)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.Alignment_Upper_Width " -D `"Alignment_Upper_Width=$($adapter.Alignment_Upper_Width)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.Alignment_Lower_Width " -D `"Alignment_Lower_Width=$($adapter.Alignment_Lower_Width)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.Alignment_Side_Clearance " -D `"Alignment_Side_Clearance=$($adapter.Alignment_Side_Clearance)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.Alignment_Side_Clearance " -D `"Alignment_Side_Clearance=$($adapter.Alignment_Side_Clearance)`""
+
+                $cmdArgs = AddArgs $cmdArgs $adapter.End1_Style " -D `"End1_Style=`"`"$($adapter.End1_Style)`"`"`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End1_Measurement " -D `"End1_Measurement=`"`"$($adapter.End1_Measurement)`"`"`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End1_Diameter " -D `"End1_Diameter=$($adapter.End1_Diameter)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End1_Length " -D `"End1_Length=$($adapter.End1_Length)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End1_Taper " -D `"End1_Taper=$($adapter.End1_Taper)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End1_StopThickness " -D `"End1_StopThickness=$($adapter.End1_StopThickness)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End1_StopLength " -D `"End1_StopLength=$($adapter.End1_StopLength)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End1_Magnets_Count " -D `"End1_Magnets_Count=$($adapter.End1_Magnets_Count)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End1_Magnet_Diameter " -D `"End1_Magnet_Diameter=$($adapter.End1_Magnet_Diameter)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End1_Magnet_Thickness " -D `"End1_Magnet_Thickness=$($adapter.End1_Magnet_Thickness)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End1_Magnet_Border " -D `"End1_Magnet_Border=$($adapter.End1_Magnet_Border)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End1_Flange_Thickness " -D `"End1_Flange_Thickness=$($adapter.End1_Flange_Thickness)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End1_Screw_Count " -D `"End1_Screw_Count=$($adapter.End1_Screw_Count)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End1_Screw_Diameter " -D `"End1_Screw_Diameter=$($adapter.End1_Screw_Diameter)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End1_Flange_Outer_Diameter " -D `"End1_Flange_Outer_Diameter=$($adapter.End1_Flange_Outer_Diameter)`""
+        
+                $cmdArgs = AddArgs $cmdArgs $transitionStyle " -D `"Transition_Style=`"`"$($transitionStyle)`"`"`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.Transition_Length " -D `"Transition_Length=$($adapter.Transition_Length)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.Transition_Bend_Radius " -D `"Transition_Bend_Radius=$($adapter.Transition_Bend_Radius)`""
+                $cmdArgs = AddArgs $cmdArgs $transitionAngle " -D `"Transition_Angle=$($transitionAngle)`""
+
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Style " -D `"End2_Style=`"`"$($adapter.End2_Style)`"`"`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Measurement " -D `"End2_Measurement=`"`"$($adapter.End2_Measurement)`"`"`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Diameter " -D `"End2_Diameter=$($adapter.End2_Diameter)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Length " -D `"End2_Length=$($adapter.End2_Length)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Taper " -D `"End2_Taper=$($adapter.End2_Taper)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_StopThickness " -D `"End2_StopThickness=$($adapter.End2_StopThickness)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_StopLength " -D `"End2_StopLength=$($adapter.End2_StopLength)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Magnets_Count " -D `"End2_Magnets_Count=$($adapter.End2_Magnets_Count)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Magnet_Diameter " -D `"End2_Magnet_Diameter=$($adapter.End2_Magnet_Diameter)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Magnet_Thickness " -D `"End2_Magnet_Thickness=$($adapter.End2_Magnet_Thickness)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Magnet_Border " -D `"End2_Magnet_Border=$($adapter.End2_Magnet_Border)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Magnet_Flange_Thickness " -D `"End2_Magnet_Flange_Thickness=$($adapter.End2_Magnet_Flange_Thickness)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Ring " -D `"End2_Ring=`"`"$($adapter.End2_Ring)`"`"`""
+
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Nozzle_Shape " -D `"End2_Nozzle_Shape=`"`"$($adapter.End2_Nozzle_Shape)`"`"`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Nozzle_Square_Width " -D `"End2_Nozzle_Square_Width=$($adapter.End2_Nozzle_Square_Width)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Nozzle_Square_Depth " -D `"End2_Nozzle_Square_Depth=$($adapter.End2_Nozzle_Square_Depth)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Nozzle_Tip_Wall_Thickness " -D `"End2_Nozzle_Tip_Wall_Thickness=$($adapter.End2_Nozzle_Tip_Wall_Thickness)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Nozzle_Radius " -D `"End2_Nozzle_Radius=$($adapter.End2_Nozzle_Radius)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Nozzle_Length " -D `"End2_Nozzle_Length=$($adapter.End2_Nozzle_Length)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Nozzle_xOffset " -D `"End2_Nozzle_xOffset=$($adapter.End2_Nozzle_xOffset)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Nozzle_yOffset " -D `"End2_Nozzle_yOffset=$($adapter.End2_Nozzle_yOffset)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Nozzle_Chamfer_Percentage " -D `"End2_Nozzle_Chamfer_Percentage=$($adapter.End2_Nozzle_Chamfer_Percentage)`""
+                $cmdArgs = AddArgs $cmdArgs $adapter.End2_Nozzle_Chamfer_Angle " -D `"End2_Nozzle_Chamfer_Angle=$($adapter.End2_Nozzle_Chamfer_Angle)`""
+ 
+                $cmdArgs += " $($script:ScadScriptPath)"
+                Write-Host  $cmdArgs
+                $executionTime =  $cmdArgs | Measure-Command { Start-Process $script:ScadExePath -ArgumentList $_ -wait }
+    
+                Write-host "done $executionTime"
+            }
+            else
+            {
+                Write-Verbose "Skipping $($filename)"
+            } 
+        }
+    }
+}
 }
