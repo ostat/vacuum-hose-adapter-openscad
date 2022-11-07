@@ -1,7 +1,7 @@
 // Hose connector examples
 // version 2022-09-26
 
-include <vacuum-hose-adapter-modules.scad>
+use <vacuum-hose-adapter-modules.scad>
 
 fudgeFactor = 0.015;
 //$fn=120;
@@ -9,12 +9,12 @@ fudgeFactor = 0.015;
 $fs = 1;
 $fa = 6;
 
-part = "50to30"; //[50to30: 50mm hose to 30mm hose, 50to30bend45deg: 50mm hose to 30mm hose bent by 45deg, 50to30bend45degsweep: 50mm hose to 30mm hose bent by 45deg sweep ,50to100: 50mm hose to 100mm hose, 50to100bend90deg: 50mm hose to 100mm hose bent by 90deg, 50to100bend90degsweep: 50mm hose to 100mm hose bent by 90deg sweep, 50toflat: flat plate to 50mm hose, mag50to40: 50mm magnet to 40mm, mag50to100: 50mm magnet to 100mm, mag50toflat: 50mm magnet to flat plate with connector, mag50toflat120: 50mm magnet to flat plate, screwflange50: flange 50mm hose, 50ring: 50m magnet flange alignment ring, mag100to100: 100m magnet flange to 100mm hose, mag100to50: 100m magnet flange to 50mm hose, 100ring: 100m magnet flange alignment ring, mag50tomag100: 50mm magnet to 100mm magnet]
+part = "50to30"; //[50to30: 50mm hose to 30mm hose, 50to30bend45deg: 50mm hose to 30mm hose bent by 45deg, 50to30bend45degsweep: 50mm hose to 30mm hose bent by 45deg sweep ,50to100: 50mm hose to 100mm hose, 50to100bend90deg: 50mm hose to 100mm hose bent by 90deg, 50to100bend90degsweep: 50mm hose to 100mm hose bent by 90deg sweep, 50toflat: flat plate to 50mm hose, mag50to40: 50mm magnet to 40mm, mag50to100: 50mm magnet to 100mm, mag50toflat: 50mm magnet to flat plate with connector, mag50toflat120: 50mm magnet to flat plate, screwflange50: flange 50mm hose, 50ring: 50m magnet flange alignment ring, mag100to100: 100m magnet flange to 100mm hose, mag100to50: 100m magnet flange to 50mm hose, 100ring: 100m magnet flange alignment ring, mag50tomag100: 50mm magnet to 100mm magnet, funnel: funnel 80mm to 5 mm , funnelOffset: funnel offset 80mm to 5 mm]
+
+module end_of_customizer_opts() {}
 
 if (part == "mag50to40") {
     HoseAdapter(
-        wallThickness = 2,
-        drawAlignmentRing = "no",
         alignmentDepth = 2,
         alignmentUpperWidth = 3,
         alignmentLowerWidth = 0.5,
@@ -40,7 +40,6 @@ if (part == "mag50to40") {
 }
 if (part == "mag50to100") {
     HoseAdapter(
-        wallThickness = 2,
         alignmentDepth = 2,
         alignmentUpperWidth = 3,
         alignmentLowerWidth = 0.5,
@@ -65,7 +64,6 @@ if (part == "mag50to100") {
 }
 if (part == "mag50toflat120") {
     HoseAdapter(
-        wallThickness = 2,
         drawAlignmentRing = "no",
         alignmentDepth = 2,
         alignmentUpperWidth = 3,
@@ -73,6 +71,7 @@ if (part == "mag50toflat120") {
         alignmentSideClearance = 0.25,
         alignmentDepthClearance = 0.75,
         connector1Style = "mag",
+        connector1wallThickness = 2, 
         connector1Measurement = "inner",
         connector1Diameter = 50,
         connector1Length = 7,
@@ -90,7 +89,6 @@ if (part == "mag50toflat120") {
 }
 if (part == "mag50toflat") {
     HoseAdapter(
-        wallThickness = 2,
         drawAlignmentRing = "no",
         alignmentDepth = 2,
         alignmentUpperWidth = 3,
@@ -116,7 +114,6 @@ if (part == "mag50toflat") {
 }
 if (part == "screwflange50") {
     HoseAdapter(
-        wallThickness = 2,
         connector1Style = "flange",
         connector1Measurement = "outer",
         connector1Diameter = 51,
@@ -125,6 +122,8 @@ if (part == "screwflange50") {
         connector1FlangeThickness = 5,
         connector1FlangeScrewCount = 4,
         connector1FlangeScrewDiameter = 5,
+        connector1FlangeWidth = 30,
+    
         transitionStyle = "tapered",
         transitionLength = 5,
         connector2Style = "hose",
@@ -151,7 +150,6 @@ if (part == "50ring") {
 }
 if (part == "50to30") {
     HoseAdapter(
-        wallThickness = 2,
         connector1Style = "hose",
         connector1Measurement = "outer",
         connector1Diameter = 50,
@@ -168,7 +166,6 @@ if (part == "50to30") {
 }
 if (part == "50to30bend45deg") {
     HoseAdapter(
-        wallThickness = 2,
         connector1Style = "hose",
         connector1Measurement = "outer",
         connector1Diameter = 50,
@@ -187,7 +184,6 @@ if (part == "50to30bend45deg") {
 }
 if (part == "50to30bend45degsweep") {
     HoseAdapter(
-        wallThickness = 2,
         connector1Style = "hose",
         connector1Measurement = "outer",
         connector1Diameter = 50,
@@ -206,7 +202,6 @@ if (part == "50to30bend45degsweep") {
 }
 if (part == "50to100") {
     HoseAdapter(
-        wallThickness = 2,
         connector1Style = "hose",
         connector1Measurement = "outer",
         connector1Diameter = 50,
@@ -224,7 +219,6 @@ if (part == "50to100") {
 }
 if (part == "50to100bend90deg") {
     HoseAdapter(
-        wallThickness = 2,
         connector1Style = "hose",
         connector1Measurement = "outer",
         connector1Diameter = 50,
@@ -244,7 +238,6 @@ if (part == "50to100bend90deg") {
 }
 if (part == "50to100bend90degsweep") {
     HoseAdapter(
-        wallThickness = 2,
         connector1Style = "hose",
         connector1Measurement = "outer",
         connector1Diameter = 50,
@@ -264,7 +257,6 @@ if (part == "50to100bend90degsweep") {
 }
 if (part == "50toflat") {
     HoseAdapter(
-        wallThickness = 2,
         connector1Style = "hose",
         connector1Measurement = "inner",
         connector1Diameter = 50,
@@ -278,7 +270,6 @@ if (part == "50toflat") {
 }
 if (part == "mag100to100") {
     HoseAdapter(
-        wallThickness = 2,
         drawAlignmentRing = "no",
         alignmentDepth = 2,
         alignmentUpperWidth = 3,
@@ -306,7 +297,6 @@ if (part == "mag100to100") {
 }
 if (part == "mag100to50") {
     HoseAdapter(
-        wallThickness = 2,
         drawAlignmentRing = "no",
         alignmentDepth = 2,
         alignmentUpperWidth = 3,
@@ -350,7 +340,6 @@ if (part == "100ring") {
 }
 if (part == "mag50tomag100") {
     HoseAdapter(
-        wallThickness = 2,
         drawAlignmentRing = "no",
         alignmentDepth = 2,
         alignmentUpperWidth = 3,
@@ -379,4 +368,62 @@ if (part == "mag50tomag100") {
         connector2MagnetBorder = 3,
         connector2MagnetFlangeThickness = 7,
         connector2Ring = "recessed");
+}
+if (part == "funnel") {
+    HoseAdapter(
+        connector1Style = "flange",
+        connector1Measurement = "inner",
+        connector1Diameter = 80,
+        connector1WallThickness = 1.5,
+        connector1FlangeWidth = 7,
+        connector1FlangeThickness = 1.5,
+        connector1FlangeScrewPosition = 10,
+        connector1FlangeScrewBorder = 5,
+        connector1FlangeScrewCount = 1,
+        connector1FlangeScrewDiameter = 5,
+        connector1Length = 3,
+        transitionStyle = "tapered",
+        transitionLength = 40,
+        connector2Style = "nozzle",
+        connector2Measurement = "inner",
+        connector2Diameter = 10,
+        connector2Length = 15,
+        connector2WallThickness = 1.5,
+        connector2NozzleShape = "circle",
+        connector2NozzleTipWallThickness = 0.6,
+        connector2NozzleRadius = 5,
+        connector2NozzleLength = 50,
+        connector2NozzleChamferPercentage = 100,
+        connector2NozzleChamferAngle = 30);
+}
+
+if (part == "funnelOffset") {
+    HoseAdapter(
+        connector1Style = "flange",
+        connector1Measurement = "inner",
+        connector1Diameter = 80,
+        connector1WallThickness = 1.5,
+        connector1FlangeWidth = 7,
+        connector1FlangeThickness = 1.5,
+        connector1FlangeScrewPosition = 10,
+        connector1FlangeScrewBorder = 5,
+        connector1FlangeScrewCount = 1,
+        connector1FlangeScrewDiameter = 5,
+        connector1Length = 3,
+        transitionStyle = "tapered",
+        transitionLength = 40,
+        transitionXOffset = -30,
+        transitionYOffset = 0,
+  
+        connector2Style = "nozzle",
+        connector2Measurement = "inner",
+        connector2Diameter = 10,
+        connector2Length = 15,
+        connector2WallThickness = 1.5,
+        connector2NozzleShape = "circle",
+        connector2NozzleTipWallThickness = 0.6,
+        connector2NozzleRadius = 5,
+        connector2NozzleLength = 50,
+        connector2NozzleChamferPercentage = 100,
+        connector2NozzleChamferAngle = 30);
 }
