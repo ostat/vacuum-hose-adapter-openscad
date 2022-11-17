@@ -102,7 +102,7 @@ End2_Diameter = 40;  //0.1
 //Length of the pipe coming out of the flange.
 End2_Length= 40;  //1
 //Taper of the start connector, use negative to taper other direction.
-End2_Taper = 2;  //0.1
+End2_Taper = 0;  //0.1
 
 
 /* [Connector 2 - Hose connector] */
@@ -130,15 +130,15 @@ End2_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recesse
 /* [Connector 2 - Nozzle] */
 // Is the measurement the adapter's outside or inside diameter?
 End2_Nozzle_Shape = "square"; //[square, circle]
-End2_Nozzle_Square_Width = 40; //0.1
-End2_Nozzle_Square_Depth = 20; //0.1
+End2_Nozzle_Square_Width = 10; //0.1
+End2_Nozzle_Square_Depth = 5; //0.1
 End2_Nozzle_Tip_Wall_Thickness = 0; //0.1
-End2_Nozzle_Radius = 5;
-End2_Nozzle_Length = 100;
-End2_Nozzle_xOffset = 0;
-End2_Nozzle_yOffset = 0;
-End2_Nozzle_Chamfer_Percentage = 0;
-End2_Nozzle_Chamfer_Angle = 0;
+End2_Nozzle_Radius = 0; //0.1
+End2_Nozzle_Length = 10;
+End2_Nozzle_xOffset = 0; //0.1
+End2_Nozzle_yOffset = 0; //0.1
+End2_Nozzle_Chamfer_Percentage = 0; //0.1
+End2_Nozzle_Chamfer_Angle = 0; //0.1
 
 /* [Hidden] */
 fudgeFactor = 0.015;

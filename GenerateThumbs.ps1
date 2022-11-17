@@ -22,6 +22,9 @@ $Script:ForceRegeneration = $false
 $SourceFolders = @(
     @{
         Path = (Join-Path $script:ScriptFolder '\generated\hoseadapter\');
+        ConnectorType = 'Hose Adapters'
+        SetTitle = 'Hose Adapters\n[SetName] [ParentFolderName]'
+        ConnectorTitle = 'Hose Adapters\n[ParentFolderName]'
         Options = @('25.4mm(1in)'         
              '31.75mm(1.25in)'     
              '32mm'                
@@ -40,9 +43,14 @@ $SourceFolders = @(
              '100mm'                
              '101.6mm(4in)'         
              '114.3mm(4.5in)');
+        HueMin = 0   #min value is 0
+        HueMax = 220 #max value is 360
     },
     @{
         Path = (Join-Path $script:ScriptFolder '\generated\magneticadapter\');
+        ConnectorType = 'Magnetic Connectors'
+        SetTitle = 'Magnetic Connectors\n[SetName] [ParentFolderName]'
+        ConnectorTitle = 'Magnetic Connectors\n[ParentFolderName]'
         Options = @('0deg'         
              '30deg'     
              '30degsweep'                
@@ -50,17 +58,47 @@ $SourceFolders = @(
              '45degsweep'                
              '90deg' 
              '90degsweep');
+        HueMin = 0   #min value is 0
+        HueMax = 220 #max value is 360
     },
     @{
         Path = (Join-Path $script:ScriptFolder '\generated\flange\');
+        ConnectorType = 'Flange'
+        SetTitle = 'Flange [SetName]\n25.4mm(1in) to 114mm(4.5in)'
+        ConnectorTitle = 'Flange\n25.4mm(1in) to 114mm(4.5in)'
         Options = @('0deg'         
              '30deg'     
              '45deg'   
              '90deg');
+        HueMin = 0   #min value is 0
+        HueMax = 220 #max value is 360
     },
     @{
         Path = (Join-Path $script:ScriptFolder '\generated\dyson\');
+        connectorType = 'Dyson V6' 
+        SetTitle = 'Funnel [SetName]'
+        ConnectorTitle = 'Dyson V6'
         Options = @();
+        HueMin = 0   #min value is 0
+        HueMax = 220 #max value is 360
+    },
+    @{
+        Path = (Join-Path $script:ScriptFolder '\generated\funnel\');
+        connectorType = 'Funnels'
+        SetTitle = 'Funnels [SetName]'
+        ConnectorTitle = 'Funnels\n25mm to 200mm'
+        Options = @();
+        HueMin = 180   #min value is 0
+        HueMax = 300 #max value is 360
+    },
+    @{
+        Path = (Join-Path $script:ScriptFolder '\generated\funnel_offcenter\');
+        ConnectorType = 'Offset Funnels'
+        SetTitle = 'Offset Funnels\n[SetName]'
+        ConnectorTitle = 'Offset Funnels\n25mm to 200mm'
+        Options = @();
+        HueMin = 180   #min value is 0
+        HueMax = 300 #max value is 360
     }
 )
 
@@ -199,27 +237,18 @@ function ConvertFrom-Hsl {
 }
 
 $SourceFolders | ForEach-Object {
-    $sourceFolder =  $_.Path
-    $Options =  $_.Options
+    $SourceSettings = $_
+    $sourceFolder =  $SourceSettings.Path
+    $Options =  $SourceSettings.Options
     $sourceFolderItem = Get-Item $sourceFolder
 
-    $SizeDesc = '25.4mm(1in) to 114mm(4.5in)'
-    switch ( $sourceFolderItem.Name )
-    {
-        'hoseadapter' { $connectorType = 'Hose Adapters' }
-        'magneticadapter' { $connectorType = 'Magnetic Connectors' }
-        'dyson' { $connectorType = 'Dyson V6' }
-        'flange' { $connectorType = 'Flange' }
-        default { $connectorType = 'Generic'}
-    }
+    $connectorType = $SourceSettings.ConnectorType
 
     # Create a PNG from the STL
     Get-ChildItem -LiteralPath $SourceFolder -Recurse -Filter '*.stl' | ForEach-Object {
         $stl = $_
-
-        $angle = $stl.Directory.Parent.FullName
-        $size = $stl.Directory.Name
-        $targetFolder = "$($angle)\thumb\$($size)"
+        $setName = $stl.Directory.Name
+        $targetFolder = "$($stl.Directory.Parent.FullName)\thumb\$($setName)"
 
         CreateFolderIfNeeded $targetFolder
     
@@ -228,14 +257,14 @@ $SourceFolders | ForEach-Object {
 
         if($generateThumb -or $Script:ForceRegeneration) {
             if($options.count -eq 0){
-                $folderOptions = (Get-ChildItem -LiteralPath $stl.Directory.Parent.FullName -Directory ) | Where-Object {$_.Name -ne 'thumb'} | Select-Object -ExpandProperty Name
+                $folderOptions = (Get-ChildItem -LiteralPath $stl.Directory.Parent.FullName -Directory ) | Where-Object {$_.Name -ne 'thumb'} | Select-Object -ExpandProperty Name | Sort-Object {[decimal]($_ -replace '.*?(\d*\.?\d*?).*', '$1')}
             }
             else{
                 $folderOptions = $options     
             }
 
             # Pick hue based on the size and position in the array, I want each size to be a different colour.
-            $hue = $script:HueMax - [Math]::Floor([array]::indexof($folderOptions,$size) * ($script:HueMax - $script:HueMin) / ($folderOptions.Length - 1))
+            $hue = $SourceSettings.HueMax - [Math]::Floor([array]::indexof($folderOptions,$setName) * ($SourceSettings.HueMax - $SourceSettings.HueMin) / ($folderOptions.Length - 1))
 
             $colour = ConvertFrom-Hsl $hue 50 60 -ABGR
             $colour2 = ConvertFrom-Hsl $hue 50 20 -ABGR
@@ -248,25 +277,16 @@ $SourceFolders | ForEach-Object {
     # Create thunbnail sets
     Get-ChildItem -LiteralPath $SourceFolder -Recurse -Filter 'thumb' -Directory | ForEach-Object { 
         $thumbFolder = $_
-        $angle = $thumbFolder.Parent.Name
 
         # Thunbnails for sub folders.
         Get-ChildItem -LiteralPath $thumbFolder.FullName -Directory  | ForEach-Object {
             $folder = $_
 
-            $size = $folder.Name
-
-            switch ( $sourceFolderItem.Name )
-            {
-                'flange' { $title = "$connectorType $size\n$SizeDesc" }
-                'dyson' { $title = "$connectorType $size\n25.4mm(1in) to 60mm" }
-                default { $title = "$connectorType\n$size $angle" }
-            }
-            
+            $setName = $folder.Name
+            $title = $SourceSettings.SetTitle.Replace('[SetName]', $setName).Replace('[ParentFolderName]',$thumbFolder.Parent.Name);
             Write-Host "$($folder.FullName) | $title"
-
       
-            $targetFileName = "$($size)_display.webp"
+            $targetFileName = "$($setName)_display.jpg"
             $newestFile = Get-ChildItem -LiteralPath $folder.FullName | Sort-Object LastAccessTime -Descending | Select-Object -First 1
             $generateThumb = GenerationNeeded (Join-Path $thumbFolder.FullName $targetFileName) $newestFile
 
@@ -277,7 +297,7 @@ $SourceFolders | ForEach-Object {
                     -TargetFilename $targetFileName `
                     -PointRatio 17 `
                     -Title $title `
-                    -Files "$($size)\*.png"  
+                    -Files "$($setName)\*.png"  
             }
             else{
                 Write-Verbose "Skipping file set $($title)"
@@ -286,13 +306,8 @@ $SourceFolders | ForEach-Object {
 
         $stlCount = (Get-ChildItem $thumbFolder.Parent.FullName -Recurse -Filter *.stl).Length
 
-        switch ( $sourceFolderItem.Name )
-        {
-            'flange' { $title = "$connectorType\n$SizeDesc" }
-            'dyson' { $title = "$connectorType\n25.4mm(1in) to 50.8mm(2in)" }
-            default { $title = "$($connectorType)\n$angle" }
-        }
-
+        $title = $SourceSettings.ConnectorTitle.Replace('[SetName]', $folder.Name).Replace('[ParentFolderName]',$thumbFolder.Parent.Name);
+        
         # for each child folder add wild card search, sort them by the number value (so 20 comes before 100)
         $files = Get-ChildItem -LiteralPath $thumbFolder.FullName -Directory | Select-Object @{name='Name';expression={"$($_.Name)\*.png"}} | Select-Object -ExpandProperty Name | Sort-Object {[decimal]($_ -replace '(\d+\.?\d*).*', '$1')}
         $filesString = $files | Join-String -Separator " "
