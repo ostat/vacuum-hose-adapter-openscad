@@ -1,5 +1,5 @@
 // Hose connector modules
-// version 2022-09-27
+// version 2022-11-21
 
 use <dotSCAD/ring_extrude.scad>
 use <dotSCAD/shape_circle.scad>
@@ -37,13 +37,19 @@ End1_Length= 15;  //0.1
 //Taper of the start connector, use negative to taper other direction.
 End1_Taper = 0;  //0.1
 
-
 /* [Connector 1 - Hose connector] */
 //Thickness of hose stop
 End1_StopThickness = 6;  //1
 //Length of hose stop
 End1_StopLength = 5;  //1
-
+//Should the stop be tapered both sides. Might easier to print.
+End1_Stop_Symmetrical = 0;
+//Number of barbs
+End1_Barbs_Count = 0;
+//Thickness of the barbs, default is half wall thickness 
+End1_Barbs_Thickness = 0; //0.1
+//Should the barbes be tapered both sides. Might be easier to print.
+End1_Barbs_Symmetrical = 0; //[0,1]
 
 /* [Connector 1 - Flange] */
 //Width of Flange added to the connector diamater
@@ -89,6 +95,7 @@ Transition_xOffset = 0; // 0.1
 Transition_yOffset = 0; // 0.1
 
 /* [Transition Support For Angled Pipes] */
+// Include a flate section on the transition to assist with printing
 Transition_Base_Type="none"; // [none, oval, rectangle]
 //Support Base Additional Thickness;
 Transition_Base_Thickness=0;
@@ -120,8 +127,15 @@ End2_Taper = 0;  //0.1
 End2_StopThickness = 0;  //1
 //Length of hose stop
 End2_StopLength = 0;  //1
+//Should the stop be tapered both sides. Might easier to print.
+End2_Stop_Symmetrical = 0;
+//Number of barbs
+End2_Barbs_Count = 0; 
+//Thickness of the barbs, default is half wall thickness 
+End2_Barbs_Thickness = 0; //0.1
+//Should the barbes be tapered both sides. Might be easier to print.
+End2_Barbs_Symmetrical = 0; //[0,1]
 
-    
 /* [Connector 2 - Magnetic Flange] */
 //Number of magnets in the flange
 End2_Magnets_Count = 6;  //1
@@ -176,18 +190,25 @@ HoseAdapter(
     connector1Taper = End1_Taper,
     connector1StopThickness = End1_StopThickness,
     connector1StopLength = End1_StopLength,
+    connector1StopSymmetrical = End1_Stop_Symmetrical,
+    connector1BarbsCount = End1_Barbs_Count,
+    connector1BarbsThickness = End1_Barbs_Thickness,
+    connector1BarbsSymmetrical = End1_Barbs_Symmetrical,
+
     connector1MagnetCount = End1_Magnets_Count,
     connector1MagnetDiameter = End1_Magnet_Diameter,
     connector1MagnetThickness = End1_Magnet_Thickness,
     connector1MagnetBorder = End1_Magnet_Border,
     connector1MagnetFlangeThickness = End1_Magnet_Flange_Thickness,
     connector1Ring = End1_Ring,
+
     connector1FlangeWidth = End1_Flange_Width,
     connector1FlangeThickness = End1_Flange_Thickness,
     connector1FlangeScrewPosition = End1_Flange_Screw_Position,
     connector1FlangeScrewBorder = End1_Flange_Screw_Border,
     connector1FlangeScrewCount = End1_Flange_Screw_Count,
     connector1FlangeScrewDiameter = End1_Flange_Screw_Diameter,
+
 
     transitionStyle = Transition_Style,
     transitionLength = Transition_Length,
@@ -200,6 +221,7 @@ HoseAdapter(
     transitionBaseWidth = Transition_Base_Width,
     transitionBaseLength = Transition_Base_Length,
     transitionBaseAngle = Transition_Base_Angle,
+
     
     connector2WallThickness  = End2_Wall_Thickness,
     connector2Style = End2_Style,
@@ -209,12 +231,18 @@ HoseAdapter(
     connector2Taper = End2_Taper,
     connector2StopThickness = End2_StopThickness,
     connector2StopLength = End2_StopLength,
+    connector2StopSymmetrical = End2_Stop_Symmetrical,
+    connector2BarbsCount = End2_Barbs_Count,
+    connector2BarbsThickness = End2_Barbs_Thickness,
+    connector2BarbsSymmetrical = End2_Barbs_Symmetrical,
+
     connector2MagnetCount = End2_Magnets_Count,
     connector2MagnetDiameter = End2_Magnet_Diameter,
     connector2MagnetThickness = End2_Magnet_Thickness,
     connector2MagnetBorder = End2_Magnet_Border,
     connector2MagnetFlangeThickness = End2_Magnet_Flange_Thickness,
     connector2Ring = End2_Ring,
+
     connector2NozzleShape = End2_Nozzle_Shape,
     connector2NozzleSquareWidth = End2_Nozzle_Square_Width,
     connector2NozzleSquareDepth = End2_Nozzle_Square_Depth,
@@ -413,9 +441,11 @@ module TaperedBentPipe(
     sizeStart = end1InnerPipeDiameter / 2 + end1WallThickness ;
     sizeEnd = end2InnerPipeDiameter / 2 + end2WallThickness ;
 
-    baseSupportThickness = (sizeStart+sizeEnd)/2 + baseThickness;
-    baseSupportWidth =  baseWidth == 0 ? outerPipeDiameter / 2  : baseWidth;
-    baseSupportLength =  baseLength == 0 ? outerPipeDiameter / 1.5  : baseLength;
+    //baseSupportThickness should be between the start and end, but wieghted to the thicker end.
+    supportBaseValue = (max(sizeStart,sizeEnd)*2 + min(sizeStart,sizeEnd))/3;
+    baseSupportThickness = supportBaseValue + baseThickness;
+    baseSupportWidth =  baseWidth == 0 ? supportBaseValue *1.5 : baseWidth;
+    baseSupportLength =  baseLength == 0 ? supportBaseValue * 2: baseLength;
     baseSupportAngle = baseAngle == 0 ? pipeAngle/2 : baseAngle;
   
     shapeOuter = shape_circle(sizeStart);
@@ -893,42 +923,123 @@ module HoseConnector(
     length,
     wallThickness,
     stopLength,
-    stopWidth)
+    stopWidth,
+    stopSymmetrical = 0,
+    barbsCount = 0,
+    barbsThickness = 0,
+    barbsSymmetrical = 0
+)
 {
+
+    _barbsThickness = barbsThickness == 0 ? wallThickness/2 : barbsThickness;
+    barbLength = length/(barbsCount*2+1);
     union() {
     
-        //hose connector
-        TaperedPipe (
-            diameter1 = innerStartDiameter,
-            diameter2 = innerEndDiameter,
-            length = length,
-            wallThickness1 = wallThickness,
-            wallThickness2 = wallThickness);
+        difference () 
+        {
+          union() {
+            //outer cylinder
+            translate([0,0,0])
+            hull()
+            {
+              cylinder(fudgeFactor, d=innerStartDiameter+2*wallThickness);
+              translate([0,0,length-fudgeFactor])
+                cylinder(fudgeFactor, d=innerEndDiameter+2*wallThickness);
+            }
+            
+            //barbs
+            if(barbsCount > 0)
+            {
+            for (i = [0: barbsCount-1]) {
+              hull()
+              {
+                translate([0,0,length/(barbsCount*2+1)*(i*2+1)])
+                Stopper(
+                  diameter = innerStartDiameter+wallThickness,
+                  totalLength = barbLength,
+                  taper1 = barbsSymmetrical == 0 ? 1 : 0.4,
+                  taper2 = barbsSymmetrical == 0 ? 0 : 0.4,
+                  wallThickness = wallThickness/2,
+                  stopThickness = _barbsThickness);
+              }}
+            }
+          }    
+          //Inner cylinder to remove
+          translate([0,0,0-fudgeFactor])
+          hull()
+          {
+            cylinder(fudgeFactor, d=innerStartDiameter);
+            translate([0,0,length+2*fudgeFactor])
+              cylinder(fudgeFactor, d=innerEndDiameter);
+          }
+        }
         
         // Create the hose stop
         if(stopWidth > 0)
         {
-            intersection()
-            {
-                StraightPipe (
-                    diameter = innerEndDiameter,
-                    length = stopLength,
-                    wallThickness = stopWidth + wallThickness,
-                    zPosition = length);
-                
-                // because pythagoras
-                x = stopLength*wallThickness/(2*stopWidth);
-
-                //A triagnle, when intersected with the pipe above, creates the stop
-                HalfConePipe (
-                    diameter = innerEndDiameter,
-                    length = x + stopLength,
-                    wallThickness1 = 0,
-                    wallThickness2 = 2*stopWidth + wallThickness,
-                    zPosition = length - x);
-            }
+            Stopper(
+              diameter = innerEndDiameter,
+              totalLength = stopLength,
+              taper1 = stopSymmetrical == 0 ? 0.5 : 0.4,
+              taper2 = stopSymmetrical == 0? 0 : 0.4,
+              wallThickness = wallThickness,
+              stopThickness = stopWidth,
+              zPosition = length);
         }
     }
+}
+
+//TODO This seems slow, esp when used for barbs
+module Stopper(
+    diameter,
+    totalLength,
+    taper1,
+    taper2,
+    wallThickness,
+    stopThickness,
+    zPosition = 0
+)
+{
+  
+  intersection()
+  {
+    flat = totalLength * (1 - taper1 - taper2);
+    StraightPipe (
+      diameter = diameter,
+      length = totalLength,
+      wallThickness = wallThickness + stopThickness,
+      zPosition = zPosition);
+      
+      //Bottom taper
+      if(taper1 > 0)
+      {
+        taperLength1 = totalLength * taper1;
+        zoffset1 = wallThickness*taperLength1/stopThickness;
+        length1= (zoffset1 + totalLength);
+        width1 = length1 * stopThickness / taperLength1;
+        HalfConePipe (
+          diameter = diameter,
+          length = length1,
+          wallThickness1 = 0,
+          wallThickness2 = width1,
+          zPosition = zPosition-zoffset1);
+      }
+      
+      //Top taper
+      if(taper2 > 0)
+      {
+        taperLength2 = totalLength * taper2;
+        zoffset2 = wallThickness * taperLength2 / stopThickness;
+        length2 = (zoffset2 + totalLength);
+        width2 = length2 * stopThickness / taperLength2;
+        HalfConePipe (
+          diameter = diameter,
+          length = length2,
+          wallThickness1 = width2,
+          wallThickness2 = 0,
+          zPosition = zPosition);
+      }
+   }
 }
 
 module HoseAdapter(
@@ -947,6 +1058,10 @@ module HoseAdapter(
     connector1Taper = 0,
     connector1StopThickness = 0,
     connector1StopLength = 0,
+    connector1StopSymmetrical = 0,
+    connector1BarbsCount = 0,
+    connector1BarbsThickness = 0,
+    connector1BarbsSymmetrical = 0,
     connector1MagnetCount = 0,
     connector1MagnetDiameter = 0,
     connector1MagnetThickness = 0,
@@ -980,6 +1095,11 @@ module HoseAdapter(
     connector2Taper = 0,
     connector2StopThickness = 0,
     connector2StopLength = 0,
+    connector2StopSymmetrical = 0,
+    connector2BarbsCount = 0,
+    connector2BarbsThickness = 0,
+    connector2BarbsSymmetrical = 0,
+
     connector2MagnetCount = 0,
     connector2MagnetDiameter = 0,
     connector2MagnetThickness = 0,
@@ -1099,7 +1219,11 @@ module HoseAdapter(
                   length = connector1Length,
                   wallThickness = connector1WallThickness,
                   stopLength = connector1StopLength,
-                  stopWidth = connector1StopThickness);
+                  stopWidth = connector1StopThickness,
+                  stopSymmetrical = connector1StopSymmetrical,
+                  barbsCount  = connector1BarbsCount,
+                  barbsThickness = connector1BarbsThickness,
+                  barbsSymmetrical = connector1BarbsSymmetrical);
           }
           
           if(connector1Style == "dyson")
@@ -1253,7 +1377,12 @@ module HoseAdapter(
                     length = connector2Length,
                     wallThickness = connector2WallThickness,
                     stopLength = connector2StopLength,
-                    stopWidth = connector2StopThickness);
+                    stopWidth = connector2StopThickness,
+                    stopSymmetrical = connector2StopSymmetrical,
+                    barbsCount  = connector2BarbsCount,
+                    barbsThickness = connector2BarbsThickness,
+                    barbsSymmetrical = connector2BarbsSymmetrical);
+
             }
             
             if(connector2Style == "nozzle")
