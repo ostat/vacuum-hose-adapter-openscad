@@ -1,5 +1,5 @@
 // Hose connector modules
-// version 2022-11-21
+// version 2022-11-22
 
 use <dotSCAD/ring_extrude.scad>
 use <dotSCAD/shape_circle.scad>
@@ -39,9 +39,9 @@ End1_Taper = 0;  //0.1
 
 /* [Connector 1 - Hose connector] */
 //Thickness of hose stop
-End1_StopThickness = 6;  //1
+End1_StopThickness = 0;  //1
 //Length of hose stop
-End1_StopLength = 5;  //1
+End1_StopLength = 0;  //1
 //Should the stop be tapered both sides. Might easier to print.
 End1_Stop_Symmetrical = 0;
 //Number of barbs
@@ -83,7 +83,7 @@ End1_Ring = "no"; //[no: No alignment ring, protruding: protruding ring, recesse
 
 /* [Transition] */
 // tapered for hose connections, flat for attaching to a device
-Transition_Style = "tapered"; //[tapered, flat, sweep]
+Transition_Style = "bend+taper"; //[flat, taper+bend: Taper then bend, bend+taper: Bend then taper, taperedbend: Tapered bend]
 //Length of the transition between the two ends
 Transition_Length = 10;  //1
 // Radius of transition bend (mm)
@@ -175,84 +175,84 @@ dysonOuterDiameter = 34;
 $fn=120;
 
 HoseAdapter(
-    drawAlignmentRing = Draw_Alignment_Ring,
-    alignmentDepth = Alignment_Depth,
-    alignmentUpperWidth = Alignment_Upper_Width,
-    alignmentLowerWidth = Alignment_Lower_Width,
-    alignmentSideClearance = Alignment_Side_Clearance,
-    alignmentDepthClearance = Alignment_Depth_Clearance,
+  drawAlignmentRing = Draw_Alignment_Ring,
+  alignmentDepth = Alignment_Depth,
+  alignmentUpperWidth = Alignment_Upper_Width,
+  alignmentLowerWidth = Alignment_Lower_Width,
+  alignmentSideClearance = Alignment_Side_Clearance,
+  alignmentDepthClearance = Alignment_Depth_Clearance,
 
-    connector1WallThickness  = End1_Wall_Thickness,
-    connector1Style = End1_Style,
-    connector1Measurement = End1_Measurement,
-    connector1Diameter = End1_Diameter,
-    connector1Length = End1_Length,
-    connector1Taper = End1_Taper,
-    connector1StopThickness = End1_StopThickness,
-    connector1StopLength = End1_StopLength,
-    connector1StopSymmetrical = End1_Stop_Symmetrical,
-    connector1BarbsCount = End1_Barbs_Count,
-    connector1BarbsThickness = End1_Barbs_Thickness,
-    connector1BarbsSymmetrical = End1_Barbs_Symmetrical,
+  connector1Style = End1_Style,
+  connector1WallThickness  = End1_Wall_Thickness,
+  connector1Measurement = End1_Measurement,
+  connector1Diameter = End1_Diameter,
+  connector1Length = End1_Length,
+  connector1Taper = End1_Taper,
+  connector1StopThickness = End1_StopThickness,
+  connector1StopLength = End1_StopLength,
+  connector1StopSymmetrical = End1_Stop_Symmetrical,
+  connector1BarbsCount = End1_Barbs_Count,
+  connector1BarbsThickness = End1_Barbs_Thickness,
+  connector1BarbsSymmetrical = End1_Barbs_Symmetrical,
 
-    connector1MagnetCount = End1_Magnets_Count,
-    connector1MagnetDiameter = End1_Magnet_Diameter,
-    connector1MagnetThickness = End1_Magnet_Thickness,
-    connector1MagnetBorder = End1_Magnet_Border,
-    connector1MagnetFlangeThickness = End1_Magnet_Flange_Thickness,
-    connector1Ring = End1_Ring,
+  connector1MagnetCount = End1_Magnets_Count,
+  connector1MagnetDiameter = End1_Magnet_Diameter,
+  connector1MagnetThickness = End1_Magnet_Thickness,
+  connector1MagnetBorder = End1_Magnet_Border,
+  connector1MagnetFlangeThickness = End1_Magnet_Flange_Thickness,
+  connector1Ring = End1_Ring,
 
-    connector1FlangeWidth = End1_Flange_Width,
-    connector1FlangeThickness = End1_Flange_Thickness,
-    connector1FlangeScrewPosition = End1_Flange_Screw_Position,
-    connector1FlangeScrewBorder = End1_Flange_Screw_Border,
-    connector1FlangeScrewCount = End1_Flange_Screw_Count,
-    connector1FlangeScrewDiameter = End1_Flange_Screw_Diameter,
+  connector1FlangeWidth = End1_Flange_Width,
+  connector1FlangeThickness = End1_Flange_Thickness,
+  connector1FlangeScrewPosition = End1_Flange_Screw_Position,
+  connector1FlangeScrewBorder = End1_Flange_Screw_Border,
+  connector1FlangeScrewCount = End1_Flange_Screw_Count,
+  connector1FlangeScrewDiameter = End1_Flange_Screw_Diameter,
 
 
-    transitionStyle = Transition_Style,
-    transitionLength = Transition_Length,
-    transitionBendRadius = Transition_Bend_Radius,
-    transitionAngle = Transition_Angle,
-    transitionXOffset = Transition_xOffset,
-    transitionYOffset = Transition_yOffset,
-    transitionBaseType = Transition_Base_Type,
-    transitionBaseThickness = Transition_Base_Thickness,
-    transitionBaseWidth = Transition_Base_Width,
-    transitionBaseLength = Transition_Base_Length,
-    transitionBaseAngle = Transition_Base_Angle,
+  transitionStyle = Transition_Style,
+  transitionLength = Transition_Length,
+  transitionBendRadius = Transition_Bend_Radius,
+  transitionAngle = Transition_Angle,
+  transitionXOffset = Transition_xOffset,
+  transitionYOffset = Transition_yOffset,
+  transitionBaseType = Transition_Base_Type,
+  transitionBaseThickness = Transition_Base_Thickness,
+  transitionBaseWidth = Transition_Base_Width,
+  transitionBaseLength = Transition_Base_Length,
+  transitionBaseAngle = Transition_Base_Angle,
 
-    
-    connector2WallThickness  = End2_Wall_Thickness,
-    connector2Style = End2_Style,
-    connector2Measurement = End2_Measurement,
-    connector2Diameter = End2_Diameter,
-    connector2Length = End2_Length,
-    connector2Taper = End2_Taper,
-    connector2StopThickness = End2_StopThickness,
-    connector2StopLength = End2_StopLength,
-    connector2StopSymmetrical = End2_Stop_Symmetrical,
-    connector2BarbsCount = End2_Barbs_Count,
-    connector2BarbsThickness = End2_Barbs_Thickness,
-    connector2BarbsSymmetrical = End2_Barbs_Symmetrical,
+  
+  connector2Style = End2_Style,
+  connector2WallThickness  = End2_Wall_Thickness,
+  connector2Measurement = End2_Measurement,
+  connector2Diameter = End2_Diameter,
+  connector2Length = End2_Length,
+  connector2Taper = End2_Taper,
+  connector2StopThickness = End2_StopThickness,
+  connector2StopLength = End2_StopLength,
+  connector2StopSymmetrical = End2_Stop_Symmetrical,
+  connector2BarbsCount = End2_Barbs_Count,
+  connector2BarbsThickness = End2_Barbs_Thickness,
+  connector2BarbsSymmetrical = End2_Barbs_Symmetrical,
 
-    connector2MagnetCount = End2_Magnets_Count,
-    connector2MagnetDiameter = End2_Magnet_Diameter,
-    connector2MagnetThickness = End2_Magnet_Thickness,
-    connector2MagnetBorder = End2_Magnet_Border,
-    connector2MagnetFlangeThickness = End2_Magnet_Flange_Thickness,
-    connector2Ring = End2_Ring,
+  connector2MagnetCount = End2_Magnets_Count,
+  connector2MagnetDiameter = End2_Magnet_Diameter,
+  connector2MagnetThickness = End2_Magnet_Thickness,
+  connector2MagnetBorder = End2_Magnet_Border,
+  connector2MagnetFlangeThickness = End2_Magnet_Flange_Thickness,
+  connector2Ring = End2_Ring,
 
-    connector2NozzleShape = End2_Nozzle_Shape,
-    connector2NozzleSquareWidth = End2_Nozzle_Square_Width,
-    connector2NozzleSquareDepth = End2_Nozzle_Square_Depth,
-    connector2NozzleTipWallThickness = End2_Nozzle_Tip_Wall_Thickness,
-    connector2NozzleRadius = End2_Nozzle_Radius,
-    connector2NozzleLength = End2_Nozzle_Length,
-    connector2NozzlexOffset = End2_Nozzle_xOffset,
-    connector2NozzleyOffset = End2_Nozzle_yOffset,
-    connector2NozzleChamferPercentage = End2_Nozzle_Chamfer_Percentage,
-    connector2NozzleChamferAngle = End2_Nozzle_Chamfer_Angle
+  connector2NozzleShape = End2_Nozzle_Shape,
+  connector2NozzleSquareWidth = End2_Nozzle_Square_Width,
+  connector2NozzleSquareDepth = End2_Nozzle_Square_Depth,
+  connector2NozzleTipWallThickness = End2_Nozzle_Tip_Wall_Thickness,
+  connector2NozzleRadius = End2_Nozzle_Radius,
+  connector2NozzleLength = End2_Nozzle_Length,
+  connector2NozzlexOffset = End2_Nozzle_xOffset,
+  connector2NozzleyOffset = End2_Nozzle_yOffset,
+  connector2NozzleChamferPercentage = End2_Nozzle_Chamfer_Percentage,
+  connector2NozzleChamferAngle = End2_Nozzle_Chamfer_Angle
 );
 
 
@@ -272,7 +272,6 @@ module Pipe(
     xOffset = 0,
     yOffset = 0)
 {
-  echo ("Pipe", diameter1, diameter2, length, wallThickness1, wallThickness2, xOffset, yOffset, zPosition);
   difference () 
   {
     //outer cylinder
@@ -295,28 +294,11 @@ module Pipe(
   }
 }
 
-module TaperedPipe(
-  diameter1, 
-  diameter2, 
+module StraightPipe(
+  diameter, 
   length, 
-  wallThickness1, 
-  wallThickness2, 
-  zPosition = 0,
-  xOffset = 0,
-  yOffset = 0)
-{
-    Pipe (
-        diameter1 = diameter1,
-        diameter2 = diameter2,
-        length = length,
-        wallThickness1 = wallThickness1,
-        wallThickness2 = wallThickness2,
-        zPosition = zPosition,
-        xOffset = xOffset,
-        yOffset = yOffset);
-}
-
-module StraightPipe(diameter, length, wallThickness, zPosition)
+  wallThickness, 
+  zPosition = 0)
 {
     Pipe (
         diameter1 = diameter,
@@ -363,7 +345,7 @@ module BentPipe(
     innerPipeDiameter,
     wallThickness,
     pipeAngle,
-    zPosition,
+    zPosition = 0,
     baseType="none",
     baseWidth=0,
     baseLength=0,
@@ -372,16 +354,16 @@ module BentPipe(
 )
 {
   outerPipeDiameter  = innerPipeDiameter + wallThickness * 2;
-  outerCircleRadius = bendRadius + outerPipeDiameter;
 
   baseSupportThickness = outerPipeDiameter/2 + baseThickness;
   baseSupportWidth =  baseWidth == 0 ? outerPipeDiameter / 2  : baseWidth;
   baseSupportLength =  baseLength == 0 ? outerPipeDiameter / 1.5  : baseLength;
   baseSupportAngle = baseAngle == 0 ? pipeAngle/2 : baseAngle;
   
-  echo("BentPipe", baseSupportWidth, baseSupportLength);
+  echo("BentPipe", bendRadius=bendRadius, innerPipeDiameter=innerPipeDiameter,wallThickness=wallThickness, pipeAngle=pipeAngle, zPosition=zPosition);
+  echo("BentPipe", baseSupportWidth=baseSupportWidth, baseSupportLength=baseSupportLength);
   
-  translate([-(outerCircleRadius - outerPipeDiameter), 0, zPosition])
+  translate([-bendRadius, 0, zPosition])
     rotate([90, 0, 0])
     difference() {
       union(){
@@ -397,25 +379,25 @@ module BentPipe(
         }
           
         rotate_extrude(angle=pipeAngle, convexity=10)
-          translate([outerCircleRadius - outerPipeDiameter, 0, 0])
+          translate([bendRadius, 0, 0])
           circle(d=outerPipeDiameter);
       }
       
      rotate([0, 0, -1])
      rotate_extrude(angle=pipeAngle+2,convexity=10)
-            translate([outerCircleRadius - outerPipeDiameter, 0, 0])
+            translate([bendRadius, 0, 0])
             circle(d=innerPipeDiameter);
           
       //Clear start from clipping
       rotate([90, 0, pipeAngle])
-      translate([outerCircleRadius - outerPipeDiameter, 0, -baseSupportThickness])
+      translate([bendRadius, 0, -baseSupportThickness])
       cylinder(
           d=innerPipeDiameter, 
           h=baseSupportThickness);
     
     //Clear end of the pipe from clipping
     rotate([90, 0, 0])
-      translate([outerCircleRadius - outerPipeDiameter, 0, 0])
+      translate([bendRadius, 0, 0])
       cylinder(d=innerPipeDiameter, h=baseSupportThickness);
     }
 }
@@ -427,7 +409,7 @@ module TaperedBentPipe(
     end1WallThickness,
     end2WallThickness,
     pipeAngle,
-    zPosition,
+    zPosition = 0,
     baseType="none",
     baseWidth=0,
     baseLength=0,
@@ -435,8 +417,9 @@ module TaperedBentPipe(
     baseAngle=0,
 )
 {
+    echo("TaperedBentPipe", bendRadius=bendRadius, end1InnerPipeDiameter=end1InnerPipeDiameter, end2InnerPipeDiameter=end2InnerPipeDiameter, end1WallThickness=end1WallThickness, end2WallThickness=end2WallThickness);
+  
     outerPipeDiameter  = end1InnerPipeDiameter + end1WallThickness * 2;
-    outerCircleRadius = bendRadius + outerPipeDiameter;
   
     sizeStart = end1InnerPipeDiameter / 2 + end1WallThickness ;
     sizeEnd = end2InnerPipeDiameter / 2 + end2WallThickness ;
@@ -450,10 +433,12 @@ module TaperedBentPipe(
   
     shapeOuter = shape_circle(sizeStart);
     shapeInner = shape_circle(sizeStart-end1WallThickness);
+
+    echo("TaperedBentPipe", baseSupportThickness=baseSupportThickness,  baseSupportAngle=baseSupportAngle,  baseSupportWidth=baseSupportWidth, baseSupportLength=baseSupportLength);
     
     translate([0, 0, zPosition])
     difference(){
-        translate([-(outerCircleRadius - outerPipeDiameter), 0, 0])
+        translate([-bendRadius, 0, 0])
         rotate([90, 0, 0])
         difference(){
           union(){
@@ -509,14 +494,14 @@ module FlangeConnector(
     ? innerStartDiameter/2 + screwPosition/2 
     : (innerStartDiameter/2 + fillet + (flangeWidth/2-fillet)/2);
   
-  echo("FlangeConnector", screwCount, screwDiameter, screwPosition, border);
-  echo("FlangeConnector", screwPositionRadius, fillet, flangeOuterDiameter, innerStartDiameter, flangeWidth);
+  echo("FlangeConnector", screwCount=screwCount, screwDiameter=screwDiameter, screwPosition=screwPosition, border=border);
+  echo("FlangeConnector", screwPositionRadius=screwPositionRadius, fillet=fillet, flangeOuterDiameter=flangeOuterDiameter, innerStartDiameter=innerStartDiameter, flangeWidth=flangeWidth);
 
   difference () 
   {
     //flange
     union() {
-      TaperedPipe (
+      Pipe (
         diameter1 = innerStartDiameter,
         diameter2 = innerEndDiameter,
         length = length,
@@ -601,7 +586,7 @@ module MagneticConnector(
     {
         //flange
         union() {
-            TaperedPipe (
+            Pipe (
                 diameter1 = innerStartDiameter,
                 diameter2 = innerEndDiameter,
                 length = length,
@@ -820,19 +805,19 @@ module DysonConnector(
 }
 
 module Nozzle(
-innerStartDiameter,
-length,
-wallThickness,
-nozzleShape,
-nozzleSquareWidth,
-nozzleSquareDepth,//Change to width and depth, also swap
-nozzleTipWallThickness,
-nozzleRadius,
-nozzleLength,
-nozzlexOffset = 0,
-nozzleyOffset = 0,
-nozzleChamferPercentage = 0, 
-nozzleChamferAngle = 0 
+  innerStartDiameter,
+  length,
+  wallThickness,
+  nozzleShape,
+  nozzleSquareWidth,
+  nozzleSquareDepth,
+  nozzleTipWallThickness,
+  nozzleRadius,
+  nozzleLength,
+  nozzlexOffset = 0,
+  nozzleyOffset = 0,
+  nozzleChamferPercentage = 0, 
+  nozzleChamferAngle = 0 
 )                  
 {
   innerRadius = innerStartDiameter/2;
@@ -855,7 +840,7 @@ nozzleChamferAngle = 0
   widthChamfer = min(nozzleWidthChamfer, nozzleWidth);
   lengthChamfer = min(nozzleLengthChamfer, nozzleLength);
 
-  echo("nozzle", innerRadius, circlepositionx, circlepositiony, nozzleWidth, nozzleDepth, nozzleWidthChamfer, nozzleLengthChamfer, widthChamfer,lengthChamfer);
+  echo("nozzle", innerRadius=innerRadius, circlepositionx=circlepositionx, circlepositiony=circlepositiony, nozzleWidth=nozzleWidth, nozzleDepth=nozzleDepth, nozzleWidthChamfer=nozzleWidthChamfer, nozzleLengthChamfer=nozzleLengthChamfer, widthChamfer=widthChamfer, lengthChamfer=lengthChamfer);
   
   difference()
   {
@@ -930,63 +915,61 @@ module HoseConnector(
     barbsSymmetrical = 0
 )
 {
-
     _barbsThickness = barbsThickness == 0 ? wallThickness/2 : barbsThickness;
     barbLength = length/(barbsCount*2+1);
     union() {
-    
-        difference () 
-        {
-          union() {
-            //outer cylinder
-            translate([0,0,0])
-            hull()
-            {
-              cylinder(fudgeFactor, d=innerStartDiameter+2*wallThickness);
-              translate([0,0,length-fudgeFactor])
-                cylinder(fudgeFactor, d=innerEndDiameter+2*wallThickness);
-            }
-            
-            //barbs
-            if(barbsCount > 0)
-            {
-            for (i = [0: barbsCount-1]) {
-              hull()
-              {
-                translate([0,0,length/(barbsCount*2+1)*(i*2+1)])
-                Stopper(
-                  diameter = innerStartDiameter+wallThickness,
-                  totalLength = barbLength,
-                  taper1 = barbsSymmetrical == 0 ? 1 : 0.4,
-                  taper2 = barbsSymmetrical == 0 ? 0 : 0.4,
-                  wallThickness = wallThickness/2,
-                  stopThickness = _barbsThickness);
-              }}
-            }
-          }    
-          //Inner cylinder to remove
-          translate([0,0,0-fudgeFactor])
+      difference () 
+      {
+        union() {
+          //outer cylinder
+          translate([0,0,0])
           hull()
           {
-            cylinder(fudgeFactor, d=innerStartDiameter);
-            translate([0,0,length+2*fudgeFactor])
-              cylinder(fudgeFactor, d=innerEndDiameter);
+            cylinder(fudgeFactor, d=innerStartDiameter+2*wallThickness);
+            translate([0,0,length-fudgeFactor])
+              cylinder(fudgeFactor, d=innerEndDiameter+2*wallThickness);
           }
-        }
-        
-        // Create the hose stop
-        if(stopWidth > 0)
+          
+          //barbs
+          if(barbsCount > 0)
+          {
+          for (i = [0: barbsCount-1]) {
+            hull()
+            {
+              translate([0,0,length/(barbsCount*2+1)*(i*2+1)])
+              Stopper(
+                diameter = innerStartDiameter+wallThickness,
+                totalLength = barbLength,
+                taper1 = barbsSymmetrical == 0 ? 1 : 0.4,
+                taper2 = barbsSymmetrical == 0 ? 0 : 0.4,
+                wallThickness = wallThickness/2,
+                stopThickness = _barbsThickness);
+            }}
+          }
+        }    
+        //Inner cylinder to remove
+        translate([0,0,0-fudgeFactor])
+        hull()
         {
-            Stopper(
-              diameter = innerEndDiameter,
-              totalLength = stopLength,
-              taper1 = stopSymmetrical == 0 ? 0.5 : 0.4,
-              taper2 = stopSymmetrical == 0? 0 : 0.4,
-              wallThickness = wallThickness,
-              stopThickness = stopWidth,
-              zPosition = length);
+          cylinder(fudgeFactor, d=innerStartDiameter);
+          translate([0,0,length+2*fudgeFactor])
+            cylinder(fudgeFactor, d=innerEndDiameter);
         }
-    }
+      }
+      
+      // Create the hose stop
+      if(stopWidth > 0)
+      {
+          Stopper(
+            diameter = innerEndDiameter,
+            totalLength = stopLength,
+            taper1 = stopSymmetrical == 0 ? 0.5 : 0.4,
+            taper2 = stopSymmetrical == 0? 0 : 0.4,
+            wallThickness = wallThickness,
+            stopThickness = stopWidth,
+            zPosition = length);
+      }
+  }
 }
 
 //TODO This seems slow, esp when used for barbs
@@ -1168,243 +1151,266 @@ module HoseAdapter(
       //Create the start connector
       if(connector1Length > 0)
       {
-          if(connector1Style == "mag")
-          {
-              connector1StopLength = 0;
-              connector1StopThickness = 0;
-              
-              //Create the flange on end 1
-              MagneticConnector(
-                  innerStartDiameter = end1InnerStartDiameter,
-                  innerEndDiameter = end1InnerEndDiameter,
-                  length = connector1Length,
-                  wallThickness = connector1WallThickness,
-                  magnetDiameter = connector1MagnetDiameter,
-                  magnetThickness = connector1MagnetThickness,
-                  magnetBorder = connector1MagnetBorder,
-                  flangeThickness = connector1MagnetFlangeThickness,
-                  magnetCount = connector1MagnetCount,
-                  alignmentRing = connector1Ring,
-                  alignmentDepth = alignmentDepth,
-                  alignmentUpperWidth = alignmentUpperWidth,
-                  alignmentLowerWidth = alignmentLowerWidth,
-                  alignmentSideClearance = alignmentSideClearance,
-                  alignmentDepthClearance = alignmentDepthClearance);
-          }
-
-          if(connector1Style == "flange")
-          {
-              connector1StopLength = 0;
-              connector1StopThickness = 0;
-              
-              //Create the flange on end 1
-            FlangeConnector(
+        if(connector1Style == "mag")
+        {
+          connector1StopLength = 0;
+          connector1StopThickness = 0;
+          
+          //Create the flange on end 1
+          MagneticConnector(
               innerStartDiameter = end1InnerStartDiameter,
               innerEndDiameter = end1InnerEndDiameter,
               length = connector1Length,
               wallThickness = connector1WallThickness,
-              flangeThickness = connector1FlangeThickness,
-              flangeWidth = connector1FlangeWidth,
-              screwPosition = connector1FlangeScrewPosition,
-              screwBorder = connector1FlangeScrewBorder,
-              screwCount = connector1FlangeScrewCount,
-              screwDiameter = connector1FlangeScrewDiameter);
-          }
-          
-          if(connector1Style == "hose")
-          {
-              HoseConnector(
-                  innerStartDiameter = end1InnerStartDiameter,
-                  innerEndDiameter = end1InnerEndDiameter,
-                  length = connector1Length,
-                  wallThickness = connector1WallThickness,
-                  stopLength = connector1StopLength,
-                  stopWidth = connector1StopThickness,
-                  stopSymmetrical = connector1StopSymmetrical,
-                  barbsCount  = connector1BarbsCount,
-                  barbsThickness = connector1BarbsThickness,
-                  barbsSymmetrical = connector1BarbsSymmetrical);
-          }
-          
-          if(connector1Style == "dyson")
-          {
-              DysonConnector(
-                innerEndDiameter = end1InnerEndDiameter,
-                length = connector1Length,
-                wallThickness = connector1WallThickness,
-                IncludeOrientationClip = true);
-          }
+              magnetDiameter = connector1MagnetDiameter,
+              magnetThickness = connector1MagnetThickness,
+              magnetBorder = connector1MagnetBorder,
+              flangeThickness = connector1MagnetFlangeThickness,
+              magnetCount = connector1MagnetCount,
+              alignmentRing = connector1Ring,
+              alignmentDepth = alignmentDepth,
+              alignmentUpperWidth = alignmentUpperWidth,
+              alignmentLowerWidth = alignmentLowerWidth,
+              alignmentSideClearance = alignmentSideClearance,
+              alignmentDepthClearance = alignmentDepthClearance);
+        }
+
+        if(connector1Style == "flange")
+        {
+          connector1StopLength = 0;
+          connector1StopThickness = 0;
+            
+          //Create the flange on end 1
+          FlangeConnector(
+            innerStartDiameter = end1InnerStartDiameter,
+            innerEndDiameter = end1InnerEndDiameter,
+            length = connector1Length,
+            wallThickness = connector1WallThickness,
+            flangeThickness = connector1FlangeThickness,
+            flangeWidth = connector1FlangeWidth,
+            screwPosition = connector1FlangeScrewPosition,
+            screwBorder = connector1FlangeScrewBorder,
+            screwCount = connector1FlangeScrewCount,
+            screwDiameter = connector1FlangeScrewDiameter);
+        }
+        
+        if(connector1Style == "hose")
+        {
+          HoseConnector(
+            innerStartDiameter = end1InnerStartDiameter,
+            innerEndDiameter = end1InnerEndDiameter,
+            length = connector1Length,
+            wallThickness = connector1WallThickness,
+            stopLength = connector1StopLength,
+            stopWidth = connector1StopThickness,
+            stopSymmetrical = connector1StopSymmetrical,
+            barbsCount  = connector1BarbsCount,
+            barbsThickness = connector1BarbsThickness,
+            barbsSymmetrical = connector1BarbsSymmetrical);
+        }
+        
+        if(connector1Style == "dyson")
+        {
+          DysonConnector(
+            innerEndDiameter = end1InnerEndDiameter,
+            length = connector1Length,
+            wallThickness = connector1WallThickness,
+            IncludeOrientationClip = true);
+        }
       }
     }
+    
     //Total length of connector 1
     endConnector1 = connector1Length + connector1StopLength;
-
-    //Calculate the bend radius
-    //Sweep, the '0' value must be max of connector 1 or 2 diameter, plus the wall thickness * 2 otherwise it will clip, then add provided radius.
-    //transition the '0' value must be end 1 diameter/2 + wall thickenss *2 to prevent clipping, then addd provided radius.
-    bendRadius = transitionStyle == "sweep" 
-        ? max(end1InnerEndDiameter, end2InnerEndDiameter) + max(connector1WallThickness, connector2WallThickness) * 2 + transitionBendRadius
-        : end1InnerEndDiameter/2 + max(connector1WallThickness, connector2WallThickness) * 2 + transitionBendRadius;
-    
+   
     // transitionLength is not wanted for sweep
-    transitionLength = transitionStyle == "sweep" ? 0 : transitionLength;
+    _transitionAngle = (transitionStyle == "flat") ? 0 : transitionAngle;
+    _transitionStyle = _transitionAngle == 0 && transitionStyle == "taperedbend" ? "bend+taper" : transitionStyle;
+    _transitionLength = _transitionStyle == "taperedbend" ? 0 : transitionLength;
     
-    color("LightGreen") 
+    //Calculate the bend radius
+    //taperedbend, the '0' value must be max of connector 1 or 2 diameter, plus the wall thickness * 2 otherwise it will clip, then add provided radius.
+    //transition the '0' value must be end 1 diameter/2 + wall thickenss *2 to prevent clipping, then addd provided radius.
+    bendRadius = 
+      transitionStyle == "taperedbend" 
+        //? max(end1InnerEndDiameter, end2InnerEndDiameter) + max(connector1WallThickness, connector2WallThickness) * 2 + transitionBendRadius
+        ?  (max(end1InnerEndDiameter,end2InnerEndDiameter)*2 + min(end1InnerEndDiameter,end2InnerEndDiameter))/3 + max(connector1WallThickness, connector2WallThickness) * 2 + transitionBendRadius
+        : transitionStyle == "bend+taper"
+          ? end1InnerEndDiameter/2 + max(connector1WallThickness, connector2WallThickness) * 2 + transitionBendRadius
+          : end2InnerStartDiameter/2 + max(connector1WallThickness, connector2WallThickness) * 2 + transitionBendRadius; 
+    
+    echo("transition", transitionStyle=transitionStyle, bendRadius=bendRadius, _transitionAngle=_transitionAngle);
+    echo("transition", end1InnerEndDiameter=end1InnerEndDiameter, end2InnerStartDiameter=end2InnerStartDiameter);
+    color("LightGreen")
+    translate([0, 0, endConnector1])
     union(){
-      if(transitionAngle > 0){
-          if(transitionStyle == "sweep")
-          {
-              //Bent pipe that tapers through the bend.
-              TaperedBentPipe(
-                  bendRadius = bendRadius,
-                  end1InnerPipeDiameter = end1InnerEndDiameter,
-                  end2InnerPipeDiameter = end2InnerStartDiameter,
-                  end1WallThickness = connector1WallThickness,
-                  end2WallThickness = connector2WallThickness,
-                  pipeAngle = transitionAngle,
-                  zPosition = endConnector1,
-                  baseType = transitionBaseType,
-                  baseThickness = transitionBaseThickness,
-                  baseWidth = transitionBaseWidth,
-                  baseLength = transitionBaseLength,
-                  baseAngle = transitionBaseAngle);
-          }
-          else
-          {
-              //Tapered transition
-              
-              //the bent pipe section, diameter matches connector 1.
-              BentPipe(
-                  bendRadius = bendRadius,
-                  innerPipeDiameter = end1InnerEndDiameter,
-                  wallThickness = connector1WallThickness,
-                  pipeAngle = transitionAngle,
-                  zPosition = endConnector1,
-                  baseType = transitionBaseType,
-                  baseThickness = transitionBaseThickness,
-                  baseWidth = transitionBaseWidth,
-                  baseLength = transitionBaseLength,
-                  baseAngle = transitionBaseAngle);
-            
-            //Tapered section position to the end of the bent pipe
-            translate([-bendRadius, 0, endConnector1])
-              rotate([0, -transitionAngle, 0])
-              translate([bendRadius, 0, 0])
-                  TaperedPipe(
-                    diameter1 = end1InnerEndDiameter, 
-                    diameter2 = end2InnerStartDiameter, 
-                    length = transitionLength, 
-                    wallThickness1 = connector1WallThickness, 
-                    wallThickness2 = connector2WallThickness, 
-                    xOffset = transitionXOffset,
-                    yOffset = transitionYOffset);     
-          }
+      if(transitionStyle == "flat")
+      {
+        transDiameter = min(end1InnerEndDiameter,  end2InnerStartDiameter);
+        transThickness = abs(end1InnerEndDiameter - end2InnerStartDiameter)/2 + max(connector1WallThickness,connector2WallThickness);
+        StraightPipe(
+            diameter = transDiameter, 
+            length = _transitionLength, 
+            wallThickness = transThickness);
+      }
+      if(_transitionStyle == "taperedbend")
+      {
+          //Bent pipe that tapers through the bend.
+          TaperedBentPipe(
+              bendRadius = bendRadius,
+              end1InnerPipeDiameter = end1InnerEndDiameter,
+              end2InnerPipeDiameter = end2InnerStartDiameter,
+              end1WallThickness = connector1WallThickness,
+              end2WallThickness = connector2WallThickness,
+              pipeAngle = _transitionAngle,
+              baseType = transitionBaseType,
+              baseThickness = transitionBaseThickness,
+              baseWidth = transitionBaseWidth,
+              baseLength = transitionBaseLength,
+              baseAngle = transitionBaseAngle);
+      }
+      else if(_transitionStyle == "bend+taper")
+      {
+        //Tapered transition
+        //the bent pipe section, diameter matches connector 1.
+        if(_transitionAngle > 0)
+        {
+          echo("here")
+          BentPipe(
+            bendRadius = bendRadius,
+            innerPipeDiameter = end1InnerEndDiameter,
+            wallThickness = connector1WallThickness,
+            pipeAngle = _transitionAngle,
+            baseType = transitionBaseType,
+            baseThickness = transitionBaseThickness,
+            baseWidth = transitionBaseWidth,
+            baseLength = transitionBaseLength,
+            baseAngle = transitionBaseAngle);
+        }
+        
+        //Tapered section position to the end of the bent pipe
+        translate([-bendRadius, 0, 0])
+          rotate([0, -_transitionAngle, 0])
+          translate([bendRadius, 0, 0])
+            Pipe(
+              diameter1 = end1InnerEndDiameter, 
+              diameter2 = end2InnerStartDiameter, 
+              length = _transitionLength, 
+              wallThickness1 = connector1WallThickness, 
+              wallThickness2 = connector2WallThickness, 
+              xOffset = transitionXOffset,
+              yOffset = transitionYOffset);     
+      }     
+      else if(_transitionStyle == "taper+bend")
+      {
+        //Tapered section position to the end of the bent pipe
+        Pipe(
+          diameter1 = end1InnerEndDiameter, 
+          diameter2 = end2InnerStartDiameter, 
+          length = _transitionLength, 
+          wallThickness1 = connector1WallThickness, 
+          wallThickness2 = connector2WallThickness, 
+          xOffset = transitionXOffset,
+          yOffset = transitionYOffset);   
+  
+        if(_transitionAngle > 0)
+        {
+          //the bent pipe section, diameter matches connector 2.
+          translate([transitionXOffset, transitionYOffset, 0])
+          BentPipe(
+            bendRadius = bendRadius,
+            innerPipeDiameter = end2InnerStartDiameter,
+            wallThickness = connector1WallThickness,
+            pipeAngle = _transitionAngle,
+            zPosition = _transitionLength,
+            baseType = transitionBaseType,
+            baseThickness = transitionBaseThickness,
+            baseWidth = transitionBaseWidth,
+            baseLength = transitionBaseLength,
+            baseAngle = transitionBaseAngle);  
+        }
       }
     }
 
-    translate([-bendRadius, 0, endConnector1])
-    rotate([0, -transitionAngle, 0])
-    translate([bendRadius, 0, 0])
+  // Create the end connector
+  if(connector2Length > 0)
+  {
+    echo("Connector2", transitionStyle=_transitionStyle, bendRadius=bendRadius, transitionAngle=_transitionAngle, endConnector1=endConnector1);
+    
+    preRotation = [
+      ((_transitionStyle == "taper+bend") ? transitionXOffset : 0) - bendRadius,
+      ((_transitionStyle == "taper+bend") ? transitionYOffset : 0),
+      ((_transitionStyle == "taper+bend") ? _transitionLength : 0) + endConnector1];
+      
+  
+    postRotation = [
+      ((_transitionStyle == "bend+taper") ? transitionXOffset : 0) + bendRadius,
+      ((_transitionStyle == "bend+taper") ? transitionYOffset : 0),
+      ((_transitionStyle == "bend+taper") ? _transitionLength : 0)];
+   
+    color("SkyBlue") 
+    translate(preRotation)
+    rotate([0, -_transitionAngle, 0])
+    translate(postRotation)
     union()
     {
-        color("LightGreen") 
-        union(){
-          //Transition between connections
-          if(transitionLength > 0)
-          {
-              if(transitionStyle == "flat")
-              {
-                  transDiameter = min(end1InnerEndDiameter,  end2InnerStartDiameter);
-                  transThickness = abs(end1InnerEndDiameter - end2InnerStartDiameter)/2 + max(connector1WallThickness,connector2WallThickness);
-                  StraightPipe(
-                      diameter = transDiameter, 
-                      length = transitionLength, 
-                      wallThickness = transThickness, 
-                      zPosition = 0);
-              }
-              else
-              {
-                  TaperedPipe(
-                      diameter1 = end1InnerEndDiameter, 
-                      diameter2 = end2InnerStartDiameter, 
-                      length = transitionLength, 
-                      wallThickness1 = connector1WallThickness, 
-                      wallThickness2 = connector2WallThickness,
-                      zPosition = 0,
-                      xOffset = transitionXOffset,
-                      yOffset = transitionYOffset);       
-              }
-          }
-        }
+      if(connector2Style == "mag")
+      {
+        translate([0, 0, connector2Length+connector2StopLength])
+        mirror ([0,0,1])    
+        MagneticConnector(
+          //Start and End are reversed as the flange is mirrored.
+          innerStartDiameter = end2InnerEndDiameter, 
+          innerEndDiameter = end2InnerStartDiameter,
+          length = connector2Length,
+          wallThickness = connector2WallThickness,
+          magnetDiameter = connector2MagnetDiameter,
+          magnetThickness = connector2MagnetThickness,
+          magnetBorder = connector2MagnetBorder,
+          flangeThickness = connector2MagnetFlangeThickness,
+          magnetCount = connector2MagnetCount,
+          alignmentRing = connector2Ring,
+          alignmentDepth = alignmentDepth,
+          alignmentUpperWidth = alignmentUpperWidth,
+          alignmentLowerWidth = alignmentLowerWidth,
+          alignmentDepthClearance = alignmentDepthClearance);
+      }
+          
+      if(connector2Style == "hose")
+      {
+          translate([0, 0, connector2Length+connector2StopLength])
+          mirror ([0,0,1])    
+          HoseConnector(
+            innerStartDiameter = end2InnerEndDiameter,
+            innerEndDiameter = end2InnerStartDiameter,
+            length = connector2Length,
+            wallThickness = connector2WallThickness,
+            stopLength = connector2StopLength,
+            stopWidth = connector2StopThickness,
+            stopSymmetrical = connector2StopSymmetrical,
+            barbsCount  = connector2BarbsCount,
+            barbsThickness = connector2BarbsThickness,
+            barbsSymmetrical = connector2BarbsSymmetrical);
+
+      }
       
-        color("SkyBlue") 
-        translate([transitionXOffset, transitionYOffset, 0])
-        union(){
-        // Create the end connector
-        if(connector2Length > 0)
-        {
-            end2StartZ = transitionLength;
-
-            if(connector2Style == "mag")
-            {
-                translate([0, 0, end2StartZ+connector2Length+connector2StopLength])
-                mirror ([0,0,1])    
-                MagneticConnector(
-                    //Start and End are reversed as the flange is mirrored.
-                    innerStartDiameter = end2InnerEndDiameter, 
-                    innerEndDiameter = end2InnerStartDiameter,
-                    length = connector2Length,
-                    wallThickness = connector2WallThickness,
-                    magnetDiameter = connector2MagnetDiameter,
-                    magnetThickness = connector2MagnetThickness,
-                    magnetBorder = connector2MagnetBorder,
-                    flangeThickness = connector2MagnetFlangeThickness,
-                    magnetCount = connector2MagnetCount,
-                    alignmentRing = connector2Ring,
-                    alignmentDepth = alignmentDepth,
-                    alignmentUpperWidth = alignmentUpperWidth,
-                    alignmentLowerWidth = alignmentLowerWidth,
-                    alignmentDepthClearance = alignmentDepthClearance);
-            }
-                
-            if(connector2Style == "hose")
-            {
-                translate([0, 0, end2StartZ+connector2Length+connector2StopLength])
-                mirror ([0,0,1])    
-                HoseConnector(
-                    innerStartDiameter = end2InnerEndDiameter,
-                    innerEndDiameter = end2InnerStartDiameter,
-                    length = connector2Length,
-                    wallThickness = connector2WallThickness,
-                    stopLength = connector2StopLength,
-                    stopWidth = connector2StopThickness,
-                    stopSymmetrical = connector2StopSymmetrical,
-                    barbsCount  = connector2BarbsCount,
-                    barbsThickness = connector2BarbsThickness,
-                    barbsSymmetrical = connector2BarbsSymmetrical);
-
-            }
-            
-            if(connector2Style == "nozzle")
-            {
-                translate([0, 0, end2StartZ])
-                Nozzle(
-                    innerStartDiameter = end2InnerStartDiameter,
-                    length = connector2Length,
-                    wallThickness = connector2WallThickness,
-                    nozzleShape = connector2NozzleShape,
-                    nozzleSquareWidth = connector2NozzleSquareWidth,
-                    nozzleSquareDepth = connector2NozzleSquareDepth,
-                    nozzleTipWallThickness = connector2NozzleTipWallThickness,
-                    nozzleRadius = connector2NozzleRadius,
-                    nozzleLength = connector2NozzleLength,
-                    nozzlexOffset = connector2NozzlexOffset,
-                    nozzleyOffset = connector2NozzleyOffset,
-                    nozzleChamferPercentage = connector2NozzleChamferPercentage,
-                    nozzleChamferAngle = connector2NozzleChamferAngle
-              );
-            }
-          }
-        }
+      if(connector2Style == "nozzle")
+      {
+        Nozzle(
+          innerStartDiameter = end2InnerStartDiameter,
+          length = connector2Length,
+          wallThickness = connector2WallThickness,
+          nozzleShape = connector2NozzleShape,
+          nozzleSquareWidth = connector2NozzleSquareWidth,
+          nozzleSquareDepth = connector2NozzleSquareDepth,
+          nozzleTipWallThickness = connector2NozzleTipWallThickness,
+          nozzleRadius = connector2NozzleRadius,
+          nozzleLength = connector2NozzleLength,
+          nozzlexOffset = connector2NozzlexOffset,
+          nozzleyOffset = connector2NozzleyOffset,
+          nozzleChamferPercentage = connector2NozzleChamferPercentage,
+          nozzleChamferAngle = connector2NozzleChamferAngle);
+      }
     }
+  }
 }
