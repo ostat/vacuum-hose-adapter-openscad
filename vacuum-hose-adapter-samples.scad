@@ -396,8 +396,38 @@ if (part == "funnel") {
         connector2NozzleChamferPercentage = 100,
         connector2NozzleChamferAngle = 30);
 }
-
 if (part == "funnelOffset") {
+    HoseAdapter(
+        connector1Style = "flange",
+        connector1Measurement = "inner",
+        connector1Diameter = 25,
+        connector1WallThickness = 1.5,
+        connector1FlangeWidth = 7,
+        connector1FlangeThickness = 1.5,
+        connector1FlangeScrewPosition = 10,
+        connector1FlangeScrewBorder = 5,
+        connector1FlangeScrewCount = 1,
+        connector1FlangeScrewDiameter = 5,
+        connector1Length = 3,
+        transitionStyle = "tapered",
+        transitionLength = 20,
+        transitionXOffset = -10,
+        transitionYOffset = 0,
+  
+        connector2Style = "nozzle",
+        connector2Measurement = "inner",
+        connector2Diameter = 5,
+        connector2Length = 0.5,
+        connector2WallThickness = 1.5,
+        connector2NozzleShape = "circle",
+        connector2NozzleTipWallThickness = 0.6,
+        connector2NozzleRadius = 2.5,
+        connector2NozzleLength = 15,
+        connector2NozzleChamferPercentage = 100,
+        connector2NozzleChamferAngle = 30);
+}
+
+if (part == "funnelOffset2") {
     HoseAdapter(
         connector1Style = "flange",
         connector1Measurement = "inner",
@@ -418,7 +448,7 @@ if (part == "funnelOffset") {
         connector2Style = "nozzle",
         connector2Measurement = "inner",
         connector2Diameter = 10,
-        connector2Length = 15,
+        connector2Length = 2,
         connector2WallThickness = 1.5,
         connector2NozzleShape = "circle",
         connector2NozzleTipWallThickness = 0.6,

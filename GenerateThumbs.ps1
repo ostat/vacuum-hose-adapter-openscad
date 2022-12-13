@@ -47,6 +47,15 @@ $SourceFolders = @(
         HueMax = 220 #max value is 360
     },
     @{
+        Path = (Join-Path $script:ScriptFolder '\generated\hosesplitter\');
+        ConnectorType = 'Hose Splitter'
+        SetTitle = 'Hose Splitter\n[SetName] [ParentFolderName]'
+        ConnectorTitle = 'Hose Splitter\n[ParentFolderName]'
+        Options = @();
+        HueMin = 0   #min value is 0
+        HueMax = 220 #max value is 360
+    },
+    @{
         Path = (Join-Path $script:ScriptFolder '\generated\magneticadapter\');
         ConnectorType = 'Magnetic Connectors'
         SetTitle = 'Magnetic Connectors\n[SetName] [ParentFolderName]'
@@ -66,12 +75,12 @@ $SourceFolders = @(
         ConnectorType = 'Flange'
         SetTitle = 'Flange [SetName]\n25.4mm(1in) to 114mm(4.5in)'
         ConnectorTitle = 'Flange\n25.4mm(1in) to 114mm(4.5in)'
-        Options = @('0deg'         
+        Options = @('straight'         
              '30deg'     
              '45deg'   
              '90deg');
-        HueMin = 0   #min value is 0
-        HueMax = 220 #max value is 360
+        HueMin = 270   #min value is 0
+        HueMax = 290 #max value is 360
     },
     @{
         Path = (Join-Path $script:ScriptFolder '\generated\dyson\');
@@ -99,6 +108,15 @@ $SourceFolders = @(
         Options = @();
         HueMin = 180   #min value is 0
         HueMax = 300 #max value is 360
+    },
+    @{
+        Path = (Join-Path $script:ScriptFolder '\generated\hose_nozzle\');
+        ConnectorType = 'Hose Nozzles'
+        SetTitle = 'Hose Nozzles\n[SetName]'
+        ConnectorTitle = 'Hose Nozzles\n25.4mm(1in) to 114mm(4.5in)'
+        Options = @();
+        HueMin = 60   #min value is 0
+        HueMax = 120 #max value is 360
     }
 )
 
