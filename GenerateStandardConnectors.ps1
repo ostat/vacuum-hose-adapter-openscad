@@ -1,4 +1,4 @@
-﻿#version 2022-11-22
+﻿#version 2022-11-26
 $Script:ForceRegeneration = $false
 
 $script:SourceFolder = (Get-Item $MyInvocation.MyCommand.Source).Directory
@@ -8,7 +8,7 @@ $script:ScadExePath = 'C:\Program Files\OpenSCAD\openscad.exe'
 $script:inchmm = 25.4
 $script:maxHeight = 180
 
-$VerbosePreference = 'continue'
+$VerbosePreference = 'SilentlyContinue'
 
 $Script:VacuumHoseSizes = 
 @(
@@ -112,6 +112,7 @@ $Script:PvcHoses = $Script:PvcHoseSizes | ForEach-Object {
     }
 
     return @{
+        MeasurementSystem = $hose['System']
         Scenario = "$($hoseSize)$($hoseUnit)"
         Style='hose'; Measurement='outer'; Diameter=$hoseSize; 
         Wall_Thickness = $hoseWall
@@ -179,7 +180,7 @@ $Script:CustomAdapters =
         Transition_Length = 0;
         Transition_End2_Count = 2;
         transitionAngles = (30, 45);
-        transitionStyles = ("taper+bend", "bend+taper", "taperedbend")
+        transitionStyles =  ("hull","taper+bend", "bend+taper", "taperedbend")
         End1 = $Script:VacuumHoses
         End2 = $Script:VacuumHoses
     },
@@ -224,6 +225,16 @@ $Script:CustomAdapters =
         End2 = $Script:PvcHoses
     },
     @{
+        Folder = (Join-Path $script:SourceFolder 'generated\barbedsplitter\');
+        Scenario = "barbedsplitter";
+        Enabled = $true;
+        Transition_Length = 0;
+        Transition_End2_Count = 2;
+        transitionAngles = (30, 45);
+        transitionStyles = ("hull","taper+bend", "bend+taper", "taperedbend")
+        End1 = $Script:PvcHoses | Where-Object {$_.MeasurementSystem -eq 'metic'}
+        End2 = $Script:PvcHoses | Where-Object {$_.MeasurementSystem -eq 'metic'}
+    },    @{
         Folder = (Join-Path $script:SourceFolder 'generated\funnel\');
         Enabled = $true
         Scenario = 'funnel';
@@ -401,7 +412,7 @@ Function AddArgs($cmdArgs, $value, $argValue) {
 
 $Script:CustomAdapters | Where-Object {$_.Enabled} | ForEach-Object {
     $_adapter = $_
-    Write-Verbose "Adapter $($_adapter.Scenario)"
+    Write-Host "Adapter $($_adapter.Scenario)"
 $_adapter.End1 | Sort-Object { Get-Random } | ForEach-Object {
     $_end1 = $_
     Write-Verbose "End1 $($_end1.Scenario)"
@@ -500,11 +511,11 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
     $end2_NozzleChamferPercentage     = $_end2.Nozzle_Chamfer_Percentage
     $end2_NozzleChamferAngle          = $_end2.Nozzle_Chamfer_Angle
     
-    Write-Host "End2_Diameter $($end2_Diameter) | End1_Diameter $($end1_Diameter) | transitionAngle $($adapter_TransitionAngle) | transitionStyle $($adapter_TransitionStyle) | Adapter $($_adapter.Scenario)"
+    Write-Verbose "$($_adapter.Scenario)  End2_Diameter $($end2_Diameter) | End1_Diameter $($end1_Diameter) | transitionAngle $($adapter_TransitionAngle) | transitionStyle $($adapter_TransitionStyle) | Adapter $($_adapter.Scenario)"
 
     # taperedbend at 0deg should be tapered
     $adapter_TransitionStyle = (IIF -If ($adapter_TransitionStyle -ieq 'taperedbend' -and $adapter_TransitionAngle -eq 0) -Right 'bend+taper' -Wrong $adapter_TransitionStyle)
-    Write-Host "transitionStyle $($adapter_TransitionStyle) | transitionAngle $($adapter_TransitionAngle)"
+    Write-Verbose "transitionStyle $($adapter_TransitionStyle) | transitionAngle $($adapter_TransitionAngle)"
     
     $modelDescription = (($adapter_TransitionAngle -eq 0) | IIf `
             -Right '' `
@@ -521,7 +532,6 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
     $scenario = (AppendIf -value $_adapter.Scenario | AppendIf -value $_end1.Scenario | AppendIf -value $_end2.Scenario)
     $filename = $scenario
 
-    Write-Host "Transition_Length $($adapter_TransitionLength)"
     $adapter_TransitionLength = IIF ($adapter_TransitionLength -gt 0) `
         -Right $adapter_TransitionLengthh `
         -Wrong ([Math]::Max([Math]::Min([Math]::Ceiling([Math]::Abs($end1_Diameter - $end2_Diameter)), 40),2))
@@ -544,10 +554,10 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
         Write-Verbose "hoseadapter - transitionAngle:$($adapter_TransitionAngle) TransitionLength:$($adapter_TransitionLength) End1_Length:$($end1_Length) End2_Length:$($end2_Length) end1_Diameter:$end1_Diameter end2_Diameter:$end2_Diameter"
     }
 
-    if($_adapter.Scenario -eq 'hosesplitter'){
-        if($end2_Diameter -ge $end1_Diameter)
+    if($_adapter.Scenario -eq 'hosesplitter' -or $_adapter.Scenario -eq 'barbedsplitter'){
+        if($end2_Diameter -gt $end1_Diameter)
         {
-            Write-Verbose "Skipping hosesplitter transitionAngle:$($adapter_TransitionAngle) End1_Diameter: $($end1_Diameter) End2_Diameter: $($end2_Diameter)"
+            Write-Verbose "Skipping $($_adapter.Scenario) transitionAngle:$($adapter_TransitionAngle) End1_Diameter: $($end1_Diameter) End2_Diameter: $($end2_Diameter)"
             return
         }
         $end1_StopThickness = 0
@@ -556,10 +566,9 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
         $end2_StopLength = 0
         $adapter_TransitionBendRadius = 5;
         $filename = "$($_end1.Scenario)_to_$($_end2.Scenario)_transition$($adapter_TransitionLength)mm"
-        $folder = Join-Path $folder "$modelDescription\$($_end1.Scenario)"
-        Write-Verbose "hosesplitter - transitionAngle:$($adapter_TransitionAngle) TransitionLength:$($adapter_TransitionLength) End1_Length:$($end1_Length) End2_Length:$($end2_Length) end1_Diameter:$end1_Diameter end2_Diameter:$end2_Diameter"
+        $folder = Join-Path $folder "$($adapter_TransitionStyle)\$($_end1.Scenario)"
+        Write-Verbose "$($_adapter.Scenario) - transitionAngle:$($adapter_TransitionAngle) TransitionLength:$($adapter_TransitionLength) End1_Length:$($end1_Length) End2_Length:$($end2_Length) end1_Diameter:$end1_Diameter end2_Diameter:$end2_Diameter"
     }
-
 
     if($_adapter.Scenario -eq 'barbedhoses'){
         if($adapter_TransitionAngle -eq 0 -and $end2_Diameter -ge $end1_Diameter)
@@ -604,7 +613,7 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
         
         Write-Verbose "hose_nozzle - transitionAngle:$($adapter_TransitionAngle) TransitionLength:$($adapter_TransitionLength) End1_Length:$($end1_Length) End2_Length:$($end2_Length) end1_Diameter:$end1_Diameter end2_Diameter:$end2_Diameter End2_Nozzle_Length$($end2_NozzleLength)"
         $folder = Join-Path $folder "$($_end1.Scenario)"
-        write-host "hose_nozle $folder"
+        write-Verbose "hose_nozle $folder"
     }
 
     if($_adapter.Scenario -eq 'funnel' -or $_adapter.Scenario -eq 'funnel_offcenter'){
@@ -635,7 +644,7 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
         Write-Verbose "magneticadapter - Magent_Count:$($end1_MagnetsCount) Magent_Diameter:$($end1_MagnetDiameter) Magnet_Thickness:$($end1_MagnetThickness) End2Scenario:$($_end2.Scenario)"
         $filename = "$($end1_Diameter)mm_$($end1_MagnetsCount)Magnets_$($end1_MagnetDiameter)x$($end1_MagnetThickness)mm_to_$($_end2.Scenario)_transition$($adapter_TransitionLength)mm"
         $folder = Join-Path $_adapter.Folder "$($end1_Diameter)mm\$($modelDescription)"
-        write-host "magneticadapter $folder"
+        write-Verbose "magneticadapter $folder"
     }
 
     if($_adapter.Scenario -eq 'dysonvacuumhose' -or $_adapter.Scenario -eq 'dysonnozzle' -or $_adapter.Scenario -eq 'dysonpvc'){
@@ -658,18 +667,18 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
                 -Right $adapter_TransitionLength `
                 -Wrong 2 #([Math]::Max([Math]::Min([Math]::Ceiling([Math]::Abs($end1_Diameter - $end2_Diameter)), 40),2))
         }
-        write-host "dyson $folder"
+        write-Verbose "dyson $folder"
     }
 
 
     if($_adapter.Scenario -eq 'flange'){
-        $modelDescription = (($adapter_TransitionAngle -eq 0) | IIf -Right 'straight' -Wrong $modelDescription)
+        $modelDescription = (($adapter_TransitionAngle -eq 0) | IIf -Right 'straight' -Wrong "$($adapter_TransitionAngle)deg")
         $end2_Diameter = $end1_Diameter
         $adapter_TransitionLength = 0
         $folder = Join-Path $folder "$($modelDescription)"
         #$FlangeOuter = IIF($End1.Flange_Outer_Diameter -eq 0, $($End1_Diameter+30),$End1.Flange_Outer_Diameter)
         #$filename = "$($End1_Style)_$($End2_Style)_$($scenario)"
-        write-host "flange $folder"
+        write-Verbose "flange $folder"
     }
 
     $filename = ($filename | AppendIf -value $modelDescription)
@@ -683,7 +692,7 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
         return 
     }
 
-    Write-Host "Generating generic adapter $($filename)"
+    Write-Host "Generating $($_adapter.Scenario) adapter $($target)"
 
     #invoke openscad
     $cmdArgs = ""

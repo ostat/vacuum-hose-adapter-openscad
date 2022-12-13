@@ -13,8 +13,11 @@ $script:ImageMagickPath = 'C:\Program Files\ImageMagick-7.1.0-Q16-HDRI\magick.ex
 $script:StlThumbPath = 'C:\bin\stl-thumb\stl-thumb.exe'
 
 # online colour picker https://colorpicker.me/
-$script:HueMin = 0   #min value is 0
-$script:HueMax = 220 #max value is 360
+$script:HueMin = 0  
+$script:HueMax = 360
+
+$script:SummarySetCount = 36
+
 
 $Script:ForceRegeneration = $false
 
@@ -25,71 +28,88 @@ $SourceFolders = @(
         ConnectorType = 'Hose Adapters'
         SetTitle = 'Hose Adapters\n[SetName] [ParentFolderName]'
         ConnectorTitle = 'Hose Adapters\n[ParentFolderName]'
-        Options = @('25.4mm(1in)'         
-             '31.75mm(1.25in)'     
-             '32mm'                
-             '34.925mm(1.375in)'   
-             '35mm'                
-             '36.5125mm(1.4375in)' 
-             '38mm'                 
-             '38.1mm(1.5in)'       
-             '40mm'                 
-             '50mm'                
-             '50.8mm(2in)'         
-             '60mm'                 
-             '63.5mm(2.5in)'        
-             '76.2mm(3in)'          
-             '88.9mm(3.5in)'        
-             '100mm'                
-             '101.6mm(4in)'         
-             '114.3mm(4.5in)');
-        HueMin = 0   #min value is 0
-        HueMax = 220 #max value is 360
+        Options = @();
+        HueMin = 120   #min value is 0
+        HueMax = 180 #max value is 360
+        SaturationMin = 35
+        SaturationMax = 60
     },
     @{
         Path = (Join-Path $script:ScriptFolder '\generated\hosesplitter\');
         ConnectorType = 'Hose Splitter'
-        SetTitle = 'Hose Splitter\n[SetName] [ParentFolderName]'
-        ConnectorTitle = 'Hose Splitter\n[ParentFolderName]'
+        SetTitle = 'Hose Splitter\n[SetName]'
+        ConnectorTitle = 'Hose Splitter\n25.4mm(1in) to 114mm(4.5in)'
         Options = @();
-        HueMin = 0   #min value is 0
+        HueMin = 120   #min value is 0
+        HueMax = 180 #max value is 360
+        SaturationMin = 65
+        SaturationMax = 95
+    },
+    @{
+        Path = (Join-Path $script:ScriptFolder '\generated\barbedhoses\');
+        ConnectorType = 'Hose Splitter'
+        SetTitle = 'Tube fittings\n[SetName]'
+        ConnectorTitle = 'Tube fittings\n4mm to 26mm'
+        Options = @();
+        HueMin = 180   #min value is 0
         HueMax = 220 #max value is 360
+        SaturationMin = 40
+        SaturationMax = 40
+    },
+    @{
+        Path = (Join-Path $script:ScriptFolder '\generated\barbedsplitter\');
+        ConnectorType = 'Hose Splitter'
+        SetTitle = 'Tube fittings\n[SetName]'
+        ConnectorTitle = 'Tube fittings\n4mm to 26mm'
+        Options = @();
+        HueMin = 180   #min value is 0
+        HueMax = 220 #max value is 360
+        SaturationMin = 50
+        SaturationMax = 80
+    },
+    @{
+        Path = (Join-Path $script:ScriptFolder '\generated\pvchoseadapter\');
+        ConnectorType = 'Hose to tube Adapters'
+        SetTitle = 'Hose to tube Adapters\n[SetName]'
+        ConnectorTitle = 'Hose to tube Adapters'
+        Options = @();
+        HueMin = 160   #min value is 0
+        HueMax = 200 #max value is 360
+        SaturationMin = 40
+        SaturationMax = 40
     },
     @{
         Path = (Join-Path $script:ScriptFolder '\generated\magneticadapter\');
         ConnectorType = 'Magnetic Connectors'
         SetTitle = 'Magnetic Connectors\n[SetName] [ParentFolderName]'
         ConnectorTitle = 'Magnetic Connectors\n[ParentFolderName]'
-        Options = @('0deg'         
-             '30deg'     
-             '30degsweep'                
-             '45deg'   
-             '45degsweep'                
-             '90deg' 
-             '90degsweep');
-        HueMin = 0   #min value is 0
-        HueMax = 220 #max value is 360
+        Options = @();
+        HueMin = 10   #min value is 0
+        HueMax = 40  #max value is 360
+        SaturationMin = 50
+        SaturationMax = 70
     },
     @{
         Path = (Join-Path $script:ScriptFolder '\generated\flange\');
         ConnectorType = 'Flange'
         SetTitle = 'Flange [SetName]\n25.4mm(1in) to 114mm(4.5in)'
         ConnectorTitle = 'Flange\n25.4mm(1in) to 114mm(4.5in)'
-        Options = @('straight'         
-             '30deg'     
-             '45deg'   
-             '90deg');
-        HueMin = 270   #min value is 0
-        HueMax = 290 #max value is 360
+        Options = @();
+        HueMin = 200   #min value is 0
+        HueMax = 220 #max value is 360
+        SaturationMin = 80
+        SaturationMax = 80
     },
     @{
         Path = (Join-Path $script:ScriptFolder '\generated\dyson\');
         connectorType = 'Dyson V6' 
-        SetTitle = 'Funnel [SetName]'
+        SetTitle = 'Dyson V6 [SetName]'
         ConnectorTitle = 'Dyson V6'
         Options = @();
-        HueMin = 0   #min value is 0
-        HueMax = 220 #max value is 360
+        HueMin = 310   #min value is 0
+        HueMax = 355 #max value is 360
+        SaturationMin = 60
+        SaturationMax = 60
     },
     @{
         Path = (Join-Path $script:ScriptFolder '\generated\funnel\');
@@ -97,8 +117,10 @@ $SourceFolders = @(
         SetTitle = 'Funnels [SetName]'
         ConnectorTitle = 'Funnels\n25mm to 200mm'
         Options = @();
-        HueMin = 180   #min value is 0
-        HueMax = 300 #max value is 360
+        HueMin = 265   #min value is 0
+        HueMax = 305 #max value is 360
+        SaturationMin = 50
+        SaturationMax = 50
     },
     @{
         Path = (Join-Path $script:ScriptFolder '\generated\funnel_offcenter\');
@@ -106,8 +128,10 @@ $SourceFolders = @(
         SetTitle = 'Offset Funnels\n[SetName]'
         ConnectorTitle = 'Offset Funnels\n25mm to 200mm'
         Options = @();
-        HueMin = 180   #min value is 0
-        HueMax = 300 #max value is 360
+        HueMin = 265   #min value is 0
+        HueMax = 305 #max value is 360
+        SaturationMin = 80
+        SaturationMax = 80
     },
     @{
         Path = (Join-Path $script:ScriptFolder '\generated\hose_nozzle\');
@@ -116,7 +140,9 @@ $SourceFolders = @(
         ConnectorTitle = 'Hose Nozzles\n25.4mm(1in) to 114mm(4.5in)'
         Options = @();
         HueMin = 60   #min value is 0
-        HueMax = 120 #max value is 360
+        HueMax = 110 #max value is 360
+        SaturationMin = 50
+        SaturationMax = 50
     }
 )
 
@@ -284,11 +310,36 @@ $SourceFolders | ForEach-Object {
             # Pick hue based on the size and position in the array, I want each size to be a different colour.
             $hue = $SourceSettings.HueMax - [Math]::Floor([array]::indexof($folderOptions,$setName) * ($SourceSettings.HueMax - $SourceSettings.HueMin) / ($folderOptions.Length - 1))
 
-            $colour = ConvertFrom-Hsl $hue 50 60 -ABGR
-            $colour2 = ConvertFrom-Hsl $hue 50 20 -ABGR
+            $saturation = $SourceSettings.SaturationMin
+            if((join-path $stl.Directory.Parent.FullName '') -ine (join-path $SourceSettings.Path ''))
+            {
+                $parentSet = $stl.Directory.Parent.Name
+                $folderSets = (Get-ChildItem -LiteralPath $SourceSettings.Path -Directory ) | Where-Object {$_.Name -ne 'thumb'} | Select-Object -ExpandProperty Name | Sort-Object @{Expression = { 
+                    $number = ($_ -replace '(\d+\.?\d*).*', '$1')
+                    [decimal]$dec = 0
+                    if([decimal]::TryParse($number, [ref]$dec))
+                    {
+                        return $dec
+                    }
+                    else{
+                        $_ 
+                    }}}
 
-            write-host "$($stl.FullName) $colour2 $colour"
+                $saturation = $SourceSettings.SaturationMax - [Math]::Floor([array]::indexof($folderSets, $parentSet) * ($SourceSettings.SaturationMax - $SourceSettings.SaturationMin) / ($folderSets.Length - 1))
+            }
+
+            $colour = ConvertFrom-Hsl $hue $saturation 60 -ABGR
+            $colour2 = ConvertFrom-Hsl $hue $saturation 20 -ABGR
+
+            write-host "$($stl.FullName) hue:[$($SourceSettings.HueMin):$($SourceSettings.HueMax):$hue] saturation:[$($SourceSettings.SaturationMin):$($SourceSettings.SaturationMax):$saturation] $colour2 $colour"
             & $script:StlThumbPath --material $colour2 $colour 111111 $($stl.FullName) $targetPath
+            
+            if($LASTEXITCODE -gt 0)
+            {
+                Write-Warning "$($stl.FullName) failed"
+                Rename-Item -LiteralPath $stl.FullName -NewName "$($stl.Name)$([datetime]::Now.ToString('yyyyMMddhhmmss')).broken"
+            }
+            
         }
     }
 
@@ -302,7 +353,7 @@ $SourceFolders | ForEach-Object {
 
             $setName = $folder.Name
             $title = $SourceSettings.SetTitle.Replace('[SetName]', $setName).Replace('[ParentFolderName]',$thumbFolder.Parent.Name);
-            Write-Host "$($folder.FullName) | $title"
+            Write-Verbose "$($folder.FullName) | $title"
       
             $targetFileName = "$($setName)_display.jpg"
             $newestFile = Get-ChildItem -LiteralPath $folder.FullName | Sort-Object LastAccessTime -Descending | Select-Object -First 1
@@ -327,17 +378,30 @@ $SourceFolders | ForEach-Object {
         $title = $SourceSettings.ConnectorTitle.Replace('[SetName]', $folder.Name).Replace('[ParentFolderName]',$thumbFolder.Parent.Name);
         
         # for each child folder add wild card search, sort them by the number value (so 20 comes before 100)
-        $files = Get-ChildItem -LiteralPath $thumbFolder.FullName -Directory | Select-Object @{name='Name';expression={"$($_.Name)\*.png"}} | Select-Object -ExpandProperty Name | Sort-Object {[decimal]($_ -replace '(\d+\.?\d*).*', '$1')}
-        $filesString = $files | Join-String -Separator " "
+        $files = Get-ChildItem -LiteralPath $thumbFolder.FullName -Directory `
+            | Select-Object @{name='Name';expression={"$($_.Name)\*.png"}} `
+            | Select-Object -ExpandProperty Name `
+            | Sort-Object @{Expression = { 
+                $number = ($_ -replace '(\d+\.?\d*).*', '$1')
+                [decimal]$dec = 0
+                if([decimal]::TryParse($number, [ref]$dec))
+                {
+                    return $dec
+                }
+                else{
+                    $_ 
+                }
+            }}
+           #| Sort-Object {[decimal]($_ -replace '(\d+\.?\d*).*', '$1')}
+         $filesString = $files | Join-String -Separator " "
 
         Write-Host "$($thumbFolder.FullName) | $title"
 
     
-        $targetFileName = "display.jpg"
-        $targetPath = (Join-Path $thumbFolder.FullName $targetFileName)
-       
         $newestFile = Get-ChildItem $thumbFolder.Parent.FullName -Recurse -Filter *.stl | Sort-Object LastAccessTime -Descending | Select-Object -First 1
-        $generateCompleteSet = GenerationNeeded $targetPath $newestFile
+      
+        $targetFileName = "display.jpg"
+        $generateCompleteSet = GenerationNeeded  (Join-Path $thumbFolder.FullName $targetFileName) $newestFile
         if($generateCompleteSet -or $Script:ForceRegeneration) {
             # montage, trim to remove white space from inages, -geometry256x256+2+2 add small border and keep all images the same size
             #& $script:ImageMagickPath montage -geometry 256x256+2+2 -pointsize 24 -trim -title "$($title)" $files display.webp
@@ -346,19 +410,25 @@ $SourceFolders | ForEach-Object {
                 -PointRatio 14 `
                 -Title $title `
                 -Files $files 
-
+        }
+        else{
+                  Write-Verbose "Skipping thunbnail complete set $($title)"
+        }
+        
+        $targetFileName = "display_$($script:SummarySetCount).jpg"
+        $generateSummarySet = GenerationNeeded (Join-Path $thumbFolder.FullName $targetFileName) $newestFile
+        if($generateSummarySet -or $Script:ForceRegeneration) {
             # thumb for a random selection
-            $takeCount = 36
-            $files = Get-ChildItem -LiteralPath $thumbFolder.FullName -Recurse -Filter '*.png' | Sort-Object { Get-Random } | select -First $takeCount | Select-Object @{name='Name';expression={"$($_.Directory.Name)\$($_.Name)"}} | Select-Object -ExpandProperty Name
-            Write-Host "$($thumbFolder.FullName) | $title | thunbnail summary set $takeCount"
+            $files = Get-ChildItem -LiteralPath $thumbFolder.FullName -Recurse -Filter '*.png' | Sort-Object { Get-Random } | select -First $script:SummarySetCount | Select-Object @{name='Name';expression={"$($_.Directory.Name)\$($_.Name)"}} | Select-Object -ExpandProperty Name
+            Write-Verbose "$($thumbFolder.FullName) | $title | thunbnail summary set $($script:SummarySetCount)"
             Create-Montage -Path $thumbFolder.FullName `
-                -TargetFilename "display_$takeCount.jpg" `
+                -TargetFilename $targetFileName `
                 -PointRatio 14 `
                 -Title $title `
                 -Files $files 
         }
         else{
-            Write-Verbose "Skipping thunbnail complete set $($title)"
+            Write-Verbose "Skipping thunbnail summary set $($title)"
         }
     }
 }
@@ -367,13 +437,13 @@ $SourceFolders | ForEach-Object {
 $title = 'hose connectors'
 
 # thumb for a random selection
-$takeCount = 36
+$takeCount = 42
 $path = (Join-Path $script:ScriptFolder '\generated')
 cd $path
 $files = Get-ChildItem -LiteralPath $path -Recurse -Filter '*.png' | Sort-Object { Get-Random } | select -First $takeCount | Select-Object @{name='Name';expression={"$($_.Directory.FullName)\$($_.Name)"}} | Select-Object -ExpandProperty Name
-Write-Host "$($thumbFolder.FullName) | $title | thunbnail summary set $takeCount"
+Write-Host "$($path) | $title | thunbnail summary set $takeCount"
 Create-Montage -Path $path `
-    -TargetFilename "display_$takeCount.jpg" `
+    -TargetFilename "display_$($takeCount)_$([datetime]::Now.ToString('yyyyMMddHHmmss')).jpg" `
     -PointRatio 10 `
     -Title $title `
     -Files $files 
