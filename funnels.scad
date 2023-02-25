@@ -34,7 +34,7 @@ NozzleTipWallThickness = 0.6;
 /* [Nozel adavanced] */
 // Pre tip length of the nozel.
 NozelLength = 1;
-// Pre tip internal diameter of the nozel. 
+// Pre tip internal diameter of the nozel.
 NozelDiameter= 0;
 
 /* [Hidden] */

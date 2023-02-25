@@ -109,12 +109,12 @@ End2_Length= 40;  //1
 End2_Taper = 2;  //0.1
 
 /* [Connector 2 - Hose connector] */
-//Thickness of hose stop 
+//Thickness of hose stop
 End2_StopThickness = 0;  //1
 
 //Length of hose stop
 End2_StopLength = 0;  //1
-    
+
 /* [Connector 2 - Magnetic Flange] */
 
 //Number of magnets in the flange

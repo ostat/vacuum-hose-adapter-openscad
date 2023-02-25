@@ -71,7 +71,7 @@ if (part == "mag50toflat120") {
         alignmentSideClearance = 0.25,
         alignmentDepthClearance = 0.75,
         connector1Style = "mag",
-        connector1wallThickness = 2, 
+        connector1wallThickness = 2,
         connector1Measurement = "inner",
         connector1Diameter = 50,
         connector1Length = 7,
@@ -123,7 +123,7 @@ if (part == "screwflange50") {
         connector1FlangeScrewCount = 4,
         connector1FlangeScrewDiameter = 5,
         connector1FlangeWidth = 30,
-    
+
         transitionStyle = "tapered",
         transitionLength = 5,
         connector2Style = "hose",
@@ -413,7 +413,7 @@ if (part == "funnelOffset") {
         transitionLength = 20,
         transitionXOffset = -10,
         transitionYOffset = 0,
-  
+
         connector2Style = "nozzle",
         connector2Measurement = "inner",
         connector2Diameter = 5,
@@ -444,7 +444,7 @@ if (part == "funnelOffset2") {
         transitionLength = 40,
         transitionXOffset = -30,
         transitionYOffset = 0,
-  
+
         connector2Style = "nozzle",
         connector2Measurement = "inner",
         connector2Diameter = 10,
