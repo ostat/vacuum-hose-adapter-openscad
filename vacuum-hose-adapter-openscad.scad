@@ -165,13 +165,6 @@ End2_Nozzle_yOffset = 0; //0.1
 End2_Nozzle_Chamfer_Percentage = 0; //0.1
 End2_Nozzle_Chamfer_Angle = 0; //0.1
 
-/* [Hidden] */
-fudgeFactor = 0.015;
-
-dysonMinLength = 46;
-dysonInnerDiameter = 28.5;
-dysonOuterDiameter = 34;
-
 //Detail
 $fn=120;
 

@@ -5,6 +5,12 @@ use <dotSCAD/src/ring_extrude.scad>
 use <dotSCAD/src/shape_circle.scad>
 // https://justinsdk.github.io/dotSCAD/
 
+/* [Hidden] */
+fudgeFactor = 0.015;
+
+dysonMinLength = 46;
+dysonInnerDiameter = 28.5;
+dysonOuterDiameter = 34;
 
 //diameter1: Inner start diameter.
 //diameter2: Inner end diameter.

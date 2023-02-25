@@ -3,9 +3,7 @@
 
 use <vacuum-hose-adapter-modules.scad>
 
-fudgeFactor = 0.015;
 //$fn=120;
-
 $fs = 1;
 $fa = 6;
 
