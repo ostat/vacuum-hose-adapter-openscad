@@ -57,8 +57,9 @@ Although, this does not appear to be required to have a good suction.
 #### Main settings
 **Changing any of the settings** (diameter, magnet size, alignment ring...)
 **will change the magnet position and flange size**.
-A good practice would be to save the file separately with the final settings or
-to write them down in case you need to create an other flange at a later time.
+A good practice would be to save the configuration of the hose in JSON using the
+`save preset` option in OpenSCAD. See [the OpenSCAD
+documentation][openscad_save_params] for more information.
 
 * Flange diameter: Internal diameter of the flange connection.
 * Flange thickness: The overall thickness of the flange. Magnet thickness plus
@@ -150,3 +151,6 @@ found its not really needed.<br>
 A 50mm magnetic connector to a 100mm magnetic flange. Allowing connection
 between different sized magnetic connectors.<br>
 <img src="./samples/50mm_magnet_to_100mm_magnet.png" width="250px">
+
+
+[openscad_save_params]:https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Customizer#GUI
