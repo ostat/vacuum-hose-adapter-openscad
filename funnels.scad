@@ -13,29 +13,29 @@ FunnelLength = 0;
 //Thickness of the funnel walls
 WallThickness = 1.5; // 0.1
 
-/* [Funnel adavanced] */
-//Angle of the nozel
-NozelAngle = 0;
+/* [Funnel advanced] */
+//Angle of the spout
+SpoutAngle = 0;
 //Where should the angle be applied
 TransitionStyle = "taper+bend"; //[taper+bend: Taper then bend, bend+taper: Bend then taper]
-//Offset the nozel in the x direction
-TransitionXOffset = 0;
-//Offset the nozel in the y direction
-TransitionYOffset = 0;
+//Offset the spout in the x direction
+SpoutXOffset = 0;
+//Offset the spout in the y direction
+SpoutYOffset = 0;
 
-/* [Nozel] */
-//Internal Diameter of the nozel tip
-NozelTipDiameter = 5;
-//Length of the nozel tip. Default is related to funnel length.
-NozelTipLength = 0;
-//Wall thickness of the nozel tip
-NozzleTipWallThickness = 0.6;
+/* [Spout] */
+//Internal Diameter of the spout tip
+SpoutTipDiameter = 5;
+//Length of the spout tip. Default is related to funnel length.
+SpoutTipLength = 0;
+//Wall thickness of the spout tip
+SpoutTipWallThickness = 0.6;
 
-/* [Nozel adavanced] */
-// Pre tip length of the nozel.
-NozelLength = 1;
-// Pre tip internal diameter of the nozel.
-NozelDiameter= 0;
+/* [Spout advanced] */
+// Pre tip length of the spout.
+SpoutLength = 1;
+// Pre tip internal diameter of the spout.
+SpoutDiameter= 0;
 
 /* [Hidden] */
 FlangeThickness = 1.5; // 0
@@ -47,10 +47,10 @@ $fn=120;
 module end_of_customizer_opts() {}
 
 //Apply defaults
-transitionLength = FunnelLength < 1 ? (OpeningDiameter-NozelDiameter)/2 : FunnelLength;
-nozelTipLength = NozelTipLength < 1 ? transitionLength*1.5 : NozelTipLength;
-nozelLength = NozelLength < 1 ? 1 : NozelLength;
-nozelDiameter = NozelDiameter < 1 ? NozelTipDiameter : NozelDiameter;
+transitionLength = FunnelLength < 1 ? (OpeningDiameter-SpoutDiameter)/2 : FunnelLength;
+spoutTipLength = SpoutTipLength < 1 ? transitionLength*1.5 : SpoutTipLength;
+spoutLength = SpoutLength < 1 ? 1 : SpoutLength;
+spoutDiameter = SpoutDiameter < 1 ? SpoutTipDiameter : SpoutDiameter;
 
   HoseAdapter(
       connector1Style = "flange",
@@ -66,18 +66,18 @@ nozelDiameter = NozelDiameter < 1 ? NozelTipDiameter : NozelDiameter;
       connector1Length = 3,
       transitionStyle = TransitionStyle,
       transitionLength = transitionLength,
-      transitionXOffset = TransitionXOffset,
-      transitionYOffset = TransitionYOffset,
-      transitionAngle = NozelAngle,
+      transitionXOffset = SpoutXOffset,
+      transitionYOffset = SpoutYOffset,
+      transitionAngle = SpoutAngle,
       //transitionBendRadius = transitionLength,
       connector2Style = "nozzle",
       connector2Measurement = "inner",
-      connector2Diameter = nozelDiameter,
-      connector2Length = nozelLength,
+      connector2Diameter = spoutDiameter,
+      connector2Length = spoutLength,
       connector2WallThickness = WallThickness,
       connector2NozzleShape = "circle",
-      connector2NozzleTipWallThickness = NozzleTipWallThickness,
-      connector2NozzleRadius = NozelTipDiameter/2,
-      connector2NozzleLength = nozelTipLength,
+      connector2NozzleTipWallThickness = SpoutTipWallThickness,
+      connector2NozzleRadius = SpoutTipDiameter/2,
+      connector2NozzleLength = spoutTipLength,
       connector2NozzleChamferPercentage = 100,
       connector2NozzleChamferAngle = 30);
