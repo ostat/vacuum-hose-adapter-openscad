@@ -3,23 +3,6 @@
 
 include <vacuum-hose-adapter-modules.scad>
 
-/* [General ] */
-
-/* [Alignment Ring] */
-//draw just the alignment ring
-Draw_Alignment_Ring = "no"; //[end1: Draw end 1, end2: Draw end 2, no: Don't draw]
-//Alignment depth in to flange (mm)
-Alignment_Depth = 2; //0.1
-//Alignment upper width at widest part (mm)
-Alignment_Upper_Width = 3; //0.1
-//Alignment lower width at narrowest part (mm)
-Alignment_Lower_Width = 0.5; //0.1
-//Alignment side clearance, to give nice fit (mm).
-Alignment_Side_Clearance = 0.25;  //0.01
-//Alignment Depth Clearance, to prevent hitting bottom (mm).
-Alignment_Depth_Clearance = .75;  //0.01
-
-
 /* [Connector 1] */
 //Wall thickness
 End1_Wall_Thickness = 2; //0.01
@@ -47,6 +30,10 @@ End1_Barbs_Count = 0;
 End1_Barbs_Thickness = 0; //0.1
 //Should the barbes be tapered both sides. Might be easier to print.
 End1_Barbs_Symmetrical = 0; //[0,1]
+//End Cap Inner Diameter.
+End1_Hose_EndCap_Diameter = 0;  //0.1
+//Thickness of endcap.
+End1_Hose_EndCap_Thickness = 0;  //0.1
 
 /* [Connector 1 - Flange] */
 //Width of Flange added to the connector diamater
@@ -85,7 +72,7 @@ Transition_Length = 10;  //1
 // Radius of transition bend (mm)
 Transition_Bend_Radius = 0;  //1
 //Angle of bend through the transition section.
-Transition_Angle = 45;  //1
+Transition_Angle = 0;  //1
 // Dupliacte the second connector. Adjust angle and bend radius to make it work.
 Transition_End2_Count = 1;  //[1, 2, 3, 4, 5, 6]
 // X offset for the connector, not supported on taperedbend.
@@ -111,8 +98,6 @@ Transition_Base_Angle=0;
 //Wall thickness
 End2_Wall_Thickness = 2; //0.01
 End2_Style="nozzle"; // [mag: Magnetic Flange, hose: Hose connector, nozzle: Nozzle attachement]
-
-
 // Is the measurement the adapter's outside or inside diameter?
 End2_Measurement = "outer"; //[inner, outer]
 // End 2 diameter of the adapter (mm)
@@ -122,8 +107,7 @@ End2_Length= 40;  //1
 //Taper of the start connector, use negative to taper other direction.
 End2_Taper = 0;  //0.1
 
-
-/* [Connector 2 - Hose connector] */
+/*[Connector 2 - Hose connector] */
 //Thickness of hose stop
 End2_StopThickness = 0;  //1
 //Length of hose stop
@@ -136,6 +120,10 @@ End2_Barbs_Count = 0;
 End2_Barbs_Thickness = 0; //0.1
 //Should the barbes be tapered both sides. Might be easier to print.
 End2_Barbs_Symmetrical = 0; //[0,1]
+//End Cap Inner Diameter.
+End2_Hose_EndCap_Diameter = 0;  //0.1
+//Thickness of endcap.
+End2_Hose_EndCap_Thickness = 0;  //0.1
 
 /* [Connector 2 - Magnetic Flange] */
 //Number of magnets in the flange
@@ -151,7 +139,6 @@ End2_Magnet_Flange_Thickness = 10;  //0.1
 // Include a flange alignment ring
 End2_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recessed: Recessed ring]
 
-
 /* [Connector 2 - Nozzle] */
 // Is the measurement the adapter's outside or inside diameter?
 End2_Nozzle_Shape = "square"; //[square, circle]
@@ -164,6 +151,22 @@ End2_Nozzle_xOffset = 0; //0.1
 End2_Nozzle_yOffset = 0; //0.1
 End2_Nozzle_Chamfer_Percentage = 0; //0.1
 End2_Nozzle_Chamfer_Angle = 0; //0.1
+
+/* [Alignment Ring] */
+//draw just the alignment ring
+Draw_Alignment_Ring = "no"; //[end1: Draw end 1, end2: Draw end 2, no: Don't draw]
+//Alignment depth in to flange (mm)
+Alignment_Depth = 2; //0.1
+//Alignment upper width at widest part (mm)
+Alignment_Upper_Width = 3; //0.1
+//Alignment lower width at narrowest part (mm)
+Alignment_Lower_Width = 0.5; //0.1
+//Alignment side clearance, to give nice fit (mm).
+Alignment_Side_Clearance = 0.25;  //0.01
+//Alignment Depth Clearance, to prevent hitting bottom (mm).
+Alignment_Depth_Clearance = .75;  //0.01
+
+/* [Hidden] */
 
 //Detail
 $fn=120;
@@ -182,6 +185,8 @@ HoseAdapter(
   connector1Diameter = End1_Diameter,
   connector1Length = End1_Length,
   connector1Taper = End1_Taper,
+  connector1EndCapDiameter  = End1_Hose_EndCap_Diameter,
+  connector1EndCapThickness = End1_Hose_EndCap_Thickness,
   connector1StopThickness = End1_StopThickness,
   connector1StopLength = End1_StopLength,
   connector1StopSymmetrical = End1_Stop_Symmetrical,
@@ -225,6 +230,8 @@ HoseAdapter(
   connector2Diameter = End2_Diameter,
   connector2Length = End2_Length,
   connector2Taper = End2_Taper,
+  connector2EndCapDiameter  = End2_Hose_EndCap_Diameter,
+  connector2EndCapThickness = End2_Hose_EndCap_Thickness,
   connector2StopThickness = End2_StopThickness,
   connector2StopLength = End2_StopLength,
   connector2StopSymmetrical = End2_Stop_Symmetrical,

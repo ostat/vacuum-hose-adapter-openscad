@@ -41,6 +41,9 @@ NozelDiameter= 0;
 FlangeThickness = 1.5; // 0
 ScrewBorder = 3;
 
+//Detail
+$fn=120;
+
 module end_of_customizer_opts() {}
 
 //Apply defaults
