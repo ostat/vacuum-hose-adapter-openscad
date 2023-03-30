@@ -1,11 +1,9 @@
 // Hose connector examples
-// version 2022-09-26
+// version 2023-02-25
 
 use <vacuum-hose-adapter-modules.scad>
 
-fudgeFactor = 0.015;
 //$fn=120;
-
 $fs = 1;
 $fa = 6;
 
@@ -30,7 +28,7 @@ if (part == "mag50to40") {
         connector1MagnetBorder = 3,
         connector1MagnetFlangeThickness = 7,
         connector1Ring = "recessed",
-        transitionStyle = "tapered",
+        transitionStyle = "bend+taper",
         transitionLength = 10,
         connector2Style = "hose",
         connector2Measurement = "outer",
@@ -55,7 +53,7 @@ if (part == "mag50to100") {
         connector1MagnetBorder = 3,
         connector1MagnetFlangeThickness = 7,
         connector1Ring = "recessed",
-        transitionStyle = "tapered",
+        transitionStyle = "bend+taper",
         transitionLength = 25,
         connector2Style = "hose",
         connector2Measurement = "outer",
@@ -71,7 +69,7 @@ if (part == "mag50toflat120") {
         alignmentSideClearance = 0.25,
         alignmentDepthClearance = 0.75,
         connector1Style = "mag",
-        connector1wallThickness = 2, 
+        connector1wallThickness = 2,
         connector1Measurement = "inner",
         connector1Diameter = 50,
         connector1Length = 7,
@@ -123,8 +121,8 @@ if (part == "screwflange50") {
         connector1FlangeScrewCount = 4,
         connector1FlangeScrewDiameter = 5,
         connector1FlangeWidth = 30,
-    
-        transitionStyle = "tapered",
+
+        transitionStyle = "bend+taper",
         transitionLength = 5,
         connector2Style = "hose",
         connector2Measurement = "outer",
@@ -156,7 +154,7 @@ if (part == "50to30") {
         connector1Length = 40,
         connector1StopThickness = 4,
         connector1StopLength = 8,
-        transitionStyle = "tapered",
+        transitionStyle = "bend+taper",
         transitionLength = 10,
         connector2Style = "hose",
         connector2Measurement = "outer",
@@ -172,7 +170,7 @@ if (part == "50to30bend45deg") {
         connector1Length = 40,
         connector1StopThickness = 4,
         connector1StopLength = 8,
-        transitionStyle = "tapered",
+        transitionStyle = "bend+taper",
         transitionLength = 10,
         transitionBendRadius = 10,
         transitionAngle = 45,
@@ -207,7 +205,7 @@ if (part == "50to100") {
         connector1Diameter = 50,
         connector1Length = 40,
         connector1Taper = 2,
-        transitionStyle = "tapered",
+        transitionStyle = "bend+taper",
         transitionLength = 50,
         connector2Style = "hose",
         connector2Measurement = "outer",
@@ -224,7 +222,7 @@ if (part == "50to100bend90deg") {
         connector1Diameter = 50,
         connector1Length = 40,
         connector1Taper = 2,
-        transitionStyle = "tapered",
+        transitionStyle = "bend+taper",
         transitionLength = 50,
         transitionBendRadius = 15,
         transitionAngle = 90,
@@ -286,7 +284,7 @@ if (part == "mag100to100") {
         connector1MagnetBorder = 3,
         connector1MagnetFlangeThickness = 7,
         connector1Ring = "recessed",
-        transitionStyle = "tapered",
+        transitionStyle = "bend+taper",
         transitionLength = 10,
         connector2Style = "hose",
         connector2Measurement = "inner",
@@ -313,7 +311,7 @@ if (part == "mag100to50") {
         connector1MagnetBorder = 3,
         connector1MagnetFlangeThickness = 7,
         connector1Ring = "recessed",
-        transitionStyle = "tapered",
+        transitionStyle = "bend+taper",
         transitionLength = 50,
         connector2Style = "hose",
         connector2Measurement = "outer",
@@ -356,7 +354,7 @@ if (part == "mag50tomag100") {
         connector1MagnetBorder = 3,
         connector1MagnetFlangeThickness = 7,
         connector1Ring = "recessed",
-        transitionStyle = "tapered",
+        transitionStyle = "bend+taper",
         transitionLength = 10,
         connector2Style = "mag",
         connector2Measurement = "inner",
@@ -382,7 +380,7 @@ if (part == "funnel") {
         connector1FlangeScrewCount = 1,
         connector1FlangeScrewDiameter = 5,
         connector1Length = 3,
-        transitionStyle = "tapered",
+        transitionStyle = "bend+taper",
         transitionLength = 40,
         connector2Style = "nozzle",
         connector2Measurement = "inner",
@@ -409,11 +407,11 @@ if (part == "funnelOffset") {
         connector1FlangeScrewCount = 1,
         connector1FlangeScrewDiameter = 5,
         connector1Length = 3,
-        transitionStyle = "tapered",
+        transitionStyle = "bend+taper",
         transitionLength = 20,
         transitionXOffset = -10,
         transitionYOffset = 0,
-  
+
         connector2Style = "nozzle",
         connector2Measurement = "inner",
         connector2Diameter = 5,
@@ -440,11 +438,11 @@ if (part == "funnelOffset2") {
         connector1FlangeScrewCount = 1,
         connector1FlangeScrewDiameter = 5,
         connector1Length = 3,
-        transitionStyle = "tapered",
+        transitionStyle = "bend+taper",
         transitionLength = 40,
         transitionXOffset = -30,
         transitionYOffset = 0,
-  
+
         connector2Style = "nozzle",
         connector2Measurement = "inner",
         connector2Diameter = 10,
