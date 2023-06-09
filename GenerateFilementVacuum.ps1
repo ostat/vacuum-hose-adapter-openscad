@@ -2,7 +2,7 @@
 $Script:ForceRegeneration = $false
 
 $script:SourceFolder = (Get-Item $MyInvocation.MyCommand.Source).Directory
-$script:ScadScriptPath = Join-Path $SourceFolder 'vacuum-hose-adapter-openscad.scad'
+$script:ScadScriptPath = Join-Path $SourceFolder 'vacuum-hose-adapter-modules.scad'
 $script:ScadExePath = 'C:\Program Files\OpenSCAD\openscad.exe'
 
 $script:inchmm = 25.4
@@ -20,17 +20,12 @@ $Script:VacuumHoseSizes =
     @{System = 'imperial';   Name = '1+7_8in';    ExternalDiameter = 1+7/8   },
     @{System = 'imperial';   Name = '2in';        ExternalDiameter = 2       },
     @{System = 'imperial';   Name = '2.5in';      ExternalDiameter = 2.5     },
-    @{System = 'imperial';   Name = '3in';        ExternalDiameter = 3       },
-    @{System = 'imperial';   Name = '3.5in';      ExternalDiameter = 3.5     },
-    @{System = 'imperial';   Name = '4in';        ExternalDiameter = 4       },
-    @{System = 'imperial';   Name = '4.5in';      ExternalDiameter = 4.5     },
     @{System = 'metric';     Name = '32mm';       ExternalDiameter = 32      },
     @{System = 'metric';     Name = '35mm';       ExternalDiameter = 35      },
     @{System = 'metric';     Name = '38mm';       ExternalDiameter = 38      },
     @{System = 'metric';     Name = '40mm';       ExternalDiameter = 40      },
     @{System = 'metric';     Name = '50mm';       ExternalDiameter = 50      },
     @{System = 'metric';     Name = '60mm';       ExternalDiameter = 60      },
-    @{System = 'metric';     Name = '100mm';      ExternalDiameter = 100     }
 )
 $Script:VacuumHoses = $Script:VacuumHoseSizes | ForEach-Object {
     $hose = $_
@@ -123,42 +118,11 @@ $Script:PvcHoses = $Script:PvcHoseSizes | ForEach-Object {
 
 $Script:Nozzels = 
 @(
-@{
-    Scenario = 'nozzle_square_short'
-    Style='nozzle'; Measurement='outer'; Diameter=40; Length=20;
-    Nozzle_Shape='square'; Nozzle_Square_Width=40; Nozzle_Square_Depth=7; Nozzle_Radius=2; Nozzle_Length=0;
-},
-@{
-    Scenario = 'nozzle_square_large'
-    Style='nozzle'; Measurement='outer'; Diameter=80; Length=50;
-    Nozzle_Shape='square'; Nozzle_Square_Width=70; Nozzle_Square_Depth=50; Nozzle_Radius=10; Nozzle_Length=10;
-},
-@{
-    Scenario = 'nozzle_floorSweep'
-    Style='nozzle'; Measurement='outer'; Diameter=70; Length=50;
-    Nozzle_Shape='square'; Nozzle_Square_Width=15; Nozzle_Square_Depth=70; Nozzle_Radius=5; Nozzle_Length=0;
-    Nozzle_xOffset = -8; Wall_Thickness=0.4;
-},
-@{
-    Scenario = 'nozzle_square_wide'
-    Style='nozzle'; Measurement='outer'; Diameter=140; Length=60;
-    Nozzle_Shape='square'; Nozzle_Square_Width=140; Nozzle_Square_Depth=10; Nozzle_Radius=5; Nozzle_Length=20; Nozzle_Tip_Wall_Thickness=0.8; Nozzle_Chamfer_Percentage=80;  Nozzle_Chamfer_Angle=25;
-},
-@{
-    Scenario = 'nozzle_square_long'
-    Style='nozzle'; Measurement='outer'; Diameter=40; Length=60;
-    Nozzle_Shape='square'; Nozzle_Square_Width=40; Nozzle_Square_Depth=20; Nozzle_Radius=5; Nozzle_Length=60; Nozzle_Tip_Wall_Thickness=0.8; Nozzle_Chamfer_Percentage=60;  Nozzle_Chamfer_Angle=25;
-},
-@{
-    Scenario = 'nozzle_square_thin'
-    Style='nozzle'; Measurement='outer'; Diameter=25; Length=30;
-    Nozzle_Shape='square'; Nozzle_Square_Width=8; Nozzle_Square_Depth=20; Nozzle_Radius=3; Nozzle_Length=90; Nozzle_Tip_Wall_Thickness=0.8; Nozzle_Chamfer_Percentage=60;  Nozzle_Chamfer_Angle=25;
-},
-@{
-    Scenario = 'nozzle_round'
-    Style='nozzle'; Measurement='outer'; Diameter=25; Length=20;
-    Nozzle_Shape='circle'; Nozzle_Radius=5; Nozzle_Length=80; Nozzle_Tip_Wall_Thickness=0.8; Nozzle_Chamfer_Percentage=80;  Nozzle_Chamfer_Angle=25;
-};
+    @{
+        Scenario = 'nozzle_round'
+        Style='nozzle'; Measurement='outer'; Diameter=25; Length=20;
+        Nozzle_Shape='circle'; Nozzle_Radius=5; Nozzle_Length=80; Nozzle_Tip_Wall_Thickness=0.8; Nozzle_Chamfer_Percentage=80;  Nozzle_Chamfer_Angle=25;
+    };
 )
 
 $Script:CustomAdapters = 
@@ -166,7 +130,7 @@ $Script:CustomAdapters =
     @{
         Folder = (Join-Path $script:SourceFolder 'generated\hoseadapter\');
         Scenario = "hoseadapter";
-        Enabled = $false;
+        Enabled = $true;
         Transition_Length = 0;
         transitionAngles = (0, 30, 45, 90);
         transitionStyles = ("bend+taper", "taperedbend")
@@ -174,106 +138,19 @@ $Script:CustomAdapters =
         End2 = $Script:VacuumHoses
     },
     @{
-        Folder = (Join-Path $script:SourceFolder 'generated\hosesplitter\');
-        Scenario = "hosesplitter";
-        Enabled = $false;
-        Transition_Length = 0;
-        Transition_End2_Count = 2;
-        transitionAngles = (30, 45);
-        transitionStyles =  ("hull","taper+bend", "bend+taper", "taperedbend")
-        End1 = $Script:VacuumHoses
-        End2 = $Script:VacuumHoses
-    },
-    @{
-        Folder = (Join-Path $script:SourceFolder 'generated\flange\');
-        Scenario = "flange";
-        Enabled = $false;
-        Transition_Length = 0;
-        transitionAngles = (0, 30, 45, 90);
-        transitionStyles = ("bend+taper");
-        End1 = $Script:VacuumHoses | ForEach-Object {
-                 $hose = $_
-                 return @{
-                    Scenario = $hose.Scenario
-                    Style='flange'; Measurement='outer'; Wall_Thickness=2; Length=10; Diameter=$hose.Diameter;
-                    Flange_Thickness=5; Flange_Screw_Count=6; Flange_Screw_Diameter=5; Flange_Width=30; #Flange_Screw_Border=5;
-                 };
-        };
-        End2 = @{
-            Style='hose'; Length=20; Measurement='outer'; Wall_Thickness=2; Diameter=0; 
-        };
-    },
-
-    @{
         Folder = (Join-Path $script:SourceFolder 'generated\pvchoseadapter\');
         Scenario = "pvchoseadapter";
-        Enabled = $false;
+        Enabled = $true;
         Transition_Length = 0;
         transitionAngles = (0);
         transitionStyles = ("bend+taper")
         End1 = $Script:VacuumHoses
         End2 = $Script:PvcHoses
-    },
-    @{
-        Folder = (Join-Path $script:SourceFolder 'generated\barbedhoses\');
-        Scenario = "barbedhoses";
-        Enabled = $false;
-        Transition_Length = 0;
-        transitionAngles = 0; #(0, 30, 45);
-        transitionStyles = "bend+taper";#("bend+taper", "taperedbend")
-        End1 = $Script:PvcHoses
-        End2 = $Script:PvcHoses
-    },
-    @{
-        Folder = (Join-Path $script:SourceFolder 'generated\barbedsplitter\');
-        Scenario = "barbedsplitter";
-        Enabled = $false;
-        Transition_Length = 0;
-        Transition_End2_Count = 2;
-        transitionAngles = (30, 45);
-        transitionStyles = ("hull","taper+bend", "bend+taper", "taperedbend")
-        End1 = $Script:PvcHoses | Where-Object {$_.MeasurementSystem -eq 'metic'}
-        End2 = $Script:PvcHoses | Where-Object {$_.MeasurementSystem -eq 'metic'}
-    },    @{
-        Folder = (Join-Path $script:SourceFolder 'generated\funnel\');
-        Enabled = $false;
-        Scenario = 'funnel';
-        Transition_Length = 0;
-        transitionAngles = 0;
-        transitionStyles = 'bend+taper';
-        End1 = @{
-            Diameter=@(25,30,40,50,60,70,80,90,100,125,150,175,200);
-            Style='flange'; Measurement='inner'; Wall_Thickness=1.5; Length=3;
-            Flange_Thickness=1.5; Flange_Screw_Count=1; Flange_Screw_Diameter=5; Flange_Width=7; Flange_Screw_Position=10; Flange_Screw_Border=5;
-        };
-        End2 = @{
-            Diameter=@(5,10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60,65,70,85,90,95,100)
-            Style='nozzle'; Measurement='inner'; Length=2;  Wall_Thickness=1.5;
-            Nozzle_Shape='circle'; Nozzle_Radius=0; Nozzle_Length=30; Nozzle_Tip_Wall_Thickness=0.6; Nozzle_Chamfer_Percentage=100; Nozzle_Chamfer_Angle=30;
-        };
-    },
-    @{
-        Folder = (Join-Path $script:SourceFolder 'generated\funnel_offcenter\');
-        Enabled = $false;
-        Scenario = 'funnel_offcenter';
-        Transition_Length = 0;
-        transitionAngles = 0;
-        transitionStyles = 'bend+taper';
-        End1 = @{
-            Diameter=@(25,30,40,50,60,70,80,90,100,125,150,175,200);
-            Style='flange'; Measurement='inner'; Wall_Thickness=1.5; Length=3;
-            Flange_Thickness=1.5; Flange_Screw_Count=1; Flange_Screw_Diameter=5; Flange_Width=7; Flange_Screw_Position=10; Flange_Screw_Border=5;
-        };
-        End2 = @{
-            Diameter=@(5,10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60,65,70,85,90,95,100)
-            Style='nozzle'; Measurement='inner'; Length=2;  Wall_Thickness=1.5;
-            Nozzle_Shape='circle'; Nozzle_Radius=0; Nozzle_Length=30; Nozzle_Tip_Wall_Thickness=0.6; Nozzle_Chamfer_Percentage=100;  Nozzle_Chamfer_Angle=30;
-        };
-    },
+    }
     @{
         Folder = (Join-Path $script:SourceFolder 'generated\dyson\');
         Scenario = 'dysonvacuumhose'
-        Enabled = $false;
+        Enabled = $true
         Transition_Length = 0;
         transitionAngles = (0, 30, 45);
         transitionStyles = ("bend+taper", "taperedbend");
@@ -286,7 +163,7 @@ $Script:CustomAdapters =
     @{
         Folder = (Join-Path $script:SourceFolder 'generated\dyson\nozzle');
         Scenario = 'dysonnozzle'
-        Enabled = $false;
+        Enabled = $true
         Transition_Length = 0;
         transitionAngles = (0, 30, 45);
         transitionStyles = ('taperedbend');
@@ -299,7 +176,7 @@ $Script:CustomAdapters =
     @{
         Folder = (Join-Path $script:SourceFolder 'generated\dyson\pvc');
         Scenario = 'dysonpvc'
-        Enabled = $false;
+        Enabled = $true
         Transition_Length = 0;
         transitionAngles = (0);
         transitionStyles = ('taperedbend');
@@ -312,94 +189,13 @@ $Script:CustomAdapters =
     @{
         Folder = (Join-Path $script:SourceFolder 'generated\hose_nozzle');
         Scenario = "hose_nozzle";
-        Enabled = $false;
+        Enabled = $true;
         Transition_Length = 0;
         transitionAngles = (0, 30, 45);
         transitionStyles = ('taperedbend');
         End1 = $Script:VacuumHoses
         End2 = $Script:Nozzels
-    },
-    @{
-        Folder = (Join-Path $script:SourceFolder 'generated\magneticadapter\');
-        Enabled = $false
-        Scenario = 'magneticadapter'
-        Transition_Length = 0;
-        transitionAngles = (0, 30, 45);
-        transitionStyles = ("bend+taper", "taperedbend");
-        Alignment_Depth=2; Alignment_Upper_Width=2; Alignment_Lower_Width=0.5; Alignment_Side_Clearance=0.25; Alignment_Depth_Clearance=0.75;
-        End1 = @{
-            Scenario = 'magneticadapter_50mm'
-            Style='mag'; Measurement='inner'; Diameter=50; Wall_Thickness=2; Length=15;
-            Magnets_Count=8; Magnet_Diameter=10.5; Magnet_Thickness=4; Magnet_Border=3; Magnet_Flange_Thickness=7.5; Ring='recessed'; 
-        };
-        End2 = $Script:VacuumHoses
-    },
-    @{
-        Folder = (Join-Path $script:SourceFolder 'generated\magneticadapter\');
-        Enabled = $false;
-        Scenario = 'magneticadapter'
-        Transition_Length = 0;
-        transitionAngles = (0, 30, 45);
-        transitionStyles = ("bend+taper", "taperedbend");
-        Alignment_Depth=2; Alignment_Upper_Width=2; Alignment_Lower_Width=0.5; Alignment_Side_Clearance=0.25; Alignment_Depth_Clearance=0.75;
-        End1 = @{
-            Scenario = 'magneticadapter_50mm'
-            Style='mag'; Measurement='inner'; Diameter=100; Wall_Thickness=2; Length=15;
-            Magnets_Count=12; Magnet_Diameter=10.5; Magnet_Thickness=4; Magnet_Border=3; Magnet_Flange_Thickness=7.5; Ring='recessed'; 
-        };
-        End2 = $Script:VacuumHoses
-    },
-    @{
-        Folder = (Join-Path $script:SourceFolder 'generated\filament\');
-        Scenario = 'filament'
-        Enabled = $true;
-        Transition_Length = 0;
-        transitionAngles = (0);
-        transitionStyles = ("taperedbend");
-        End1 = $Script:VacuumHoses;
-        End2 = @(
-            @{
-                Scenario = 'flat'
-                Hose_EndCap_Diameter = 10; Hose_EndCap_Thickness = 2;
-                Style='hose'; Measurement='outer'; Diameter=0; Length=10;
-             },
-            @{
-                Scenario = 'flat_breather'
-                Hose_EndCap_Diameter = 10; Hose_EndCap_Thickness = 2;
-                Style='hose'; Measurement='outer'; Diameter=0; Length=10;
-                Breather_Diameter='5'; Breather_Count=1;
-            },
-            @{
-                Scenario = 'nozzle'
-                Style='nozzle'; Measurement='outer'; Diameter=0; Length=10;
-                Nozzle_Shape='square'; Nozzle_Square_Width=15; Nozzle_Square_Depth=70; Nozzle_Radius=5; Nozzle_Length=0;
-                Nozzle_xOffset = -8; Wall_Thickness=0.4;
-            },
-            @{
-                Scenario = 'nozzle_breather'
-                Style='nozzle'; Measurement='outer'; Diameter=0; Length=10;
-                Breather_Diameter='5'; Breather_Count=1;
-                Nozzle_Shape='square'; Nozzle_Square_Width=15; Nozzle_Square_Depth=70; Nozzle_Radius=5; Nozzle_Length=0;
-                Nozzle_xOffset = -8; Wall_Thickness=0.4;
-            });
     }
-    #,@{
-    #     targetFolder = (Join-Path $script:SourceFolder 'generated\dyson\custom');
-    #     scenario = 'dyson3'
-    #     Wall_Thickness = 2;
-    #     Draw_Alignment_Ring='no'; Alignment_Depth=2; Alignment_Upper_Width=2; Alignment_Lower_Width=.05; Alignment_Side_Clearance=0.25;#[decimal]$Alignment_Side_Clearance=0.75,
-    #
-    #     Style='dyson'; Measurement='outer'; Diameter=40; Length=20;
-    #     Taper=2; StopThickness=0; StopLength=0;
-    #     Magnets_Count=0; Magnet_Diameter=0; Magnet_Thickness=0; Magnet_Border=0;
-    #     Flange_Thickness=5; Screw_Count=6; Screw_Diameter=5; Flange_Outer_Diameter=0;
-    #     
-    #     Transition_Style='taperedbend'; Transition_Length=10; Transition_Bend_Radius=10; Transition_Angle=0;
-    #
-    #     Style='hose'; Measurement='outer'; Diameter=50; Length=20;
-    #     Taper=2; StopThickness=0; StopLength=0;
-    #     Magnets_Count=0; Magnet_Diameter=0; Magnet_Thickness=0; Magnet_Border=0; Magnet_Flange_Thickness=0; Ring='recessed'; Nozzle_Chamfer_Percentage=0; Nozzle_Chamfer_Angle=0;
-    #}
 )
 
 function CreateFolderIfNeeded([string] $path) {
@@ -486,11 +282,7 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
     $end1_BarbsCount                  = $_end1.Barbs_Count
     $end1_BarbsThickness              = $_end1.Barbs_Thickness
     $end1_BarbsSymmetrical            = $_end1.Barbs_Symmetrical
-    $end1_BreatherDiameter            = $_end1.Breather_Diameter
-    $end1_BreatherCount               = $_end1.Breather_Count
-    $end1_HoseEndCapDiameter          = $_end1.Hose_EndCap_Diameter
-    $end1_HoseEndCapThickness         = $_end1.Hose_EndCap_Thickness
-                                
+                                    
     $end1_MagnetsCount                = $_end1.Magnets_Count
     $end1_MagnetDiameter              = $_end1.Magnet_Diameter
     $end1_MagnetThickness             = $_end1.Magnet_Thickness
@@ -530,10 +322,6 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
     $end2_BarbsCount                  = $_end2.Barbs_Count
     $end2_BarbsThickness              = $_end2.Barbs_Thickness
     $end2_BarbsSymmetrical            = $_end2.Barbs_Symmetrical
-    $end2_BreatherDiameter            = $_end2.Breather_Diameter
-    $end2_BreatherCount               = $_end2.Breather_Count
-    $end2_HoseEndCapDiameter          = $_end2.Hose_EndCap_Diameter
-    $end2_HoseEndCapThickness         = $_end2.Hose_EndCap_Thickness
 
     $end2_MagnetsCount                = $_end2.Magnets_Count
     $end2_MagnetDiameter              = $_end2.Magnet_Diameter
@@ -596,39 +384,6 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
         Write-Verbose "hoseadapter - transitionAngle:$($adapter_TransitionAngle) TransitionLength:$($adapter_TransitionLength) End1_Length:$($end1_Length) End2_Length:$($end2_Length) end1_Diameter:$end1_Diameter end2_Diameter:$end2_Diameter"
     }
 
-    if($_adapter.Scenario -eq 'hosesplitter' -or $_adapter.Scenario -eq 'barbedsplitter'){
-        if($end2_Diameter -gt $end1_Diameter)
-        {
-            Write-Verbose "Skipping $($_adapter.Scenario) transitionAngle:$($adapter_TransitionAngle) End1_Diameter: $($end1_Diameter) End2_Diameter: $($end2_Diameter)"
-            return
-        }
-        $end1_StopThickness = 0
-        $end1_StopLength = 0
-        $end2_StopThickness = 0
-        $end2_StopLength = 0
-        $adapter_TransitionBendRadius = 5;
-        $filename = "$($_end1.Scenario)_to_$($_end2.Scenario)_transition$($adapter_TransitionLength)mm"
-        $folder = Join-Path $folder "$($adapter_TransitionStyle)\$($_end1.Scenario)"
-        Write-Verbose "$($_adapter.Scenario) - transitionAngle:$($adapter_TransitionAngle) TransitionLength:$($adapter_TransitionLength) End1_Length:$($end1_Length) End2_Length:$($end2_Length) end1_Diameter:$end1_Diameter end2_Diameter:$end2_Diameter"
-    }
-
-    if($_adapter.Scenario -eq 'barbedhoses'){
-        if($adapter_TransitionAngle -eq 0 -and $end2_Diameter -ge $end1_Diameter)
-        {
-            Write-Verbose "Skipping barbedhoses transitionAngle:$($adapter_TransitionAngle) End1_Diameter: $($end1_Diameter) End2_Diameter: $($end2_Diameter)"
-            return
-        }
-        $modelDescription = (($adapter_TransitionAngle -eq 0) | IIf -Right 'straight' -Wrong $modelDescription)
-        $end1_StopThickness = (($end1_Diameter -gt $end2_Diameter) | IIF -Right ($end1_WallThickness*1.5) -Wrong 0)
-        $end1_StopLength = (($end1_Diameter -gt $end2_Diameter) | IIF -Right ($end1_WallThickness*1.5) -Wrong 0)
-        $end2_StopThickness = (($end1_Diameter -gt $end2_Diameter) | IIF -Right 0 -Wrong ($end2_WallThickness*1.5))
-        $end2_StopLength = (($end1_Diameter -gt $end2_Diameter) | IIF -Right 0 -Wrong ($end2_WallThickness*1.5))
-        $filename = "$($_end1.Scenario)_to_$($_end2.Scenario)_transition$($adapter_TransitionLength)mm"
-
-        $folder = Join-Path $_adapter.Folder "$modelDescription\$($_end1.Scenario)"
-        Write-Verbose "barbedhoses - transitionAngle:$($adapter_TransitionAngle) TransitionLength:$($adapter_TransitionLength) End1_Length:$($end1_Length) End2_Length:$($end2_Length) end1_Diameter:$end1_Diameter end2_Diameter:$end2_Diameter"
-    }
-
     if($_adapter.Scenario -eq 'pvchoseadapter'){
         $end1_StopThickness = 4
         $end1_StopLength = 8
@@ -656,58 +411,7 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
         Write-Verbose "hose_nozzle - transitionAngle:$($adapter_TransitionAngle) TransitionLength:$($adapter_TransitionLength) End1_Length:$($end1_Length) End2_Length:$($end2_Length) end1_Diameter:$end1_Diameter end2_Diameter:$end2_Diameter End2_Nozzle_Length$($end2_NozzleLength)"
         $folder = Join-Path $folder "$($_end1.Scenario)"
         write-Verbose "hose_nozle $folder"
-    }
-
-    if($_adapter.Scenario -eq 'funnel' -or $_adapter.Scenario -eq 'funnel_offcenter'){
-        Write-Verbose 'setting Funnel settings'
-        if($end2_Diameter -ge $end1_Diameter/2 -or $end2_Diameter -le $end1_Diameter/8)
-        {
-            Write-Verbose "Skipping Funnel End1_Diameter: $($end1_Diameter) End2_Diameter: $($end2_Diameter)"
-            return
-        }
-
-        #Give the cone a 45deg
-        $adapter_TransitionLength = [Math]::Min([Math]::Max([Math]::Ceiling([Math]::Abs($end1_Diameter - $end2_Diameter)),5),100)
-        $end1_FlangeOuterDiameter = $end1_Diameter + 20
-        $end2_NozzleRadius = $end2_Diameter/2
-        $end2_NozzleLength = [Math]::Min([Math]::Min($end1_Diameter, $adapter_TransitionLength + $end2_Diameter), 180 - $adapter_TransitionLength)
-
-        if($scenario -eq 'funnel_offcenter'){
-            $adapter_TransitionXOffset = ($end1_Diameter - $end2_Diameter)/-2;
-        }
-
-        $modelDescription = "$($end1_Diameter)mm_to_$($end2_Diameter)mm"
-        $folder = Join-Path $folder "$($end1_Diameter)mm"
-    }   
-    
-    if($_adapter.Scenario -eq 'filament'){
-        Write-Verbose 'setting filament settings'
-      
-        $end2_Diameter = $end1_Diameter;
-        #Give the cone a 45deg
-        $adapter_TransitionLength = [Math]::Min([Math]::Max([Math]::Ceiling([Math]::Abs($end1_Diameter - $end2_Diameter)),5),100)
-        $end1_FlangeOuterDiameter = $end1_Diameter + 20
-        $end2_NozzleRadius = $end2_Diameter/2
-        $end2_NozzleLength = [Math]::Min([Math]::Min($end1_Diameter, $adapter_TransitionLength + $end2_Diameter), 180 - $adapter_TransitionLength)
-
-        if($scenario -eq 'funnel_offcenter'){
-            $adapter_TransitionXOffset = ($end1_Diameter - $end2_Diameter)/-2;
-        }
-
-        $modelDescription = "$($end1_Diameter)mm_to_$($end2_Diameter)mm"
-        $folder = Join-Path $folder "$($end1_Diameter)mm"
-    }   
-    
-     
-
-    if($_adapter.Scenario -eq 'magneticadapter'){
-        $modelDescription = (($adapter_TransitionAngle -eq 0) | IIf -Right 'straight' -Wrong $modelDescription)
-        Write-Verbose "magneticadapter - transitionAngle:$($adapter_TransitionAngle) TransitionLength:$($adapter_TransitionLength) End1_Length:$($end1_Length) End2_Length:$($end2_Length) end1_Diameter:$end1_Diameter end2_Diameter:$end2_Diameter"
-        Write-Verbose "magneticadapter - Magent_Count:$($end1_MagnetsCount) Magent_Diameter:$($end1_MagnetDiameter) Magnet_Thickness:$($end1_MagnetThickness) End2Scenario:$($_end2.Scenario)"
-        $filename = "$($end1_Diameter)mm_$($end1_MagnetsCount)Magnets_$($end1_MagnetDiameter)x$($end1_MagnetThickness)mm_to_$($_end2.Scenario)_transition$($adapter_TransitionLength)mm"
-        $folder = Join-Path $_adapter.Folder "$($end1_Diameter)mm\$($modelDescription)"
-        write-Verbose "magneticadapter $folder"
-    }
+    } 
 
     if($_adapter.Scenario -eq 'dysonvacuumhose' -or $_adapter.Scenario -eq 'dysonnozzle' -or $_adapter.Scenario -eq 'dysonpvc'){
         $modelDescription = (($adapter_TransitionAngle -eq 0) | IIf -Right 'straight' -Wrong $modelDescription)
@@ -732,17 +436,6 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
         write-Verbose "dyson $folder"
     }
 
-
-    if($_adapter.Scenario -eq 'flange'){
-        $modelDescription = (($adapter_TransitionAngle -eq 0) | IIf -Right 'straight' -Wrong "$($adapter_TransitionAngle)deg")
-        $end2_Diameter = $end1_Diameter
-        $adapter_TransitionLength = 0
-        $folder = Join-Path $folder "$($modelDescription)"
-        #$FlangeOuter = IIF($End1.Flange_Outer_Diameter -eq 0, $($End1_Diameter+30),$End1.Flange_Outer_Diameter)
-        #$filename = "$($End1_Style)_$($End2_Style)_$($scenario)"
-        write-Verbose "flange $folder"
-    }
-
     $filename = ($filename | AppendIf -value $modelDescription)
 
     CreateFolderIfNeeded $folder
@@ -758,7 +451,7 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
 
     #invoke openscad
     $cmdArgs = ""
-    #$cmdArgs = "-o `"$($target)`""
+    $cmdArgs = "-o `"$($target)`""
 
     $cmdArgs = AddArgs $cmdArgs $adapter_DrawAlignmentRing        " -D `"Draw_Alignment_Ring=`"`"$($adapter_DrawAlignmentRing)`"`"`""
     $cmdArgs = AddArgs $cmdArgs $adapter_AlignmentDepth           " -D `"Alignment_Depth=$($adapter_AlignmentDepth)`""
@@ -780,11 +473,6 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
     $cmdArgs = AddArgs $cmdArgs $end1_BarbsCount                  " -D `"End1_Barbs_Count=$($end1_BarbsCount)`""
     $cmdArgs = AddArgs $cmdArgs $end1_BarbsThickness              " -D `"End1_Barbs_Thickness=$($end1_BarbsThickness)`""
     $cmdArgs = AddArgs $cmdArgs $end1_BarbsSymmetrical            " -D `"End1_Barbs_Symmetrical=$($end1_BarbsSymmetrical)`""
-
-    $cmdArgs = AddArgs $cmdArgs $end1_BreatherDiameter            " -D `"End1_BreatherDiameter=$($end1_BreatherDiameter)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_BreatherCount               " -D `"End1_BreatherCount=$($end1_BreatherCount)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_HoseEndCapDiameter          " -D `"End1_Hose_EndCap_Diameter=$($end1_HoseEndCapDiameter)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_HoseEndCapThickness         " -D `"End1_Hose_EndCap_Thickness=$($end1_HoseEndCapThickness)`""
 
     $cmdArgs = AddArgs $cmdArgs $end1_MagnetsCount                " -D `"End1_Magnets_Count=$($end1_MagnetsCount)`""
     $cmdArgs = AddArgs $cmdArgs $end1_MagnetDiameter              " -D `"End1_Magnet_Diameter=$($end1_MagnetDiameter)`""
@@ -827,11 +515,6 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
     $cmdArgs = AddArgs $cmdArgs $end2_BarbsCount                  " -D `"End2_Barbs_Count=$($end2_BarbsCount)`""
     $cmdArgs = AddArgs $cmdArgs $end2_BarbsThickness              " -D `"End2_Barbs_Thickness=$($end2_BarbsThickness)`""
     $cmdArgs = AddArgs $cmdArgs $end2_BarbsSymmetrical            " -D `"End2_Barbs_Symmetrical=$($end2_BarbsSymmetrical)`""
-
-    $cmdArgs = AddArgs $cmdArgs $end2_BreatherDiameter            " -D `"End2_BreatherDiameter=$($end2_BreatherDiameter)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_BreatherCount               " -D `"End2_BreatherCount=$($end2_BreatherCount)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_HoseEndCapDiameter          " -D `"End2_Hose_EndCap_Diameter=$($end2_HoseEndCapDiameter)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_HoseEndCapThickness         " -D `"End2_Hose_EndCap_Thickness=$($end2_HoseEndCapThickness)`""
 
     $cmdArgs = AddArgs $cmdArgs $end2_MagnetsCount                " -D `"End2_Magnets_Count=$($end2_MagnetsCount)`""
     $cmdArgs = AddArgs $cmdArgs $end2_MagnetDiameter              " -D `"End2_Magnet_Diameter=$($end2_MagnetDiameter)`""

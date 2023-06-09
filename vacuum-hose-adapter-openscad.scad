@@ -16,6 +16,10 @@ End1_Diameter = 50;  //0.1
 End1_Length= 15;  //0.1
 //Taper of the start connector, use negative to taper other direction.
 End1_Taper = 0;  //0.1
+//Diamater of breather hole.
+End1_BreatherDiameter = 0;  //0.1
+//Number of breather holes.
+End1_BreatherCount = 0;  //1
 
 /* [Connector 1 - Hose connector] */
 //Thickness of hose stop
@@ -106,6 +110,10 @@ End2_Diameter = 40;  //0.1
 End2_Length= 40;  //1
 //Taper of the start connector, use negative to taper other direction.
 End2_Taper = 0;  //0.1
+//Diamater of breather hole.
+End2_BreatherDiameter = 0;  //0.1
+//Number of breather holes.
+End2_BreatherCount = 0;  //1
 
 /*[Connector 2 - Hose connector] */
 //Thickness of hose stop
@@ -192,7 +200,8 @@ HoseAdapter(
   connector1StopSymmetrical = End1_Stop_Symmetrical,
   connector1BarbsCount = End1_Barbs_Count,
   connector1BarbsThickness = End1_Barbs_Thickness,
-  connector1BarbsSymmetrical = End1_Barbs_Symmetrical,
+  connector1BreatherDiameter = End1_BreatherDiameter,
+  connector1BreatherCount = End1_BreatherCount,
 
   connector1MagnetCount = End1_Magnets_Count,
   connector1MagnetDiameter = End1_Magnet_Diameter,
@@ -238,7 +247,9 @@ HoseAdapter(
   connector2BarbsCount = End2_Barbs_Count,
   connector2BarbsThickness = End2_Barbs_Thickness,
   connector2BarbsSymmetrical = End2_Barbs_Symmetrical,
-
+  connector2BreatherDiameter = End2_BreatherDiameter,
+  connector2BreatherCount = End2_BreatherCount,
+  
   connector2MagnetCount = End2_Magnets_Count,
   connector2MagnetDiameter = End2_Magnet_Diameter,
   connector2MagnetThickness = End2_Magnet_Thickness,

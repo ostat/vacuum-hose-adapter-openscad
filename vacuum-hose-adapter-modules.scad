@@ -859,6 +859,7 @@ module HoseConnector(
     // Create the hose stop
     if(stopWidth > 0)
     {
+        color("Chocolate")
           Stopper(
             diameter = innerEndDiameter,
             outer = connectorMeasurement == "outer",
@@ -868,6 +869,34 @@ module HoseConnector(
             wallThickness = wallThickness,
             stopThickness = stopWidth,
             zPosition = length);
+    }
+  }
+}
+
+module Breather(
+    diameter,
+    outer,
+    breatherDiameter,
+    breatherCount = 1,
+    wallThickness,
+    zPosition = 0
+)
+{
+  translate ([0, 0, zPosition]) 
+  difference ()
+  {
+    StraightPipe (
+      diameter = diameter,
+      length = breatherDiameter,
+      wallThickness = wallThickness,
+      zPosition = 0);
+  
+    //breather hole cut out
+    for (i = [0: breatherCount-1]) {
+        // The rotation should try to avoid the screw being under the bent hose.
+        rotate ([fudgeFactor, 90, 180/breatherCount * (i * 2 - 1 + breatherCount)])
+        translate ([-breatherDiameter/2, 0, 0])
+        cylinder (d = breatherDiameter, h = diameter/2 + breatherDiameter + fudgeFactor*4);
     }
   }
 }
@@ -884,7 +913,6 @@ module Stopper(
     zPosition = 0
 )
 {
-  
   intersection()
   {
     flat = totalLength * (1 - taper1 - taper2);
@@ -957,6 +985,9 @@ module HoseAdapter(
     connector1BarbsCount = 0,
     connector1BarbsThickness = 0,
     connector1BarbsSymmetrical = 0,
+    connector1BreatherDiameter = 0,
+    connector1BreatherCount = 0,
+    
     connector1MagnetCount = 0,
     connector1MagnetDiameter = 0,
     connector1MagnetThickness = 0,
@@ -999,7 +1030,9 @@ module HoseAdapter(
     connector2BarbsCount = 0,
     connector2BarbsThickness = 0,
     connector2BarbsSymmetrical = 0,
-
+    connector2BreatherDiameter = 0,
+    connector2BreatherCount = 0,
+  
     connector2MagnetCount = 0,
     connector2MagnetDiameter = 0,
     connector2MagnetThickness = 0,
@@ -1068,8 +1101,7 @@ module HoseAdapter(
             magnetBorder = connector2MagnetBorder);
     }
 
-    color("LightPink")
-    union(){
+     union(){
       //Create the start connector
       if(connector1Length > 0)
       {
@@ -1079,6 +1111,7 @@ module HoseAdapter(
           connector1StopThickness = 0;
 
           //Create the flange on end 1
+          color("LightPink")
           MagneticConnector(
               innerStartDiameter = end1InnerStartDiameter,
               innerEndDiameter = end1InnerEndDiameter,
@@ -1103,6 +1136,7 @@ module HoseAdapter(
           connector1StopThickness = 0;
 
           //Create the flange on end 1
+          color("LightPink")
           FlangeConnector(
             innerStartDiameter = end1InnerStartDiameter,
             innerEndDiameter = end1InnerEndDiameter,
@@ -1118,6 +1152,22 @@ module HoseAdapter(
 
         if(connector1Style == "hose")
         {
+          // Create the hose stop
+          if(connector1StopThickness > 0) // should  be 0
+          {
+            color("HotPink")
+            Stopper(
+              diameter = end1InnerEndDiameter,
+              outer = connector1Measurement == "outer",
+              totalLength = connector1StopLength,
+              taper1 = connector1StopSymmetrical == 0 ? 0.5 : 0.4,
+              taper2 = connector1StopSymmetrical == 0? 0 : 0.4,
+              wallThickness = connector1WallThickness,
+              stopThickness = connector1StopThickness,
+              zPosition = connector1Length);
+          }
+          
+          color("LightPink")
           HoseConnector(
             innerStartDiameter = end1InnerStartDiameter,
             innerEndDiameter = end1InnerEndDiameter,
@@ -1125,7 +1175,7 @@ module HoseAdapter(
             length = connector1Length,
             wallThickness = connector1WallThickness,
             stopLength = connector1StopLength,
-            stopWidth = connector1StopThickness,
+            stopWidth = 0,//connector1StopThickness,
             stopSymmetrical = connector1StopSymmetrical,
             barbsCount  = connector1BarbsCount,
             barbsThickness = connector1BarbsThickness,
@@ -1137,17 +1187,29 @@ module HoseAdapter(
 
         if(connector1Style == "dyson")
         {
+          color("LightPink")
           DysonConnector(
             innerEndDiameter = end1InnerEndDiameter,
             length = connector1Length,
             wallThickness = connector1WallThickness,
             IncludeOrientationClip = true);
         }
+        
+        if(connector1BreatherDiameter > 0)
+        {
+          color("DarkMagenta")
+          Breather(
+            diameter = end1InnerEndDiameter,
+            breatherDiameter = connector1BreatherDiameter,
+            breatherCount = connector1BreatherCount,
+            wallThickness = connector1WallThickness,
+            zPosition = connector1Length + connector1StopThickness);
+        }
       }
     }
 
     //Total length of connector 1
-    endConnector1 = connector1Length + connector1StopLength;
+    endConnector1 = connector1Length + connector1StopLength + connector1BreatherDiameter;
 
     // transitionLength is not wanted for sweep
     _transitionAngle = (transitionStyle == "flat") ? 0 : transitionAngle;
@@ -1340,74 +1402,107 @@ module HoseAdapter(
     //The max above is a bug.
 
 
-    color("SkyBlue")
     for (rotation = [0:transitionEnd2Count-1])
     {
       rotate([0, 0, rotation*(360/transitionEnd2Count)])
       translate(preRotation)
       rotate([0, -_transitionAngle, 0])
       translate(postRotation)
-      union()
-      {
-        if(connector2Style == "mag")
+      union(){
+        if(connector2BreatherDiameter > 0)
         {
-          translate([0, 0, connector2Length+connector2StopLength])
-          mirror ([0,0,1])
-          MagneticConnector(
-            //Start and End are reversed as the flange is mirrored.
-            innerStartDiameter = end2InnerEndDiameter,
-            innerEndDiameter = end2InnerStartDiameter,
-            length = connector2Length,
+          color("DarkBlue")
+          Breather(
+            diameter = end2InnerEndDiameter,
+            breatherDiameter = connector2BreatherDiameter,
+            breatherCount = connector2BreatherCount,
             wallThickness = connector2WallThickness,
-            magnetDiameter = connector2MagnetDiameter,
-            magnetThickness = connector2MagnetThickness,
-            magnetBorder = connector2MagnetBorder,
-            flangeThickness = connector2MagnetFlangeThickness,
-            magnetCount = connector2MagnetCount,
-            alignmentRing = connector2Ring,
-            alignmentDepth = alignmentDepth,
-            alignmentUpperWidth = alignmentUpperWidth,
-            alignmentLowerWidth = alignmentLowerWidth,
-            alignmentDepthClearance = alignmentDepthClearance);
+            zPosition = 0);
         }
-
-        if(connector2Style == "hose")
-        {
+        
+        translate([0, 0, connector2BreatherDiameter])
+        union()
+        {        
+          if(connector2Style == "mag")
+          {
+            color("SkyBlue")
             translate([0, 0, connector2Length+connector2StopLength])
             mirror ([0,0,1])
-            HoseConnector(
+            MagneticConnector(
+              //Start and End are reversed as the flange is mirrored.
               innerStartDiameter = end2InnerEndDiameter,
               innerEndDiameter = end2InnerStartDiameter,
-              connectorMeasurement = connector2Measurement,
               length = connector2Length,
               wallThickness = connector2WallThickness,
-              stopLength = connector2StopLength,
-              stopWidth = connector2StopThickness,
-              stopSymmetrical = connector2StopSymmetrical,
-              barbsCount  = connector2BarbsCount,
-              barbsThickness = connector2BarbsThickness,
-              barbsSymmetrical = connector2BarbsSymmetrical,
-              endCapDiameter = connector2EndCapDiameter,
-              endCapThickness = connector2EndCapThickness
-          );
-        }
+              magnetDiameter = connector2MagnetDiameter,
+              magnetThickness = connector2MagnetThickness,
+              magnetBorder = connector2MagnetBorder,
+              flangeThickness = connector2MagnetFlangeThickness,
+              magnetCount = connector2MagnetCount,
+              alignmentRing = connector2Ring,
+              alignmentDepth = alignmentDepth,
+              alignmentUpperWidth = alignmentUpperWidth,
+              alignmentLowerWidth = alignmentLowerWidth,
+              alignmentDepthClearance = alignmentDepthClearance);
+          }
 
-        if(connector2Style == "nozzle")
-        {
-          Nozzle(
-            innerStartDiameter = end2InnerStartDiameter,
-            length = connector2Length,
-            wallThickness = connector2WallThickness,
-            nozzleShape = connector2NozzleShape,
-            nozzleSquareWidth = connector2NozzleSquareWidth,
-            nozzleSquareDepth = connector2NozzleSquareDepth,
-            nozzleTipWallThickness = connector2NozzleTipWallThickness,
-            nozzleRadius = connector2NozzleRadius,
-            nozzleLength = connector2NozzleLength,
-            nozzlexOffset = connector2NozzlexOffset,
-            nozzleyOffset = connector2NozzleyOffset,
-            nozzleChamferPercentage = connector2NozzleChamferPercentage,
-            nozzleChamferAngle = connector2NozzleChamferAngle);
+          if(connector2Style == "hose")
+          {
+            translate([0, 0, connector2Length+connector2StopLength])
+            mirror ([0,0,1])
+            union(){
+              // Create the hose stop
+              if(connector2StopThickness > 0)
+              {
+                color("RoyalBlue")
+                Stopper(
+                  diameter = end2InnerEndDiameter,
+                  outer = connector2Measurement == "outer",
+                  totalLength = connector2StopLength,
+                  taper1 = connector2StopSymmetrical == 0 ? 0.5 : 0.4,
+                  taper2 = connector2StopSymmetrical == 0? 0 : 0.4,
+                  wallThickness = connector2WallThickness,
+                  stopThickness = connector2StopThickness,
+                  zPosition = connector2Length);
+              }
+              
+                color("SkyBlue")
+                HoseConnector(
+                  innerStartDiameter = end2InnerEndDiameter,
+                  innerEndDiameter = end2InnerStartDiameter,
+                  connectorMeasurement = connector2Measurement,
+                  length = connector2Length,
+                  wallThickness = connector2WallThickness,
+                  stopLength = connector2StopLength,
+                  stopWidth = 0, //connector2StopThickness,
+                  stopSymmetrical = connector2StopSymmetrical,
+                  barbsCount  = connector2BarbsCount,
+                  barbsThickness = connector2BarbsThickness,
+                  barbsSymmetrical = connector2BarbsSymmetrical,
+                  endCapDiameter = connector2EndCapDiameter,
+                  endCapThickness = connector2EndCapThickness
+              );
+            }
+          }
+
+          if(connector2Style == "nozzle")
+          {
+            color("SkyBlue")
+            Nozzle(
+              innerStartDiameter = end2InnerStartDiameter,
+              length = connector2Length,
+              wallThickness = connector2WallThickness,
+              nozzleShape = connector2NozzleShape,
+              nozzleSquareWidth = connector2NozzleSquareWidth,
+              nozzleSquareDepth = connector2NozzleSquareDepth,
+              nozzleTipWallThickness = connector2NozzleTipWallThickness,
+              nozzleRadius = connector2NozzleRadius,
+              nozzleLength = connector2NozzleLength,
+              nozzlexOffset = connector2NozzlexOffset,
+              nozzleyOffset = connector2NozzleyOffset,
+              nozzleChamferPercentage = connector2NozzleChamferPercentage,
+              nozzleChamferAngle = connector2NozzleChamferAngle);
+          }
         }
       }
     }
