@@ -112,6 +112,17 @@ $SourceFolders = @(
         SaturationMax = 60
     },
     @{
+        Path = (Join-Path $script:ScriptFolder '\generated\vax\');
+        connectorType = 'vax' 
+        SetTitle = 'Dyson V6 [SetName]'
+        ConnectorTitle = 'Dyson V6'
+        Options = @();
+        HueMin = 310   #min value is 0
+        HueMax = 355 #max value is 360
+        SaturationMin = 60
+        SaturationMax = 60
+    },
+    @{
         Path = (Join-Path $script:ScriptFolder '\generated\funnel\');
         connectorType = 'Funnels'
         SetTitle = 'Funnels [SetName]'

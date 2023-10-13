@@ -1,5 +1,5 @@
-// Hose connector
-// version 2023-02-25
+// Hose connector modules
+// version 2023-07-24
 
 include <vacuum-hose-adapter-modules.scad>
 
@@ -66,21 +66,29 @@ End1_Ring = "no"; //[no: No alignment ring, protruding: protruding ring, recesse
 
 /* [Transition] */
 // tapered for hose connections, flat for attaching to a device
-Transition_Style = "bend+taper"; //[flat, taper+bend: Taper then bend, bend+taper: Bend then taper, taperedbend: Tapered bend, hull: For multiple end count]
+Transition_Style = "bend+taper"; //[flat, taper+bend: Taper then bend, bend+taper: Bend then taper, taperedbend: Tapered bend, hull: Hull for multiple end count]
 //Length of the transition between the two ends
 Transition_Length = 10;  //1
 // Radius of transition bend (mm)
 Transition_Bend_Radius = 0;  //1
 //Angle of bend through the transition section.
 Transition_Angle = 0;  //1
-// Dupliacte the second connector. Adjust angle and bend radius to make it work.
-Transition_End2_Count = 1;  //[1, 2, 3, 4, 5, 6]
 // X offset for the connector, not supported on taperedbend.
 Transition_xOffset = 0; // 0.1
 // Y offset for the connector, not supported on taperedbend.
 Transition_yOffset = 0; // 0.1
+/* [Transition Multiple connector settings] */
+// Dupliacte the second connector. Adjust angle and bend radius to make it work.
+Transition_End2_Count = 1;  //[1, 2, 3, 4, 5, 6]
+// MulitConnector, connector in hull length.
 Transition_HullLength = 0; // 0.1
+// MulitConnector, connector in hull offset.
 Transition_HullyOffset = 0; // 0.1
+// MulitConnector, add center connector.
+Transition_HullCenter = false;
+// MulitConnector, center connector height. default is 2*lengthInHull
+Transition_HullCenterHeight = 0;
+  
 
 /* [Transition Support For Angled Pipes] */
 // Include a flate section on the transition to assist with printing
@@ -97,7 +105,7 @@ Transition_Base_Angle=0;
 /* [Connector 2] */
 //Wall thickness
 End2_Wall_Thickness = 2; //0.01
-End2_Style="nozzle"; // [mag: Magnetic Flange, hose: Hose connector, nozzle: Nozzle attachement]
+End2_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement]
 // Is the measurement the adapter's outside or inside diameter?
 End2_Measurement = "outer"; //[inner, outer]
 // End 2 diameter of the adapter (mm)
@@ -124,6 +132,20 @@ End2_Barbs_Symmetrical = 0; //[0,1]
 End2_Hose_EndCap_Diameter = 0;  //0.1
 //Thickness of endcap.
 End2_Hose_EndCap_Thickness = 0;  //0.1
+
+/* [Connector 2 - Flange] */
+//Width of Flange added to the connector diamater
+End2_Flange_Width = 20;
+//Thickness of the flange
+End2_Flange_Thickness = 5;
+//Position of the screws added to the connector diamater, 0 = middle of flange
+End2_Flange_Screw_Position= 0;
+//Minium amount of the material around the magnets (mm), 0 = End1_Flange_Width / 4
+End2_Flange_Screw_Border = 5;  //0.1
+//Number of Screw holes flange
+End2_Flange_Screw_Count = 4;
+//The diameter of the screws (mm)
+End2_Flange_Screw_Diameter = 5;  //0.1
 
 /* [Connector 2 - Magnetic Flange] */
 //Number of magnets in the flange
@@ -166,11 +188,14 @@ Alignment_Side_Clearance = 0.25;  //0.01
 //Alignment Depth Clearance, to prevent hitting bottom (mm).
 Alignment_Depth_Clearance = .75;  //0.01
 
+/* [other] */
+//Slice model inhalf to be able to easy see inside
+Enable_Debug_Slice = false;
+
 /* [Hidden] */
 
 //Detail
 $fn=120;
-
 HoseAdapter(
   drawAlignmentRing = Draw_Alignment_Ring,
   alignmentDepth = Alignment_Depth,
@@ -223,7 +248,9 @@ HoseAdapter(
   transitionEnd2Count = Transition_End2_Count,
   transitionHullLength = Transition_HullLength,
   transitionHullyOffset = Transition_HullyOffset,
-
+  transitionHullCenter = Transition_HullCenter,
+  transitionHullCenterHeight= Transition_HullCenterHeight,
+  
   connector2Style = End2_Style,
   connector2WallThickness  = End2_Wall_Thickness,
   connector2Measurement = End2_Measurement,
@@ -246,6 +273,13 @@ HoseAdapter(
   connector2MagnetFlangeThickness = End2_Magnet_Flange_Thickness,
   connector2Ring = End2_Ring,
 
+  connector2FlangeWidth = End2_Flange_Width,
+  connector2FlangeThickness = End2_Flange_Thickness,
+  connector2FlangeScrewPosition = End2_Flange_Screw_Position,
+  connector2FlangeScrewBorder = End2_Flange_Screw_Border,
+  connector2FlangeScrewCount = End2_Flange_Screw_Count,
+  connector2FlangeScrewDiameter = End2_Flange_Screw_Diameter,
+  
   connector2NozzleShape = End2_Nozzle_Shape,
   connector2NozzleSquareWidth = End2_Nozzle_Square_Width,
   connector2NozzleSquareDepth = End2_Nozzle_Square_Depth,
@@ -255,5 +289,6 @@ HoseAdapter(
   connector2NozzlexOffset = End2_Nozzle_xOffset,
   connector2NozzleyOffset = End2_Nozzle_yOffset,
   connector2NozzleChamferPercentage = End2_Nozzle_Chamfer_Percentage,
-  connector2NozzleChamferAngle = End2_Nozzle_Chamfer_Angle
+  connector2NozzleChamferAngle = End2_Nozzle_Chamfer_Angle,
+  sliceDebug = Enable_Debug_Slice
 );
