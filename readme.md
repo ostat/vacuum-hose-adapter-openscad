@@ -13,7 +13,7 @@ any air leaks that might reduce the suction power of your vacuum.
 
 ## Connection types
 
-Three different types of connections are possible to maximize the number of
+Four different types of connections are possible to maximize the number of
 applications possible.
 
 ### Hose connection
@@ -53,6 +53,11 @@ Ideally, the flange should be created with a small recess to accept the ring.
 The most optimal solution would be to print the ring in flexible material (TPU).
 
 Although, this does not appear to be required to have a good suction.
+
+#### CTS Cen-Tec Quick-connect
+An connector 2 adapter for CTS Cen-Tec quick-connect hoses (see https://www.centecsystems.com/quick-click-dust-collection/). 
+The stubby Cen-Tec adapter comes from an existing STL model (https://www.thingiverse.com/thing:4739202), but had to be remixed in Meshmixer to resolve a non-manifold fault in the STL - the resultant new STL is quite large and has been ZIP'd for Github.
+A better solution would be to design the Cen-Tec adapter from scratch in OpenSCAD but this solution works OK for now.
 
 #### Main settings
 **Changing any of the settings** (diameter, magnet size, alignment ring...)
