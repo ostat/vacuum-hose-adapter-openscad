@@ -1409,6 +1409,12 @@ module HoseAdapter(
             nozzleChamferPercentage = connector2NozzleChamferPercentage,
             nozzleChamferAngle = connector2NozzleChamferAngle);
         }
+
+        if(connector2Style == "Cen-Tec")
+        {
+          echo("Cen-tec end connector 2")
+          import("Cen-Tec_Systems_Stubby_1.5.stl");
+        }
       }
     }
   }
