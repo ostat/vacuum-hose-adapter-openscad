@@ -66,7 +66,7 @@ End1_Ring = "no"; //[no: No alignment ring, protruding: protruding ring, recesse
 
 /* [Transition] */
 // tapered for hose connections, flat for attaching to a device
-Transition_Style = "bend+taper"; //[flat, taper+bend: Taper then bend, bend+taper: Bend then taper, taperedbend: Tapered bend, hull: Hull for multiple end count]
+Transition_Style = "bend+taper"; //[flat, taper+bend: Taper then bend, bend+taper: Bend then taper, organicbend: Tapered bend, hull: Hull for multiple end count]
 //Length of the transition between the two ends
 Transition_Length = 10;  //1
 // Radius of transition bend (mm)
@@ -193,9 +193,9 @@ Alignment_Depth_Clearance = .75;  //0.01
 Enable_Debug_Slice = false;
 
 /* [Hidden] */
-
 //Detail
 $fn=120;
+
 HoseAdapter(
   drawAlignmentRing = Draw_Alignment_Ring,
   alignmentDepth = Alignment_Depth,
@@ -290,5 +290,6 @@ HoseAdapter(
   connector2NozzleyOffset = End2_Nozzle_yOffset,
   connector2NozzleChamferPercentage = End2_Nozzle_Chamfer_Percentage,
   connector2NozzleChamferAngle = End2_Nozzle_Chamfer_Angle,
-  sliceDebug = Enable_Debug_Slice
+  sliceDebug = Enable_Debug_Slice,
+  showCaliper = Enable_Debug_Slice
 );
