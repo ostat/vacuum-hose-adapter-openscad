@@ -7928,7 +7928,7 @@ module Text(text="»«",size=5,h,cx,cy,cz,center=0,spacing=1,fn,fs=fs,radius=0,r
 
 text=str(text);
 lenT=len(text);
-textmetrics=version()[0]<2022?false:textmetrics;
+textmetrics=version()[0]<2022?false:false;
 
 Echo(str("Sizing inactive trueSize=",trueSizeSW),color="warning",condition=trueSize!="size"&&( (!textmetrics&&trueSize!="body")||(is_num(useVersion)&&useVersion<22.208) ) );
 
