@@ -1092,7 +1092,7 @@ module Dw735Connector(
   slotLength = 16;  
   slotOffset1 = 7.5;  
   slotOffset2 = 9;  
-  fixedPinLength = 4.5;
+  fixedPinLength = 4.1;
   
   _connectorCount = max(1,connectorCount);
   
@@ -1113,7 +1113,7 @@ module Dw735Connector(
         StraightPipe (
           diameter = innerEndDiameter+wallThickness*2,
           length = length,
-          wallThickness = fixedPinLength);
+          wallThickness = fixedPinLength - 1.5);
         
         for (rotation = [0:_connectorCount-1])
         {
