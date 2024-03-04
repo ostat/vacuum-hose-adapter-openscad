@@ -1304,7 +1304,6 @@ module Dw735Connector(
   clearanceHeight = 4;
   clearanceDiameter = innerEndDiameter+9.2;
   
-  
   _connectorCount = max(1,connectorCount);
   
   slotAngle = (slotLength-slotDiameter)/(2*PI*(innerEndDiameter/2+wallThickness))*360;
@@ -1324,7 +1323,7 @@ module Dw735Connector(
         StraightPipe (
           diameter = innerEndDiameter+wallThickness*2,
           length = length,
-          wallThickness = fixedPinLength);
+          wallThickness = fixedPinLength - 1.5);
         
         for (rotation = [0:_connectorCount-1])
         {
