@@ -89,6 +89,8 @@ End1_Magnet_Border = 2;  //0.1
 End1_Magnet_Flange_Thickness = 6;  //0.1
 // Include a flange alignment ring
 End1_Ring = "no"; //[no: No alignment ring, protruding: protruding ring, recessed: Recessed ring]
+// Magnetic ring Twist lock bolt size (draft setting)
+End1_Magnet_Twist_Lock_Size = 0;  //[0:none,3:M3,4:M4,5:M5]
 
 /* [Transition] */
 // tapered for hose connections, flat for attaching to a device
@@ -194,6 +196,9 @@ End2_Magnet_Border = 2;  //0.1
 End2_Magnet_Flange_Thickness = 10;  //0.1
 // Include a flange alignment ring
 End2_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recessed: Recessed ring]
+// Magnetic ring twist lock bolt size (draft setting)
+End2_Magnet_Twist_Lock_Size = 0;  //[0:none,3:M3,4:M4,5:M5]
+
 
 /* [Connector 2 - Nozzle] */
 // Is the measurement the adapter's outside or inside diameter?
@@ -261,6 +266,7 @@ HoseAdapter(
   connector1MagnetThickness = End1_Magnet_Thickness,
   connector1MagnetBorder = End1_Magnet_Border,
   connector1MagnetFlangeThickness = End1_Magnet_Flange_Thickness,
+  connector1MagnetTwistLockSize = End1_Magnet_Twist_Lock_Size,
   connector1Ring = End1_Ring,
 
   connector1FlangeWidth = End1_Flange_Width,
@@ -312,6 +318,7 @@ HoseAdapter(
   connector2MagnetThickness = End2_Magnet_Thickness,
   connector2MagnetBorder = End2_Magnet_Border,
   connector2MagnetFlangeThickness = End2_Magnet_Flange_Thickness,
+  connector2MagnetTwistLockSize = End2_Magnet_Twist_Lock_Size,
   connector2Ring = End2_Ring,
 
   connector2FlangeWidth = End2_Flange_Width,
@@ -818,18 +825,42 @@ module MagneticConnector(
     alignmentLowerWidth,
     alignmentSideClearance,
     alignmentDepthClearance,
-    locking = false,
-    lockingDiameter = 4,
+    twistLockSize,
+    //head,outer thread, inner thread
 )
 {
+  
+  //These sizes need to be tested.
+  lockingSize = 
+    twistLockSize == 3 ? [5.5+0.3,3,2.5] //m3
+    : twistLockSize == 4 ? [7+0.3,4,3.3] //m4
+    : twistLockSize == 5 ? [8.5+0.3,5,4.2] //m5
+    : [0,0,0];
 
-    alignmentBorder = alignmentRing != "no" ? magnetBorder/2 : 0;
-    magnetPosition = (innerStartDiameter + magnetDiameter) / 2 + magnetBorder +
-        (alignmentRing != "no" ? alignmentBorder + alignmentUpperWidth : 0);
+  locking = lockingSize != [0,0,0];
+  
+  alignmentBorder = alignmentRing != "no" ? magnetBorder/2 : 0;
+  magnetPosition = (innerStartDiameter + magnetDiameter) / 2 + magnetBorder +
+      (alignmentRing != "no" ? alignmentBorder + alignmentUpperWidth : 0);
 
-    lockPosition = magnetPosition + magnetDiameter/2 + magnetBorder*2;
+  //lockingOffset = magnetCount % 2 == 0 ? lockingOffset : false;
+  //lockingDivisions = lockingOffset ? magnetCount/2 : magnetCount;
+  
+  magnetDivisionAngle = 360 / magnetCount;
+  magnetCir = 2*PI*magnetPosition;          
+  magnetDivisionCir = magnetCir / magnetCount;
+  lockingSystemSize =  magnetDiameter+lockingSize[0]+lockingSize[1]*2+magnetBorder*3;
+  twistLockBorder = magnetBorder * 1.5; //Mostly because the magent would be bigger than the bolt any way
+  lockingOffset = magnetCount % 2 == 0 ? (magnetDivisionCir < lockingSystemSize) : false;
+  lockingDivisions = lockingOffset ? magnetCount/2 : magnetCount;
+  
+  endAngleoffset = magnetDivisionAngle * ((magnetDiameter+lockingSize[1])/2+magnetBorder)/magnetDivisionCir; //This needs to be calcualted based on magnet size and bot size.
 
-    fillet = flangeThickness;
+  startAngleoffset = lockingOffset ? magnetDivisionAngle * ((magnetDiameter+lockingSize[0])/2+magnetBorder)/magnetDivisionCir : endAngleoffset; 
+
+  
+  echo("MagneticConnector_locking", magnetDivisionAngle=magnetDivisionAngle, magnetCir=magnetCir, magnetDivisionCir=magnetDivisionCir, minLockSpace = lockingSystemSize, endAngleoffset=endAngleoffset, endAngleoffset=endAngleoffset);
+  fillet = flangeThickness;
     difference ()
     {
         //flange
@@ -844,18 +875,30 @@ module MagneticConnector(
             // flange aound the magnets
             hull () {
                 for (i = [0: magnetCount-1]) {
-                    rotate ([0, 0, i * (360 / magnetCount)])
+                    rotate ([0, 0, i * magnetDivisionAngle])
                     translate ([magnetPosition, 0, 0])
                     cylinder (d = magnetDiameter + magnetBorder * 2, flangeThickness);
                 }
              
               //flage around locks
               if(locking)
-              for (i = [0: magnetCount-1]) {
-                  rotate ([0, 0, (i+0.5)* 360 / magnetCount])
-                  translate ([lockPosition, 0, 0 ])
-                  cylinder (d = lockingDiameter+magnetBorder*4, h = flangeThickness);
-              }
+              for (i = [0: magnetCount-1])
+              rotate ([0, 0, i* magnetDivisionAngle])
+              union(){
+                  rotate ([0, 0, 0.5*magnetDivisionAngle])
+                  translate ([magnetPosition, 0, 0])
+                  cylinder (d = lockingSize[0]+twistLockBorder*2, h = flangeThickness + fudgeFactor*2);
+                  
+                  rotate ([0, 0, magnetDivisionAngle-endAngleoffset])
+                  translate ([magnetPosition, 0, 0])
+                  cylinder (d = lockingSize[0]+twistLockBorder*2, h = flangeThickness + fudgeFactor*2);
+                  
+                  rotate ([0, 0, lockingOffset ? startAngleoffset : 0.5*magnetDivisionAngle])
+                  rotate_extrude(angle=lockingOffset ? (magnetDivisionAngle-endAngleoffset-startAngleoffset) : (magnetDivisionAngle-endAngleoffset*2)/2)
+                  translate ([magnetPosition, flangeThickness/2, 0])
+                  square([lockingSize[0]+twistLockBorder*2,flangeThickness],center=true);
+                }
+              
             }
        
 
@@ -899,15 +942,44 @@ module MagneticConnector(
             translate ([magnetPosition, 0, - fudgeFactor])
             cylinder (d = magnetDiameter, h = magnetThickness + fudgeFactor);
         }
-
-        //Lock cut out
-       if(locking)
-       for (i = [0: magnetCount-1]) {
-            rotate ([0, 0, (i+0.5)* 360 / magnetCount])
-            translate ([lockPosition, 0, - fudgeFactor])
-            cylinder (d = lockingDiameter, h = flangeThickness + fudgeFactor*2);
-        }
         
+        //Lock cut out
+        if(locking){
+          for (i = [0: lockingDivisions-1]) {
+            
+            rotate ([0, 0, i*360/lockingDivisions])
+            union(){
+              rotate ([0, 0, endAngleoffset-(lockingOffset ? 360/magnetCount : 0)])
+              translate ([magnetPosition, 0, - fudgeFactor])
+              cylinder (d = lockingSize[2], h = length + fudgeFactor*2);
+          
+              rotate ([0, 0, lockingOffset ? startAngleoffset : 0.5*360/magnetCount])
+              translate ([magnetPosition, 0, - fudgeFactor])
+              cylinder (d = lockingSize[0], h = length + fudgeFactor*2);
+
+              rotate ([0, 0, 360/magnetCount-endAngleoffset])
+              translate ([magnetPosition, 0, - fudgeFactor])
+              cylinder (d = lockingSize[1], h = length + fudgeFactor*2);
+              
+              rotate ([0, 0, lockingOffset ? startAngleoffset : 0.5*360/magnetCount])
+              rotate_extrude(angle=lockingOffset ? (magnetDivisionAngle-endAngleoffset-startAngleoffset) : (magnetDivisionAngle-endAngleoffset*2)/2)
+              translate ([magnetPosition, length/2, 0])
+              square([lockingSize[1],length+fudgeFactor*2],center=true);
+
+              translate ([0, 0, flangeThickness/2])
+              union(){
+                rotate ([0, 0, 360/magnetCount-endAngleoffset])
+                translate ([magnetPosition, 0, - fudgeFactor])
+                cylinder (d = lockingSize[0], h = length + fudgeFactor*2);
+                
+                rotate ([0, 0, lockingOffset ? startAngleoffset : 0.5*360/magnetCount])
+                rotate_extrude(angle=lockingOffset ? (magnetDivisionAngle-endAngleoffset-startAngleoffset) : (magnetDivisionAngle-endAngleoffset*2)/2)
+                translate ([magnetPosition, length/2, 0])
+                square([lockingSize[0],length+fudgeFactor*2],center=true);
+              }
+            }
+          }
+        }
         //Flange inner
         translate([0, 0, -fudgeFactor])
             cylinder (
@@ -1119,7 +1191,7 @@ difference(){
     roundedCube(
       x=pinHoleWidth,
       y=pinHoleHeight,//max(pinHoleWidth,pinHoleHeight),
-      h=max(wallThickness*2),
+      h=wallThickness*2,
       r=pinHoleRadius,
       center = true);
     
@@ -1128,7 +1200,7 @@ difference(){
     roundedCube(
       x=pinHoleWidth,
       y=pinHoleHeight,//max(pinHoleWidth,pinHoleHeight),
-      h=max(wallThickness),
+      h=wallThickness,
       r1=pinHoleRadius,
       r2=(pinHoleRadius+wallThickness)*2, //these values are made up, not sure what a could value should be
       center = true);
@@ -1146,8 +1218,8 @@ difference(){
       roundedCube(
         x=pinHoleWidth,
         y=slideLength+pinHoleHeight,//max(pinHoleWidth,pinHoleHeight),
-        h=max(wallThickness*2+pinHoleRadius*2,pinHoleWidth,pinHoleHeight),
-        r=pinHoleRadius,
+        h=wallThickness*2,
+        r1=pinHoleRadius,
         center = true);
 
         
@@ -1221,7 +1293,11 @@ module Dw735Connector(
   slotLength = 16;  
   slotOffset1 = 7.5;  
   slotOffset2 = 9;  
-  fixedPinLength = 4.5;
+  fixedPinLength = 4.1;
+  maxSupportThickness = fixedPinLength - 1.5;
+  clearanceHeight = 4;
+  clearanceDiameter = innerEndDiameter+9.2;
+  
   
   _connectorCount = max(1,connectorCount);
   
@@ -1269,6 +1345,21 @@ module Dw735Connector(
       }
     }
     
+    Pipe (
+      diameter1 = clearanceDiameter,
+      diameter2 = clearanceDiameter+wallThickness*2,
+      length = wallThickness,
+      wallThickness1 = wallThickness,
+      wallThickness2 = 0,
+      zPosition = clearanceHeight-fudgeFactor);
+        
+     StraightPipe (
+        diameter = clearanceDiameter,
+        length = clearanceHeight+fudgeFactor,
+        wallThickness = wallThickness,
+        zPosition = -fudgeFactor);
+      
+      
     for (rotation = [0:_connectorCount-1])
     {
       rotate([0, 0, -rotation*(180/_connectorCount)])
@@ -1590,10 +1681,11 @@ module HoseConnector(
     // Create the hose stop
     if(stopWidth > 0)
     {
+      translate([0,0,-fudgeFactor])
       Stopper(
         diameter = innerEndDiameter,
         outer = connectorMeasurement == "outer",
-        totalLength = stopLength,
+        totalLength = stopLength+fudgeFactor*2,
         taper1 = stopSymmetrical == 0 ? 0.5 : 0.4,
         taper2 = stopSymmetrical == 0? 0 : 0.4,
         wallThickness = wallThickness,
@@ -1721,6 +1813,7 @@ module adapter(
     magnetThickness = 0,
     magnetBorder = 0,
     magnetFlangeThickness = 0,
+    magnetTwistLockSize = 0,
     alignmentRing = 0,
     alignmentDepth = 0,
     alignmentUpperWidth = 0,
@@ -1776,7 +1869,8 @@ module adapter(
               alignmentUpperWidth = alignmentUpperWidth,
               alignmentLowerWidth = alignmentLowerWidth,
               alignmentSideClearance = alignmentSideClearance,
-              alignmentDepthClearance = alignmentDepthClearance);
+              alignmentDepthClearance = alignmentDepthClearance,
+              twistLockSize = magnetTwistLockSize);
         }
         else if(style == "flange")
         {
@@ -2231,6 +2325,7 @@ module HoseAdapter(
     connector1MagnetThickness = 0,
     connector1MagnetBorder = 0,
     connector1MagnetFlangeThickness = 0,
+    connector1MagnetTwistLockSize = 0,
     connector1Ring= "no",
     connector1FlangeWidth = 0,
     connector1FlangeThickness = 0,
@@ -2280,6 +2375,7 @@ module HoseAdapter(
     connector2MagnetThickness = 0,
     connector2MagnetBorder = 0,
     connector2MagnetFlangeThickness = 0,
+    connector2MagnetTwistLockSize = 0,
     connector2Ring = "no",
     
     connector2FlangeWidth = 0,
@@ -2466,6 +2562,7 @@ module HoseAdapter(
         magnetThickness = connector1MagnetThickness,
         magnetBorder = connector1MagnetBorder,
         magnetFlangeThickness = connector1MagnetFlangeThickness,
+        magnetTwistLockSize = connector1MagnetTwistLockSize,
         alignmentRing = connector1Ring,
         alignmentDepth = alignmentDepth,
         alignmentUpperWidth = alignmentUpperWidth,
@@ -2565,7 +2662,8 @@ module HoseAdapter(
             magnetThickness = connector2MagnetThickness,
             magnetBorder = connector2MagnetBorder,
             magnetFlangeThickness = connector2MagnetFlangeThickness,
-            alignmentRing = connector1Ring,
+            magnetTwistLockSize = connector2MagnetTwistLockSize,
+            alignmentRing = connector2Ring,
             alignmentDepth = alignmentDepth,
             alignmentUpperWidth = alignmentUpperWidth,
             alignmentLowerWidth = alignmentLowerWidth,
@@ -2622,6 +2720,7 @@ module HoseAdapter(
             magnetThickness = connector2MagnetThickness,
             magnetBorder = connector2MagnetBorder,
             magnetFlangeThickness = connector2MagnetFlangeThickness,
+            magnetTwistLockSize = connector2MagnetTwistLockSize,
             alignmentRing = connector1Ring,
             alignmentDepth = alignmentDepth,
             alignmentUpperWidth = alignmentUpperWidth,
