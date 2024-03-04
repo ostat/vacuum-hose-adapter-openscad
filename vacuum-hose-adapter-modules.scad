@@ -27,6 +27,12 @@ dw735MinLength = 17;
 dw735Measurement = "inner";
 dw735InnerDiameter = 71;
 
+cenTecMinLength = 25+2;
+cenTecMeasurement = "inner";
+cenTecInnerDiameter = 22.625*2;
+cenTecOuterDiameter = cenTecInnerDiameter + 6;
+ 
+
 /* [Connector 1] */
 //Wall thickness
 End1_Wall_Thickness = 2; //0.01
@@ -1972,8 +1978,8 @@ module adapter(
         echo("enabling debug slice");
         cubeSziex = max(innerStartDiameter,innerEndDiameter)*1.5;
         cubeSziey = max(innerStartDiameter,innerEndDiameter)*1.5;
-        cubeSziez = length+nozzleLength+fudgeFactor*4;
-        translate([-cubeSziex/2, -cubeSziey, -fudgeFactor])
+        cubeSziez = length+fudgeFactor*4+(style == "nozzle"? nozzleLength : 0);
+        translate([-cubeSziex/2, -cubeSziey, -fudgeFactor*2])
         cube([cubeSziex,cubeSziey,cubeSziez]);
       }
     } 
@@ -2399,21 +2405,25 @@ module HoseAdapter(
     showCaliper = false
 ){
   $gha=[["connector1",[0,0,0]],["connector2",[0,0,0]],["trasnition",[0,0,0]]];
+  
   //Apply defauls and overrides 
   connector1Measurement =
     (connector1Style == "camlock") ? camlockMeasurement :
     (connector1Style == "dyson") ? dysonMeasurement :
     (connector1Style == "dw735") ? dw735Measurement :
+    (connector1Style == "centec") ? cenTecMeasurement :
     connector1Measurement;
   
   connector1Diameter = 
     (connector1Style == "camlock") ? camlockOuterDiameter :
     (connector1Style == "dyson") ? dysonOuterDiameter :
     (connector1Style == "dw735") ? dw735InnerDiameter :
-   connector1Diameter;
+    (connector1Style == "centec") ? cenTecInnerDiameter :
+    connector1Diameter;
  
    connector1WallThickness = 
     (connector1Style == "dyson") ? (dysonOuterDiameter - dysonInnerDiameter)/2 :
+    (connector1Style == "centec") ? (cenTecOuterDiameter - cenTecInnerDiameter)/2 :
     connector1WallThickness;
   
   end1InnerDiameter = 
@@ -2426,6 +2436,7 @@ module HoseAdapter(
     (connector1Style == "dyson" && connector1Length < dysonMinLength) ? dysonMinLength :
     (connector1Style == "camlock") ? camlockMinLength :
     (connector1Style == "dw735" && connector1Length < dw735MinLength) ? dw735MinLength :
+    (connector1Style == "centec" && connector1Length < cenTecMinLength) ? cenTecMinLength :
     connector1Length;
   
   echo(connector1Length = connector1Length, connector1Style = connector1Style, dw735MinLength = dw735MinLength);
@@ -2433,7 +2444,8 @@ module HoseAdapter(
   connector1Taper = 
     (connector1Style == "dyson") ? 0 : //dyson lock has no taper
     (connector1Style == "camlock") ? 0 : //cam lock has no taper
-    (connector1Style == "dw735") ? 0 : //cam lock has no taper
+    (connector1Style == "dw735") ? 0 : //dw735 lock has no taper
+    (connector1Style == "centec") ? 0 : //centec has no taper
     connector1Taper;
 
   //Apply taper, from small to big
