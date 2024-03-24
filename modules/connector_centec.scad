@@ -1,31 +1,51 @@
+
+include <modules_utility.scad>
+include <connector_hose.scad>
+
 fudgeFactor = 0.015;
 
-cenTecMinLength = 25+2;
+cenTecBodyLength =  25;
+cenTecWallThickness = 3;
+cenTecMinLength = cenTecBodyLength+2;
 cenTecMeasurement = "inner";
 cenTecInnerDiameter = 22.625*2;
-cenTecOuterDiameter = cenTecInnerDiameter + 6;
+cenTecOuterDiameter = cenTecInnerDiameter + cenTecWallThickness*2;
+
+centecSettings = ["centec", [
+  [iSettingsLength, cenTecMinLength],
+  [iSettingsMeasurement, cenTecMeasurement],
+  [iSettingsDiameter, cenTecInnerDiameter],
+  [iSettingsWallThickness, (cenTecOuterDiameter - cenTecInnerDiameter)/2],
+  [iSettingsTaper ,0]
+  ]];
+  
+//CenTecConnector();
 
 module CenTecConnector(){
 
-  pinHoleWidth = 11;
+  pinHoleWidth = 9.5;
   pinHoleHeight = 6;
-  pinHoleRadius = 1;
+  pinHoleRadius = 3;
   pinHoleOffset = 11;
 
   pinSlideIndent = 1.5;
-  connectorLength = 25;
-  connectorInnerEndRadius= 22.625;
-  connectorInnerStartRadius= 22.9;
+  connectorLength = cenTecBodyLength;
+  connectorInnerEndRadius= cenTecInnerDiameter/2;
+  connectorInnerStartRadius= cenTecInnerDiameter/2+0.275;
   StopInnerRadius = 18.2;
-  ConnectorOuterRadius = 51.250;
-  wallThickness = 3;
-  StopInnerLength = wallThickness;
+  wallThickness = cenTecWallThickness;
+  StopInnerLength = cenTecWallThickness;
   
-  echo("CenTecConnector");
+  slideTaper=1;
+  
+  _pinHoleRadius = min(pinHoleRadius, pinHoleHeight/2);
+  
+  
+  echo("CenTecConnector", _pinHoleRadius=_pinHoleRadius, pinHoleHeight=pinHoleHeight);
     //Main body
 
-
-difference(){
+    
+  difference(){
     HoseConnector(
       connectorMeasurement = "inner",
       innerStartDiameter = connectorInnerStartRadius*2,
@@ -39,32 +59,34 @@ difference(){
     );
 
 
+    //Thumb relief for the press pin
     for(i=[0:1])
-    rotate([0,0,i*180])
-    //translate([connectorInnerEndRadius,0,pinHoleHeight])
-    translate([0,connectorInnerEndRadius+wallThickness/2,pinHoleHeight/2+pinHoleOffset])
-    union(){
-    rotate([90,0,0])
-    roundedCube(
-      x=pinHoleWidth,
-      y=pinHoleHeight,//max(pinHoleWidth,pinHoleHeight),
-      h=wallThickness*2,
-      r=pinHoleRadius,
-      center = true);
-    
-    translate([0,wallThickness/2,0])
-    rotate([90,0,180])
-    roundedCube(
-      x=pinHoleWidth,
-      y=pinHoleHeight,//max(pinHoleWidth,pinHoleHeight),
-      h=wallThickness,
-      r1=pinHoleRadius,
-      r2=(pinHoleRadius+wallThickness)*2, //these values are made up, not sure what a could value should be
-      center = true);
-  }
-    
+      rotate([0,0,i*180])
+      //translate([connectorInnerEndRadius,0,pinHoleHeight])
+      translate([0,connectorInnerEndRadius+wallThickness/2,pinHoleHeight/2+pinHoleOffset])
+        union(){
+        rotate([90,0,0])
+        roundedCube(
+          x=pinHoleWidth,
+          y=pinHoleHeight,//max(pinHoleWidth,pinHoleHeight),
+          h=wallThickness*2,
+          r=_pinHoleRadius,
+          center = true);
+        
+        translate([0,wallThickness/2,0])
+        rotate([90,0,180])
+        roundedCube(
+          x=pinHoleWidth,
+          y=pinHoleHeight,//max(pinHoleWidth,pinHoleHeight),
+          h=wallThickness,
+          r1=_pinHoleRadius,
+          r2=(_pinHoleRadius+wallThickness)*2, //these values are made up, not sure what a could value should be
+          center = true);
+    }
+      
+    //Slide for the clip
     intersection(){
-      slideTaper=1;
+
       slideLength=pinHoleOffset+pinHoleHeight/2;
 
       for(i=[0:1])
@@ -72,19 +94,20 @@ difference(){
       //translate([connectorInnerEndRadius,0,pinHoleHeight])
       translate([0,connectorInnerEndRadius+wallThickness/2,slideLength/2-pinHoleHeight/2])
       rotate([90,0,0])
-      roundedCube(
+      cube([pinHoleWidth,slideLength+pinHoleHeight, wallThickness*2], center = true);
+      /*roundedCube(
         x=pinHoleWidth,
         y=slideLength+pinHoleHeight,//max(pinHoleWidth,pinHoleHeight),
         h=wallThickness*2,
-        r1=pinHoleRadius,
-        center = true);
-
+        r1=0.1,
+        r2=1,
+        center = true);*/
         
       translate([0,0,slideLength+slideTaper])
       mirror([0,0,1])
       HoseConnector(
         connectorMeasurement = "outer",
-        innerStartDiameter = connectorInnerStartRadius*2-pinSlideIndent*2,
+        innerStartDiameter = connectorInnerStartRadius*2-pinSlideIndent*2-pinSlideIndent/2,
         innerEndDiameter = connectorInnerStartRadius*2-pinSlideIndent,
         length = slideLength,
         wallThickness = pinSlideIndent,
