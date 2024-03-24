@@ -15,15 +15,18 @@ module MagneticConnector(
     alignmentSideClearance,
     alignmentDepthClearance,
     twistLockSize,
-    //head,outer thread, inner thread
 )
 {
   
   //These sizes need to be tested.
+  //head, outer thread for slot, thread hole size
   lockingSize = 
-    twistLockSize == 3 ? [5.5+0.3,3,2.5] //m3
-    : twistLockSize == 4 ? [7+0.3,4,3.3] //m4
-    : twistLockSize == 5 ? [8.5+0.3,5,4.2] //m5
+    twistLockSize == "3" ? [5.5+0.3,3,2.5] //m3
+    : twistLockSize == "3cnc" ? [5.5+0.3,3,4] //m3
+    : twistLockSize == "4" ? [7+0.3,4,3.3] //m4
+    : twistLockSize == "4cnc" ? [7+0.3,4,5.6] //m4
+    : twistLockSize == "5" ? [8.5+0.3,5,4.2] //m5
+    : twistLockSize == "5cnc" ? [8.5+0.3,5,6.5] //m5
     : [0,0,0];
 
   locking = lockingSize != [0,0,0];
