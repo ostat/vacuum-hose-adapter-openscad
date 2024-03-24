@@ -1,3 +1,5 @@
+use <ub.scad>
+
 fudgeFactor = 0.015;
 
 module HoseConnector(
@@ -109,26 +111,29 @@ module HoseConnector(
     }
 
     // Create the hose stop
-    if(stopWidth > 0)
+    if(stopWidth > 0 && stopLength > 0)
     {
       translate([0,0,-fudgeFactor])
       Stopper(
         diameter = innerEndDiameter,
-        outer = connectorMeasurement == "outer",
+        outer = innerStartDiameter <= innerEndDiameter,
         totalLength = stopLength+fudgeFactor*2,
         taper1 = stopSymmetrical == 0 ? 0.5 : 0.4,
         taper2 = stopSymmetrical == 0? 0 : 0.4,
         wallThickness = wallThickness,
         stopThickness = stopWidth,
-        zPosition = length);
+        zPosition = length,
+        help = help);
     }
   }
   
    HelpTxt("HoseConnector",[
+    "connectorMeasurement", connectorMeasurement,
     "innerStartDiameter", innerStartDiameter,
     "innerEndDiameter", innerEndDiameter,
     "length", length,
     "wallThickness", wallThickness,
+    "stopLength", stopLength,
     "stopWidth", stopWidth,
     "stopSymmetrical", stopSymmetrical,
     "barbsCount", barbsCount,

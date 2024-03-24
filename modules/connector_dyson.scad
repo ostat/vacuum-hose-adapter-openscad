@@ -11,6 +11,14 @@ dysonMeasurement = "outer";
 dysonOuterDiameter = 34;
 dysonInnerDiameter = 28.5;
 
+dysonSettings = ["dyson", [
+  [iSettingsLength, dysonMinLength],
+  [iSettingsMeasurement, dysonMeasurement],
+  [iSettingsDiameter, dysonOuterDiameter],
+  [iSettingsWallThickness, (dysonOuterDiameter - dysonInnerDiameter)/2],
+  [iSettingsTaper ,0]
+  ]];
+  
 module DysonConnector(
   innerEndDiameter,
   length,

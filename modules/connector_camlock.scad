@@ -4,6 +4,13 @@ camlockMinLength = 35+3;
 camlockMeasurement = "outer";
 camlockOuterDiameter = 24.25*2;
 
+camlockSettings = ["camlock", [
+  [iSettingsLength, camlockMinLength],
+  [iSettingsMeasurement, camlockMeasurement],
+  [iSettingsDiameter, camlockOuterDiameter],
+  [iSettingsTaper ,0]
+  ]];
+  
 module CamlockConnector(
   innerEndDiameter,
   length,

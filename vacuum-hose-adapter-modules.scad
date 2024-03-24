@@ -1,11 +1,10 @@
 // Hose connector modules
 // version 2023-07-24
 // https://justinsdk.github.io/dotSCAD/
-use <modules/dotSCAD/shape_circle.scad>
-use <modules/dotSCAD/ring_extrude.scad>
 use <modules/ub.scad>
 
-use <modules/modules_utility.scad>
+include <modules/modules_utility.scad>
+include <modules/connector_common.scad>
 
 include <modules/connector_hose.scad>
 include <modules/connector_flange.scad>
@@ -32,7 +31,7 @@ End1_Style="flange"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connec
 // Is the measurement the adapter's outside or inside diameter?
 End1_Measurement = "inner"; //[inner, outer]
 // End 1 diameter of the adapter (mm)
-End1_Diameter = 50;  //0.1
+End1_Diameter = 50;  //0.01
 //Length of the start connector (including the flange).
 End1_Length= 15;  //0.1
 //Rotation around the z axis. Userfull for non symeterical connectors.
@@ -87,7 +86,7 @@ End1_Magnet_Flange_Thickness = 6;  //0.1
 // Include a flange alignment ring
 End1_Ring = "no"; //[no: No alignment ring, protruding: protruding ring, recessed: Recessed ring]
 // Magnetic ring Twist lock bolt size (draft setting)
-End1_Magnet_Twist_Lock_Size = 0;  //[0:none,3:M3,4:M4,5:M5]
+End1_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitchen insert,"4":M4,"4cnc":M4 with CNC Kitchen insert,"5":M5,"5cnc":M5 with CNC Kitchen insert]
 
 /* [Transition] */
 // tapered for hose connections, flat for attaching to a device
@@ -135,7 +134,7 @@ End2_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connec
 // Is the measurement the adapter's outside or inside diameter?
 End2_Measurement = "outer"; //[inner, outer]
 // End 2 diameter of the adapter (mm)
-End2_Diameter = 40;  //0.1
+End2_Diameter = 40;  //0.05
 //Length of the pipe coming out of the flange.
 End2_Length= 40;  //1
 //Rotation around the z axis. Userfull for non symeterical connectors.
@@ -194,7 +193,7 @@ End2_Magnet_Flange_Thickness = 10;  //0.1
 // Include a flange alignment ring
 End2_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recessed: Recessed ring]
 // Magnetic ring twist lock bolt size (draft setting)
-End2_Magnet_Twist_Lock_Size = 0;  //[0:none,3:M3,4:M4,5:M5]
+End2_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitchen insert,"4":M4,"4cnc":M4 with CNC Kitchen insert,"5":M5,"5cnc":M5 with CNC Kitchen insert]
 
 
 /* [Connector 2 - Nozzle] */
@@ -227,6 +226,8 @@ Alignment_Depth_Clearance = .75;  //0.01
 /* [other] */
 //Slice model inhalf to be able to easy see inside
 Enable_Debug_Slice = false;
+//Will only show if debug is also enabled
+Enable_Calipers_Slice = false;
 Enable_Help = false;
 
 
@@ -234,110 +235,7 @@ Enable_Help = false;
 //Detail
 $fn=120;
 
-HoseAdapter(
-  drawAlignmentRing = Draw_Alignment_Ring,
-  alignmentDepth = Alignment_Depth,
-  alignmentUpperWidth = Alignment_Upper_Width,
-  alignmentLowerWidth = Alignment_Lower_Width,
-  alignmentSideClearance = Alignment_Side_Clearance,
-  alignmentDepthClearance = Alignment_Depth_Clearance,
-
-  connector1Style = End1_Style,
-  connector1WallThickness  = End1_Wall_Thickness,
-  connector1Measurement = End1_Measurement,
-  connector1Diameter = End1_Diameter,
-  connector1Length = End1_Length,
-  connector1Rotation = End1_Rotation,
-  connector1Taper = End1_Taper,
-  connector1EndCapDiameter  = End1_Hose_EndCap_Diameter,
-  connector1EndCapThickness = End1_Hose_EndCap_Thickness,
-  connector1StopThickness = End1_StopThickness,
-  connector1StopLength = End1_StopLength,
-  connector1StopSymmetrical = End1_Stop_Symmetrical,
-  connector1BarbsCount = End1_Barbs_Count,
-  connector1BarbsThickness = End1_Barbs_Thickness,
-  connector1BarbsSymmetrical = End1_Barbs_Symmetrical,
-
-  connector1MagnetCount = End1_Magnets_Count,
-  connector1MagnetDiameter = End1_Magnet_Diameter,
-  connector1MagnetThickness = End1_Magnet_Thickness,
-  connector1MagnetBorder = End1_Magnet_Border,
-  connector1MagnetFlangeThickness = End1_Magnet_Flange_Thickness,
-  connector1MagnetTwistLockSize = End1_Magnet_Twist_Lock_Size,
-  connector1Ring = End1_Ring,
-
-  connector1FlangeWidth = End1_Flange_Width,
-  connector1FlangeThickness = End1_Flange_Thickness,
-  connector1FlangeScrewPosition = End1_Flange_Screw_Position,
-  connector1FlangeScrewBorder = End1_Flange_Screw_Border,
-  connector1FlangeScrewCount = End1_Flange_Screw_Count,
-  connector1FlangeScrewDiameter = End1_Flange_Screw_Diameter,
-
-
-  transitionStyle = Transition_Style,
-  transitionLength = Transition_Length,
-  transitionBendRadius = Transition_Bend_Radius,
-  transitionAngle = Transition_Angle,
-  transitionXOffset = Transition_xOffset,
-  transitionYOffset = Transition_yOffset,
-  transitionBaseType = Transition_Base_Type,
-  transitionBaseThickness = Transition_Base_Thickness,
-  transitionBaseWidth = Transition_Base_Width,
-  transitionBaseLength = Transition_Base_Length,
-  transitionBaseAngle = Transition_Base_Angle,
-  transitionEnd2Count = Transition_End2_Count,
-  transitionHullLength = Transition_HullLength,
-  transitionHullCenterLength = Transition_HullCenterLength,
-  transitionHullyOffset = Transition_HullyOffset,
-  transitionHullCenter = Transition_HullCenter,
-  transitionHullCenterHeight= Transition_HullCenterHeight,
-  
-  connector2Style = End2_Style,
-  connector2WallThickness  = End2_Wall_Thickness,
-  connector2Measurement = End2_Measurement,
-  connector2Diameter = End2_Diameter,
-  connector2Length = End2_Length,
-  connector2Rotation = End2_Rotation,
-  connector2Taper = End2_Taper,
-  connector2EndCapDiameter  = End2_Hose_EndCap_Diameter,
-  connector2EndCapThickness = End2_Hose_EndCap_Thickness,
-  connector2EndCapGridSize  = End2_Hose_EndCap_GridSize,
-  connector2EndCapGridWallThickness = End2_Hose_EndCap_GridWallThickness,
-  connector2StopThickness = End2_StopThickness,
-  connector2StopLength = End2_StopLength,
-  connector2StopSymmetrical = End2_Stop_Symmetrical,
-  connector2BarbsCount = End2_Barbs_Count,
-  connector2BarbsThickness = End2_Barbs_Thickness,
-  connector2BarbsSymmetrical = End2_Barbs_Symmetrical,
-
-  connector2MagnetCount = End2_Magnets_Count,
-  connector2MagnetDiameter = End2_Magnet_Diameter,
-  connector2MagnetThickness = End2_Magnet_Thickness,
-  connector2MagnetBorder = End2_Magnet_Border,
-  connector2MagnetFlangeThickness = End2_Magnet_Flange_Thickness,
-  connector2MagnetTwistLockSize = End2_Magnet_Twist_Lock_Size,
-  connector2Ring = End2_Ring,
-
-  connector2FlangeWidth = End2_Flange_Width,
-  connector2FlangeThickness = End2_Flange_Thickness,
-  connector2FlangeScrewPosition = End2_Flange_Screw_Position,
-  connector2FlangeScrewBorder = End2_Flange_Screw_Border,
-  connector2FlangeScrewCount = End2_Flange_Screw_Count,
-  connector2FlangeScrewDiameter = End2_Flange_Screw_Diameter,
-  
-  connector2NozzleShape = End2_Nozzle_Shape,
-  connector2NozzleSquareWidth = End2_Nozzle_Square_Width,
-  connector2NozzleSquareDepth = End2_Nozzle_Square_Depth,
-  connector2NozzleTipWallThickness = End2_Nozzle_Tip_Wall_Thickness,
-  connector2NozzleRadius = End2_Nozzle_Radius,
-  connector2NozzleLength = End2_Nozzle_Length,
-  connector2NozzlexOffset = End2_Nozzle_xOffset,
-  connector2NozzleyOffset = End2_Nozzle_yOffset,
-  connector2NozzleChamferPercentage = End2_Nozzle_Chamfer_Percentage,
-  connector2NozzleChamferAngle = End2_Nozzle_Chamfer_Angle,
-  sliceDebug = Enable_Debug_Slice,
-  showCaliper = Enable_Debug_Slice
-);
+HoseAdapter();
 
 module adapter(
     connector = 2,
@@ -850,149 +748,129 @@ module transition(
 }
   
 module HoseAdapter(
-    drawAlignmentRing = "no",
-    alignmentDepth = 2,
-    alignmentUpperWidth = 3,
-    alignmentLowerWidth = 0.5,
-    alignmentSideClearance = 0.25,
-    alignmentDepthClearance = .75,
+  drawAlignmentRing = Draw_Alignment_Ring,
+  alignmentDepth = Alignment_Depth,
+  alignmentUpperWidth = Alignment_Upper_Width,
+  alignmentLowerWidth = Alignment_Lower_Width,
+  alignmentSideClearance = Alignment_Side_Clearance,
+  alignmentDepthClearance = Alignment_Depth_Clearance,
 
-    connector1WallThickness = 2,
-    connector1Style= "hose",
-    connector1Measurement= "inner",
-    connector1Diameter = 0,
-    connector1Length = 0,
-    connector1Rotation = 0,
-    connector1Taper = 0,
-    connector1EndCapDiameter = 0,
-    connector1EndCapThickness = 0,
-    connector1StopThickness = 0,
-    connector1StopLength = 0,
-    connector1StopSymmetrical = 0,
-    connector1BarbsCount = 0,
-    connector1BarbsThickness = 0,
-    connector1BarbsSymmetrical = 0,
-    connector1MagnetCount = 0,
-    connector1MagnetDiameter = 0,
-    connector1MagnetThickness = 0,
-    connector1MagnetBorder = 0,
-    connector1MagnetFlangeThickness = 0,
-    connector1MagnetTwistLockSize = 0,
-    connector1Ring= "no",
-    connector1FlangeWidth = 0,
-    connector1FlangeThickness = 0,
-    connector1FlangeScrewPosition = 0,
-    connector1FlangeScrewBorder = 0,
-    connector1FlangeScrewCount = 0,
-    connector1FlangeScrewDiameter = 0,
+  connector1Style = End1_Style,
+  connector1WallThickness  = End1_Wall_Thickness,
+  connector1Measurement = End1_Measurement,
+  connector1Diameter = End1_Diameter,
+  connector1Length = End1_Length,
+  connector1Rotation = End1_Rotation,
+  connector1Taper = End1_Taper,
+  connector1EndCapDiameter  = End1_Hose_EndCap_Diameter,
+  connector1EndCapThickness = End1_Hose_EndCap_Thickness,
+  connector1StopThickness = End1_StopThickness,
+  connector1StopLength = End1_StopLength,
+  connector1StopSymmetrical = End1_Stop_Symmetrical,
+  connector1BarbsCount = End1_Barbs_Count,
+  connector1BarbsThickness = End1_Barbs_Thickness,
+  connector1BarbsSymmetrical = End1_Barbs_Symmetrical,
 
-    transitionStyle = "tapered",
-    transitionLength = 0,
-    transitionBendRadius = 0,
-    transitionAngle = 0,
-    transitionXOffset = 0,
-    transitionYOffset = 0,
-    transitionBaseType = "none",
-    transitionBaseThickness =0 ,
-    transitionBaseWidth =0 ,
-    transitionBaseLength = 0,
-    transitionBaseAngle = 0,
-    transitionEnd2Count = 1,
-    transitionHullLength = 0,
-    transitionHullCenterLength = 0,
-    transitionHullyOffset = 0,
-    transitionHullCenter = false,
-    transitionHullCenterHeight= 0,
+  connector1MagnetCount = End1_Magnets_Count,
+  connector1MagnetDiameter = End1_Magnet_Diameter,
+  connector1MagnetThickness = End1_Magnet_Thickness,
+  connector1MagnetBorder = End1_Magnet_Border,
+  connector1MagnetFlangeThickness = End1_Magnet_Flange_Thickness,
+  connector1MagnetTwistLockSize = End1_Magnet_Twist_Lock_Size,
+  connector1Ring = End1_Ring,
+
+  connector1FlangeWidth = End1_Flange_Width,
+  connector1FlangeThickness = End1_Flange_Thickness,
+  connector1FlangeScrewPosition = End1_Flange_Screw_Position,
+  connector1FlangeScrewBorder = End1_Flange_Screw_Border,
+  connector1FlangeScrewCount = End1_Flange_Screw_Count,
+  connector1FlangeScrewDiameter = End1_Flange_Screw_Diameter,
+
+  transitionStyle = Transition_Style,
+  transitionLength = Transition_Length,
+  transitionBendRadius = Transition_Bend_Radius,
+  transitionAngle = Transition_Angle,
+  transitionXOffset = Transition_xOffset,
+  transitionYOffset = Transition_yOffset,
+  transitionBaseType = Transition_Base_Type,
+  transitionBaseThickness = Transition_Base_Thickness,
+  transitionBaseWidth = Transition_Base_Width,
+  transitionBaseLength = Transition_Base_Length,
+  transitionBaseAngle = Transition_Base_Angle,
+  transitionEnd2Count = Transition_End2_Count,
+  transitionHullLength = Transition_HullLength,
+  transitionHullCenterLength = Transition_HullCenterLength,
+  transitionHullyOffset = Transition_HullyOffset,
+  transitionHullCenter = Transition_HullCenter,
+  transitionHullCenterHeight= Transition_HullCenterHeight,
   
-    connector2WallThickness = 2,
-    connector2Style = "hose",
-    connector2Measurement = "inner",
-    connector2Diameter = 0,
-    connector2Length = 0,
-    connector2Rotation = 0,
-    connector2Taper = 0,
-    connector2EndCapDiameter = 0,
-    connector2EndCapThickness = 0,
-    connector2EndCapGridSize  = 0,
-    connector2EndCapGridWallThickness = 0,
-    connector2StopThickness = 0,
-    connector2StopLength = 0,
-    connector2StopSymmetrical = 0,
-    connector2BarbsCount = 0,
-    connector2BarbsThickness = 0,
-    connector2BarbsSymmetrical = 0,
+  connector2Style = End2_Style,
+  connector2WallThickness  = End2_Wall_Thickness,
+  connector2Measurement = End2_Measurement,
+  connector2Diameter = End2_Diameter,
+  connector2Length = End2_Length,
+  connector2Rotation = End2_Rotation,
+  connector2Taper = End2_Taper,
+  connector2EndCapDiameter  = End2_Hose_EndCap_Diameter,
+  connector2EndCapThickness = End2_Hose_EndCap_Thickness,
+  connector2EndCapGridSize  = End2_Hose_EndCap_GridSize,
+  connector2EndCapGridWallThickness = End2_Hose_EndCap_GridWallThickness,
+  connector2StopThickness = End2_StopThickness,
+  connector2StopLength = End2_StopLength,
+  connector2StopSymmetrical = End2_Stop_Symmetrical,
+  connector2BarbsCount = End2_Barbs_Count,
+  connector2BarbsThickness = End2_Barbs_Thickness,
+  connector2BarbsSymmetrical = End2_Barbs_Symmetrical,
 
-    connector2MagnetCount = 0,
-    connector2MagnetDiameter = 0,
-    connector2MagnetThickness = 0,
-    connector2MagnetBorder = 0,
-    connector2MagnetFlangeThickness = 0,
-    connector2MagnetTwistLockSize = 0,
-    connector2Ring = "no",
-    
-    connector2FlangeWidth = 0,
-    connector2FlangeThickness = 0,
-    connector2FlangeScrewPosition = 0,
-    connector2FlangeScrewBorder = 0,
-    connector2FlangeScrewCount = 0,
-    connector2FlangeScrewDiameter = 0,
-    
-    connector2NozzleShape = "square",
-    connector2NozzleSquareWidth = 20,
-    connector2NozzleSquareDepth = 10,
-    connector2NozzleTipWallThickness = 0,
-    connector2NozzleRadius = 5,
-    connector2NozzleLength = 50,
-    connector2NozzlexOffset = 0,
-    connector2NozzleyOffset = 0,
-    connector2NozzleChamferPercentage = 0,
-    connector2NozzleChamferAngle = 0,
-    sliceDebug = false,
-    showCaliper = false
+  connector2MagnetCount = End2_Magnets_Count,
+  connector2MagnetDiameter = End2_Magnet_Diameter,
+  connector2MagnetThickness = End2_Magnet_Thickness,
+  connector2MagnetBorder = End2_Magnet_Border,
+  connector2MagnetFlangeThickness = End2_Magnet_Flange_Thickness,
+  connector2MagnetTwistLockSize = End2_Magnet_Twist_Lock_Size,
+  connector2Ring = End2_Ring,
+
+  connector2FlangeWidth = End2_Flange_Width,
+  connector2FlangeThickness = End2_Flange_Thickness,
+  connector2FlangeScrewPosition = End2_Flange_Screw_Position,
+  connector2FlangeScrewBorder = End2_Flange_Screw_Border,
+  connector2FlangeScrewCount = End2_Flange_Screw_Count,
+  connector2FlangeScrewDiameter = End2_Flange_Screw_Diameter,
+  
+  connector2NozzleShape = End2_Nozzle_Shape,
+  connector2NozzleSquareWidth = End2_Nozzle_Square_Width,
+  connector2NozzleSquareDepth = End2_Nozzle_Square_Depth,
+  connector2NozzleTipWallThickness = End2_Nozzle_Tip_Wall_Thickness,
+  connector2NozzleRadius = End2_Nozzle_Radius,
+  connector2NozzleLength = End2_Nozzle_Length,
+  connector2NozzlexOffset = End2_Nozzle_xOffset,
+  connector2NozzleyOffset = End2_Nozzle_yOffset,
+  connector2NozzleChamferPercentage = End2_Nozzle_Chamfer_Percentage,
+  connector2NozzleChamferAngle = End2_Nozzle_Chamfer_Angle,
+  sliceDebug = Enable_Debug_Slice,
+  showCaliper = Enable_Calipers_Slice
 ){
   $gha=[["connector1",[0,0,0]],["connector2",[0,0,0]],["trasnition",[0,0,0]]];
   
-  //Apply defauls and overrides 
-  connector1Measurement =
-    (connector1Style == "camlock") ? camlockMeasurement :
-    (connector1Style == "dyson") ? dysonMeasurement :
-    (connector1Style == "dw735") ? dw735Measurement :
-    (connector1Style == "centec") ? cenTecMeasurement :
-    connector1Measurement;
-  
-  connector1Diameter = 
-    (connector1Style == "camlock") ? camlockOuterDiameter :
-    (connector1Style == "dyson") ? dysonOuterDiameter :
-    (connector1Style == "dw735") ? dw735InnerDiameter :
-    (connector1Style == "centec") ? cenTecInnerDiameter :
-    connector1Diameter;
- 
-   connector1WallThickness = 
-    (connector1Style == "dyson") ? (dysonOuterDiameter - dysonInnerDiameter)/2 :
-    (connector1Style == "centec") ? (cenTecOuterDiameter - cenTecInnerDiameter)/2 :
-    connector1WallThickness;
-  
+  //Apply defauls and overrides
+  connector1Measurement = retriveConnectorSetting(connector1Style, iSettingsMeasurement, connector1Measurement);
+  connector1Diameter = retriveConnectorSetting(connector1Style, iSettingsDiameter, connector1Diameter);
+  connector1WallThickness = retriveConnectorSetting(connector1Style, iSettingsWallThickness, connector1WallThickness);
+  connector1Length = retriveConnectorSetting(connector1Style, iSettingsLength, connector1Length);
+  connector1Taper = retriveConnectorSetting(connector1Style, iSettingsTaper, connector1Taper);
+
+  echo("HoseAdapter", connector1Style = connector1Style, 
+    connector1Measurement = connector1Measurement, 
+    connector1Diameter = connector1Diameter,
+    connector1WallThickness = connector1WallThickness,
+    connector1Length = connector1Length,
+    connector1Taper = connector1Taper);
+    
   end1InnerDiameter = 
     (connector1Measurement == "inner") ? connector1Diameter : 
     connector1Diameter - connector1WallThickness * 2;
   
   end2InnerDiameter = connector2Measurement == "inner" ? connector2Diameter : connector2Diameter - connector2WallThickness * 2;
-
-  connector1Length = 
-    (connector1Style == "dyson" && connector1Length < dysonMinLength) ? dysonMinLength :
-    (connector1Style == "camlock") ? camlockMinLength :
-    (connector1Style == "dw735" && connector1Length < dw735MinLength) ? dw735MinLength :
-    (connector1Style == "centec" && connector1Length < cenTecMinLength) ? cenTecMinLength :
-    connector1Length;
-  
-  echo(connector1Length = connector1Length, connector1Style = connector1Style, dw735MinLength = dw735MinLength);
-  
-  connector1Taper = 
-    (connector1Style == "dyson") ? 0 : //dyson lock has no taper
-    (connector1Style == "camlock") ? 0 : //cam lock has no taper
-    (connector1Style == "dw735") ? 0 : //dw735 lock has no taper
-    (connector1Style == "centec") ? 0 : //centec has no taper
-    connector1Taper;
 
   //Apply taper, from small to big
   end1InnerStartDiameter = end1InnerDiameter - connector1Taper / 2;
@@ -1012,7 +890,7 @@ module HoseAdapter(
 
   //If the stop has no thickness, it needs no length
   connector1StopLength = (connector1StopThickness > 0 && connector1Style == "hose") ? connector1StopLength : 0;
-  connector2StopLength = (connector2StopThickness > 0 && connector1Style == "hose") ? connector2StopLength : 0;
+  connector2StopLength = (connector2StopThickness > 0 && connector2Style == "hose") ? connector2StopLength : 0;
 
 
   //Transition settings 
@@ -1028,6 +906,8 @@ module HoseAdapter(
           ? abs(end1OuterEndDiameter - end2OuterStartDiameter)/2
           : transitionLength;
 
+    echo("HoseAdapter", _transitionAngle=_transitionAngle, _transitionStyle=_transitionStyle, _transitionLength=_transitionLength);
+    
       //Calculate the bend radius
       //organicbend, the '0' value must be max of connector 1 or 2 diameter, plus the wall thickness * 2 otherwise it will clip, then add provided radius.
       //transition the '0' value must be end 1 diameter/2 + wall thickenss *2 to prevent clipping, then addd provided radius.
@@ -1049,19 +929,19 @@ module HoseAdapter(
         : 0;
       //end hull settings
       echo("hull settings", shapeOverlap=shapeOverlap, lengthInHull=lengthInHull, _transitionLength=_transitionLength,edgeOffset=edgeOffset );
-      bendRadius = transitionStyle == "organicbend"
+      bendRadius = _transitionStyle == "organicbend"
         ? transitionEnd2Count > 1
           ? -(taperedAverageDiameter/2)/(cos(_transitionAngle)-1)-taperedAverageDiameter/2 + transitionBendRadius
           : taperedAverageDiameter + transitionBendRadius
-        : transitionStyle == "bend+taper"
+        : _transitionStyle == "bend+taper"
           ? transitionEnd2Count > 1
             ? -(end1OuterEndDiameter/2)/(cos(_transitionAngle)-1)-end1OuterEndDiameter/2 + transitionBendRadius
             : end1OuterEndDiameter/2 + transitionBendRadius
-          : transitionStyle == "taper+bend"
+          : _transitionStyle == "taper+bend"
             ? transitionEnd2Count > 1
               ? -(end2OuterStartDiameter/2)/(cos(_transitionAngle)-1)-end2OuterStartDiameter/2 + transitionBendRadius
               : end2OuterStartDiameter/2 + transitionBendRadius
-            : transitionStyle == "hull"
+            : _transitionStyle == "hull"
               ? 0
               : 0;
     
@@ -1141,7 +1021,7 @@ module HoseAdapter(
   
       translate([0, 0, endConnector1])
       transition(
-        style = transitionStyle,
+        style = _transitionStyle,
         length = _transitionLength,
         connector1InnerEndDiameter = end1InnerEndDiameter,
         connector2InnerStartDiameter = end2InnerEndDiameter,
