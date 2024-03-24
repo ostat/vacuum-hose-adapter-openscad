@@ -1,6 +1,9 @@
 
 fudgeFactor = 0.015;
 
+include <dotSCAD/shape_circle.scad>
+include <dotSCAD/ring_extrude.scad>
+
 //diameter1: Inner start diameter.
 //diameter2: Inner end diameter.
 //length: pipe length
@@ -302,7 +305,7 @@ module TaperedBentPipe(
     end2Count=1
 )
 {
-
+    assert(is_num(pipeAngle) &&  pipeAngle > 0, "pipeAngle must be greater than 0")
     echo("TaperedBentPipe", bendRadius=bendRadius, end1InnerPipeDiameter=end1InnerPipeDiameter, end2InnerPipeDiameter=end2InnerPipeDiameter, end1WallThickness=end1WallThickness, end2WallThickness=end2WallThickness);
 
     outerPipeDiameter  = end1InnerPipeDiameter + end1WallThickness * 2;
