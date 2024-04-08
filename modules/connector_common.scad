@@ -1,7 +1,3 @@
-// associative searching
-// dp 2019
-// - define the dictionary
-
 iSettingsLength = 0;
 iSettingsMeasurement = 1;
 iSettingsDiameter = 2;

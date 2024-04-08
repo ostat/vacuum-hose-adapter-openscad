@@ -428,78 +428,67 @@ module adapter(
       }
     } 
   }
-  
-  /*
-      HelpTxt("Caliper",[
-    "l",l,
-    "in",in,
-    "size",size,
-    "center",center,
-    "messpunkt",messpunkt,
-    "translate",translate,
-    "end",end,
-    "h",h,
-    "render",render,
-    "l2",l2,
-    "txt",txt]
-    ,help);
-  */
-  
+
   if($preview&&showCaliper){
-    color("white")
+    color("Gold")
     translate([0, 0, length+stopLength])
     mirror ([0,0,1])
     mirror (connector == 2 ? [1,0,0] : [0,0,0])
     union(){
       endStyle = measurement == "inner" ? 3 : 4;
       addwidth = measurement == "outer" ? wallThickness*2 : 0;
-      translate([0,0,length/2])
+      translate(style == "nozzle" ? [0,0,length] :[0,0,length/2])
       rotate([90,0,0])
        Caliper(messpunkt = false, help=0, size = 7,h = 0.1,
           l=innerDiameter + addwidth, 
           end=endStyle, 
           in=connector == 1 ? 1 : 0, 
-          txt = str("con", connector, " ", measurement, " ", innerDiameter,"mm"));
+          txt2 = str("con", connector, " ", measurement));
       if(innerDiameter != innerStartDiameter){
         translate([0,0,0])
         rotate([90,0,0])
-        Caliper(messpunkt = false, help=0, size = 6,h = 0.1,
+        Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
             l=innerStartDiameter + addwidth, 
             end=endStyle, 
             in=connector == 1 ? 1 : 0,
-            txt = str("con", connector, " start ", measurement, " ", innerStartDiameter,"mm"));
+            txt2 = str("con", connector, " start ", measurement));
       }
       if(innerDiameter != innerEndDiameter){
         translate([0,0,length])
         rotate([90,0,0])
-        Caliper(messpunkt = false, help=0, size = 6,h = 0.1,
+        Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
             l=innerEndDiameter + addwidth, 
-            end=endStyle, 
+            end=3, 
             in=connector == 1 ? 1 : 0,
-            txt = str("con", connector, " end ", measurement, " ", innerEndDiameter,"mm"));     
+            txt2 = str("con", connector, " end ", measurement));     
       }
       
       barWidth = wallThickness*8;
-      position = innerDiameter/2 + wallThickness + barWidth;
+      position = innerDiameter/2 + wallThickness*2;
       translate([(connector == 1 ? position  : -position), 0, length/2])
       rotate([90,0,0])
       Caliper(messpunkt = false, help=0, h = 0.1,
-            l=length, l2 = barWidth*2,
+            center=true,
+            l=length,
+            cx= 0,
             end=0, 
             size = 8,
             in=connector == 1 ? 2 : 3,
-            txt = str("con", connector, " length ", length,"mm"));
- 
+            translate= connector == 1 ? [15,0,0] : [-15,0,0],
+            txt2 = str("con", connector, " length"));
+        
       if(style == "nozzle")
       {
         translate([(connector == 1 ? position  : -position), 0,-nozzleLength/2])
         rotate([90,0,0])
         Caliper(messpunkt = false, help=0, h = 0.1,
-              l=nozzleLength, l2 = barWidth*2,
+              l=nozzleLength,
+              cx= 0,
               end=0, 
               size = 8,
               in=connector == 1 ? 2 : 3,
-              txt = str("nozzle ", connector, " length ", nozzleLength,"mm"));
+              translate= connector == 1 ? [15,0,0] : [-15,0,0],
+              txt2 = str("nozzle ", connector, " length"));
       }     
     }
   }
