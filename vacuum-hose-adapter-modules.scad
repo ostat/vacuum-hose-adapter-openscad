@@ -1,6 +1,11 @@
-// Hose connector modules
-// version 2023-07-24
-// https://justinsdk.github.io/dotSCAD/
+// Hose connector
+// version 2024-04-30
+// repo https://github.com/ostat/vacuum-hose-adapter-openscad
+//
+// I give permision to use this script as you want, you are also free to sell models generated using this script. When sharing or selling models generated please provide attribution, with a link to the repo.
+//
+// I don't approve of you hosting or uploading this script it to any site or 3d modeling site.
+
 use <modules/ub.scad>
 
 include <modules/modules_utility.scad>
