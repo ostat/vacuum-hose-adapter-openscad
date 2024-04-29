@@ -5,38 +5,37 @@ module Nozzle(
   length,
   wallThickness,
   nozzleShape,
-  nozzleSquareWidth,
-  nozzleSquareDepth,
+  nozzleSize,
   nozzleTipWallThickness,
   nozzleRadius,
-  nozzleLength,
-  nozzlexOffset = 0,
-  nozzleyOffset = 0,
+  nozzleOffset = [0,0],
   nozzleChamferPercentage = 0,
-  nozzleChamferAngle = 0
+  nozzleChamferAngle = 0,
+  help
 )
 {
+  assert(nozzleShape == "square" || nozzleShape == "circle", str("nozzleShape only supports square and circle. Provided:'", nozzleShape ,"'"));
   innerRadius = innerStartDiameter/2;
-
-  circlepositionx = nozzleShape == "square" ? nozzleSquareDepth/2 - nozzleRadius : 0;
-  circlepositiony = nozzleShape == "square" ? nozzleSquareWidth/2 - nozzleRadius : 0;
+  _nozzleRadius = nozzleShape == "circle" && nozzleRadius == 0 ? nozzleSize.x/2 
+    : nozzleShape == "square" ? min(nozzleSize.x/2, nozzleSize.y/2, nozzleRadius) 
+    : nozzleRadius;
+  circlepositionx = nozzleShape == "square" ? nozzleSize.x/2 - _nozzleRadius : 0;
+  circlepositiony = nozzleShape == "square" ? nozzleSize.y/2 - _nozzleRadius : 0;
   circlepositions = nozzleShape == "square" ?
     [[ circlepositionx, circlepositiony ],
     [ -circlepositionx, circlepositiony ],
     [ circlepositionx, -circlepositiony ],
     [ -circlepositionx, -circlepositiony ]] : [[ circlepositionx, circlepositiony ]] ;
 
-  nozzleWidth = (nozzleShape == "square" ? nozzleSquareDepth : nozzleRadius * 2) + wallThickness*2;
-  nozzleDepth = (nozzleShape == "square" ? nozzleSquareWidth : nozzleRadius * 2) + wallThickness*2;
+  nozzleWidth = (nozzleShape == "square" ? nozzleSize.x : _nozzleRadius * 2) + wallThickness*2;
+  nozzleDepth = (nozzleShape == "square" ? nozzleSize.y : _nozzleRadius * 2) + wallThickness*2;
   nozzleWidthChamfer = nozzleWidth * nozzleChamferPercentage /100;
   nozzleLengthChamfer = nozzleWidthChamfer * tan(nozzleChamferAngle);
 
   tipWallThickness = nozzleTipWallThickness == 0 ? wallThickness : nozzleTipWallThickness;
 
   widthChamfer = min(nozzleWidthChamfer, nozzleWidth);
-  lengthChamfer = min(nozzleLengthChamfer, nozzleLength);
-
-  echo("nozzle", innerRadius=innerRadius, circlepositionx=circlepositionx, circlepositiony=circlepositiony, nozzleWidth=nozzleWidth, nozzleDepth=nozzleDepth, nozzleWidthChamfer=nozzleWidthChamfer, nozzleLengthChamfer=nozzleLengthChamfer, widthChamfer=widthChamfer, lengthChamfer=lengthChamfer);
+  lengthChamfer = min(nozzleLengthChamfer, nozzleSize.z);
 
   difference()
   {
@@ -47,20 +46,20 @@ module Nozzle(
       hull()
       {
         cylinder(fudgeFactor*2, r=innerRadius+wallThickness);
-        translate([nozzleyOffset,nozzlexOffset,length + fudgeFactor])
+        translate([nozzleOffset.y,nozzleOffset.x,length + fudgeFactor])
         hull() for (i= [ 0 : len(circlepositions) - 1 ])
           translate([circlepositions[i][0], circlepositions[i][1], 0])
-          cylinder(fudgeFactor, r=nozzleRadius+wallThickness+fudgeFactor);
+          cylinder(fudgeFactor, r=_nozzleRadius+wallThickness+fudgeFactor);
       }
 
       // Nozzle
-      translate([nozzleyOffset,nozzlexOffset,length + fudgeFactor])
+      translate([nozzleOffset.y,nozzleOffset.x,length + fudgeFactor])
       hull() for (i= [ 0 : len(circlepositions) - 1 ])
       {
         translate([circlepositions[i][0], circlepositions[i][1], 0])
-          cylinder(fudgeFactor, r=nozzleRadius+wallThickness+fudgeFactor);
-        translate([circlepositions[i][0], circlepositions[i][1], nozzleLength])
-          cylinder(fudgeFactor, r=nozzleRadius+tipWallThickness+fudgeFactor);
+          cylinder(fudgeFactor, r=_nozzleRadius+wallThickness+fudgeFactor);
+        translate([circlepositions[i][0], circlepositions[i][1], nozzleSize.z])
+          cylinder(fudgeFactor, r=_nozzleRadius+tipWallThickness+fudgeFactor);
       }
     }
 
@@ -72,28 +71,47 @@ module Nozzle(
       {
         translate([00,0,-fudgeFactor])
           cylinder(fudgeFactor*2, r=innerRadius);
-        translate([nozzleyOffset,nozzlexOffset,length+fudgeFactor])
+        translate([nozzleOffset.y,nozzleOffset.x,length+fudgeFactor])
           hull() for (i= [ 0 : len(circlepositions) - 1 ])
             translate([circlepositions[i][0], circlepositions[i][1], 0])
-            cylinder(fudgeFactor*2, r=nozzleRadius+fudgeFactor);
+            cylinder(fudgeFactor*2, r=_nozzleRadius+fudgeFactor);
       }
 
       // Nozzle
-      translate([nozzleyOffset,nozzlexOffset,length+fudgeFactor*2])
+      translate([nozzleOffset.y,nozzleOffset.x,length+fudgeFactor*2])
       hull() for (i= [ 0 : len(circlepositions) - 1 ])
         translate([circlepositions[i][0], circlepositions[i][1], 0])
-        cylinder(nozzleLength+fudgeFactor*2, r=nozzleRadius+fudgeFactor);
+        cylinder(nozzleSize.z+fudgeFactor*2, r=_nozzleRadius+fudgeFactor);
     }
 
     // Chamfer
     if(widthChamfer > 0 && lengthChamfer > 0)
     {
-      translate([0,0,nozzleLength+length+fudgeFactor*3] )
-        rotate([90,0,180])
+      translate([nozzleOffset.y,nozzleOffset.x,nozzleSize.z+length+fudgeFactor*3] )
+      rotate([90,0,180])
         linear_extrude(nozzleDepth+1, center=true)
           polygon( points = [[nozzleWidth/2-widthChamfer,0],
                               [nozzleWidth/2+fudgeFactor*2,0],
                               [nozzleWidth/2+fudgeFactor*2,-lengthChamfer]] );
     }
   }
+  
+  HelpTxt("Nozzle",[
+    "innerStartDiameter", innerStartDiameter,
+    "length", length,
+    "wallThickness", wallThickness,
+    "nozzleShape", nozzleShape,
+    "nozzleSize", nozzleSize,
+    "nozzleTipWallThickness", nozzleTipWallThickness,
+    "nozzleRadius", nozzleRadius,
+    "nozzleOffset", nozzleOffset,
+    "nozzleChamferPercentage", nozzleChamferPercentage,
+    "nozzleChamferAngle", nozzleChamferAngle,
+    "_nozzleWidth", nozzleWidth,
+    "_nozzleDepth", nozzleDepth,
+    "_nozzleWidthChamfer", nozzleWidthChamfer,
+    "_nozzleLengthChamfer", nozzleLengthChamfer,
+    "_nozzleRadius", _nozzleRadius,
+    "_circlepositions", circlepositions,
+    ],help); 
 }

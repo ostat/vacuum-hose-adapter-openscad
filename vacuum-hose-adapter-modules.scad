@@ -22,6 +22,9 @@ include <modules/connector_dw735.scad>
 
 /* [Hidden] */
 fudgeFactor = 0.015;
+DefaultEnd1Color = "LightPink";
+DefaultEnd2Color = "SkyBlue";
+DefaultTransitionColor = "LightGreen";
 
 /* [Connector 1] */
 //Wall thickness
@@ -45,13 +48,13 @@ End1_StopThickness = 0;  //1
 //Length of hose stop
 End1_StopLength = 0;  //1
 //Should the stop be tapered both sides. Might easier to print.
-End1_Stop_Symmetrical = 0;
+End1_Stop_Symmetrical = false;
 //Number of barbs
 End1_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
 End1_Barbs_Thickness = 0; //0.1
 //Should the barbes be tapered both sides. Might be easier to print.
-End1_Barbs_Symmetrical = 0; //[0,1]
+End1_Barbs_Symmetrical = false;
 //End Cap Inner Diameter.
 End1_Hose_EndCap_Diameter = 0;  //0.1
 //Thickness of endcap.
@@ -97,10 +100,8 @@ Transition_Length = 10;  //1
 Transition_Bend_Radius = 0;  //1
 //Angle of bend through the transition section.
 Transition_Angle = 0;  //1
-// X offset for the connector, not supported on taperedbend.
-Transition_xOffset = 0; // 0.1
-// Y offset for the connector, not supported on taperedbend.
-Transition_yOffset = 0; // 0.1
+// offset for the connector, not supported on taperedbend.
+Transition_Offset = [0,0]; // 0.1
 /* [Transition Multiple connector settings] */
 // Dupliacte the second connector. Adjust angle and bend radius to make it work.
 Transition_End2_Count = 1;  //[1, 2, 3, 4, 5, 6]
@@ -130,7 +131,7 @@ Transition_Base_Angle=0;
 /* [Connector 2] */
 //Wall thickness
 End2_Wall_Thickness = 2; //0.01
-End2_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, none: None]
+End2_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec: Cen-Tec quick connect, none: None]
 // Is the measurement the adapter's outside or inside diameter?
 End2_Measurement = "outer"; //[inner, outer]
 // End 2 diameter of the adapter (mm)
@@ -148,13 +149,13 @@ End2_StopThickness = 0;  //1
 //Length of hose stop
 End2_StopLength = 0;  //1
 //Should the stop be tapered both sides. Might easier to print.
-End2_Stop_Symmetrical = 0;
+End2_Stop_Symmetrical = false;
 //Number of barbs
 End2_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
 End2_Barbs_Thickness = 0; //0.1
 //Should the barbes be tapered both sides. Might be easier to print.
-End2_Barbs_Symmetrical = 0; //[0,1]
+End2_Barbs_Symmetrical = false;
 //Thickness of endcap, 0 means disabled
 End2_Hose_EndCap_Thickness = 0;  //0.1
 //End Cap Inner Diameter.
@@ -199,13 +200,10 @@ End2_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitche
 /* [Connector 2 - Nozzle] */
 // Is the measurement the adapter's outside or inside diameter?
 End2_Nozzle_Shape = "square"; //[square, circle]
-End2_Nozzle_Square_Width = 10; //0.1
-End2_Nozzle_Square_Depth = 5; //0.1
+End2_Nozzle_Size = [10,5,10]; //0.1
 End2_Nozzle_Tip_Wall_Thickness = 0; //0.1
 End2_Nozzle_Radius = 0; //0.1
-End2_Nozzle_Length = 10;
-End2_Nozzle_xOffset = 0; //0.1
-End2_Nozzle_yOffset = 0; //0.1
+End2_Nozzle_Offset = [0,0]; //0.1
 End2_Nozzle_Chamfer_Percentage = 0; //0.1
 End2_Nozzle_Chamfer_Angle = 0; //0.1
 
@@ -229,14 +227,87 @@ Enable_Debug_Slice = false;
 //Will only show if debug is also enabled
 Enable_Calipers_Slice = false;
 Enable_Help = false;
-
+End1_Color = [DefaultEnd1Color,1];  //0.1
+End2_Color = [DefaultEnd2Color,1];  //0.1
+Transition_Color = [DefaultTransitionColor,1]; //The color, then the alpha value
 
 /* [Hidden] */
 //Detail
 $fn=120;
 
+function getColor(colorSetting, defaultColor) = 
+  assert(is_list(colorSetting), "colorSetting must be a list")
+  assert(len(colorSetting) == 2, "colorSetting be length 2")
+  let(
+    c = colorSetting[0] == "" ? defaultColor : colorSetting[0],
+    a = is_num(colorSetting[1]) && colorSetting[1] >=0 && colorSetting[1] <=1 ? colorSetting[1] : 1) [c,a];
+
 HoseAdapter();
 
+module adapterAlignmentRing(
+  centerDiameter = 0,
+  alignmentDepth = 0,
+  alignmentUpperWidth = 0,
+  alignmentLowerWidth = 0,
+  alignmentSideClearance = 0,
+  alignmentDepthClearance = 0,
+  magnetBorder = 0,
+  debug = false,
+  showCaliper=false,
+  help){
+
+  difference(){
+    AlignmentRing(
+      centerDiameter = centerDiameter,
+      alignmentDepth = alignmentDepth,
+      alignmentUpperWidth = alignmentUpperWidth,
+      alignmentLowerWidth = alignmentLowerWidth,
+      alignmentSideClearance = alignmentSideClearance,
+      alignmentDepthClearance = alignmentDepthClearance,
+      magnetBorder = magnetBorder);
+
+    if($preview&&debug){
+      cubeSziex = centerDiameter+max(alignmentUpperWidth, alignmentLowerWidth);
+      cubeSziey = centerDiameter/2+max(alignmentUpperWidth, alignmentLowerWidth);
+      cubeSziez = alignmentDepth*2;
+      translate([-cubeSziex/2, -cubeSziey, -cubeSziez/2])
+        cube([cubeSziex,cubeSziey,cubeSziez]);
+      }
+    } 
+     
+    if($preview&&showCaliper){
+      color("Gold")
+      union(){
+        rotate([90,0,0])
+        Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
+          //center=false,
+          l=centerDiameter+max(alignmentUpperWidth, alignmentLowerWidth), 
+          end=0, in=1, 
+          translate= [0,10,0],
+          txt2 = "centerDiameter");
+        translate([(centerDiameter)/2,0,0])
+        rotate([90,90,0])
+        Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
+          l=(alignmentDepth-alignmentDepthClearance)*2, 
+          end=0, in=4,          
+          cx= 0,
+          translate= [0,5,0],
+          txt2 = "alignmentDepth");
+        }
+    }
+  
+  HelpTxt("adapterAlignmentRing",[
+    "centerDiameter", centerDiameter,
+    "magnetBorder", magnetBorder,
+    "alignmentDepth", alignmentDepth,
+    "alignmentUpperWidth", alignmentUpperWidth,
+    "alignmentLowerWidth", alignmentLowerWidth,
+    "alignmentSideClearance", alignmentSideClearance,
+    "alignmentDepthClearance", alignmentDepthClearance,
+    "debug", debug]
+    ,help);       
+}
+          
 module adapter(
     connector = 2,
     wallThickness = 2,
@@ -254,10 +325,10 @@ module adapter(
     endCapGridWallThickness = 0,
     stopThickness = 0,
     stopLength = 0,
-    stopSymmetrical = 0,
+    stopSymmetrical = false,
     barbsCount = 0,
     barbsThickness = 0,
-    barbsSymmetrical = 0,
+    barbsSymmetrical = false,
     magnetCount = 0,
     magnetDiameter = 0,
     magnetThickness = 0,
@@ -278,26 +349,26 @@ module adapter(
     flangeScrewDiameter = 0,
     transitionAngle = 0,
     nozzleShape = "square",
-    nozzleSquareWidth = 20,
-    nozzleSquareDepth = 10,
+    nozzleSize = [20,10,50],
     nozzleTipWallThickness = 0,
     nozzleRadius = 5,
-    nozzleLength = 50,
-    nozzlexOffset = 0,
-    nozzleyOffset = 0,
+    nozzleOffset = [0,0],
     nozzleChamferPercentage = 0,
     nozzleChamferAngle = 0,
-    adapterColor = "blue",
+    adapterColor = ["blue",1],
     debug = false,
     showCaliper=false,
     help
 ){
+  assert(is_list(adapterColor), "adapterColor must be a list")
+  assert(len(adapterColor) == 2, "adapterColor be length 2")
+  
   //Create the start connector
   if(length > 0)
   {
     difference()
     {
-      color(adapterColor)
+      color(adapterColor[0], adapterColor[1])
       rotate([0,0,rotation])
       union(){
         if(style == "mag")
@@ -336,7 +407,8 @@ module adapter(
             screwPosition = flangeScrewPosition,
             screwBorder = flangeScrewBorder,
             screwCount = flangeScrewCount,
-            screwDiameter = flangeScrewDiameter);
+            screwDiameter = flangeScrewDiameter,
+            help = help);
         }
 
         else if(style == "hose")
@@ -353,14 +425,13 @@ module adapter(
             stopWidth = stopThickness,
             stopSymmetrical = stopSymmetrical,
             barbsCount  = barbsCount,
-            barbsThickness = endCapThickness,
+            barbsThickness = barbsThickness,
             barbsSymmetrical = barbsSymmetrical,
             endCapDiameter = endCapDiameter,
             endCapThickness = endCapThickness,
             endCapGridSize = endCapGridSize,
             endCapGridWallThickness = endCapGridWallThickness,
-            help = help
-          );
+            help = help);
         }
         else if(style == "dyson")
         {
@@ -389,7 +460,7 @@ module adapter(
             innerEndDiameter = innerEndDiameter,
             length = length,
             wallThickness = wallThickness,
-            connectorCount = transitionAngle > 0 ? 4 : 1);
+            connectorCount = transitionAngle > 0 ? 6 : 1);
         }
         else if(style == "centec")
         {
@@ -404,25 +475,25 @@ module adapter(
             length = length,
             wallThickness = wallThickness,
             nozzleShape = nozzleShape,
-            nozzleSquareWidth = nozzleSquareWidth,
-            nozzleSquareDepth = nozzleSquareDepth,
+            nozzleSize = nozzleSize,
             nozzleTipWallThickness = nozzleTipWallThickness,
             nozzleRadius = nozzleRadius,
-            nozzleLength = nozzleLength,
-            nozzlexOffset = nozzlexOffset,
-            nozzleyOffset = nozzleyOffset,
+            nozzleOffset = nozzleOffset,
             nozzleChamferPercentage = nozzleChamferPercentage,
-            nozzleChamferAngle = nozzleChamferAngle);
+            nozzleChamferAngle = nozzleChamferAngle,
+            help = help);
+        } else if(style == "none"){
         }
         else {
-         echo(str("style not supported style: ", style));
+         assert(false, str("style not supported style: ", style));
         }
       }
       if($preview&&debug){
-        echo("enabling debug slice");
-        cubeSziex = max(innerStartDiameter,innerEndDiameter)*1.5;
+        cubeSziex = max(innerStartDiameter,innerEndDiameter)*2;
         cubeSziey = max(innerStartDiameter,innerEndDiameter)*1.5;
-        cubeSziez = length+fudgeFactor*4+(style == "nozzle"? nozzleLength : 0);
+        cubeSziez = length+stopLength+fudgeFactor*4
+          +(style == "nozzle"? nozzleSize.z+fudgeFactor : 0)
+          +(style == "mag"? alignmentDepth: 0);
         translate([-cubeSziex/2, -cubeSziey, -fudgeFactor*2])
         cube([cubeSziex,cubeSziey,cubeSziez]);
       }
@@ -479,10 +550,10 @@ module adapter(
         
       if(style == "nozzle")
       {
-        translate([(connector == 1 ? position  : -position), 0,-nozzleLength/2])
+        translate([(connector == 1 ? position  : -position), 0,-nozzleSize.z/2])
         rotate([90,0,0])
         Caliper(messpunkt = false, help=0, h = 0.1,
-              l=nozzleLength,
+              l=nozzleSize.z,
               cx= 0,
               end=0, 
               size = 8,
@@ -532,13 +603,10 @@ module adapter(
     "flangeScrewDiameter", flangeScrewDiameter,
     "transitionAngle", transitionAngle,
     "nozzleShape", nozzleShape,
-    "nozzleSquareWidth", nozzleSquareWidth,
-    "nozzleSquareDepth", nozzleSquareDepth,
+    "nozzleSize", nozzleSize,
     "nozzleTipWallThickness", nozzleTipWallThickness,
     "nozzleRadius", nozzleRadius,
-    "nozzleLength", nozzleLength,
-    "nozzlexOffset", nozzlexOffset,
-    "nozzleyOffset", nozzleyOffset,
+    "nozzleOffset", nozzleOffset,
     "nozzleChamferPercentage", nozzleChamferPercentage,
     "nozzleChamferAngle", nozzleChamferAngle,
     "adapterColor", adapterColor,
@@ -568,12 +636,15 @@ module transition(
   edgeOffset,
   hullCenter,
   centerHeight,
-  xOffset,
-  yOffset,
+  Offset,
   debug = false,
+  transitionColor = ["LightGreen",1],
   showCaliper = false,
   help
 ){
+  assert(is_list(transitionColor), "adapterColor must be a list")
+  assert(len(transitionColor) == 2, "adapterColor be length 2")
+  
   difference()
   {
     union()
@@ -582,7 +653,7 @@ module transition(
       {
         transDiameter = min(connector1InnerEndDiameter,  connector2InnerStartDiameter);
         transThickness = abs(connector1InnerEndDiameter - connector2InnerStartDiameter)/2 + max(connector1WallThickness,connector2WallThickness);
-        color("LightGreen")
+        color(transitionColor[0], transitionColor[1])
         StraightPipe(
             diameter = transDiameter,
             length = length,
@@ -591,7 +662,7 @@ module transition(
       if(style == "organicbend")
       {
           //Bent pipe that tapers through the bend.
-          color("LightGreen")
+          color(transitionColor[0], transitionColor[1])
           TaperedBentPipe(
               bendRadius = bendRadius,
               end1InnerPipeDiameter = connector1InnerEndDiameter,
@@ -608,7 +679,7 @@ module transition(
       }
       else if(style == "hull")
       {
-        color("LightGreen")
+        color(transitionColor[0], transitionColor[1])
         BentPipeHull(
             inner1PipeRadius = connector1InnerEndDiameter/2,
             inner2PipeRadius = connector2InnerStartDiameter/2,
@@ -630,7 +701,7 @@ module transition(
         //the bent pipe section, diameter matches connector 1.
         if(angle > 0)
         {
-          color("LightGreen")
+          color(transitionColor[0], transitionColor[1])
           BentPipe(
             bendRadius = bendRadius,
             innerPipeDiameter = connector1InnerEndDiameter,
@@ -647,7 +718,8 @@ module transition(
         //Tapered section position to the end of the bent pipe
         for (rotation = [0:connector2Count-1])
         {
-          color("SpringGreen")
+          //color("SpringGreen")
+          color(transitionColor[0], transitionColor[1])
           rotate([0, 0, rotation*(360/connector2Count)])
           translate([-bendRadius, 0, 0])
             rotate([0, -angle, 0])
@@ -658,28 +730,27 @@ module transition(
                 length = length,
                 wallThickness1 = connector1WallThickness,
                 wallThickness2 = connector2WallThickness,
-                xOffset = xOffset,
-                yOffset = yOffset);
+                Offset = Offset);
         }
       }
       else if(style == "taper+bend")
       {
         //Tapered section position to the end of the bent pipe
-        color("SpringGreen")
+        //color("SpringGreen")
+        color(transitionColor[0], transitionColor[1])
         Pipe(
           diameter1 = connector1InnerEndDiameter,
           diameter2 = connector2InnerStartDiameter,
           length = length,
           wallThickness1 = connector1WallThickness,
           wallThickness2 = connector2WallThickness,
-          xOffset = xOffset,
-          yOffset = yOffset);
+          Offset = Offset);
 
         if(angle > 0)
         {
           //the bent pipe section, diameter matches connector 2.
-          translate([xOffset, yOffset, 0])
-          color("LightGreen")
+          translate([Offset.x, Offset.y, 0])
+          color(transitionColor[0], transitionColor[1])
           BentPipe(
             bendRadius = bendRadius,
             innerPipeDiameter = connector2InnerStartDiameter,
@@ -696,7 +767,6 @@ module transition(
       }
     }
     if($preview&&debug){
-      echo("enabling debug slice");
       cubeSize = max(connector1InnerEndDiameter,connector2InnerStartDiameter)*3;
       translate([-cubeSize/2, -cubeSize , -fudgeFactor*2])
           cube([cubeSize, cubeSize, cubeSize ]);
@@ -704,8 +774,8 @@ module transition(
       //    cube([200,200,200]);
     }
   
-  if(showCaliper){
-  }
+    if(showCaliper){
+    }
   }
 
   HelpTxt("transition",[
@@ -730,8 +800,7 @@ module transition(
     "edgeOffset", edgeOffset,
     "hullCenter", hullCenter,
     "centerHeight", centerHeight,
-    "xOffset", xOffset,
-    "yOffset", yOffset,
+    "offset", Offset,
     "debug", debug]
     ,help);   
 }
@@ -779,8 +848,7 @@ module HoseAdapter(
   transitionLength = Transition_Length,
   transitionBendRadius = Transition_Bend_Radius,
   transitionAngle = Transition_Angle,
-  transitionXOffset = Transition_xOffset,
-  transitionYOffset = Transition_yOffset,
+  transitionOffset = Transition_Offset,
   transitionBaseType = Transition_Base_Type,
   transitionBaseThickness = Transition_Base_Thickness,
   transitionBaseWidth = Transition_Base_Width,
@@ -827,18 +895,21 @@ module HoseAdapter(
   connector2FlangeScrewDiameter = End2_Flange_Screw_Diameter,
   
   connector2NozzleShape = End2_Nozzle_Shape,
-  connector2NozzleSquareWidth = End2_Nozzle_Square_Width,
-  connector2NozzleSquareDepth = End2_Nozzle_Square_Depth,
+  connector2NozzleSize = End2_Nozzle_Size,
   connector2NozzleTipWallThickness = End2_Nozzle_Tip_Wall_Thickness,
   connector2NozzleRadius = End2_Nozzle_Radius,
-  connector2NozzleLength = End2_Nozzle_Length,
-  connector2NozzlexOffset = End2_Nozzle_xOffset,
-  connector2NozzleyOffset = End2_Nozzle_yOffset,
+  connector2NozzleOffset = End2_Nozzle_Offset,
   connector2NozzleChamferPercentage = End2_Nozzle_Chamfer_Percentage,
   connector2NozzleChamferAngle = End2_Nozzle_Chamfer_Angle,
   sliceDebug = Enable_Debug_Slice,
-  showCaliper = Enable_Calipers_Slice
+  showCaliper = Enable_Calipers_Slice,
+  end1Color = End1_Color,
+  end2Color = End2_Color,
+  transitionColor = Transition_Color,
+  help = Enable_Help
 ){
+  assert(is_num(connector1Length), "connector1Length must be a number");
+  
   $gha=[["connector1",[0,0,0]],["connector2",[0,0,0]],["trasnition",[0,0,0]]];
   
   //Apply defauls and overrides
@@ -847,13 +918,14 @@ module HoseAdapter(
   connector1WallThickness = retriveConnectorSetting(connector1Style, iSettingsWallThickness, connector1WallThickness);
   connector1Length = retriveConnectorSetting(connector1Style, iSettingsLength, connector1Length);
   connector1Taper = retriveConnectorSetting(connector1Style, iSettingsTaper, connector1Taper);
-
-  echo("HoseAdapter", connector1Style = connector1Style, 
-    connector1Measurement = connector1Measurement, 
-    connector1Diameter = connector1Diameter,
-    connector1WallThickness = connector1WallThickness,
-    connector1Length = connector1Length,
-    connector1Taper = connector1Taper);
+    
+  connector2Measurement = retriveConnectorSetting(connector2Style, iSettingsMeasurement, connector2Measurement);
+  connector2Diameter = let(d2 = retriveConnectorSetting(connector2Style, iSettingsDiameter, connector2Diameter)) 
+    //For nozzle, if the diameter is 0, then set it to the D1, this will look nice.
+    (connector2Style == "nozzle" && d2 == 0) ? connector1Diameter : d2;
+  connector2WallThickness = retriveConnectorSetting(connector2Style, iSettingsWallThickness, connector2WallThickness);
+  connector2Length = retriveConnectorSetting(connector2Style, iSettingsLength, connector2Length);
+  connector2Taper = retriveConnectorSetting(connector2Style, iSettingsTaper, connector2Taper);
     
   end1InnerDiameter = 
     (connector1Measurement == "inner") ? connector1Diameter : 
@@ -894,8 +966,6 @@ module HoseAdapter(
         : transitionLength == 0
           ? abs(end1OuterEndDiameter - end2OuterStartDiameter)/2
           : transitionLength;
-
-    echo("HoseAdapter", _transitionAngle=_transitionAngle, _transitionStyle=_transitionStyle, _transitionLength=_transitionLength);
     
       //Calculate the bend radius
       //organicbend, the '0' value must be max of connector 1 or 2 diameter, plus the wall thickness * 2 otherwise it will clip, then add provided radius.
@@ -917,7 +987,6 @@ module HoseAdapter(
           : (end1OuterEndDiameter - end2OuterStartDiameter)/2 + transitionHullyOffset) * cos(_transitionAngle)
         : 0;
       //end hull settings
-      echo("hull settings", shapeOverlap=shapeOverlap, lengthInHull=lengthInHull, _transitionLength=_transitionLength,edgeOffset=edgeOffset );
       bendRadius = _transitionStyle == "organicbend"
         ? transitionEnd2Count > 1
           ? -(taperedAverageDiameter/2)/(cos(_transitionAngle)-1)-taperedAverageDiameter/2 + transitionBendRadius
@@ -933,254 +1002,239 @@ module HoseAdapter(
             : _transitionStyle == "hull"
               ? 0
               : 0;
-    
       
-  if(drawAlignmentRing == "end1")
+  if(drawAlignmentRing == "end1" || drawAlignmentRing == "end2")
   {
-      !AlignmentRing(
-          centerDiameter = end1InnerStartDiameter + connector1MagnetBorder + alignmentUpperWidth,
-          alignmentDepth = alignmentDepth,
-          alignmentUpperWidth = alignmentUpperWidth,
-          alignmentLowerWidth = alignmentLowerWidth,
-          alignmentSideClearance = alignmentSideClearance,
-          alignmentDepthClearance = alignmentDepthClearance,
-          magnetBorder = connector1MagnetBorder);
-  }
-
-  if(drawAlignmentRing == "end2")
-  {
-      !AlignmentRing(
-          centerDiameter = end2InnerStartDiameter + connector2MagnetBorder + alignmentUpperWidth,
-          alignmentDepth = alignmentDepth,
-          alignmentUpperWidth = alignmentUpperWidth,
-          alignmentLowerWidth = alignmentLowerWidth,
-          alignmentSideClearance = alignmentSideClearance,
-          alignmentDepthClearance = alignmentDepthClearance,
-          magnetBorder = connector2MagnetBorder);
-  }
-
-  
-  difference()
-  {
-    union() 
+    adapterAlignmentRing(
+      centerDiameter = drawAlignmentRing == "end1" 
+        ? end1InnerStartDiameter + connector1MagnetBorder + alignmentUpperWidth
+        : end2InnerStartDiameter + connector2MagnetBorder + alignmentUpperWidth,
+      alignmentDepth = alignmentDepth,
+      alignmentUpperWidth = alignmentUpperWidth,
+      alignmentLowerWidth = alignmentLowerWidth,
+      alignmentSideClearance = alignmentSideClearance,
+      alignmentDepthClearance = alignmentDepthClearance,
+      magnetBorder = drawAlignmentRing == "end1" ? connector1MagnetBorder : connector2MagnetBorder,
+      debug = sliceDebug,
+      showCaliper = showCaliper,
+      help = help);
+  } else {
+    difference()
     {
-      translate([0, 0, connector1Length+connector1StopLength])
-      mirror ([0,0,1])
-      adapter(
-        connector = 1,
-        wallThickness = connector1WallThickness,
-        style= connector1Style,
-        measurement= connector1Measurement,
-        innerDiameter = end1InnerDiameter,
-        innerStartDiameter = end1InnerStartDiameter,
-        innerEndDiameter = end1InnerEndDiameter,
-        length = connector1Length,
-        rotation = connector1Rotation,
-        endCapDiameter = connector1EndCapDiameter,
-        endCapThickness = connector1EndCapThickness,
-        stopThickness = connector1StopThickness,
-        stopLength = connector1StopLength,
-        stopSymmetrical = connector1StopSymmetrical,
-        barbsCount = connector1BarbsCount,
-        barbsThickness = connector1BarbsThickness,
-        barbsSymmetrical = connector1BarbsSymmetrical,
-        magnetCount = connector1MagnetCount,
-        magnetDiameter = connector1MagnetDiameter,
-        magnetThickness = connector1MagnetThickness,
-        magnetBorder = connector1MagnetBorder,
-        magnetFlangeThickness = connector1MagnetFlangeThickness,
-        magnetTwistLockSize = connector1MagnetTwistLockSize,
-        alignmentRing = connector1Ring,
-        alignmentDepth = alignmentDepth,
-        alignmentUpperWidth = alignmentUpperWidth,
-        alignmentLowerWidth = alignmentLowerWidth,
-        alignmentSideClearance = alignmentSideClearance,
-        alignmentDepthClearance = alignmentDepthClearance,
-        flangeWidth = connector1FlangeWidth,
-        flangeThickness = connector1FlangeThickness,
-        flangeScrewPosition = connector1FlangeScrewPosition,
-        flangeScrewBorder = connector1FlangeScrewBorder,
-        flangeScrewCount = connector1FlangeScrewCount,
-        flangeScrewDiameter = connector1FlangeScrewDiameter,
-        transitionAngle =_transitionAngle,
-        adapterColor = "LightPink",
-        debug = sliceDebug,
-        showCaliper = showCaliper,
-        help = Enable_Help);
-  
-      translate([0, 0, endConnector1])
-      transition(
-        style = _transitionStyle,
-        length = _transitionLength,
-        connector1InnerEndDiameter = end1InnerEndDiameter,
-        connector2InnerStartDiameter = end2InnerEndDiameter,
-        connector1WallThickness = connector1WallThickness,
-        connector2WallThickness = connector2WallThickness,
-        bendRadius = bendRadius,
-        angle = _transitionAngle,
-        baseType = transitionBaseType,
-        baseThickness = transitionBaseThickness,
-        baseWidth = transitionBaseWidth,
-        baseLength = transitionBaseLength,
-        baseAngle = transitionBaseAngle,
-        connector2Count = transitionEnd2Count,
-        lengthInHull = lengthInHull,
-        hullLength = transitionHullLength,
-        hullCenterLength = transitionHullCenterLength,
-        edgeOffset = edgeOffset,
-        hullCenter = transitionHullCenter,
-        centerHeight = transitionCenterHeight,
-        xOffset = transitionXOffset,
-        yOffset = transitionYOffset,
-        debug = sliceDebug,
-        showCaliper = showCaliper,
-        help = Enable_Help);
-
-      // Create the end connector
-      if(connector2Length > 0)
+      union() 
       {
-        preRotation = [
-          ((_transitionStyle == "taper+bend") ? transitionXOffset
-            : _transitionStyle == "hull" ? -end1OuterEndDiameter/2
-            : 0) - bendRadius,
-          ((_transitionStyle == "taper+bend") ? transitionYOffset : 0),
-          ((_transitionStyle == "taper+bend" || _transitionStyle == "flat" || _transitionStyle == "none") ? _transitionLength
-            : _transitionStyle == "hull" ? 0
-            : 0) + endConnector1];
+        translate([0, 0, connector1Length+connector1StopLength])
+        mirror ([0,0,1])
+        adapter(
+          connector = 1,
+          wallThickness = connector1WallThickness,
+          style= connector1Style,
+          measurement= connector1Measurement,
+          innerDiameter = end1InnerDiameter,
+          innerStartDiameter = end1InnerStartDiameter,
+          innerEndDiameter = end1InnerEndDiameter,
+          length = connector1Length,
+          rotation = connector1Rotation,
+          endCapDiameter = connector1EndCapDiameter,
+          endCapThickness = connector1EndCapThickness,
+          stopThickness = connector1StopThickness,
+          stopLength = connector1StopLength,
+          stopSymmetrical = connector1StopSymmetrical,
+          barbsCount = connector1BarbsCount,
+          barbsThickness = connector1BarbsThickness,
+          barbsSymmetrical = connector1BarbsSymmetrical,
+          magnetCount = connector1MagnetCount,
+          magnetDiameter = connector1MagnetDiameter,
+          magnetThickness = connector1MagnetThickness,
+          magnetBorder = connector1MagnetBorder,
+          magnetFlangeThickness = connector1MagnetFlangeThickness,
+          magnetTwistLockSize = connector1MagnetTwistLockSize,
+          alignmentRing = connector1Ring,
+          alignmentDepth = alignmentDepth,
+          alignmentUpperWidth = alignmentUpperWidth,
+          alignmentLowerWidth = alignmentLowerWidth,
+          alignmentSideClearance = alignmentSideClearance,
+          alignmentDepthClearance = alignmentDepthClearance,
+          flangeWidth = connector1FlangeWidth,
+          flangeThickness = connector1FlangeThickness,
+          flangeScrewPosition = connector1FlangeScrewPosition,
+          flangeScrewBorder = connector1FlangeScrewBorder,
+          flangeScrewCount = connector1FlangeScrewCount,
+          flangeScrewDiameter = connector1FlangeScrewDiameter,
+          transitionAngle =_transitionAngle,
+          adapterColor = getColor(end1Color, DefaultEnd1Color),
+          debug = sliceDebug,
+          showCaliper = showCaliper,
+          help = help);
+           
+        translate([0, 0, endConnector1])
+        transition(
+          style = _transitionStyle,
+          length = _transitionLength,
+          connector1InnerEndDiameter = end1InnerEndDiameter,
+          connector2InnerStartDiameter = end2InnerEndDiameter,
+          connector1WallThickness = connector1WallThickness,
+          connector2WallThickness = connector2WallThickness,
+          bendRadius = bendRadius,
+          angle = _transitionAngle,
+          baseType = transitionBaseType,
+          baseThickness = transitionBaseThickness,
+          baseWidth = transitionBaseWidth,
+          baseLength = transitionBaseLength,
+          baseAngle = transitionBaseAngle,
+          connector2Count = transitionEnd2Count,
+          lengthInHull = lengthInHull,
+          hullLength = transitionHullLength,
+          hullCenterLength = transitionHullCenterLength,
+          edgeOffset = edgeOffset,
+          hullCenter = transitionHullCenter,
+          centerHeight = transitionCenterHeight,
+          Offset = transitionOffset,
+          debug = sliceDebug,
+          transitionColor = getColor(transitionColor, DefaultTransitionColor),
+          showCaliper = showCaliper,
+          help = help);
 
-        postRotation = [
-          ((_transitionStyle == "bend+taper") ? transitionXOffset
-            : _transitionStyle == "hull" ? end1OuterEndDiameter/2-edgeOffset
-            : 0) + bendRadius,
-          ((_transitionStyle == "bend+taper") ? transitionYOffset : 0),
-          ((_transitionStyle == "bend+taper") ? _transitionLength
-            : _transitionStyle == "hull" ? max(transitionHullLength,transitionHullLength)+lengthInHull+connector2WallThickness
-            : 0)];
-        //The max above is a bug.
-  
-        for (rotation = [0:transitionEnd2Count-1])
+        // Create the end connector
+        if(connector2Length > 0)
         {
-          rotate([0, 0, rotation*(360/transitionEnd2Count)])
-          translate(preRotation)
-          rotate([0, -_transitionAngle, 0])
-          translate(postRotation)
-          adapter(
-            connector = 2,
-            wallThickness = connector2WallThickness,
-            style= connector2Style,
-            measurement= connector2Measurement,
-            innerDiameter = end2InnerDiameter,
-            innerStartDiameter = end2InnerStartDiameter,
-            innerEndDiameter = end2InnerEndDiameter,
-            length = connector2Length,
-            rotation = connector2Rotation,
-            endCapDiameter = connector2EndCapDiameter,
-            endCapThickness = connector2EndCapThickness,
-            endCapGridSize = connector2EndCapGridSize,
-            endCapGridWallThickness = connector2EndCapGridWallThickness,
-            stopThickness = connector2StopThickness,
-            stopLength = connector2StopLength,
-            stopSymmetrical = connector2StopSymmetrical,
-            barbsCount = connector2BarbsCount,
-            barbsThickness = connector2BarbsThickness,
-            barbsSymmetrical = connector2BarbsSymmetrical,
-            magnetCount = connector2MagnetCount,
-            magnetDiameter = connector2MagnetDiameter,
-            magnetThickness = connector2MagnetThickness,
-            magnetBorder = connector2MagnetBorder,
-            magnetFlangeThickness = connector2MagnetFlangeThickness,
-            magnetTwistLockSize = connector2MagnetTwistLockSize,
-            alignmentRing = connector2Ring,
-            alignmentDepth = alignmentDepth,
-            alignmentUpperWidth = alignmentUpperWidth,
-            alignmentLowerWidth = alignmentLowerWidth,
-            alignmentSideClearance = alignmentSideClearance,
-            alignmentDepthClearance = alignmentDepthClearance,
-            flangeWidth = connector2FlangeWidth,
-            flangeThickness = connector2FlangeThickness,
-            flangeScrewPosition = connector2FlangeScrewPosition,
-            flangeScrewBorder = connector2FlangeScrewBorder,
-            flangeScrewCount = connector2FlangeScrewCount,
-            flangeScrewDiameter = connector2FlangeScrewDiameter,
-            nozzleShape = connector2NozzleShape,
-            nozzleSquareWidth = connector2NozzleSquareWidth,
-            nozzleSquareDepth = connector2NozzleSquareDepth,
-            nozzleTipWallThickness = connector2NozzleTipWallThickness,
-            nozzleRadius = connector2NozzleRadius,
-            nozzleLength = connector2NozzleLength,
-            nozzlexOffset = connector2NozzlexOffset,
-            nozzleyOffset = connector2NozzleyOffset,
-            nozzleChamferPercentage = connector2NozzleChamferPercentage,
-            nozzleChamferAngle = connector2NozzleChamferAngle,
-            transitionAngle =_transitionAngle,
-            adapterColor = "SkyBlue",
-            debug = sliceDebug,
-            showCaliper = rotation == 0 ? showCaliper : false,
-            help = Enable_Help);
-        }
-      
-        if(_transitionStyle == "hull" && transitionHullCenter)
-        {
-          translate([0, 0, endConnector1+connector2StopLength+transitionCenterHeight+transitionHullCenterLength])
-          adapter(
-            connector = 2,
-            wallThickness = connector2WallThickness,
-            style= connector2Style,
-            measurement= connector2Measurement,
-            innerDiameter = end2InnerDiameter,
-            innerStartDiameter = end2InnerStartDiameter,
-            innerEndDiameter = end2InnerEndDiameter,
-            length = connector2Length,
-            rotation = connector2Rotation,
-            endCapDiameter = connector2EndCapDiameter,
-            endCapThickness = connector2EndCapThickness,
-            endCapGridSize = connector2EndCapGridSize,
-            endCapGridWallThickness = connector2EndCapGridWallThickness,
-            stopThickness = connector2StopThickness,
-            stopLength = connector2StopLength,
-            stopSymmetrical = connector2StopSymmetrical,
-            barbsCount = connector2BarbsCount,
-            barbsThickness = connector2BarbsThickness,
-            barbsSymmetrical = connector2BarbsSymmetrical,
-            magnetCount = connector2MagnetCount,
-            magnetDiameter = connector2MagnetDiameter,
-            magnetThickness = connector2MagnetThickness,
-            magnetBorder = connector2MagnetBorder,
-            magnetFlangeThickness = connector2MagnetFlangeThickness,
-            magnetTwistLockSize = connector2MagnetTwistLockSize,
-            alignmentRing = connector1Ring,
-            alignmentDepth = alignmentDepth,
-            alignmentUpperWidth = alignmentUpperWidth,
-            alignmentLowerWidth = alignmentLowerWidth,
-            alignmentSideClearance = alignmentSideClearance,
-            alignmentDepthClearance = alignmentDepthClearance,
-            flangeWidth = connector2FlangeWidth,
-            flangeThickness = connector2FlangeThickness,
-            flangeScrewPosition = connector2FlangeScrewPosition,
-            flangeScrewBorder = connector2FlangeScrewBorder,
-            flangeScrewCount = connector2FlangeScrewCount,
-            flangeScrewDiameter = connector2FlangeScrewDiameter,
-            nozzleShape = connector2NozzleShape,
-            nozzleSquareWidth = connector2NozzleSquareWidth,
-            nozzleSquareDepth = connector2NozzleSquareDepth,
-            nozzleTipWallThickness = connector2NozzleTipWallThickness,
-            nozzleRadius = connector2NozzleRadius,
-            nozzleLength = connector2NozzleLength,
-            nozzlexOffset = connector2NozzlexOffset,
-            nozzleyOffset = connector2NozzleyOffset,
-            nozzleChamferPercentage = connector2NozzleChamferPercentage,
-            nozzleChamferAngle = connector2NozzleChamferAngle,
-            transitionAngle =_transitionAngle,    
-            adapterColor = "SkyBlue",    
-            debug = sliceDebug,
-            showCaliper = showCaliper,
-            help = Enable_Help);
+          preRotation = [
+            ((_transitionStyle == "taper+bend") ? transitionOffset.x
+              : _transitionStyle == "hull" ? -end1OuterEndDiameter/2
+              : 0) - bendRadius,
+            ((_transitionStyle == "taper+bend") ? transitionOffset.y : 0),
+            ((_transitionStyle == "taper+bend" || _transitionStyle == "flat" || _transitionStyle == "none") ? _transitionLength
+              : _transitionStyle == "hull" ? 0
+              : 0) + endConnector1];
+
+          postRotation = [
+            ((_transitionStyle == "bend+taper") ? transitionOffset.x
+              : _transitionStyle == "hull" ? end1OuterEndDiameter/2-edgeOffset
+              : 0) + bendRadius,
+            ((_transitionStyle == "bend+taper") ? transitionOffset.y : 0),
+            ((_transitionStyle == "bend+taper") ? _transitionLength
+              : _transitionStyle == "hull" ? max(transitionHullLength,transitionHullLength)+lengthInHull+connector2WallThickness
+              : 0)];
+          //The max above is a bug.
+    
+          for (rotation = [0:transitionEnd2Count-1])
+          {
+            if(sliceDebug == false || rotation ==0)
+            rotate([0, 0, rotation*(360/transitionEnd2Count)])
+            translate(preRotation)
+            rotate([0, -_transitionAngle, 0])
+            translate(postRotation)
+            adapter(
+              connector = 2,
+              wallThickness = connector2WallThickness,
+              style= connector2Style,
+              measurement= connector2Measurement,
+              innerDiameter = end2InnerDiameter,
+              innerStartDiameter = end2InnerStartDiameter,
+              innerEndDiameter = end2InnerEndDiameter,
+              length = connector2Length,
+              rotation = connector2Rotation,
+              endCapDiameter = connector2EndCapDiameter,
+              endCapThickness = connector2EndCapThickness,
+              endCapGridSize = connector2EndCapGridSize,
+              endCapGridWallThickness = connector2EndCapGridWallThickness,
+              stopThickness = connector2StopThickness,
+              stopLength = connector2StopLength,
+              stopSymmetrical = connector2StopSymmetrical,
+              barbsCount = connector2BarbsCount,
+              barbsThickness = connector2BarbsThickness,
+              barbsSymmetrical = connector2BarbsSymmetrical,
+              magnetCount = connector2MagnetCount,
+              magnetDiameter = connector2MagnetDiameter,
+              magnetThickness = connector2MagnetThickness,
+              magnetBorder = connector2MagnetBorder,
+              magnetFlangeThickness = connector2MagnetFlangeThickness,
+              magnetTwistLockSize = connector2MagnetTwistLockSize,
+              alignmentRing = connector2Ring,
+              alignmentDepth = alignmentDepth,
+              alignmentUpperWidth = alignmentUpperWidth,
+              alignmentLowerWidth = alignmentLowerWidth,
+              alignmentSideClearance = alignmentSideClearance,
+              alignmentDepthClearance = alignmentDepthClearance,
+              flangeWidth = connector2FlangeWidth,
+              flangeThickness = connector2FlangeThickness,
+              flangeScrewPosition = connector2FlangeScrewPosition,
+              flangeScrewBorder = connector2FlangeScrewBorder,
+              flangeScrewCount = connector2FlangeScrewCount,
+              flangeScrewDiameter = connector2FlangeScrewDiameter,
+              nozzleShape = connector2NozzleShape,
+              nozzleSize = connector2NozzleSize,
+              nozzleTipWallThickness = connector2NozzleTipWallThickness,
+              nozzleRadius = connector2NozzleRadius,
+              nozzleOffset = connector2NozzleOffset,
+              nozzleChamferPercentage = connector2NozzleChamferPercentage,
+              nozzleChamferAngle = connector2NozzleChamferAngle,
+              transitionAngle =_transitionAngle,
+              adapterColor = getColor(end2Color, DefaultEnd2Color),
+              debug = sliceDebug,
+              showCaliper = rotation == 0 ? showCaliper : false,
+              help = help);
+          }
+
+          if(_transitionStyle == "hull" && transitionHullCenter)
+          {
+            translate([0, 0, endConnector1+connector2StopLength+transitionCenterHeight+transitionHullCenterLength])
+            adapter(
+              connector = 2,
+              wallThickness = connector2WallThickness,
+              style= connector2Style,
+              measurement= connector2Measurement,
+              innerDiameter = end2InnerDiameter,
+              innerStartDiameter = end2InnerStartDiameter,
+              innerEndDiameter = end2InnerEndDiameter,
+              length = connector2Length,
+              rotation = connector2Rotation,
+              endCapDiameter = connector2EndCapDiameter,
+              endCapThickness = connector2EndCapThickness,
+              endCapGridSize = connector2EndCapGridSize,
+              endCapGridWallThickness = connector2EndCapGridWallThickness,
+              stopThickness = connector2StopThickness,
+              stopLength = connector2StopLength,
+              stopSymmetrical = connector2StopSymmetrical,
+              barbsCount = connector2BarbsCount,
+              barbsThickness = connector2BarbsThickness,
+              barbsSymmetrical = connector2BarbsSymmetrical,
+              magnetCount = connector2MagnetCount,
+              magnetDiameter = connector2MagnetDiameter,
+              magnetThickness = connector2MagnetThickness,
+              magnetBorder = connector2MagnetBorder,
+              magnetFlangeThickness = connector2MagnetFlangeThickness,
+              magnetTwistLockSize = connector2MagnetTwistLockSize,
+              alignmentRing = connector1Ring,
+              alignmentDepth = alignmentDepth,
+              alignmentUpperWidth = alignmentUpperWidth,
+              alignmentLowerWidth = alignmentLowerWidth,
+              alignmentSideClearance = alignmentSideClearance,
+              alignmentDepthClearance = alignmentDepthClearance,
+              flangeWidth = connector2FlangeWidth,
+              flangeThickness = connector2FlangeThickness,
+              flangeScrewPosition = connector2FlangeScrewPosition,
+              flangeScrewBorder = connector2FlangeScrewBorder,
+              flangeScrewCount = connector2FlangeScrewCount,
+              flangeScrewDiameter = connector2FlangeScrewDiameter,
+              nozzleShape = connector2NozzleShape,
+              nozzleSize = connector2NozzleSize,
+              nozzleTipWallThickness = connector2NozzleTipWallThickness,
+              nozzleRadius = connector2NozzleRadius,
+              nozzleOffset = connector2NozzleOffset,
+              nozzleChamferPercentage = connector2NozzleChamferPercentage,
+              nozzleChamferAngle = connector2NozzleChamferAngle,
+              transitionAngle =_transitionAngle,    
+              adapterColor = getColor(end2Color, DefaultEnd2Color), 
+              debug = sliceDebug,
+              showCaliper = showCaliper,
+              help = help);
+          }
         }
       }
     }
     /*
     if(sliceDebug){
-      echo("enabling debug slice");
       cubeSziex = max(end1InnerDiameter,end2InnerDiameter)*3;
       cubeSziey = max(end1InnerDiameter,end2InnerDiameter)*1.5;
       cubeSziez = (connector1Length + connector2Length)*3;

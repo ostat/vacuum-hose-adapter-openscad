@@ -8,15 +8,21 @@ module FlangeConnector(
     screwPosition,
     screwBorder,
     screwCount,
-    screwDiameter
+    screwDiameter,
+    help
 )
 {
+  assert(is_num(flangeThickness), "flangeThickness should be a number");
+  assert(is_num(screwBorder), "screwBorder should be a number");
+  assert(is_num(screwCount), "screwCount should be a number");
+  assert(is_num(screwDiameter), "screwDiameter should be a number");
+  
   //The fillet around the edge
   fillet = flangeThickness;
   border = screwBorder == 0 ? flangeWidth/4 : screwBorder;
   flangeOuterDiameter = innerStartDiameter + flangeWidth;
   screwPositionRadius = screwPosition != 0
-    ? innerStartDiameter/2 + screwPosition/2
+    ? innerStartDiameter/2 + screwDiameter/2 + screwPosition/2
     : (innerStartDiameter/2 + fillet + (flangeWidth/2-fillet)/2);
 
   echo("FlangeConnector", screwCount=screwCount, screwDiameter=screwDiameter, screwPosition=screwPosition, border=border);
@@ -80,4 +86,20 @@ module FlangeConnector(
             d2 = innerEndDiameter,
             h = length + 2 * fudgeFactor*2);
   }
+  
+  HelpTxt("FlangeConnector",[
+    "innerStartDiameter", innerStartDiameter,
+    "innerEndDiameter", innerEndDiameter,
+    "length", length,
+    "wallThickness", wallThickness,
+    "flangeThickness", flangeThickness,
+    "flangeWidth", flangeWidth,
+    "screwPosition", screwPosition,
+    "screwBorder", screwBorder,
+    "screwCount", screwCount,
+    "screwDiameter", screwDiameter,
+    "border", border,
+    "flangeOuterDiameter", flangeOuterDiameter,
+    "screwPositionRadius", screwPositionRadius
+    ],help);
 }

@@ -11,7 +11,7 @@ dw735Settings = ["dw735", [
   [iSettingsDiameter, dw735InnerDiameter],
   [iSettingsTaper ,0]
   ]];
-  
+
 module Dw735Connector(
   innerEndDiameter ,
   length,
@@ -56,6 +56,7 @@ module Dw735Connector(
         
         for (rotation = [0:_connectorCount-1])
         {
+          flippedRotation = rotation % 2 == 0 ? rotation : -rotation;
           rotate([0, 0, -rotation*(180/_connectorCount)])
           union(){
             hull(){

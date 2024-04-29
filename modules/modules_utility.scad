@@ -17,8 +17,7 @@ module Pipe(
     wallThickness1,
     wallThickness2,
     zPosition = 0,
-    xOffset = 0,
-    yOffset = 0)
+    Offset = [0,0])
 {
   difference ()
   {
@@ -27,7 +26,7 @@ module Pipe(
     hull()
     {
       cylinder(fudgeFactor, d=diameter1+2*wallThickness1);
-      translate([xOffset,yOffset,length-fudgeFactor])
+      translate([Offset.x,Offset.y,length-fudgeFactor])
         cylinder(fudgeFactor, d=diameter2+2*wallThickness2);
     }
 
@@ -36,7 +35,7 @@ module Pipe(
     hull()
     {
       cylinder(fudgeFactor, d=diameter1);
-      translate([xOffset,yOffset,length+2*fudgeFactor])
+      translate([Offset.x,Offset.y,length+2*fudgeFactor])
         cylinder(fudgeFactor, d=diameter2);
     }
   }
@@ -104,7 +103,20 @@ module BentPipeHull(
     centerHeight= 0
 )
 {
-  outer1PipeRadius = inner1PipeRadius+ end1WallThickness;
+  assert(is_num(inner1PipeRadius), "inner1PipeRadius must be a number");
+  assert(is_num(inner2PipeRadius), "inner2PipeRadius must be a number");
+  assert(is_num(end1WallThickness), "end1WallThickness must be a number");
+  assert(is_num(end2WallThickness), "end2WallThickness must be a number");
+  assert(is_num(pipeAngle), "pipeAngle must be a number");
+  assert(is_num(zPosition), "zPosition must be a number");
+  assert(is_num(end2Count), "end2Count must be a number");
+  assert(is_num(lengthInHull), "lengthInHull must be a number");
+  assert(is_num(lengthOutHull), "lengthOutHull must be a number");
+  assert(is_num(edgeOffset), "edgeOffset must be a number");
+  assert(is_bool(addCenter), "addCenter must be a boolean");
+  assert(is_num(centerHeight), "centerHeight must be a number");
+  
+  outer1PipeRadius = inner1PipeRadius + end1WallThickness;
   outer2PipeRadius = inner2PipeRadius + end2WallThickness;
   //_edgeOffset = outer1PipeRadius - outer2PipeRadius - edgeOffset;
   _edgeOffset = edgeOffset;
@@ -251,9 +263,11 @@ module BentPipe(
           translate([bendRadius,0,0])
           rotate([0,90,0])
           if (baseType == "rectangle")
-            translate([0,0,baseSupportThickness/2]) cube( [baseSupportWidth,baseSupportLength,baseSupportThickness],center=true);
+            translate([0,0,baseSupportThickness*3/4]) cube( [baseSupportWidth,baseSupportLength,baseSupportThickness/2],center=true);
           else if (baseType == "oval")
-            resize([baseSupportWidth,0,0]) cylinder(h=baseSupportThickness,d=baseSupportLength);
+            translate([0,0,baseSupportThickness/2])
+            resize([baseSupportWidth,0,0]) 
+            cylinder(h=baseSupportThickness/2,d=baseSupportLength);
         }
 
         rotate_extrude(angle=pipeAngle, convexity=10)

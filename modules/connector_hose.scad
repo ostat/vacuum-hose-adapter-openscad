@@ -10,10 +10,10 @@ module HoseConnector(
     wallThickness,
     stopLength,
     stopWidth,
-    stopSymmetrical = 0,
+    stopSymmetrical = false,
     barbsCount = 0,
     barbsThickness = 0,
-    barbsSymmetrical = 0,
+    barbsSymmetrical = false,
     endCapDiameter = 0,
     endCapThickness = 0,
     endCapGridSize = 0,
@@ -67,11 +67,11 @@ module HoseConnector(
       for (i = [0: barbsCount-1]) {
           translate([0,0,length/(barbsCount*2+1)*(i*2+1)])
           Stopper(
-            diameter = innerStartDiameter+wallThickness,
+            diameter = connectorMeasurement == "outer" ? innerStartDiameter+wallThickness : innerStartDiameter,
             outer = connectorMeasurement == "outer",
             totalLength = barbLength,
-            taper1 = barbsSymmetrical == 0 ? 1 : 0.4,
-            taper2 = barbsSymmetrical == 0 ? 0 : 0.4,
+            taper1 = barbsSymmetrical ? 0.4 : 1,
+            taper2 = barbsSymmetrical ? 0.4 : 0,
             wallThickness = wallThickness/2,
             stopThickness = _barbsThickness);
       }
@@ -118,8 +118,8 @@ module HoseConnector(
         diameter = innerEndDiameter,
         outer = innerStartDiameter <= innerEndDiameter,
         totalLength = stopLength+fudgeFactor*2,
-        taper1 = stopSymmetrical == 0 ? 0.5 : 0.4,
-        taper2 = stopSymmetrical == 0? 0 : 0.4,
+        taper1 = stopSymmetrical ? 0.4 : 0.5,
+        taper2 = stopSymmetrical ? 0.4 : 0,
         wallThickness = wallThickness,
         stopThickness = stopWidth,
         zPosition = length,
