@@ -1,20 +1,3 @@
-iSettingsLength = 0;
-iSettingsMeasurement = 1;
-iSettingsDiameter = 2;
-iSettingsWallThickness = 3;
-iSettingsTaper = 4;
-
-include <connector_camlock.scad>
-include <connector_centec.scad>
-include <connector_dyson.scad>
-include <connector_dw735.scad>
-
-connectorSettings =[
-  camlockSettings,
-  centecSettings,
-  dysonSettings,
-  dw735Settings];
-
 function lookupKey(dictionary, key, default=undef) = let(results = [
   for (record = dictionary)
   if (record[0] == key)

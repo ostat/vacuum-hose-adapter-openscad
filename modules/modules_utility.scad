@@ -1,5 +1,5 @@
 
-fudgeFactor = 0.015;
+include <constants.scad>
 
 include <dotSCAD/shape_circle.scad>
 include <dotSCAD/ring_extrude.scad>

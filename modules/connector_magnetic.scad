@@ -1,3 +1,5 @@
+include <constants.scad>
+
 module MagneticConnector(
     innerStartDiameter,
     innerEndDiameter,

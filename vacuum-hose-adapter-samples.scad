@@ -1,7 +1,7 @@
 // Hose connector examples
 // version 2023-02-25
 
-use <vacuum-hose-adapter-modules.scad>
+use <vacuum-hose-adapter-openscad.scad>
 
 //$fn=120;
 $fs = 1;
@@ -188,7 +188,7 @@ if (part == "50to30bend45degsweep") {
         connector1Length = 40,
         connector1StopThickness = 4,
         connector1StopLength = 8,
-        transitionStyle = "sweep",
+        transitionStyle = "organicbend",
         transitionLength = 10,
         transitionBendRadius = 10,
         transitionAngle = 45,
@@ -241,7 +241,7 @@ if (part == "50to100bend90degsweep") {
         connector1Diameter = 50,
         connector1Length = 40,
         connector1Taper = 2,
-        transitionStyle = "sweep",
+        transitionStyle = "organicbend",
         transitionLength = 50,
         transitionBendRadius = 15,
         transitionAngle = 90,

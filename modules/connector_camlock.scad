@@ -1,4 +1,4 @@
-fudgeFactor = 0.015;
+include <constants.scad>
 
 camlockMinLength = 35+3;
 camlockMeasurement = "outer";

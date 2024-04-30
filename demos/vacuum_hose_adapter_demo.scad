@@ -1,5 +1,5 @@
 // include instead of use, so we get the pitch
-use <../vacuum-hose-adapter-modules.scad>
+use <../vacuum-hose-adapter-openscad.scad>
 include <../modules/functions_general.scad>
 include <../modules/functions_string.scad>
 

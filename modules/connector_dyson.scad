@@ -1,11 +1,7 @@
-// Hose connector modules
-// version 2023-07-24
-// https://justinsdk.github.io/dotSCAD/
+include <constants.scad>
 use <modules_utility.scad>
 
 /* [Hidden] */
-fudgeFactor = 0.015;
-
 dysonMinLength = 46;
 dysonMeasurement = "outer";
 dysonOuterDiameter = 34;

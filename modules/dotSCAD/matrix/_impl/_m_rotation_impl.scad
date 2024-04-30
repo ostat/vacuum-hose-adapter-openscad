@@ -1,6 +1,6 @@
 use <../../__comm__/__to_ang_vect.scad>
 
-FINAL_ROW = [0, 0, 0, 1];
+ROTATION_FINAL_ROW = [0, 0, 0, 1];
 function __m_rotation_q_rotation(a, v) = 
     let(
         uv = v / norm(v),
@@ -19,7 +19,7 @@ function __m_rotation_q_rotation(a, v) =
         [1 - yy - zz, xy - w.z, xz + w.y, 0],
         [xy + w.z, 1 - xx - zz, yz - w.x, 0],
         [xz - w.y, yz + w.x, 1 - xx - yy, 0],
-        FINAL_ROW
+        ROTATION_FINAL_ROW
     ];
 
 function __m_rotation_xRotation(a) = 
@@ -28,7 +28,7 @@ function __m_rotation_xRotation(a) =
         [1, 0, 0, 0],
         [0, c, -s, 0],
         [0, s, c, 0],
-        FINAL_ROW
+        ROTATION_FINAL_ROW
     ];
 
 function __m_rotation_yRotation(a) = 
@@ -37,7 +37,7 @@ function __m_rotation_yRotation(a) =
         [c, 0, s, 0],
         [0, 1, 0, 0],
         [-s, 0, c, 0],
-        FINAL_ROW
+        ROTATION_FINAL_ROW
     ];    
 
 function __m_rotation_zRotation(a) = 
@@ -46,7 +46,7 @@ function __m_rotation_zRotation(a) =
         [c, -s, 0, 0],
         [s, c, 0, 0],
         [0, 0, 1, 0],
-        FINAL_ROW
+        ROTATION_FINAL_ROW
     ];    
 
 function __m_rotation_xyz_rotation(a) =
@@ -58,5 +58,5 @@ function _m_rotation_impl(a, v) =
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        FINAL_ROW
+        ROTATION_FINAL_ROW
     ] : (is_undef(v) ? __m_rotation_xyz_rotation(a) : __m_rotation_q_rotation(a, v));

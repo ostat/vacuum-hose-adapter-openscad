@@ -1,8 +1,7 @@
+include <constants.scad>
 
 include <modules_utility.scad>
 include <connector_hose.scad>
-
-fudgeFactor = 0.015;
 
 cenTecBodyLength =  25;
 cenTecWallThickness = 3;

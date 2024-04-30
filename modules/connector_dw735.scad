@@ -1,5 +1,4 @@
-/* [Hidden] */
-fudgeFactor = 0.015;
+include <constants.scad>
 
 dw735MinLength = 17;
 dw735Measurement = "inner";

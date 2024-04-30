@@ -1,7 +1,8 @@
 // Hose connector examples
 // version 2022-09-26
 
-use <vacuum-hose-adapter-modules.scad>
+use <vacuum-hose-adapter-openscad.scad>
+
 /* [Funnel] */
 //funnel opening diameter
 OpeningDiameter = 20; //0.01
@@ -19,9 +20,7 @@ SpoutAngle = 0;
 //Where should the angle be applied
 TransitionStyle = "taper+bend"; //[taper+bend: Taper then bend, bend+taper: Bend then taper]
 //Offset the spout in the x direction
-SpoutXOffset = 0;
-//Offset the spout in the y direction
-SpoutYOffset = 0;
+SpoutOffset = [0,0];
 
 /* [Spout] */
 //Internal Diameter of the spout tip
@@ -66,10 +65,8 @@ spoutDiameter = SpoutDiameter < 1 ? SpoutTipDiameter : SpoutDiameter;
       connector1Length = 3,
       transitionStyle = TransitionStyle,
       transitionLength = transitionLength,
-      transitionXOffset = SpoutXOffset,
-      transitionYOffset = SpoutYOffset,
+      transitionOffset = SpoutOffset,
       transitionAngle = SpoutAngle,
-      //transitionBendRadius = transitionLength,
       connector2Style = "nozzle",
       connector2Measurement = "inner",
       connector2Diameter = spoutDiameter,
@@ -78,6 +75,6 @@ spoutDiameter = SpoutDiameter < 1 ? SpoutTipDiameter : SpoutDiameter;
       connector2NozzleShape = "circle",
       connector2NozzleTipWallThickness = SpoutTipWallThickness,
       connector2NozzleRadius = SpoutTipDiameter/2,
-      connector2NozzleLength = spoutTipLength,
+      connector2NozzleSize= [0,0,spoutTipLength],
       connector2NozzleChamferPercentage = 100,
       connector2NozzleChamferAngle = 30);
