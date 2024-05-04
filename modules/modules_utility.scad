@@ -124,7 +124,7 @@ module BentPipeHull(
   end1BaseHeight = end1WallThickness;
   end2BaseHeight = end2WallThickness;
   
-  echo("BentPipeHull", _edgeOffset = _edgeOffset, lengthInHull = lengthInHull, centerHeight=centerHeight, lengthOutHull=lengthOutHull, outer1PipeRadius=outer1PipeRadius, outer2PipeRadius=outer2PipeRadius, a= (cos(pipeAngle) * outer2PipeRadius*2) );
+  //echo("BentPipeHull", _edgeOffset = _edgeOffset, lengthInHull = lengthInHull, centerHeight=centerHeight, lengthOutHull=lengthOutHull, outer1PipeRadius=outer1PipeRadius, outer2PipeRadius=outer2PipeRadius, a= (cos(pipeAngle) * outer2PipeRadius*2));
   
   difference(){
     //Outer shape
@@ -153,7 +153,7 @@ module BentPipeHull(
       for (rotation = [0:end2Count-1])
       {
         //End 2 extentions
-        echo("Outer shape", pipeAngle=pipeAngle, outer1PipeRadius=outer1PipeRadius, outer2PipeRadius=outer2PipeRadius, _edgeOffset=_edgeOffset, lengthInHull=lengthInHull, end2WallThickness=end2WallThickness );
+        //echo("Outer shape", pipeAngle=pipeAngle, outer1PipeRadius=outer1PipeRadius, outer2PipeRadius=outer2PipeRadius, _edgeOffset=_edgeOffset, lengthInHull=lengthInHull, end2WallThickness=end2WallThickness );
 
         rotate([0,0,rotation*(360/end2Count)])
         rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
@@ -246,8 +246,8 @@ module BentPipe(
   baseSupportLength =  baseLength == 0 ? outerPipeDiameter / 1.5  : baseLength;
   baseSupportAngle = baseAngle == 0 ? pipeAngle/2 : baseAngle;
 
-  echo("BentPipe", bendRadius=bendRadius, innerPipeDiameter=innerPipeDiameter,wallThickness=wallThickness, pipeAngle=pipeAngle, zPosition=zPosition);
-  echo("BentPipe", baseSupportWidth=baseSupportWidth, baseSupportLength=baseSupportLength);
+  //echo("BentPipe", bendRadius=bendRadius, innerPipeDiameter=innerPipeDiameter,wallThickness=wallThickness, pipeAngle=pipeAngle, zPosition=zPosition);
+  //echo("BentPipe", baseSupportWidth=baseSupportWidth, baseSupportLength=baseSupportLength);
 
 
   difference() {
@@ -319,8 +319,8 @@ module TaperedBentPipe(
     end2Count=1
 )
 {
-    assert(is_num(pipeAngle) &&  pipeAngle > 0, "pipeAngle must be greater than 0")
-    echo("TaperedBentPipe", bendRadius=bendRadius, end1InnerPipeDiameter=end1InnerPipeDiameter, end2InnerPipeDiameter=end2InnerPipeDiameter, end1WallThickness=end1WallThickness, end2WallThickness=end2WallThickness);
+    assert(is_num(pipeAngle) &&  pipeAngle > 0, "pipeAngle must be greater than 0");
+    //echo("TaperedBentPipe", bendRadius=bendRadius, end1InnerPipeDiameter=end1InnerPipeDiameter, end2InnerPipeDiameter=end2InnerPipeDiameter, end1WallThickness=end1WallThickness, end2WallThickness=end2WallThickness);
 
     outerPipeDiameter  = end1InnerPipeDiameter + end1WallThickness * 2;
 
@@ -337,7 +337,7 @@ module TaperedBentPipe(
     shapeOuter = shape_circle(sizeStart);
     shapeInner = shape_circle(sizeStart-end1WallThickness);
 
-    echo("TaperedBentPipe", baseSupportThickness=baseSupportThickness,  baseSupportAngle=baseSupportAngle,  baseSupportWidth=baseSupportWidth, baseSupportLength=baseSupportLength);
+    //echo("TaperedBentPipe", baseSupportThickness=baseSupportThickness,  baseSupportAngle=baseSupportAngle,  baseSupportWidth=baseSupportWidth, baseSupportLength=baseSupportLength);
 
     translate([0, 0, zPosition])
     difference(){

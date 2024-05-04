@@ -3,7 +3,7 @@ use <../vacuum-hose-adapter-openscad.scad>
 include <../modules/functions_general.scad>
 include <../modules/functions_string.scad>
 
-scenario = "demo"; //[demo, endcommon_wallthickness,endcommon_diameter,endcommon_measurement,endcommon_length,endcommon_taper,endcommon_rotation,  hose_demo,hose_stopthickness,hose_stoplength,hose_stopsymmetrical,hose_barbsthickness,hose_barbscount,hose_barbssymmetrical,hose_endcapthickness,hose_endcapdiameter, flange_demo,flange_width,flange_thickness,flange_screwposition,flange_screwborder,flange_screwcount,flange_screwdiameter, magnetic_flangedemo,magnetic_magnetcount,magnetic_magnetdiameter,magnetic_magnetthickness,magnetic_magnetborder,magnetic_flangethickness,magnetic_alignmentring,magnetic_twistlock, nozzle_demo,nozzle_shape,nozzle_size,nozzle_tipwallthickness,nozzle_radius,nozzle_offset,nozzle_chamferpercentage,nozzle_chamferangle,     allignmentring_demo,allignmentring_depth,allignmentring_upperwidth,allignmentring_lowerwidth,allignmentring_sideclearance,allignmentring_depthclearance, camlock_demo,dw735_demo,dyson_demo,centec_demo,   transition_demo,transition_bendtaper,transition_taperbend,transition_organicbend,transition_flat, transition_hull,transition_hulllength,transition_hulloffset,transition_hullcenter, transition_length,transition_angle,transition_bendradius,transition_offset,transition_EndCount,  transitionbase,transitionbase_thickness,transitionbase_length,transitionbase_width,transitionbase_angle ]
+scenario = "demo"; //[demo, endcommon_wallthickness,endcommon_diameter,endcommon_measurement,endcommon_length,endcommon_taper,endcommon_rotation,  hose_demo,hose_stopthickness,hose_stoplength,hose_stopsymmetrical,hose_barbsthickness,hose_barbscount,hose_barbssymmetrical,hose_endcapthickness,hose_endcapdiameter, flange_demo,flange_width,flange_thickness,flange_screwposition,flange_screwborder,flange_screwcount,flange_screwdiameter, magnetic_flangedemo,magnetic_magnetcount,magnetic_magnetdiameter,magnetic_magnetthickness,magnetic_magnetborder,magnetic_flangethickness,magnetic_alignmentring,magnetic_twistlock, nozzle_demo,nozzle_shape,nozzle_size,nozzle_tipwallthickness,nozzle_radius,nozzle_offset,nozzle_chamferpercentage,nozzle_chamferangle,     allignmentring_demo,allignmentring_depth,allignmentring_upperwidth,allignmentring_lowerwidth,allignmentring_sideclearance,allignmentring_depthclearance, camlock_demo,dw735_demo,dyson_demo,centec_demo,   transition_demo,transition_bendtaper,transition_taperbend,transition_organicbend,transition_flat, transition_hull,transition_hulllength,transition_hulloffset,transition_hullcenter, transition_length,transition_angle,transition_bendradius,transition_offset,transition_EndCount,  transitionbase,transitionbase_thickness,transitionbase_length,transitionbase_width,transitionbase_angle, transitionext_demo,transitionextpre_length,transitionextpre_gridSize,transitionextpre_wallthickness,transitionextpost_length,transitionextpost_gridSize,transitionextpost_wallthickness]
 showtext = true; 
 colour = "";
 //used to highlight the section of interest.
@@ -81,7 +81,15 @@ itransitionHullyOffset = 12+it;
 itransitionHullCenter = 13+it;
 itransitionHullCenterHeight = 14+it;
 
-ic2=15+it;
+te=15+it;
+itransitionPreLength = 0+te;
+itransitionPreGridSize = 1+te;
+itransitionPreGridWallThickness = 2+te; 
+itransitionPostLength = 3+te;
+itransitionPostGridSize = 4+te;
+itransitionPostGridWallThickness = 5+te;
+
+ic2=6+te;
 iconnector2Style = 0+ic2;
 iconnector2WallThickness = 1+ic2;
 iconnector2Measurement = 2+ic2;
@@ -183,7 +191,11 @@ defaultDemoSetting = [
     "none",0,0,0,0,
     //transitionEnd2Count, transitionHullLength, transitionHullyOffset, transitionHullCenter, transitionHullCenterHeight,
     1,0,0,false,0,
-
+    //transitionPreLength,transitionPreGridSize,transitionPreGridWallThickness
+    0,0,0,
+    //transitionPostLength,transitionPostGridSize,transitionPostGridWallThickness
+    0,0,0,
+    
     //connector2Style, connector2WallThickness, connector2Measurement, connector2Diameter, connector2Length, connector2Taper, connector2Rotation
     "hose", 2, "outer", 30,20,0,0,
     //connector2EndCapDiameter, connector2EndCapThickness, connector2StopThickness, connector2StopLength, connector2StopSymmetrical, 
@@ -662,6 +674,47 @@ function getScenario(scenario) =
       ["60deg", [[itransitionBaseAngle,60]]]
     ]     
 
+    //transition extensions
+    //transitionext_demo, transitionextpre_length,transitionextpre_gridSize,transitionextpre_wallthickness, transitionextpost_length,transitionextpost_gridSize,transitionextpost_wallthickness
+    : scenario == "transitionext_demo" ? [["Transition Extension",4,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [irenderseparation,[80,0,0]], [itransitionBendRadius,10], [itransitionAngle,45], [itransitionEnd2Count,2], [iend1Color, deemphasize], [iend2Color, deemphasize], [itransitionStyle, "hull"]]],
+     ["", []],
+     ["Pre 10mm", [[itransitionPreLength,10]]],
+     ["Pre and Post 10mm", [[itransitionPreLength,10], [itransitionPostLength,10]]],
+     ["Pre grid", [[itransitionPreLength,10], [itransitionPostLength,10], [itransitionPreGridWallThickness,-1]]]
+    ]
+    : scenario == "transitionextpre_length" ? [["Pre Transition Extension Length",3,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [itransitionBendRadius,10], [irenderseparation,[80,0,0]], [iend1Color,deemphasize], [iend2Color,deemphasize]]],
+      ["0mm", [[itransitionPreLength,0]]],
+      ["5mm", [[itransitionPreLength,5]]],
+      ["10mm", [[itransitionPreLength,10]]]
+    ]
+    : scenario == "transitionextpre_gridSize" ? [["Pre Transition Extension Grid Size",3,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [itransitionBendRadius,10], [irenderseparation,[80,0,0]], [itransitionPreLength,5],[itransitionPreGridWallThickness,2], [iend1Color,deemphasize], [iend2Color,deemphasize]]],
+      ["0mm", [[itransitionPreGridSize,0]]],
+      ["5mm", [[itransitionPreGridSize,5]]],
+      ["10mm", [[itransitionPreGridSize,10]]]
+    ]
+    : scenario == "transitionextpre_wallthickness" ? [["Pre Transition Extension WallThickness",4,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [itransitionBendRadius,10], [irenderseparation,[80,0,0]], [itransitionPreLength,5], [itransitionPreGridSize,5], [iend1Color,deemphasize], [iend2Color,deemphasize]]],
+      ["0mm", [[itransitionPreGridWallThickness,0]]],
+      ["2mm", [[itransitionPreGridWallThickness,2]]],
+      ["3mm", [[itransitionPreGridWallThickness,3]]],
+      ["5mm", [[itransitionPreGridWallThickness,5]]]
+    ]
+        : scenario == "transitionextpost_length" ? [["Post Transition Extension Length",3,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [itransitionBendRadius,10], [irenderseparation,[80,0,0]], [iend1Color,deemphasize], [iend2Color,deemphasize]]],
+      ["0mm", [[itransitionPostLength,0]]],
+      ["5mm", [[itransitionPostLength,5]]],
+      ["10mm", [[itransitionPostLength,10]]]
+    ]
+    : scenario == "transitionextpost_gridSize" ? [["Post Transition Extension Grid Size",3,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [itransitionBendRadius,10], [irenderseparation,[80,0,0]], [itransitionPostLength,5],[itransitionPostGridWallThickness,2], [iend1Color,deemphasize], [iend2Color,deemphasize]]],
+      ["0mm", [[itransitionPostGridSize,0]]],
+      ["5mm", [[itransitionPostGridSize,5]]],
+      ["10mm", [[itransitionPostGridSize,10]]]
+    ]
+    : scenario == "transitionextpost_wallthickness" ? [["Post Transition Extension WallThickness",4,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [itransitionBendRadius,10], [irenderseparation,[80,0,0]], [itransitionPostLength,5], [itransitionPostGridSize,5], [iend1Color,deemphasize], [iend2Color,deemphasize]]],
+      ["0mm", [[itransitionPostGridWallThickness,0]]],
+      ["2mm", [[itransitionPostGridWallThickness,2]]],
+      ["3mm", [[itransitionPostGridWallThickness,3]]],
+      ["5mm", [[itransitionPostGridWallThickness,5]]]
+    ]
+
     : assert(false, str("unknow scenario - '", scenario, "'"));
       
 function getCurrentStep(scenario, stepIndex=-1) = let(
@@ -779,7 +832,13 @@ module RenderScenario(scenario, showtext=true, stepIndex=-1, sliceDebug = false,
         transitionHullyOffset = currentStepSettings[itransitionHullyOffset],
         transitionHullCenter = currentStepSettings[itransitionHullCenter],
         transitionHullCenterHeight = currentStepSettings[itransitionHullCenterHeight],
-        
+        transitionPreLength = currentStepSettings[itransitionPreLength],
+        transitionPreGridSize = currentStepSettings[itransitionPreGridSize],
+        transitionPreGridWallThickness = currentStepSettings[itransitionPreGridWallThickness],
+        transitionPostLength = currentStepSettings[itransitionPostLength],
+        transitionPostGridSize = currentStepSettings[itransitionPostGridSize],
+        transitionPostGridWallThickness = currentStepSettings[itransitionPostGridWallThickness],
+
         connector2Style = currentStepSettings[iconnector2Style],
         connector2WallThickness  = currentStepSettings[iconnector2WallThickness ],
         connector2Measurement = currentStepSettings[iconnector2Measurement],
