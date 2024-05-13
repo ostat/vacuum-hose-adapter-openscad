@@ -35,8 +35,6 @@ module CenTecConnector(){
   wallThickness = cenTecWallThickness;
   StopInnerLength = cenTecWallThickness;
   
-  slideTaper=1;
-  
   _pinHoleRadius = min(pinHoleRadius, pinHoleHeight/2);
   
   
@@ -84,37 +82,15 @@ module CenTecConnector(){
     }
       
     //Slide for the clip
-    intersection(){
+    slideLength=pinHoleOffset+pinHoleHeight/2;
 
-      slideLength=pinHoleOffset+pinHoleHeight/2;
-
-      for(i=[0:1])
+    for(i=[0:1])
       rotate([0,0,i*180])
-      //translate([connectorInnerEndRadius,0,pinHoleHeight])
-      translate([0,connectorInnerEndRadius+wallThickness/2,slideLength/2-pinHoleHeight/2])
-      rotate([90,0,0])
+      translate([0,connectorInnerEndRadius-wallThickness/2,slideLength/2-pinHoleHeight/2])
+      rotate([98,0,00])
       cube([pinHoleWidth,slideLength+pinHoleHeight, wallThickness*2], center = true);
-      /*roundedCube(
-        x=pinHoleWidth,
-        y=slideLength+pinHoleHeight,//max(pinHoleWidth,pinHoleHeight),
-        h=wallThickness*2,
-        r1=0.1,
-        r2=1,
-        center = true);*/
-        
-      translate([0,0,slideLength+slideTaper])
-      mirror([0,0,1])
-      HoseConnector(
-        connectorMeasurement = "outer",
-        innerStartDiameter = connectorInnerStartRadius*2-pinSlideIndent*2-pinSlideIndent/2,
-        innerEndDiameter = connectorInnerStartRadius*2-pinSlideIndent,
-        length = slideLength,
-        wallThickness = pinSlideIndent,
-        stopLength = slideTaper*2,
-        stopWidth = slideTaper
-      );
-    }
-  }      
+
+  }
 }
 
 //Creates a rounded cube
