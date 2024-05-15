@@ -126,12 +126,16 @@ Transition_Pre_Length = 10;
 Transition_Pre_GridSize = 0;  //0.1
 //Size of the grid walls in the Pre transition. 0: no grid, -1: uses wall thickness
 Transition_Pre_GridWallThickness = 0;  //0.1
+Transition_Pre_Text = "";
+Transition_Pre_Text_Size = 0;
 //Length of the pre transition
 Transition_Post_Length = 0;
 //Size of the grid in the Pre transition. 0: diameter/6
 Transition_Post_GridSize = 0;  //0.1
 //Size of the grid walls in the Pre transition. 0: no grid, -1: uses wall thickness
 Transition_Post_GridWallThickness = 0;  //0.1
+Transition_Post_Text = "";
+Transition_Post_Text_Size = 0;
 
 /* [Transition Support For Angled Pipes] */
 // Include a flate section on the transition to assist with printing
@@ -661,6 +665,9 @@ module transitionExtension(
   transitionColor = ["LightGreen",1],
   debug = false,
   showCaliper=false,
+  txt="",
+  txtSize=0,
+  includeHook = 0,
   help){
   assert(is_list(transitionColor), "transitionColor must be a list");
   assert(len(transitionColor) == 2, "transitionColor be length 2");
@@ -703,6 +710,19 @@ module transitionExtension(
         translate([-cubeSize.x/2, -cubeSize.y, -fudgeFactor*2])
         cube(cubeSize);
       }
+      
+      if(is_string(txt) && len(txt) > 0){
+      translate([0,0,wallThickness/2])
+      RoundText(
+        textvalue = txt,
+        font = "Liberation:style=Bold",
+        fontSize = txtSize > 0 ? txtSize : length-wallThickness,
+        radius = (innerDiameter+wallThickness)/2,
+        textExtrude = wallThickness,
+        forceRound = true,
+        center = true,
+        $fn=64);
+      }  
     }
 
     if($preview&&showCaliper){
@@ -1010,10 +1030,14 @@ module HoseAdapter(
   transitionPreLength = Transition_Pre_Length,
   transitionPreGridSize = Transition_Pre_GridSize,
   transitionPreGridWallThickness = Transition_Pre_GridWallThickness,
+  transitionPreText=Transition_Pre_Text,
+  transitionPreTextSize = Transition_Pre_Text_Size,
   transitionPostLength = Transition_Post_Length,
   transitionPostGridSize = Transition_Post_GridSize,
   transitionPostGridWallThickness = Transition_Post_GridWallThickness,
-
+  transitionPostText = Transition_Post_Text,
+  transitionPostTextSize=Transition_Post_Text_Size,
+  
   connector2Style = End2_Style,
   connector2WallThickness  = End2_Wall_Thickness,
   connector2Measurement = End2_Measurement,
@@ -1229,6 +1253,8 @@ module HoseAdapter(
           length = transitionPreLength,
           gridSize = transitionPreGridSize,
           gridWallThickness = transitionPreGridWallThickness,
+          txt = transitionPreText,
+          txtSize=transitionPreTextSize,
           transitionColor = getColor(transitionColor, DefaultTransitionColor),
           debug = sliceDebug,
           showCaliper = showCaliper,
@@ -1295,6 +1321,7 @@ module HoseAdapter(
             union(){
               translate([0, 0, transitionPostLength])
               mirror([0,0,1])
+              mirror([0,1,0])
               transitionExtension(
                 connector = 2,
                 innerDiameter = end2InnerStartDiameter,
@@ -1302,6 +1329,8 @@ module HoseAdapter(
                 length = transitionPostLength,
                 gridSize = transitionPostGridSize,
                 gridWallThickness = transitionPostGridWallThickness,
+                txt = transitionPostText,
+                txtSize=transitionPostTextSize,
                 transitionColor = getColor(transitionColor, DefaultTransitionColor),
                 debug = sliceDebug,
                 showCaliper = showCaliper,
