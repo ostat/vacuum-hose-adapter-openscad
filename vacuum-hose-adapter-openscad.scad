@@ -9,6 +9,7 @@
 use <modules/ub.scad>
 include <modules/constants.scad>
 include <modules/modules_utility.scad>
+include <modules/modules_pipe.scad>
 
 include <modules/connector_common.scad>
 include <modules/connector_hose.scad>
@@ -523,13 +524,12 @@ module adapter(
             nozzleChamferPercentage = nozzleChamferPercentage,
             nozzleChamferAngle = nozzleChamferAngle,
             help = help);
-        } else if(style == "none"){
-        }
+        } else if(style == "none"){ }
         else {
          assert(false, str("style not supported style: ", style));
         }
       }
-      if($preview&&debug){
+      if($preview&&debug&&style!="none"){
         cubeSziex = max(innerStartDiameter,innerEndDiameter)*2;
         cubeSziey = max(innerStartDiameter,innerEndDiameter)*1.5;
         cubeSziez = length+stopLength+fudgeFactor*4
@@ -541,7 +541,7 @@ module adapter(
     } 
   }
 
-  if($preview&&showCaliper){
+  if($preview&&showCaliper&&style!="none"){
     color("Gold")
     translate([0, 0, length+stopLength])
     mirror ([0,0,1])
@@ -694,6 +694,7 @@ module transitionExtension(
   {
     difference(){
       color(transitionColor[0], transitionColor[1])
+      union(){
       HoseConnector(
         innerStartDiameter = innerDiameter,
         innerEndDiameter = innerDiameter,
@@ -704,10 +705,47 @@ module transitionExtension(
         endCapGridSize = gridSize,
         endCapGridWallThickness = gridWallThickness,
         help);
-    
+        
+        if(includeHook == 1){
+          hootLength = min(15, length);
+          hookSize = wallThickness*2;
+          intersection(){ 
+            difference(){
+              Stopper(
+                diameter = (innerDiameter+wallThickness),
+                outer = (innerDiameter+wallThickness*2)+hookSize*2,
+                totalLength = hootLength,
+                taper1 = 0.25,
+                taper2 = 0.25,
+                wallThickness = wallThickness/2,
+                stopThickness = hookSize);
+
+              translate([0,0,wallThickness])
+              Stopper(
+                diameter = (innerDiameter-wallThickness),
+                outer = (innerDiameter+wallThickness),
+                totalLength = hootLength-wallThickness*2,
+                taper1 = 0.3,
+                taper2 = 0.3,
+                wallThickness = wallThickness/2,
+                stopThickness = hookSize);
+              }
+              
+              cubeSize = [innerDiameter+hookSize,5,hootLength];
+              translate([-cubeSize.x,-cubeSize.y/2,0])
+              cube([innerDiameter+hookSize,cubeSize.y,cubeSize.z]);
+          }
+        /*
+          difference(){
+            cylinder(h=length, d=(innerDiameter+wallThickness*2)+hookSize);
+            translate([0,0,-fudgeFactor])
+            cylinder(h=length+fudgeFactor*2, d=(innerDiameter+wallThickness));
+          }*/
+        }
+      }
       if($preview&&debug){
         cubeSize = [innerDiameter*2,innerDiameter*1.5, length+fudgeFactor*4];
-        translate([-cubeSize.x/2, -cubeSize.y, -fudgeFactor*2])
+        translate([-cubeSize.x/2, (connector == 1 ? -cubeSize.y : 0), -fudgeFactor*2])
         cube(cubeSize);
       }
       

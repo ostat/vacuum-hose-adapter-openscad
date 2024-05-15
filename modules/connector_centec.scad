@@ -65,7 +65,7 @@ module CenTecConnector(){
       translate([0,connectorInnerEndRadius+wallThickness/2,pinHoleHeight/2+pinHoleOffset])
         union(){
         rotate([90,0,0])
-        roundedCube(
+        centecRoundedCube(
           x=pinHoleWidth,
           y=pinHoleHeight,//max(pinHoleWidth,pinHoleHeight),
           h=wallThickness*2,
@@ -74,7 +74,7 @@ module CenTecConnector(){
         
         translate([0,wallThickness/2,0])
         rotate([90,0,180])
-        roundedCube(
+        centecRoundedCube(
           x=pinHoleWidth,
           y=pinHoleHeight,//max(pinHoleWidth,pinHoleHeight),
           h=wallThickness,
@@ -123,7 +123,7 @@ module CenTecConnector(){
 //z=height in mm
 //cornerRadius = the radius of the cube corners
 //fn = overrides the #fn function for the corners
-module roundedCube(
+module centecRoundedCube(
   x,
   y,
   h,

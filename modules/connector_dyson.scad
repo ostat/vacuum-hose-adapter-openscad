@@ -1,5 +1,6 @@
 include <constants.scad>
 use <modules_utility.scad>
+use <modules_pipe.scad>
 
 /* [Hidden] */
 dysonMinLength = 46;

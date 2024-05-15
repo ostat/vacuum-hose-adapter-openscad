@@ -1,5 +1,7 @@
-use <ub.scad>
 include <constants.scad>
+use <ub.scad>
+use <modules_utility.scad>
+use <modules_pipe.scad>
 
 module HoseConnector(
     innerStartDiameter,
@@ -148,82 +150,3 @@ module HoseConnector(
     ],help); 
 }
 
-//TODO This seems slow, esp when used for barbs
-module Stopper(
-    diameter,
-    outer,
-    totalLength,
-    taper1,
-    taper2,
-    wallThickness,
-    stopThickness,
-    zPosition = 0,
-    marker = false,
-    help
-)
-{
-  _diameter = outer ? diameter : diameter + wallThickness*2;
-  markPos = (outer ? diameter+wallThickness : diameter-stopThickness*2)/2;
-  translate([0,0,zPosition])
-  union(){
-    if(marker)
-      translate([markPos,0,+stopThickness])
-      sphere(d=stopThickness);
-    intersection()
-    {
-      flat = totalLength * (1 - taper1 - taper2);
-      StraightPipe (
-        diameter = outer ? diameter : diameter-stopThickness*2,
-        length = totalLength,
-        wallThickness = wallThickness + stopThickness);
-
-
-    
-        //Bottom taper
-        if(taper1 > 0)
-        {
-          taperLength1 = totalLength * taper1;
-          zoffset1 = wallThickness*taperLength1/stopThickness;
-          length1= (zoffset1 + totalLength);
-          width1 = length1 * stopThickness / taperLength1;
-          diameterstart1 = _diameter;
-          diameterend1 = outer ? _diameter :_diameter - width1*2;
-          Pipe (
-            diameter1 = diameterstart1,
-            diameter2 = diameterend1,
-            length = length1,
-            wallThickness1 = 0,
-            wallThickness2 = width1,
-            zPosition = -zoffset1);
-        }
-
-        //Top taper
-        if(taper2 > 0)
-        {
-          taperLength2 = totalLength * taper2;
-          zoffset2 = wallThickness * taperLength2 / stopThickness;
-          length2 = (zoffset2 + totalLength);
-          width2 = length2 * stopThickness / taperLength2;
-          diameterstart2 = outer ? _diameter :_diameter - width2*2;
-          diameterend2 = _diameter;
-          Pipe (
-            diameter1 = diameterstart2,
-            diameter2 = diameterend2,
-            length = length2,
-            wallThickness1 = width2,
-            wallThickness2 = 0);
-          
-        }
-      }
-   }
-
- HelpTxt("Stopper",[
-    "diameter", diameter,
-    "totalLength", totalLength,
-    "taper1", taper1,
-    "taper2", taper2,
-    "wallThickness", wallThickness,
-    "stopThickness", stopThickness,
-    "zPosition", zPosition]
-    ,help);  
-}
