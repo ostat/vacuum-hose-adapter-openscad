@@ -30,14 +30,23 @@ Pipe(
 //wallThickness2 Thickness of the walls at the end
 //zPosition: Start Z position.
 module Pipe(
+    diameter,
     diameter1,
     diameter2,
     length,
+    wallThickness,
     wallThickness1,
     wallThickness2,
     zPosition = 0,
     Offset = [0,0])
 {
+  diameter1 = is_undef(diameter) ? diameter1 : diameter;
+  diameter2 = is_undef(diameter) ? diameter2 : diameter;
+  wallThickness1 = is_undef(wallThickness) ? wallThickness1 : wallThickness;
+  wallThickness2 = is_undef(wallThickness) ? wallThickness2 : wallThickness;
+  
+  
+  
   difference ()
   {
     //outer cylinder

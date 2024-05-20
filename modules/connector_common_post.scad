@@ -1,6 +1,7 @@
 connectorSettings =[
   camlockSettings,
-  centecSettings,
+  centecFemaleSettings,
+  centecMaleSettings,
   dysonSettings,
   dw735Settings,
   osvacmSettings,

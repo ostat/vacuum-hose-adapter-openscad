@@ -3,24 +3,99 @@ include <constants.scad>
 include <modules_utility.scad>
 include <connector_hose.scad>
 
-cenTecBodyLength =  25;
-cenTecWallThickness = 3;
-cenTecMinLength = cenTecBodyLength+2;
-cenTecMeasurement = "inner";
-cenTecInnerDiameter = 22.625*2;
-cenTecOuterDiameter = cenTecInnerDiameter + cenTecWallThickness*2;
+cenTecFemaleBodyLength =  25;
+cenTecFemaleWallThickness = 3;
+cenTecFemaleMinLength = cenTecFemaleBodyLength+2;
+cenTecFemaleMeasurement = "inner";
+cenTecFemaleInnerDiameter = 22.625*2;
+cenTecFemaleOuterDiameter = cenTecFemaleInnerDiameter + cenTecFemaleWallThickness*2;
 
-centecSettings = ["centec", [
-  [iSettingsLength, cenTecMinLength],
-  [iSettingsMeasurement, cenTecMeasurement],
-  [iSettingsDiameter, cenTecInnerDiameter],
-  [iSettingsWallThickness, (cenTecOuterDiameter - cenTecInnerDiameter)/2],
+centecFemaleSettings = ["centec_female", [
+  [iSettingsLength, cenTecFemaleMinLength],
+  [iSettingsMeasurement, cenTecFemaleMeasurement],
+  [iSettingsDiameter, cenTecFemaleInnerDiameter],
+  [iSettingsWallThickness, (cenTecFemaleOuterDiameter - cenTecFemaleInnerDiameter)/2],
+  [iSettingsTaper ,0]
+  ]];
+
+cenTecMaleBodyLength =  25.797;
+cenTecMaleMinLength = 32;
+cenTecMaleMeasurement = "outer";
+cenTecMaleInnerDiameter = 32.544;
+cenTecMaleOuterDiameter = 45.244; 
+cenTecMaleWallThickness = (cenTecMaleOuterDiameter - cenTecMaleInnerDiameter)/2;
+ 
+centecMaleSettings = ["centec_male", [
+  [iSettingsLength, cenTecMaleMinLength],
+  [iSettingsMeasurement, cenTecMaleMeasurement],
+  [iSettingsDiameter, cenTecMaleOuterDiameter],
+  [iSettingsWallThickness, (cenTecMaleOuterDiameter - cenTecMaleInnerDiameter)/2],
   [iSettingsTaper ,0]
   ]];
   
-//CenTecConnector();
+//Test female  
+//CenTecFemaleConnector();
+//Test female
+//CenTecMaleConnector();
 
-module CenTecConnector(){
+module CenTecMaleConnector($fn = 64){
+  connectorLength = cenTecMaleMinLength;
+  connectorInnerRadius= cenTecMaleInnerDiameter/2;
+  connectorOuterRadius= cenTecMaleOuterDiameter/2;
+  StopInnerRadius = 18.2;
+  wallThickness = cenTecMaleWallThickness;
+  StopInnerLength = cenTecFemaleWallThickness;
+
+  clickLength = 5.556;
+  clickDiameter = 36.513;
+  clickZpos = 9.128;
+  clickWallThicknessDepth = (cenTecMaleOuterDiameter-clickDiameter);
+  
+  startLipLength = 1.191;
+  startLipDiameter = 35.719;
+  startLipWidthDepth = (cenTecMaleOuterDiameter - startLipDiameter);
+  
+  stopLength = 6;
+  stopWidth = 3.175;
+  stopZpos = connectorLength - stopLength;// 25.797;
+  
+  union(){ 
+  difference(){  
+    Pipe(
+      diameter = connectorInnerRadius*2,
+      length = connectorLength,
+      wallThickness=wallThickness);
+    /*HoseConnector(
+      connectorMeasurement = "outer",
+      innerStartDiameter = connectorInnerRadius*2,
+      innerEndDiameter = connectorInnerRadius*2,
+      length = connectorLength,
+      wallThickness = wallThickness);*/
+    Pipe(
+      diameter = startLipDiameter,
+      length = startLipLength,
+      wallThickness=startLipWidthDepth,
+      zPosition = -fudgeFactor);
+    Pipe(
+      diameter = clickDiameter,
+      length = clickLength,
+      wallThickness=clickWallThicknessDepth,
+      zPosition = clickZpos);
+  }
+  
+  Stopper(
+    diameter = connectorOuterRadius*2-fudgeFactor,
+    outer = true,
+    totalLength = stopLength,
+    taper1 = 0,
+    taper2 = 0.5,
+    wallThickness = 0,
+    stopThickness = stopWidth,
+    zPosition = stopZpos);
+  }
+}
+
+module CenTecFemaleConnector($fn = 64){
 
   pinHoleWidth = 9.5;
   pinHoleHeight = 6;
@@ -28,12 +103,12 @@ module CenTecConnector(){
   pinHoleOffset = 11;
 
   pinSlideIndent = 1.5;
-  connectorLength = cenTecBodyLength;
-  connectorInnerEndRadius= cenTecInnerDiameter/2;
-  connectorInnerStartRadius= cenTecInnerDiameter/2+0.275;
+  connectorLength = cenTecFemaleBodyLength;
+  connectorInnerEndRadius= cenTecFemaleInnerDiameter/2;
+  connectorInnerStartRadius= cenTecFemaleInnerDiameter/2+0.275;
   StopInnerRadius = 18.2;
-  wallThickness = cenTecWallThickness;
-  StopInnerLength = cenTecWallThickness;
+  wallThickness = cenTecFemaleWallThickness;
+  StopInnerLength = cenTecFemaleWallThickness;
   
   slideTaper=1;
   
