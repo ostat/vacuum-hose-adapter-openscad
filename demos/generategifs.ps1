@@ -128,13 +128,14 @@ function Create-ImageForDemo(
             #--camera=translatex,y,z,rotx,y,z,dist
         }
 
-        $cmdArgs = $cmdArgs += " -D `"scenario=`"`"$($scenario.ScenarioName)`"`"`""
-        $cmdArgs = $cmdArgs += " -D `"showtext=$($showtext.ToString().tolower())`""
-        $cmdArgs = $cmdArgs += " --colorscheme Tomorrow" #BeforeDawn
-        $cmdArgs = $cmdArgs += " --imgsize 4096,3072"#" --imgsize 1024,768"4096,3072
+        $cmdArgs += " -D `"scenario=`"`"$($scenario.ScenarioName)`"`"`""
+        $cmdArgs += " -D `"showtext=$($showtext.ToString().tolower())`""
+        $cmdArgs += " --colorscheme Tomorrow" #BeforeDawn
+        $cmdArgs += " --enable textmetrics"
+        $cmdArgs += " --imgsize 4096,3072"#" --imgsize 1024,768"4096,3072
         if($scenario.Count -gt 1)
         {
-            $cmdArgs = $cmdArgs += " --animate $($scenario.Count)"
+            $cmdArgs += " --animate $($scenario.Count)"
         }
         
         $cmdArgs += " $($scadScriptPath)"
