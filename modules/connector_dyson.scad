@@ -6,23 +6,27 @@ use <modules_pipe.scad>
 dysonVersion = "1.2";
 dysonMinLength = 46;
 dysonMeasurement = "outer";
-dysonOuterDiameter = 34;
+dysonOuterDiameter = 34.1;
 dysonInnerDiameter = 28.5;
+dysonWallThickenss = (dysonOuterDiameter - dysonInnerDiameter)/2;
 
 dysonSettings = ["dyson", [
   [iSettingsLength, dysonMinLength],
   [iSettingsMeasurement, dysonMeasurement],
   [iSettingsDiameter, dysonOuterDiameter],
-  [iSettingsWallThickness, (dysonOuterDiameter - dysonInnerDiameter)/2],
+  [iSettingsWallThickness, dysonWallThickenss],
   [iSettingsTaper ,0],
   [iSettingsVersion, dysonVersion]
   ]];
   
+//DysonConnector();
+
 module DysonConnector(
-  innerEndDiameter,
-  length,
-  wallThickness,
-  IncludeOrientationClip = true
+  innerEndDiameter = dysonInnerDiameter,
+  length = dysonMinLength,
+  wallThickness = dysonWallThickenss,
+  IncludeOrientationClip = true,
+  $fn = 64
 ){
   heightStartShaft = 10;
   heightCutout= 4.45;
@@ -39,14 +43,13 @@ module DysonConnector(
   heightMainShaft = orientationClipHeight - (heightStartShaft+heightCutout+heightCutoutTapper) + orientationClipLength;
   height = heightStartShaft+heightCutout+heightCutoutTapper+heightMainShaft;
   innerDiameter = 28.5;
-  outerDiameter = 34;
+  outerDiameter = dysonOuterDiameter;
 
   cutoutRadius = 30.7;// dysonInnerDiameter/2;
   innerRadius = innerDiameter/2;
   outerRadius = outerDiameter/2;
   
   union() {
-
     difference() {
       union() {
         difference() {
@@ -83,13 +86,19 @@ module DysonConnector(
               wallThickness = 0,
               stopThickness = orentationClipwallThickness);
             
-            for(i=[0,90,180,270])
+            clipCount = 4;
+            for(i=[0:1:clipCount-1])
             {
-              rotate([0,0,i])
+              rotate([0,0,i*360/clipCount])
               difference() {
                 //Circle cutout for clip
                 translate([0,-outerRadius+4,-23/2+6.5]) rotate([90,0,0])
-                  cylinder(r1=23/2, r2=23.5/2, h=orentationClipwallThickness*3);
+                  union(){
+                    baseclipheight = orentationClipwallThickness*1.7;
+                  cylinder(r=23/2, h=baseclipheight);
+                  translate([0,0,baseclipheight-fudgeFactor])
+                  cylinder(r1=23/2, r2=25/2, h=orentationClipwallThickness);
+                  }
                 //Verticle clip lock
                translate([0,-outerRadius,orientationClipWidth/2]) rotate([90,0,0])
                  hull() {
