@@ -415,7 +415,8 @@ module adapter(
               alignmentLowerWidth = alignmentLowerWidth,
               alignmentSideClearance = alignmentSideClearance,
               alignmentDepthClearance = alignmentDepthClearance,
-              twistLockSize = magnetTwistLockSize);
+              twistLockSize = magnetTwistLockSize,
+              $fn = $fn);
         }
         else if(style == "flange")
         {
@@ -432,7 +433,8 @@ module adapter(
             screwBorder = flangeScrewBorder,
             screwCount = flangeScrewCount,
             screwDiameter = flangeScrewDiameter,
-            help = help);
+            help = help,
+            $fn = $fn);
         }
 
         else if(style == "hose")
@@ -455,7 +457,8 @@ module adapter(
             endCapThickness = endCapThickness,
             endCapGridSize = endCapGridSize,
             endCapGridWallThickness = endCapGridWallThickness,
-            help = help);
+            help = help,
+            $fn = $fn);
         }
         else if(style == "dyson")
         {
@@ -465,7 +468,8 @@ module adapter(
             innerEndDiameter = innerEndDiameter,
             length = length,
             wallThickness = wallThickness,
-            IncludeOrientationClip = true);
+            IncludeOrientationClip = true,
+            $fn = $fn);
         }
         else if(style == "camlock")
         {
@@ -474,7 +478,8 @@ module adapter(
           CamlockConnector(
             innerEndDiameter = innerEndDiameter,
             length = length,
-            wallThickness = wallThickness);
+            wallThickness = wallThickness,
+            $fn = $fn);
         }
         else if(style == "dw735")
         {
@@ -484,19 +489,20 @@ module adapter(
             innerEndDiameter = innerEndDiameter,
             length = length,
             wallThickness = wallThickness,
-            connectorCount = transitionAngle > 0 ? 6 : 1);
+            connectorCount = transitionAngle > 0 ? 6 : 1,
+            $fn = $fn);
         }
         else if(style == "centec_female")
         {
           translate([0, 0, length+stopLength])
           mirror ([0,0,1])
-          CenTecFemaleConnector();
+          CenTecFemaleConnector($fn = $fn);
         }
         else if(style == "centec_male")
         {
           translate([0, 0, length+stopLength])
           mirror ([0,0,1])
-          CenTecMaleConnector();
+          CenTecMaleConnector($fn = $fn);
         }
         else if(style == "osvacm" || style == "osvacm32")
         {
@@ -505,7 +511,8 @@ module adapter(
           osVacMaleConnector(
           innerDiameter = innerEndDiameter,
           length = length,
-          help = help);
+          help = help,
+          $fn = $fn);
         }
         else if(style == "osvacf" || style == "osvacf32")
         {
@@ -514,7 +521,8 @@ module adapter(
           osVacFemaleConnector(
           innerDiameter = innerEndDiameter,
           length = length,
-          help = help);
+          help = help,
+          $fn = $fn);
         }
         else if(style == "nozzle")
         {
@@ -529,7 +537,8 @@ module adapter(
             nozzleOffset = nozzleOffset,
             nozzleChamferPercentage = nozzleChamferPercentage,
             nozzleChamferAngle = nozzleChamferAngle,
-            help = help);
+            help = help,
+            $fn = $fn);
         } else if(style == "none"){ }
         else {
          assert(false, str("style not supported style: ", style));
