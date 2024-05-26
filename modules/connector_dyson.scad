@@ -3,6 +3,7 @@ use <modules_utility.scad>
 use <modules_pipe.scad>
 
 /* [Hidden] */
+dysonVersion = "1.2";
 dysonMinLength = 46;
 dysonMeasurement = "outer";
 dysonOuterDiameter = 34;
@@ -13,7 +14,8 @@ dysonSettings = ["dyson", [
   [iSettingsMeasurement, dysonMeasurement],
   [iSettingsDiameter, dysonOuterDiameter],
   [iSettingsWallThickness, (dysonOuterDiameter - dysonInnerDiameter)/2],
-  [iSettingsTaper ,0]
+  [iSettingsTaper ,0],
+  [iSettingsVersion, dysonVersion]
   ]];
   
 module DysonConnector(

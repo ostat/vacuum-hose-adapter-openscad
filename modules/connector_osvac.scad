@@ -9,25 +9,30 @@ use <modules_pipe.scad>
 /* [Hidden] */
 clipCount = 3;
 
+osvacmVersion = "0.1";
 osvacmMinLength = 30;
 osvacmMeasurement = "inner";
 osvacmOuterDiameter = 37.8;
 osvacmInnerDiameter = 32;
 osvacmWallThickness = (osvacmOuterDiameter - osvacmInnerDiameter)/2;
+
 osvacm32Settings = ["osvacm32", [
   [iSettingsLength, osvacmMinLength],
   [iSettingsMeasurement, osvacmMeasurement],
   [iSettingsDiameter, osvacmInnerDiameter],
   [iSettingsWallThickness, osvacmWallThickness],
-  [iSettingsTaper ,0]
+  [iSettingsTaper ,0],
+  [iSettingsVersion, osvacmVersion]
   ]];
 osvacmSettings = ["osvacm", [
   [iSettingsLength, osvacmMinLength],
   [iSettingsMeasurement, osvacmMeasurement],
   [iSettingsWallThickness, osvacmWallThickness],
-  [iSettingsTaper ,0]
+  [iSettingsTaper ,0],
+  [iSettingsVersion, osvacmVersion]
   ]];
 
+osvacfVersion = "0.1";
 osvacfMinLength = 34.10;
 osvacfMeasurement = "inner";
 osvacfOuterDiameter = 47.265;
@@ -39,13 +44,15 @@ osvacf32Settings = ["osvacf32", [
   [iSettingsMeasurement, osvacfMeasurement],
   [iSettingsDiameter, osvacfInnerDiameter],
   [iSettingsWallThickness, osvacfWallThickness],
-  [iSettingsTaper ,0]
+  [iSettingsTaper ,0],
+  [iSettingsVersion, osvacfVersion]
   ]];
 osvacfSettings = ["osvacf", [
   [iSettingsLength, osvacfMinLength],
   [iSettingsMeasurement, osvacfMeasurement],
   [iSettingsWallThickness, osvacfWallThickness],
-  [iSettingsTaper ,0]
+  [iSettingsTaper ,0],
+  [iSettingsVersion, osvacfVersion]
   ]];
   
 //Test male connector

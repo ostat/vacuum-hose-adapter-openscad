@@ -3,6 +3,7 @@ include <constants.scad>
 include <modules_utility.scad>
 include <connector_hose.scad>
 
+cenTecFemaleVersion = "0.1";
 cenTecFemaleBodyLength =  25;
 cenTecFemaleWallThickness = 3;
 cenTecFemaleMinLength = cenTecFemaleBodyLength+2;
@@ -15,9 +16,11 @@ centecFemaleSettings = ["centec_female", [
   [iSettingsMeasurement, cenTecFemaleMeasurement],
   [iSettingsDiameter, cenTecFemaleInnerDiameter],
   [iSettingsWallThickness, (cenTecFemaleOuterDiameter - cenTecFemaleInnerDiameter)/2],
-  [iSettingsTaper ,0]
+  [iSettingsTaper ,0],
+  [iSettingsVersion, cenTecFemaleVersion]
   ]];
 
+cenTecMaleVersion = "0.1";
 cenTecMaleBodyLength =  25.797;
 cenTecMaleMinLength = 32;
 cenTecMaleMeasurement = "outer";
@@ -30,7 +33,8 @@ centecMaleSettings = ["centec_male", [
   [iSettingsMeasurement, cenTecMaleMeasurement],
   [iSettingsDiameter, cenTecMaleOuterDiameter],
   [iSettingsWallThickness, (cenTecMaleOuterDiameter - cenTecMaleInnerDiameter)/2],
-  [iSettingsTaper ,0]
+  [iSettingsTaper ,0],
+  [iSettingsVersion, cenTecMaleVersion]
   ]];
   
 //Test female  
@@ -38,7 +42,7 @@ centecMaleSettings = ["centec_male", [
 //Test female
 //CenTecMaleConnector();
 
-module CenTecMaleConnector($fn = 64){
+module CenTecMaleConnector( ){
   connectorLength = cenTecMaleMinLength;
   connectorInnerRadius= cenTecMaleInnerDiameter/2;
   connectorOuterRadius= cenTecMaleOuterDiameter/2;

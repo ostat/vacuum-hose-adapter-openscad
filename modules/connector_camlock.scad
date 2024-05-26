@@ -1,5 +1,6 @@
 include <constants.scad>
 
+camlockVersion = "1.0";
 camlockMinLength = 35+3;
 camlockMeasurement = "outer";
 camlockOuterDiameter = 24.25*2;
@@ -8,7 +9,8 @@ camlockSettings = ["camlock", [
   [iSettingsLength, camlockMinLength],
   [iSettingsMeasurement, camlockMeasurement],
   [iSettingsDiameter, camlockOuterDiameter],
-  [iSettingsTaper ,0]
+  [iSettingsTaper ,0],
+  [iSettingsVersion, camlockVersion]
   ]];
   
 module CamlockConnector(

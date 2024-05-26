@@ -1,5 +1,7 @@
 include <constants.scad>
 
+
+dw735Version = "1.2";
 dw735MinLength = 17;
 dw735Measurement = "inner";
 dw735InnerDiameter = 71;
@@ -8,7 +10,8 @@ dw735Settings = ["dw735", [
   [iSettingsLength, dw735MinLength],
   [iSettingsMeasurement, dw735Measurement],
   [iSettingsDiameter, dw735InnerDiameter],
-  [iSettingsTaper ,0]
+  [iSettingsTaper ,0],
+  [iSettingsVersion, dw735Version]
   ]];
 
 module Dw735Connector(
