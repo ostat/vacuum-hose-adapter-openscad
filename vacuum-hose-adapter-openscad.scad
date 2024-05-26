@@ -756,16 +756,18 @@ module transitionExtension(
       }
       
       if(is_string(txt) && len(txt) > 0){
-      translate([0,0,wallThickness/2])
-      RoundText(
-        textvalue = txt,
-        font = "Liberation:style=Bold",
-        fontSize = txtSize > 0 ? txtSize : length-wallThickness,
-        radius = (innerDiameter+wallThickness)/2,
-        textExtrude = wallThickness,
-        forceRound = true,
-        center = true,
-        $fn=64);
+        textExtrude = min(wallThickness,1);
+        border = length * .2; //border above and below the text
+        translate([0,0,border])
+        RoundText(
+          textvalue = txt,
+          font = "Liberation:style=Bold",
+          fontSize = txtSize > 0 ? txtSize : length-border*2,
+          radius = innerDiameter/2+wallThickness - textExtrude/2,
+          textExtrude = textExtrude,
+          forceRound = true,
+          center = true,
+          $fn=64);
       }  
     }
 
