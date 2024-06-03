@@ -5,7 +5,7 @@ module Nozzle(
   length,
   wallThickness,
   nozzleShape,
-  nozzleSize,
+  nozzleSize = [0,0,0],
   nozzleTipWallThickness,
   nozzleRadius,
   nozzleOffset = [0,0],
@@ -14,6 +14,8 @@ module Nozzle(
   help
 )
 {
+  assert(is_list(nozzleSize) && len(nozzleSize) == 3, "nozzleSize must be a list of length 2");
+
   assert(nozzleShape == "square" || nozzleShape == "circle", str("nozzleShape only supports square and circle. Provided:'", nozzleShape ,"'"));
   innerRadius = innerStartDiameter/2;
   _nozzleRadius = nozzleShape == "circle" && nozzleRadius == 0 ? nozzleSize.x/2 
@@ -37,6 +39,14 @@ module Nozzle(
   widthChamfer = min(nozzleWidthChamfer, nozzleWidth);
   lengthChamfer = min(nozzleLengthChamfer, nozzleSize.z);
 
+  //todo, add correction to ensure that the thickness of the walls never reduce to less than wallthickenss1 and wallThickness2
+  //using wallThickness/2 is a sloppy approximation, really need to use trig to would out the correct value
+  leadin = max(fudgeFactor, wallThickness/2);
+  startOuterLeadin = innerStartDiameter > max(nozzleSize.x,nozzleSize.y) ? leadin : fudgeFactor;
+  startInnerLeadin = innerStartDiameter > max(nozzleSize.x,nozzleSize.y) ? fudgeFactor : leadin;
+  endOuterLeadin = max(nozzleSize.x,nozzleSize.y) > innerStartDiameter ? leadin : fudgeFactor;
+  endInnerLeadin = max(nozzleSize.x,nozzleSize.y) > innerStartDiameter ? fudgeFactor : leadin;
+  
   difference()
   {
     //Outer Shape
@@ -45,11 +55,11 @@ module Nozzle(
       // Nozzle base
       hull()
       {
-        cylinder(fudgeFactor*2, r=innerRadius+wallThickness);
-        translate([nozzleOffset.y,nozzleOffset.x,length + fudgeFactor])
+        cylinder(startOuterLeadin, r=innerRadius+wallThickness);
+        translate([nozzleOffset.y,nozzleOffset.x,length - endOuterLeadin+ fudgeFactor])
         hull() for (i= [ 0 : len(circlepositions) - 1 ])
           translate([circlepositions[i][0], circlepositions[i][1], 0])
-          cylinder(fudgeFactor, r=_nozzleRadius+wallThickness+fudgeFactor);
+          cylinder(endOuterLeadin, r=_nozzleRadius+wallThickness+fudgeFactor);
       }
 
       // Nozzle
@@ -67,18 +77,28 @@ module Nozzle(
     union()
     {
       // Nozzle base
-      hull()
-      {
-        translate([00,0,-fudgeFactor])
-          cylinder(fudgeFactor*2, r=innerRadius);
-        translate([nozzleOffset.y,nozzleOffset.x,length+fudgeFactor])
+      union(){
+        translate([0,0,-fudgeFactor])
+          cylinder(startInnerLeadin+fudgeFactor*2, r=innerRadius);
+      
+        translate([0,0,startInnerLeadin])
+        hull()
+        {
+          cylinder(fudgeFactor, r=innerRadius);
+          translate([nozzleOffset.y,nozzleOffset.x,length-startInnerLeadin-endInnerLeadin])
+            hull() for (i= [ 0 : len(circlepositions) - 1 ])
+              translate([circlepositions[i][0], circlepositions[i][1], 0])
+              cylinder(fudgeFactor, r=_nozzleRadius+fudgeFactor);
+        }
+        translate([nozzleOffset.y,nozzleOffset.x,length-endInnerLeadin-fudgeFactor])
           hull() for (i= [ 0 : len(circlepositions) - 1 ])
             translate([circlepositions[i][0], circlepositions[i][1], 0])
-            cylinder(fudgeFactor*2, r=_nozzleRadius+fudgeFactor);
-      }
-
+            cylinder(endInnerLeadin+fudgeFactor*3, r=_nozzleRadius+fudgeFactor);
+            
+       } 
+        
       // Nozzle
-      translate([nozzleOffset.y,nozzleOffset.x,length+fudgeFactor*2])
+      translate([nozzleOffset.y,nozzleOffset.x,length+fudgeFactor])
       hull() for (i= [ 0 : len(circlepositions) - 1 ])
         translate([circlepositions[i][0], circlepositions[i][1], 0])
         cylinder(nozzleSize.z+fudgeFactor*2, r=_nozzleRadius+fudgeFactor);
