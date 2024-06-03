@@ -3,7 +3,7 @@ use <../vacuum-hose-adapter-openscad.scad>
 include <../modules/functions_general.scad>
 include <../modules/functions_string.scad>
 
-scenario = "demo"; //[demo, endcommon_wallthickness,endcommon_diameter,endcommon_measurement,endcommon_length,endcommon_taper,endcommon_rotation,  hose_demo,hose_stopthickness,hose_stoplength,hose_stopsymmetrical,hose_barbsthickness,hose_barbscount,hose_barbssymmetrical,hose_endcapthickness,hose_endcapdiameter, flange_demo,flange_width,flange_thickness,flange_screwposition,flange_screwborder,flange_screwcount,flange_screwdiameter, magnetic_flangedemo,magnetic_magnetcount,magnetic_magnetdiameter,magnetic_magnetthickness,magnetic_magnetborder,magnetic_flangethickness,magnetic_alignmentring,magnetic_twistlock, nozzle_demo,nozzle_shape,nozzle_size,nozzle_tipwallthickness,nozzle_radius,nozzle_offset,nozzle_chamferpercentage,nozzle_chamferangle,     allignmentring_demo,allignmentring_depth,allignmentring_upperwidth,allignmentring_lowerwidth,allignmentring_sideclearance,allignmentring_depthclearance, camlock_sample,camlock_demo, centec_female_sample,centec_female_demo,centec_male_sample,centec_male_demo, dyson_sample,dyson_demo, dw735_sample,dw735_demo, osvacm32_sample,osvacm32_demo,osvacm_sample,osvacm_demo,osvacf32_sample,osvacf32_demo,osvacf_sample,osvacf_demo, transition_demo,transition_bendtaper,transition_taperbend,transition_organicbend,transition_flat, transition_hull,transition_hulllength,transition_hulloffset,transition_hullcenter, transition_length,transition_angle,transition_bendradius,transition_offset,transition_EndCount,  transitionbase,transitionbase_thickness,transitionbase_length,transitionbase_width,transitionbase_angle, transitionext_demo,transitionextpre_length,transitionextpre_gridSize,transitionextpre_wallthickness,transitionextpost_length,transitionextpost_gridSize,transitionextpost_wallthickness]
+scenario = "demo"; //[demo,demo2,demo_fixed, endcommon_wallthickness,endcommon_diameter,endcommon_measurement,endcommon_length,endcommon_taper,endcommon_rotation,  hose_demo,hose_stopthickness,hose_stoplength,hose_stopsymmetrical,hose_barbsthickness,hose_barbscount,hose_barbssymmetrical,hose_endcapthickness,hose_endcapdiameter, flange_demo,flange_width,flange_thickness,flange_screwposition,flange_screwborder,flange_screwcount,flange_screwdiameter, magnetic_flangedemo,magnetic_magnetcount,magnetic_magnetdiameter,magnetic_magnetthickness,magnetic_magnetborder,magnetic_flangethickness,magnetic_alignmentring,magnetic_twistlock, nozzle_demo,nozzle_shape,nozzle_size,nozzle_tipwallthickness,nozzle_radius,nozzle_offset,nozzle_chamferpercentage,nozzle_chamferangle,     allignmentring_demo,allignmentring_depth,allignmentring_upperwidth,allignmentring_lowerwidth,allignmentring_sideclearance,allignmentring_depthclearance, camlock_sample,camlock_demo, centec_female_sample,centec_female_demo,centec_male_sample,centec_male_demo, dyson_sample,dyson_demo, dw735_sample,dw735_demo, osvacm32_sample,osvacm32_demo,osvacm_sample,osvacm_demo,osvacf32_sample,osvacf32_demo,osvacf_sample,osvacf_demo, transition_demo,transition_bendtaper,transition_taperbend,transition_organicbend,transition_flat, transition_hull,transition_hulllength,transition_hulloffset,transition_hullcenter, transition_length,transition_angle,transition_bendradius,transition_offset,transition_EndCount,  transitionbase,transitionbase_thickness,transitionbase_length,transitionbase_width,transitionbase_angle, transitionext_demo,transitionextpre_length,transitionextpre_gridSize,transitionextpre_wallthickness,transitionextpost_length,transitionextpost_gridSize,transitionextpost_wallthickness]
 showtext = true; 
 colour = "";
 //used to highlight the section of interest.
@@ -77,11 +77,12 @@ itransitionBaseLength = 8+it;
 itransitionBaseAngle = 9+it;
 itransitionEnd2Count = 10+it;
 itransitionHullLength = 11+it;
-itransitionHullyOffset = 12+it;
-itransitionHullCenter = 13+it;
-itransitionHullCenterHeight = 14+it;
+itransitionHullCenterLength = 12+it;
+itransitionHullyOffset = 13+it;
+itransitionHullCenter = 14+it;
+itransitionHullCenterHeight = 15+it;
 
-te=15+it;
+te=16+it;
 itransitionPreLength = 0+te;
 itransitionPreGridSize = 1+te;
 itransitionPreGridWallThickness = 2+te; 
@@ -196,8 +197,8 @@ defaultDemoSetting = [
     "bend+taper", 10,0,0,[0,0],
     //transitionBaseType, transitionBaseThickness, transitionBaseWidth, transitionBaseLength, transitionBaseAngle, 
     "none",0,0,0,0,
-    //transitionEnd2Count, transitionHullLength, transitionHullyOffset, transitionHullCenter, transitionHullCenterHeight,
-    1,0,0,false,0,
+    //transitionEnd2Count, transitionHullLength, transitionHullCenterLength, transitionHullyOffset, transitionHullCenter, transitionHullCenterHeight,
+    1,0,0,0,false,0,
     //transitionPreLength,transitionPreGridSize,transitionPreGridWallThickness,transitionPreText,transitionPostSize
     0,0,0,"",0,
     //transitionPostLength,transitionPostGridSize,transitionPostGridWallThickness,transitionPostText,transitionPostTextSize
@@ -232,28 +233,33 @@ function getcustomVpf(scenarioVp) = iscustomVP(scenarioVp, 4) ? let(vpf = scenar
 function getScenario(scenario) = 
 //[0]: seenarioName,scenarioCount,[vpr,vpt,vpd,vpf],[[key,value]]
 //[1]: name,[[key,value]]
-    scenario == "demo" ? [["Hose Adapters",8,[[],[0,0,26],550],[[irendercount,4], [irenderseparation,[85,0,35]], [itextposition,[0,-80,-10]]]],
+    scenario == "demo" ? [["Hose Adapters",13,[[],[0,0,26],550],[[irendercount,4], [irenderseparation,[85,0,35]], [itextposition,[0,-80,-10]]]],
       ["Hose connector", [[iconnector1Style,"hose"], [iconnector2Diameter,25], [iconnector1StopThickness,2], [iconnector1StopLength,3], [iconnector1Taper,1], [iconnector2BarbsCount,3], [iconnector1Measurement,"inner"]]],
       ["Magnetic Flange", [[iconnector1Style, "mag"], [iconnector1MagnetCount,6], [iconnector1Diameter,45], [iconnector1MagnetTwistLockSize, "3cnc"], [iconnector2Diameter,50]]],
       ["Flange", [[iconnector1Style, "flange"]]],
-      ["Dyson V6 connector", [[iconnector1Style,"dyson"], [iconnector1Diameter,50], [itransitionAngle,45], [itransitionStyle,"hull"],[itransitionEnd2Count,2], [itransitionHullCenterHeight,45]]],
-      ["CAMLOCK connector", [[iconnector1Style, "camlock"],[itransitionAngle,45], [itransitionStyle,"hull"],[itransitionEnd2Count,2], [itransitionHullCenter,true], [itransitionHullCenterHeight,45], [itransitionHullLength,20], [irotaterender1,[0,0,-45]], [irotaterender2,[0,0,-45]]]],
+      ["Dyson V6 connector", [[iconnector1Style,"dyson"], [itransitionAngle,45], [itransitionStyle,"hull"],[itransitionEnd2Count,2], [itransitionHullCenterHeight,45]]],
+      ["CAMLOCK connector", [[iconnector1Style, "camlock"],[itransitionAngle,45], [itransitionStyle,"hull"],[itransitionEnd2Count,2], [itransitionLength,10], [itransitionHullCenter,true], [itransitionHullCenterLength,5], [itransitionHullCenterHeight,40], [itransitionHullLength,20], [irotaterender1,[0,0,-45]], [irotaterender2,[0,0,-45]]]],
       ["Dewalt DW735x", [[iconnector1Style,"dw735"], [itransitionBendRadius,10], [itransitionStyle,"taper+bend"], [itransitionAngle,90], [iconnector1Diameter,80], [iconnector2Diameter,50]]],
-      ["Centec Quick Connect", [[iconnector1Style, "centec"],[iconnector1Diameter, 50]]],
-      ["Nozzle", [[itransitionStyle,"bend+taper"], [itransitionBendRadius,10], [itransitionAngle,30], [itransitionLength,3], [iconnector2Style,"nozzle"], [iconnector2Diameter,0], [iconnector2NozzleShape,"square"], [iconnector2NozzleChamferPercentage,50], [iconnector2NozzleChamferAngle,45], [iconnector2NozzleSize,[10,5,50]]]]]
+      ["Centec Quick Connect Female", [[iconnector1Style, "centec_female"]]],
+      ["Centec Quick Connect Male", [[iconnector1Style, "centec_male"]]],
+      ["osVAC32 Male", [[iconnector1Style, "osvacm32"]]],
+      ["osVAC Male", [[iconnector1Style, "osvacm"]]],
+      ["osVAC32 Female", [[iconnector1Style, "osvacf32"]]],
+      ["osVAC Female", [[iconnector1Style, "osvacf"]]],
+      ["Nozzle", [[itransitionStyle,"bend+taper"], [itransitionBendRadius,10], [itransitionAngle,30], [itransitionLength,3], [iconnector2Style,"nozzle"], [iconnector2Diameter,0], [iconnector2NozzleShape,"square"], [iconnector2NozzleChamferPercentage,50], [iconnector2NozzleChamferAngle,45], [iconnector2NozzleSize,[10,5,50]]]]    ]
+    : scenario == "demo2" ? [["Hose Adapters",13,[[],[10,-0,40],450],[[irendercount, 2],[itextposition,[0,-50,0]]],"demo"]]
+    
+    : scenario == "demo_fixed" ? [["Fixed Adapters",9,[[],[10,-0,40],450],[[irendercount, 2],[iconnector2Diameter, 50], [itransitionColor,coloredDeemphasize], [iend2Color,coloredDeemphasize], [irenderseparation,[85,0,35]],[itextposition,[0,-50,0]]]],
+      ["Dyson V6 connector", [[iconnector1Style,"dyson"]]],
+      ["CAMLOCK connector", [[iconnector1Style, "camlock"]]],
+      ["Dewalt DW735x", [[iconnector1Style,"dw735"], [itransitionBendRadius,10], [itransitionStyle,"taper+bend"], [itransitionAngle,45]]],
+      ["Centec Quick Connect Female", [[iconnector1Style, "centec_female"]]],
+      ["Centec Quick Connect Male", [[iconnector1Style, "centec_male"]]],
+      ["osVAC32 Male", [[iconnector1Style, "osvacm32"]]],
+      ["osVAC Male", [[iconnector1Style, "osvacm"]]],
+      ["osVAC32 Female", [[iconnector1Style, "osvacf32"]]],
+      ["osVAC Female", [[iconnector1Style, "osvacf"]]]   ]
 
-      /*
-      iconnector1Style, "mag"], [iconnector1Diameter, 60], [iconnector1MagnetCount, 6]]],
-      ["none", [[iconnector1MagnetTwistLockSize, "0"]]],
-      ["M3", [[iconnector1MagnetTwistLockSize, "3"]]],
-      ["M3 with CNC Kitchen insert", [[iconnector1MagnetTwistLockSize, "3cnc"]]],
-      
-            ["Hose Adapter", []],
-      ["Bent Hose Adapter", [[itransitionBendRadius,10], [itransitionAngle,45], [iconnector2BarbsCount,3], [iconnector2Measurement,"outer"]]],
-      ["Nozzle", [[itransitionStyle,"bend+taper"], [itransitionBendRadius,10], [itransitionAngle,30], [itransitionLength,3], [iconnector2Style,"nozzle"], [iconnector2Diameter,0], [iconnector2NozzleShape,"square"], [iconnector2NozzleChamferPercentage,50], [iconnector2NozzleChamferAngle,45],[iconnector2NozzleSize,[10,5,50]]]],
-      ["Double Adapter", [[itransitionAngle,45], [itransitionStyle,"hull"],[itransitionEnd2Count,2], [itransitionHullCenterHeight,45]]],
-      ["Triple Adapter", [[itransitionAngle,45], [itransitionStyle,"hull"],[itransitionEnd2Count,2], [itransitionHullCenter,true], [itransitionHullCenterHeight,45], [itransitionHullLength,20], [irotaterender1,[0,0,-45]], [irotaterender2,[0,0,-45]]]]
-      */
       
     //Connector settings
     //endcommon_wallthickness,endcommon_diameter,endcommon_measurement,endcommon_length,endcommon_taper,endcommon_rotation
@@ -859,6 +865,8 @@ module RenderScenario(scenario, showtext=true, stepIndex=-1, sliceDebug = false,
         transitionBaseAngle = currentStepSettings[itransitionBaseAngle],
         transitionEnd2Count = currentStepSettings[itransitionEnd2Count],
         transitionHullLength = currentStepSettings[itransitionHullLength],
+        transitionHullCenterLength = currentStepSettings[itransitionHullCenterLength],
+  
         transitionHullyOffset = currentStepSettings[itransitionHullyOffset],
         transitionHullCenter = currentStepSettings[itransitionHullCenter],
         transitionHullCenterHeight = currentStepSettings[itransitionHullCenterHeight],
