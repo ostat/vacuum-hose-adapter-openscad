@@ -1,28 +1,7 @@
-
 include <constants.scad>
 include <dotSCAD/shape_circle.scad>
 include <dotSCAD/ring_extrude.scad>
 
-/*
-difference(){
-radius = 25;
-height = 10;
-thickness = 10;
-
-union(){
-  cylinder(height*2, d=radius*2-thickness*2);
-  cylinder(height, d=radius*2);
-  translate([0,0,-height])
-  cylinder(height, d=radius*2);
-}
-Pipe(
-    diameter1 = radius*2,
-    diameter2 = radius*2-thickness*2,
-    length = height+fudgeFactor*2,
-    wallThickness1 = fudgeFactor,
-    wallThickness2 = thickness+fudgeFactor);
-}*/
-            
 //diameter1: Inner start diameter.
 //diameter2: Inner end diameter.
 //length: pipe length
@@ -45,7 +24,13 @@ module Pipe(
   wallThickness1 = is_undef(wallThickness) ? wallThickness1 : wallThickness;
   wallThickness2 = is_undef(wallThickness) ? wallThickness2 : wallThickness;
   
-  
+  //todo, add correction to ensure that the thickness of the walls never reduce to less than wallthickenss1 and wallThickness2
+  //using wallThickness/2 is a sloppy approximation, really need to use trig to would out the correct value
+  leadin = max(fudgeFactor, min(wallThickness1, wallThickness2, length)/2);
+  startOuterLeadin = diameter1 > diameter2 ? leadin : fudgeFactor;
+  startInnerLeadin = diameter1 > diameter2 ? fudgeFactor : leadin;
+  endOuterLeadin = diameter2 > diameter1 ? leadin : fudgeFactor;
+  endInnerLeadin = diameter2 > diameter1 ? fudgeFactor : leadin;
   
   difference ()
   {
@@ -53,10 +38,11 @@ module Pipe(
     translate([0,0,zPosition])
     hull()
     {
-      if(Offset.x>0 || Offset.y>0){
-        cylinder(fudgeFactor, d=diameter1+wallThickness1*2);
-        translate([Offset.x,Offset.y,length-fudgeFactor])
-          cylinder(fudgeFactor, d=diameter2+wallThickness2*2);
+      if(Offset.x>0 || Offset.y>0 || 
+        (diameter1 != diameter2 && diameter1+wallThickness1*2 != diameter2+wallThickness2*2)) {
+        cylinder(h=startOuterLeadin, d=diameter1+wallThickness1*2);
+        translate([Offset.x,Offset.y,length-endOuterLeadin])
+          cylinder(h=endOuterLeadin, d=diameter2+wallThickness2*2);
       }
       else{
         cylinder(length, 
@@ -67,26 +53,33 @@ module Pipe(
 
     //Inner cylinder to remove
     translate([0,0,zPosition])
-      if(Offset.x > 0 || Offset.y>0){
-        hull() {
-          cylinder(fudgeFactor, d=diameter1);
-          translate([Offset.x,Offset.y,length+fudgeFactor*2])
-            cylinder(fudgeFactor, d=diameter2);
-        }
-      } else {
       union()
       {
+      if(Offset.x > 0 || Offset.y>0 ||
+        (diameter1 != diameter2 && diameter1+wallThickness1*2 != diameter2+wallThickness2*2)) {
+      
+        translate([0,0,-fudgeFactor])
+        cylinder(startInnerLeadin+fudgeFactor*2, d=diameter1);
+        
+        translate([0,0,startInnerLeadin])
+        hull() {
+          cylinder(fudgeFactor, d=diameter1);
+          translate([Offset.x,Offset.y,length-startInnerLeadin-endInnerLeadin])
+            cylinder(fudgeFactor, d=diameter2);
+        }
+        translate([0,0,length-endInnerLeadin-fudgeFactor])
+        cylinder(endInnerLeadin+fudgeFactor*2, d=diameter2);
+      } else {
         // main removal
         cylinder(length, d1=diameter1, d2=diameter2);
-        
-        // bottomtop glitch correction
-        translate([0,0,-fudgeFactor])
-          cylinder(fudgeFactor*2, d=diameter1);
+      }
+      // bottomtop glitch correction
+      translate([0,0,-fudgeFactor])
+        cylinder(fudgeFactor*2, d=diameter1);
 
-        // top glitch correction
-        translate([0,0,length-fudgeFactor])
-          cylinder(fudgeFactor*2, d=diameter2);
-       }
+      // top glitch correction
+      translate([0,0,length-fudgeFactor])
+        cylinder(fudgeFactor*2, d=diameter2);
     }
   }
 }
@@ -491,9 +484,6 @@ module Stopper(
   zoffset2 = wallThickness * taperLength2 / stopThickness;
   length2 = (zoffset2 + totalLength);
   taperWidth2 = is_list(taper2) ? taper2.x : length2 * stopThickness / taperLength2;
-  
-  echo("taper-1",taper1=taper1,taperLength1=taperLength1,zoffset1=zoffset1,length1=length1,taperWidth1=taperWidth1);
-  echo("taper-2",taper2=taper2,taperLength2=taperLength2,zoffset2=zoffset2,length2=length2,taperWidth2=taperWidth2);
   
   translate([0,0,zPosition])
   union(){
