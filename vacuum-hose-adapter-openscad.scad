@@ -1151,11 +1151,16 @@ module HoseAdapter(
   connector1Length = retriveConnectorSetting(connector1Style, iSettingsLength, connector1Length);
   connector1Taper = retriveConnectorSetting(connector1Style, iSettingsTaper, connector1Taper);
     
-  connector2Measurement = retriveConnectorSetting(connector2Style, iSettingsMeasurement, connector2Measurement);
-  connector2Diameter = let(d2 = retriveConnectorSetting(connector2Style, iSettingsDiameter, connector2Diameter)) 
     //For nozzle, if the diameter is 0, then set it to the D1, this will look nice.
+  connector2Measurement = let(
+    m2 = retriveConnectorSetting(connector2Style, iSettingsMeasurement, connector2Measurement),
+    d2 = retriveConnectorSetting(connector2Style, iSettingsDiameter, connector2Diameter))
+      (connector2Style == "nozzle" && d2 == 0) ? connector1Measurement : m2;
+  connector2Diameter = let(d2 = retriveConnectorSetting(connector2Style, iSettingsDiameter, connector2Diameter)) 
     (connector2Style == "nozzle" && d2 == 0) ? connector1Diameter : d2;
-  connector2WallThickness = retriveConnectorSetting(connector2Style, iSettingsWallThickness, connector2WallThickness);
+  
+  connector2WallThickness = let(w2 = retriveConnectorSetting(connector2Style, iSettingsWallThickness, connector2WallThickness))
+    (connector2Style == "nozzle" && w2 == 0) ? connector1WallThickness : w2;
   connector2Length = retriveConnectorSetting(connector2Style, iSettingsLength, connector2Length);
   connector2Taper = retriveConnectorSetting(connector2Style, iSettingsTaper, connector2Taper);
     
@@ -1196,9 +1201,9 @@ module HoseAdapter(
       _transitionLength = _transitionStyle == "organicbend" //|| _transitionStyle == "hull"
         ? 0
         : transitionLength == 0
-          ? abs(end1OuterEndDiameter - end2OuterStartDiameter)/2
+          ? max(abs(end1OuterEndDiameter - end2OuterStartDiameter)/2, abs(end1InnerEndDiameter - end2InnerStartDiameter)/2)
           : transitionLength;
-    
+
       //Calculate the bend radius
       //organicbend, the '0' value must be max of connector 1 or 2 diameter, plus the wall thickness * 2 otherwise it will clip, then add provided radius.
       //transition the '0' value must be end 1 diameter/2 + wall thickenss *2 to prevent clipping, then addd provided radius.
@@ -1447,7 +1452,7 @@ module HoseAdapter(
 
           if(_transitionStyle == "hull" && transitionHullCenter)
           {
-            translate([0, 0, endConnector1+transitionLength+connector2StopLength+transitionCenterHeight+transitionHullCenterLength])
+            translate([0, 0, endConnector1+transitionPreLength+connector2StopLength+transitionCenterHeight+transitionHullCenterLength])
             adapter(
               connector = 2,
               wallThickness = connector2WallThickness,
