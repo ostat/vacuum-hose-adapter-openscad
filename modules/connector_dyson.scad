@@ -114,7 +114,7 @@ module DysonConnector(
 
       //remove center
       translate([0,0,-fudgeFactor])
-        cylinder(r=innerRadius, h=height+2);
+        cylinder(r=innerRadius, h=height+fudgeFactor*2);
     }
   }
 }

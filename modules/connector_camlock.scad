@@ -12,7 +12,14 @@ camlockSettings = ["camlock", [
   [iSettingsTaper ,0],
   [iSettingsVersion, camlockVersion]
   ]];
-  
+ 
+ /*
+ CamlockConnector(
+  innerEndDiameter = camlockOuterDiameter,
+  length = camlockMinLength,
+  wallThickness = 2);
+ */
+ 
 module CamlockConnector(
   innerEndDiameter,
   length,
@@ -53,7 +60,7 @@ module CamlockConnector(
       connectorMeasurement = "outer",
       innerStartDiameter = innerDiameter-wallThickness*2,
       innerEndDiameter = innerDiameter-wallThickness*2,
-      length = camlockHeight,
+      length = camlockHeight+camlockStopLength+fudgeFactor*2-(camlockRingClipHeight+wallThickness/2),
       wallThickness = camlockWallThickness,
       stopLength = 0,
       stopWidth = 0,
