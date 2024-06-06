@@ -133,8 +133,10 @@ module ConeRing(centerDiameter, length, wallThickness1, wallThickness2, zPositio
 module BentPipeHull(
     inner1PipeRadius,
     inner2PipeRadius,
+    inner3PipeRadius,
     end1WallThickness,
     end2WallThickness,
+    end3WallThickness,
     pipeAngle = 0,
     zPosition=0,
     end2Count=1,
@@ -148,8 +150,10 @@ module BentPipeHull(
 {
   assert(is_num(inner1PipeRadius), "inner1PipeRadius must be a number");
   assert(is_num(inner2PipeRadius), "inner2PipeRadius must be a number");
+  assert(is_num(inner3PipeRadius), "inner3PipeRadius must be a number");
   assert(is_num(end1WallThickness), "end1WallThickness must be a number");
   assert(is_num(end2WallThickness), "end2WallThickness must be a number");
+  assert(is_num(end3WallThickness), "end3WallThickness must be a number");
   assert(is_num(pipeAngle), "pipeAngle must be a number");
   assert(is_num(zPosition), "zPosition must be a number");
   assert(is_num(end2Count), "end2Count must be a number");
@@ -161,6 +165,7 @@ module BentPipeHull(
   
   outer1PipeRadius = inner1PipeRadius + end1WallThickness;
   outer2PipeRadius = inner2PipeRadius + end2WallThickness;
+  outer3PipeRadius = inner3PipeRadius + end3WallThickness;
   //_edgeOffset = outer1PipeRadius - outer2PipeRadius - edgeOffset;
   _edgeOffset = edgeOffset;
   
@@ -172,6 +177,7 @@ module BentPipeHull(
   difference(){
     //Outer shape
     union(){
+      //The main body hull shape
       hull(){
         for (rotation = [0:end2Count-1])
         {
@@ -185,14 +191,15 @@ module BentPipeHull(
         if(addCenter)
         {
           //end 2 center
-          translate([0, 0, centerHeight-end2WallThickness])
-          cylinder(r=outer2PipeRadius, h=end2WallThickness);
+          translate([0, 0, centerHeight-end3WallThickness])
+          cylinder(r=outer3PipeRadius, h=end3WallThickness);
         }
         
         //end1
         cylinder(r=outer1PipeRadius, h=end1BaseHeight+fudgeFactor);
       }
 
+      //Extentions tubes
       for (rotation = [0:end2Count-1])
       {
         //End 2 extentions
@@ -207,12 +214,13 @@ module BentPipeHull(
       if(addCenter)
       {
           translate([0, 0, centerHeight])
-          cylinder(r=outer2PipeRadius, h=lengthOutHullCenter);
+          cylinder(r=outer3PipeRadius, h=lengthOutHullCenter);
       }
     }
 
     //inner/negative shape
     union(){
+      //The Inner Main body hull shape
       hull(){
         for (rotation = [0:end2Count-1])
         {
@@ -226,14 +234,15 @@ module BentPipeHull(
         if(addCenter)
         {
         //End 2 center
-          translate([0, 0, centerHeight-end2WallThickness-fudgeFactor])
-          cylinder(r=inner2PipeRadius, h=end2WallThickness+fudgeFactor*2);
+          translate([0, 0, centerHeight-end3WallThickness-fudgeFactor])
+          cylinder(r=inner3PipeRadius, h=end3WallThickness+fudgeFactor*2);
         }
         
         //End 1
         cylinder(r=inner1PipeRadius, h=end1BaseHeight+fudgeFactor*2);
       }
 
+      //Extention tubes
       for (rotation = [0:end2Count-1])
       {
         //End 2 extentions
@@ -246,8 +255,8 @@ module BentPipeHull(
       if(addCenter)
       {
           translate([0, 0, centerHeight-fudgeFactor])
-          cylinder(r=inner2PipeRadius, h=lengthOutHullCenter+fudgeFactor*2);
-        }
+          cylinder(r=inner3PipeRadius, h=lengthOutHullCenter+fudgeFactor*2);
+      }
     }
 
     //Clear start from clipping
