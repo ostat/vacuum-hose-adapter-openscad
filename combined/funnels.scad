@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'funnels.scad'. Generated 2024-04-30 11:12
+//Combined version of 'funnels.scad'. Generated 2024-06-07 23:37
 ///////////////////////////////////////
 // Hose connector examples
 // version 2022-09-26
@@ -46,523 +46,6 @@ ScrewBorder = 3;
 $fn=120;
 
 module end_of_customizer_opts() {}
-//Combined from path ring_extrude.scad
-/**
-* ring_extrude.scad
-*
-* @copyright Justin Lin, 2017
-* @license https://opensource.org/licenses/lgpl-3.0.html
-*
-* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-ring_extrude.html
-*
-**/
-
-
-module ring_extrude(shape_pts, radius, angle = 360, twist = 0, scale = 1.0, triangles = "SOLID") {
-    if(twist == 0 && scale == 1.0) {
-        rotate_extrude(angle = angle) 
-        translate([radius, 0, 0]) 
-            polygon(shape_pts);
-    } else {
-        a_step = 360 / __frags(radius);
-
-        angles = is_num(angle) ? [0, angle] : angle;
-
-        m = floor(angles[0] / a_step) + 1;
-        n = floor(angles[1] / a_step);
-
-        leng = radius * cos(a_step / 2);
-
-        begin_r = leng / cos((m - 0.5) * a_step - angles[0]);
-        end_r =  leng / cos((n + 0.5) * a_step - angles[1]);
-
-        angs = [
-            [90, 0, angles[0]], 
-            each [for(i = m; i <= n; i = i + 1) [90, 0, a_step * i]]
-        ];
-
-        pts = [
-            __ra_to_xy(begin_r, angles[0]), 
-            each [for(i = m; i <= n; i = i + 1) __ra_to_xy(radius, a_step * i)]
-        ];
-
-        is_angle_frag_end = angs[len(angs) - 1][2] == angles[1];
-        
-        all_angles = is_angle_frag_end ? 
-            angs : [each angs, [90, 0, angles[1]]];
-            
-        all_points = is_angle_frag_end ? 
-            pts : [each pts, __ra_to_xy(end_r, angles[1])];
-
-        sections = cross_sections(shape_pts, all_points, all_angles, twist, scale);
-
-        sweep(
-            sections,
-            triangles = triangles
-        );
-
-        // hook for testing
-        test_ring_extrude(sections, angle);
-    }
-}
-
-// Override it to test
-module test_ring_extrude(sections, angle) {
-
-}
-//CombinedEnd from path ring_extrude.scad
-//Combined from path __frags.scad
-function __frags(radius) = 
-    $fn == 0 ?  
-        max(min(360 / $fa, radius * 6.283185307179586 / $fs), 5) :
-        max($fn, 3);
-//CombinedEnd from path __frags.scad
-//Combined from path __ra_to_xy.scad
-function __ra_to_xy(r, a) = [r * cos(a), r * sin(a)];
-//CombinedEnd from path __ra_to_xy.scad
-//Combined from path cross_sections.scad
-/**
-* cross_sections.scad
-*
-* @copyright Justin Lin, 2017
-* @license https://opensource.org/licenses/lgpl-3.0.html
-*
-* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-cross_sections.html
-*
-**/
-
-
-function cross_sections(shape_pts, path_pts, angles, twist = 0, scale = 1.0) =
-    let(
-        len_path_pts_minus_one = len(path_pts) - 1,
-        sh_pts = len(shape_pts[0]) == 3 ? [for(p = shape_pts) [each p, 1]] : [for(p = shape_pts) [each p, 0, 1]],
-        pth_pts = len(path_pts[0]) == 3 ? path_pts : [for(p = path_pts) [each p, 0]]
-    )
-    twist == 0 && scale == 1.0 ?
-    [
-        for(i = [0:len_path_pts_minus_one])
-        let(transform_m = m_translation(pth_pts[i]) * m_rotation(angles[i]))
-        [
-            for(p = sh_pts) 
-            let(transformed = transform_m * p)
-            [transformed.x, transformed.y, transformed.z]
-        ]
-    ] :
-    let(
-        twist_step = twist / len_path_pts_minus_one,
-        scale_step_vt = (is_num(scale) ? let(s = scale - 1) [s, s, 0] : ([each scale, 0] - [1, 1, 0])) / len_path_pts_minus_one,
-        one_s = [1, 1, 1]
-    )
-    [
-        for(i = [0:len_path_pts_minus_one])
-        let(
-            transform_m = m_translation(pth_pts[i]) * 
-                          m_rotation(angles[i]) * 
-                          m_rotation(twist_step * i) * 
-                          m_scaling(scale_step_vt * i + one_s)
-        )
-        [
-            for(p = sh_pts) 
-            let(transformed = transform_m * p)
-            [transformed.x, transformed.y, transformed.z]
-        ]
-    ];
-//CombinedEnd from path cross_sections.scad
-//Combined from path m_scaling.scad
-/**
-* m_scaling.scad
-*
-* @copyright Justin Lin, 2019
-* @license https://opensource.org/licenses/lgpl-3.0.html
-*
-* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-m_scaling.html
-*
-**/
-
-
-function m_scaling(s) = _m_scaling_impl(s);
-//CombinedEnd from path m_scaling.scad
-//Combined from path _m_scaling_impl.scad
-function __m_scaling_to_3_elems_scaling_vect(s) =
-     let(leng = len(s))
-     leng == 3 ? s : 
-     leng == 2 ? [each s, 1] : [s.x, 1, 1];
-
-function __m_scaling_to_scaling_vect(s) = is_num(s) ? [s, s, s] : __m_scaling_to_3_elems_scaling_vect(s);
-
-SCALING_FINAL_ROW = [0, 0, 0, 1];
-function _m_scaling_impl(s) = 
-    let(v = __m_scaling_to_scaling_vect(s))
-    [
-        [v.x, 0, 0, 0],
-        [0, v.y, 0, 0],
-        [0, 0, v.z, 0],
-        SCALING_FINAL_ROW
-    ];
-//CombinedEnd from path _m_scaling_impl.scad
-//Combined from path m_translation.scad
-/**
-* m_translation.scad
-*
-* @copyright Justin Lin, 2019
-* @license https://opensource.org/licenses/lgpl-3.0.html
-*
-* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-m_translation.html
-*
-**/
-
-
-function m_translation(v) = _m_translation_impl(v);
-//CombinedEnd from path m_translation.scad
-//Combined from path _m_translation_impl.scad
-function _to_3_elems_translation_vect(v) =
-     let(leng = len(v))
-     leng == 3 ? v : 
-     leng == 2 ? [each v, 0] : [v.x, 0, 0];
-
-function _to_translation_vect(v) = is_num(v) ? [v, 0, 0] : _to_3_elems_translation_vect(v);
-
-FINAL_ROW = [0, 0, 0, 1];
-function _m_translation_impl(v) = 
-    let(vt = _to_translation_vect(v))
-    [ 
-        [1, 0, 0, vt.x],
-        [0, 1, 0, vt.y],
-        [0, 0, 1, vt.z],
-        FINAL_ROW
-    ];
-//CombinedEnd from path _m_translation_impl.scad
-//Combined from path m_rotation.scad
-/**
-* m_rotation.scad
-*
-* @copyright Justin Lin, 2019
-* @license https://opensource.org/licenses/lgpl-3.0.html
-*
-* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-m_rotation.html
-*
-**/
-
-
-function m_rotation(a, v) = _m_rotation_impl(a, v);
-//CombinedEnd from path m_rotation.scad
-//Combined from path _m_rotation_impl.scad
-
-ROTATION_FINAL_ROW = [0, 0, 0, 1];
-function __m_rotation_q_rotation(a, v) = 
-    let(
-        uv = v / norm(v),
-        s = sin(a / 2) * uv,
-        w = sin(a) * uv,
-
-        xx = 2 * s.x ^ 2,
-        yy = 2 * s.y ^ 2,
-        zz = 2 * s.z ^ 2,
-
-        xy = 2 * s.x * s.y,
-        xz = 2 * s.x * s.z,
-        yz = 2 * s.y * s.z
-    )
-    [
-        [1 - yy - zz, xy - w.z, xz + w.y, 0],
-        [xy + w.z, 1 - xx - zz, yz - w.x, 0],
-        [xz - w.y, yz + w.x, 1 - xx - yy, 0],
-        ROTATION_FINAL_ROW
-    ];
-
-function __m_rotation_xRotation(a) = 
-    let(c = cos(a), s = sin(a))
-    [
-        [1, 0, 0, 0],
-        [0, c, -s, 0],
-        [0, s, c, 0],
-        ROTATION_FINAL_ROW
-    ];
-
-function __m_rotation_yRotation(a) = 
-    let(c = cos(a), s = sin(a))
-    [
-        [c, 0, s, 0],
-        [0, 1, 0, 0],
-        [-s, 0, c, 0],
-        ROTATION_FINAL_ROW
-    ];    
-
-function __m_rotation_zRotation(a) = 
-    let(c = cos(a), s = sin(a))
-    [
-        [c, -s, 0, 0],
-        [s, c, 0, 0],
-        [0, 0, 1, 0],
-        ROTATION_FINAL_ROW
-    ];    
-
-function __m_rotation_xyz_rotation(a) =
-    let(ang = __to_ang_vect(a))
-    __m_rotation_zRotation(ang[2]) * __m_rotation_yRotation(ang[1]) * __m_rotation_xRotation(ang[0]);
-
-function _m_rotation_impl(a, v) = 
-    (a == 0 || a == [0, 0, 0] || a == [0] || a == [0, 0]) ? [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        ROTATION_FINAL_ROW
-    ] : (is_undef(v) ? __m_rotation_xyz_rotation(a) : __m_rotation_q_rotation(a, v));
-//CombinedEnd from path _m_rotation_impl.scad
-//Combined from path __to_ang_vect.scad
-function __to_3_elems_ang_vect(a) =
-     let(leng = len(a))
-     leng == 3 ? a : 
-     leng == 2 ? [each a, 0] : [a.x, 0, 0];
-
-function __to_ang_vect(a) = is_num(a) ? [0, 0, a] : __to_3_elems_ang_vect(a);
-//CombinedEnd from path __to_ang_vect.scad
-//Combined from path sweep.scad
-/**
-* sweep.scad
-*
-* @copyright Justin Lin, 2020
-* @license https://opensource.org/licenses/lgpl-3.0.html
-*
-* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-sweep.html
-*
-**/
-
-
-module sweep(sections, triangles = "SOLID") {
-
-    function side_indexes(sects, begin_idx = 0) = 
-        let(       
-            leng_sects = len(sects),
-            leng_pts_sect = len(sects[0]),
-            range_j = [begin_idx:leng_pts_sect:begin_idx + (leng_sects - 2) * leng_pts_sect],
-            range_i = [0:leng_pts_sect - 1]
-        ) 
-        concat(
-            [
-                for(j = range_j, i = range_i)
-                let(i2 = j + (i + 1) % leng_pts_sect)
-                [
-                    j + i, 
-                    i2, 
-                    i2 + leng_pts_sect
-                ]
-            ],
-            [
-                for(j = range_j, i = range_i)
-                let(ji = j + i)
-                [
-                    ji, 
-                    j + (i + 1) % leng_pts_sect + leng_pts_sect , 
-                    ji + leng_pts_sect
-                ]
-            ]      
-        );
-
-    
-    function the_same_after_twisting(f_sect, l_sect) =
-        let(found = search([l_sect[0]], f_sect)[0], leng = len(l_sect))
-        found != [] && 
-        len([for(i = 0; l_sect[i] == f_sect[(found + i) % leng]; i = i + 1) undef]) == leng;
-
-    function to_v_pts(sects) = [for(sect = sects) each sect];                   
-
-    module solid_sections(sects) {
-        leng_sects = len(sects);
-        leng_pts_sect = len(sects[0]);
-        first_sect = sects[0];
-        last_sect = sects[leng_sects - 1];
-   
-        v_pts = to_v_pts(sects);
-
-        begin_end_the_same =
-            first_sect == last_sect || the_same_after_twisting(first_sect, last_sect);
-
-        if(begin_end_the_same) {
-            f_idxes = side_indexes(sects);
-
-            polyhedron(v_pts, f_idxes); 
-
-            // hook for testing
-            test_sweep_solid(v_pts, f_idxes, triangles);
-        } else {
-            from = leng_pts_sect * (leng_sects - 1);
-            f_idxes = [
-                [each [leng_pts_sect - 1:-1:0]], 
-                each side_indexes(sects), 
-                [each [from:from + leng_pts_sect - 1]]
-            ];
-            
-            polyhedron(v_pts, f_idxes);   
-
-            // hook for testing
-            test_sweep_solid(v_pts, f_idxes, triangles);             
-        }
-    }
-
-    module hollow_sections(sects) {
-        leng_sects = len(sects);
-        leng_sect = len(sects[0]);
-        half_leng_sect = leng_sect / 2;
-        half_leng_v_pts = leng_sects * half_leng_sect;
-
-        function strip_sects(begin_idx, end_idx) = 
-            let(range = [begin_idx:end_idx])
-            [for(sect = sects) [for(j = range) sect[j]]]; 
-
-        range = [0:half_leng_sect - 1];
-        function first_idxes() = 
-            [
-                for(i = range) 
-                let(i3 = (i + 1) % half_leng_sect)
-                [
-                    i,
-                    i + half_leng_v_pts,
-                    i3 + half_leng_v_pts, 
-                    i3
-                ] 
-            ];
-
-        function last_idxes(begin_idx) = 
-            [
-                for(i = range) 
-                let(bi = begin_idx + i, i2 = begin_idx + (i + 1) % half_leng_sect)
-                [
-                    bi,
-                    i2,
-                    i2 + half_leng_v_pts,
-                    bi + half_leng_v_pts
-                ]     
-            ];            
-
-        outer_sects = strip_sects(0, half_leng_sect - 1);
-        inner_sects = strip_sects(half_leng_sect, leng_sect - 1);
-
-        outer_idxes = side_indexes(outer_sects);
-        inner_idxes = [for(idxes = side_indexes(inner_sects, half_leng_v_pts)) reverse(idxes)];
-
-        first_outer_sect = outer_sects[0];
-        last_outer_sect = outer_sects[leng_sects - 1];
-        first_inner_sect = inner_sects[0];
-        last_inner_sect = inner_sects[leng_sects - 1];
-        
-        leng_pts_sect = len(first_outer_sect);
-
-        begin_end_the_same = 
-           (first_outer_sect == last_outer_sect && first_inner_sect == last_inner_sect) ||
-           (
-               the_same_after_twisting(first_outer_sect, last_outer_sect) && 
-               the_same_after_twisting(first_inner_sect, last_inner_sect)
-           ); 
-
-        v_pts = concat(to_v_pts(outer_sects), to_v_pts(inner_sects));
-
-        if(begin_end_the_same) {
-            f_idxes = concat(outer_idxes, inner_idxes);
-
-            polyhedron(
-                v_pts,
-                f_idxes
-            );      
-
-            // hook for testing
-            test_sweep_solid(v_pts, f_idxes, triangles);                     
-        } else {
-            f_idxes = concat(
-                first_idxes(), 
-                outer_idxes, 
-                inner_idxes, 
-                last_idxes(half_leng_v_pts - half_leng_sect)
-            );
-            
-            polyhedron(
-                v_pts,
-                f_idxes
-            ); 
-
-            // hook for testing
-            test_sweep_solid(v_pts, f_idxes, triangles);              
-        }
-    }
-    
-    module triangles_defined_sections() {
-        faces = [
-            [0, 1, 2], [3, 5, 4], 
-            [1, 3, 4], [2, 1, 4], [2, 3, 0], 
-            [0, 3, 1], [2, 4, 5], [2, 5, 3]
-        ];
-        module two_sections(section1, section2) {
-            for(idx = triangles) {
-                polyhedron(
-                    concat(
-                        [for(i = idx) section1[i]], 
-                        [for(i = idx) section2[i]]
-                    ),
-                    faces
-                );
-            }
-        }
-        
-        for(i = [0:len(sections) - 2]) {
-             two_sections(
-                 sections[i], 
-                 sections[i + 1]
-             );
-        }
-    }
-    
-    if(triangles == "SOLID") {
-        solid_sections(sections);
-    } else if(triangles == "HOLLOW") {
-        hollow_sections(sections);
-    }
-    else {
-        triangles_defined_sections();
-    }
-}
-
-// override it to test
-
-module test_sweep_solid(points, faces, triangles) {
-
-}
-//CombinedEnd from path sweep.scad
-//Combined from path reverse.scad
-/**
-* reverse.scad
-*
-* @copyright Justin Lin, 2019
-* @license https://opensource.org/licenses/lgpl-3.0.html
-*
-* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-reverse.html
-*
-**/ 
-
-function reverse(lt) = [for(i = len(lt) - 1; i > -1; i = i - 1) lt[i]];
-//CombinedEnd from path reverse.scad
-//Combined from path shape_circle.scad
-/**
-* shape_circle.scad
-*
-* @copyright Justin Lin, 2020
-* @license https://opensource.org/licenses/lgpl-3.0.html
-*
-* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-shape_circle.html
-*
-**/
-
-
-function shape_circle(radius, n) =
-    let(
-        _frags = __frags(radius),
-        step_a = 360 / _frags,
-        to = (is_undef(n) || n > _frags) ? _frags - 1: n - 1
-    )
-    [
-        for(a = [each [0:to]] * step_a) 
-        [radius * cos(a), radius * sin(a)]
-    ];
-//CombinedEnd from path shape_circle.scad
 //Combined from path ub.scad
 // works from OpenSCAD version 2021 or higher   maintained at https://github.com/UBaer21/UB.scad
 
@@ -14800,10 +14283,182 @@ iSettingsMeasurement = 1;
 iSettingsDiameter = 2;
 iSettingsWallThickness = 3;
 iSettingsTaper = 4;
+iSettingsVersion = 5;
 //CombinedEnd from path constants.scad
 //Combined from path modules_utility.scad
 
+// rotate as per a, v, but around point pt
+module rotate_about_pt(z, y, pt) {
+    translate(pt)
+        rotate([0, y, z]) // CHANGE HERE
+            translate(-pt)
+                children();
+}
 
+// takes part of an array
+function getRunningTextWidth(charsMetrics,position=0,end) = //= [for (i = [start:end]) list[i]];
+  assert(is_list(charsMetrics), "charsMetricsmust be a list")
+  assert(is_num(position), str("position must be a number", "provided '", position, "'"))
+  assert(is_num(end), str("end must be a number", "provided '", end, "'"))
+  position < end 
+    ? charsMetrics[position].size.y + getRunningTextWidth(charsMetrics, position + 1, end) 
+    : charsMetrics[position].size.y;
+ 
+function subStr(s,length=5) = 
+  assert(is_string(s), "s must be a string")
+  assert(is_num(length), "length must be a number")
+  str(chr([for(i=[0 :min(length,len(s))-1])ord(s[i])]));
+
+module RoundText(
+  textvalue = "",
+  font = "Liberation:style=Bold",
+  fontSize = 6.5,
+  radius = 20,
+  textExtrude = 1,
+  forceRound = false,
+  center = true,
+  $fn=64)
+{
+  _radius = forceRound ? radius - textExtrude : radius;
+  charsCount = len(textvalue);
+  charsMetrics = [for(i=[0:1:charsCount-1]) textmetrics(text=str(textvalue[i]),size=fontSize,font=font)];
+  
+  
+  offsetAngle = center ? textmetrics(text=textvalue,size=fontSize,font=font).size.x/2 : 0;
+  
+  // takes part of an array
+  rotate([0,0,-offsetAngle*180/(PI*_radius)])
+  intersection(){
+    union(){
+      for(i=[0:1:charsCount-1]){
+        char = textvalue[i];
+        
+        runningMetrix = textmetrics(text=subStr(textvalue, i+1),size=fontSize,font=font);
+        runningLength = runningMetrix.size.x - charsMetrics[i].size.x/2;
+        arcAngle=runningLength*180/(PI*_radius);
+        rotate([0,0,arcAngle])
+          translate( [_radius,0,0])
+            rotate([90,0,90])
+              linear_extrude(textExtrude * (forceRound ? 2:1))
+                text(
+                  textvalue[i],
+                  //valign="center",
+                  halign="center",
+                  size=fontSize,
+                  font=font);
+        }  
+    } 
+    if(forceRound)       
+    {
+      translate([0,0,-fontSize])
+      difference(){
+        cylinder(r=radius+textExtrude,h = fontSize*3,$fn=$fn);
+        translate([0,0,-fudgeFactor])
+        cylinder(r=radius,h = fontSize*3+fudgeFactor*2,$fn=$fn);
+      }
+    }         
+  }
+}
+
+//Creates a rounded cube
+//x=width in mm
+//y=length in mm
+//z=height in mm
+//cornerRadius = the radius of the cube corners
+//topRadius = the radius of the top of the cube
+//bottomRadius = the radius of the top of the cube
+//sideRadius = the radius of the sides. This must be over 0.
+//fn = overrides the #fn function for the corners
+module roundedCube(
+  x,
+  y,
+  z,
+  size=[],
+  cornerRadius = 0,
+  topRadius = 0,
+  bottomRadius = 0,
+  sideRadius = 0,
+  fn = 64)
+{
+  assert(is_list(size), "size must be a list");
+  size = len(size) == 3 ? size : [x,y,z];
+  
+  topRadius = topRadius > 0 ? topRadius : cornerRadius;
+  bottomRadius = bottomRadius > 0 ? bottomRadius : cornerRadius;
+  sideRadius = sideRadius > 0 ? sideRadius : cornerRadius;
+  
+  if(sideRadius < topRadius || sideRadius < bottomRadius)
+  {
+    echo("roundedCube", "Error, sideRadius must be >= than bottomRadius and topRadius", sideRadius=sideRadius, topRadius=topRadius, bottomRadius=bottomRadius);
+  }
+    
+  positions=[
+     [sideRadius                    ,sideRadius                   ]
+    ,[max(size.x-sideRadius, sideRadius) ,sideRadius                   ]
+    ,[max(size.x-sideRadius, sideRadius) ,max(size.y-sideRadius, sideRadius)]
+    ,[sideRadius                         ,max(size.y-sideRadius, sideRadius)]
+    ];
+
+  hull(){
+    for (i =[0:1:len(positions)-1])
+    {
+      translate(positions[i]) 
+        roundedCylinder(h=size.z,r=sideRadius,roundedr2=topRadius,roundedr1=bottomRadius,$fn=fn);
+    }
+  }
+}
+
+
+module roundedCylinder(h,r,roundedr=0,roundedr1=0,roundedr2=0)
+{
+  roundedr1 = roundedr1 > 0 ? roundedr1 : roundedr;
+  roundedr2 = roundedr2 > 0 ? roundedr2 : roundedr;
+  if(roundedr1 > 0 || roundedr2 > 0){
+    hull(){
+      if(roundedr1 > 0)
+        roundedDisk(r,roundedr1,half=-1);
+      else
+        cylinder(r=r,h=h-roundedr2);
+        
+      if(roundedr2 > 0)
+        translate([0,0,h-roundedr2*2]) 
+          roundedDisk(r,roundedr2,half=1);
+      else
+        translate([0,0,roundedr1]) 
+          cylinder(r=r,h=h-roundedr1);
+    }
+  }
+  else {
+    cylinder(r=r,h=h);
+  }
+}
+
+module roundedDisk(r,roundedr, half=0){
+ hull(){
+    translate([0,0,roundedr]) 
+    rotate_extrude() 
+    translate([r-roundedr,0,0])
+    difference(){
+      circle(roundedr);
+      //Remove inner half so we dont get error when r<roundedr*2
+      translate([-roundedr*2,-roundedr,0])
+      square(roundedr*2);
+      
+      if(half<0){
+        //Remove top half
+        translate([-roundedr,0,0])
+        square(roundedr*2);   
+      }
+      if(half>0){
+        //Remove bottom half
+        translate([-roundedr,-roundedr*2,0])
+        square(roundedr*2);   
+      }
+    }
+  }
+}
+//CombinedEnd from path modules_utility.scad
+//Combined from path modules_pipe.scad
 
 //diameter1: Inner start diameter.
 //diameter2: Inner end diameter.
@@ -14812,32 +14467,86 @@ iSettingsTaper = 4;
 //wallThickness2 Thickness of the walls at the end
 //zPosition: Start Z position.
 module Pipe(
+    diameter,
     diameter1,
     diameter2,
     length,
+    wallThickness,
     wallThickness1,
     wallThickness2,
     zPosition = 0,
     Offset = [0,0])
 {
+  diameter1 = is_undef(diameter) ? diameter1 : diameter;
+  diameter2 = is_undef(diameter) ? diameter2 : diameter;
+  wallThickness1 = is_undef(wallThickness) ? wallThickness1 : wallThickness;
+  wallThickness2 = is_undef(wallThickness) ? wallThickness2 : wallThickness;
+  
+  //todo, add correction to ensure that the thickness of the walls never reduce to less than wallthickenss1 and wallThickness2
+  //using wallThickness/2 is a sloppy approximation, really need to use trig to would out the correct value
+  leadin = max(fudgeFactor, min(wallThickness1, wallThickness2, length)/2);
+  
+  //a = b × tan(α)
+  //atan(a/b) = angle;
+  
+  startOuterLeadin = diameter1+wallThickness1*2 > diameter2+wallThickness2*2 ? leadin : fudgeFactor;
+  startInnerLeadin = diameter1 > diameter2 ? fudgeFactor : leadin;
+  endOuterLeadin = diameter2+wallThickness2*2> diameter1+wallThickness1*2 ? leadin : fudgeFactor;
+  endInnerLeadin = diameter2 > diameter1 ? fudgeFactor : leadin;
+  hasLeadinWallCorrection = 
+    startOuterLeadin != fudgeFactor ||
+    startInnerLeadin != fudgeFactor ||
+    endOuterLeadin != fudgeFactor ||
+    endInnerLeadin != fudgeFactor;
+  //echo("Pipe", hasLeadinWallCorrection=hasLeadinWallCorrection, startOuterLeadin=startOuterLeadin, startInnerLeadin=startInnerLeadin, endOuterLeadin=endOuterLeadin, endInnerLeadin=endInnerLeadin);
   difference ()
   {
     //outer cylinder
     translate([0,0,zPosition])
     hull()
     {
-      cylinder(fudgeFactor, d=diameter1+2*wallThickness1);
-      translate([Offset.x,Offset.y,length-fudgeFactor])
-        cylinder(fudgeFactor, d=diameter2+2*wallThickness2);
+      if(Offset.x>0 || Offset.y>0 || hasLeadinWallCorrection) {
+        //(diameter1 != diameter2 && diameter1+wallThickness1*2 != diameter2+wallThickness2*2)) {
+        cylinder(h=startOuterLeadin, d=diameter1+wallThickness1*2);
+        translate([Offset.x,Offset.y,length-endOuterLeadin])
+          cylinder(h=endOuterLeadin, d=diameter2+wallThickness2*2);
+      }
+      else{
+        cylinder(length, 
+          d1=diameter1+wallThickness1*2,
+          d2=diameter2+wallThickness2*2);
+      }
     }
 
     //Inner cylinder to remove
-    translate([0,0,zPosition-fudgeFactor])
-    hull()
-    {
-      cylinder(fudgeFactor, d=diameter1);
-      translate([Offset.x,Offset.y,length+2*fudgeFactor])
-        cylinder(fudgeFactor, d=diameter2);
+    translate([0,0,zPosition])
+      union()
+      {
+      if(Offset.x > 0 || Offset.y>0 || hasLeadinWallCorrection) {
+        //(diameter1 != diameter2 && diameter1+wallThickness1*2 != diameter2+wallThickness2*2)) {
+      
+        translate([0,0,-fudgeFactor])
+        cylinder(startInnerLeadin+fudgeFactor*2, d=diameter1);
+        
+        translate([0,0,startInnerLeadin])
+        hull() {
+          cylinder(fudgeFactor, d=diameter1);
+          translate([Offset.x,Offset.y,length-startInnerLeadin-endInnerLeadin])
+            cylinder(fudgeFactor, d=diameter2);
+        }
+        translate([0,0,length-endInnerLeadin-fudgeFactor])
+        cylinder(endInnerLeadin+fudgeFactor*2, d=diameter2);
+      } else {
+        // main removal
+        cylinder(length, d1=diameter1, d2=diameter2);
+      }
+      // bottomtop glitch correction
+      translate([0,0,-fudgeFactor])
+        cylinder(fudgeFactor*2, d=diameter1);
+
+      // top glitch correction
+      translate([0,0,length-fudgeFactor])
+        cylinder(fudgeFactor*2, d=diameter2);
     }
   }
 }
@@ -14891,8 +14600,10 @@ module ConeRing(centerDiameter, length, wallThickness1, wallThickness2, zPositio
 module BentPipeHull(
     inner1PipeRadius,
     inner2PipeRadius,
+    inner3PipeRadius,
     end1WallThickness,
     end2WallThickness,
+    end3WallThickness,
     pipeAngle = 0,
     zPosition=0,
     end2Count=1,
@@ -14906,8 +14617,10 @@ module BentPipeHull(
 {
   assert(is_num(inner1PipeRadius), "inner1PipeRadius must be a number");
   assert(is_num(inner2PipeRadius), "inner2PipeRadius must be a number");
+  assert(is_num(inner3PipeRadius), "inner3PipeRadius must be a number");
   assert(is_num(end1WallThickness), "end1WallThickness must be a number");
   assert(is_num(end2WallThickness), "end2WallThickness must be a number");
+  assert(is_num(end3WallThickness), "end3WallThickness must be a number");
   assert(is_num(pipeAngle), "pipeAngle must be a number");
   assert(is_num(zPosition), "zPosition must be a number");
   assert(is_num(end2Count), "end2Count must be a number");
@@ -14919,17 +14632,19 @@ module BentPipeHull(
   
   outer1PipeRadius = inner1PipeRadius + end1WallThickness;
   outer2PipeRadius = inner2PipeRadius + end2WallThickness;
+  outer3PipeRadius = inner3PipeRadius + end3WallThickness;
   //_edgeOffset = outer1PipeRadius - outer2PipeRadius - edgeOffset;
   _edgeOffset = edgeOffset;
   
   end1BaseHeight = end1WallThickness;
   end2BaseHeight = end2WallThickness;
   
-  echo("BentPipeHull", _edgeOffset = _edgeOffset, lengthInHull = lengthInHull, centerHeight=centerHeight, lengthOutHull=lengthOutHull, outer1PipeRadius=outer1PipeRadius, outer2PipeRadius=outer2PipeRadius, a= (cos(pipeAngle) * outer2PipeRadius*2) );
+  //echo("BentPipeHull", _edgeOffset = _edgeOffset, lengthInHull = lengthInHull, centerHeight=centerHeight, lengthOutHull=lengthOutHull, outer1PipeRadius=outer1PipeRadius, outer2PipeRadius=outer2PipeRadius, a= (cos(pipeAngle) * outer2PipeRadius*2));
   
   difference(){
     //Outer shape
     union(){
+      //The main body hull shape
       hull(){
         for (rotation = [0:end2Count-1])
         {
@@ -14943,18 +14658,19 @@ module BentPipeHull(
         if(addCenter)
         {
           //end 2 center
-          translate([0, 0, centerHeight-end2WallThickness])
-          cylinder(r=outer2PipeRadius, h=end2WallThickness);
+          translate([0, 0, centerHeight-end3WallThickness])
+          cylinder(r=outer3PipeRadius, h=end3WallThickness);
         }
         
         //end1
         cylinder(r=outer1PipeRadius, h=end1BaseHeight+fudgeFactor);
       }
 
+      //Extentions tubes
       for (rotation = [0:end2Count-1])
       {
         //End 2 extentions
-        echo("Outer shape", pipeAngle=pipeAngle, outer1PipeRadius=outer1PipeRadius, outer2PipeRadius=outer2PipeRadius, _edgeOffset=_edgeOffset, lengthInHull=lengthInHull, end2WallThickness=end2WallThickness );
+        //echo("Outer shape", pipeAngle=pipeAngle, outer1PipeRadius=outer1PipeRadius, outer2PipeRadius=outer2PipeRadius, _edgeOffset=_edgeOffset, lengthInHull=lengthInHull, end2WallThickness=end2WallThickness );
 
         rotate([0,0,rotation*(360/end2Count)])
         rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
@@ -14965,12 +14681,13 @@ module BentPipeHull(
       if(addCenter)
       {
           translate([0, 0, centerHeight])
-          cylinder(r=outer2PipeRadius, h=lengthOutHullCenter);
+          cylinder(r=outer3PipeRadius, h=lengthOutHullCenter);
       }
     }
 
     //inner/negative shape
     union(){
+      //The Inner Main body hull shape
       hull(){
         for (rotation = [0:end2Count-1])
         {
@@ -14984,14 +14701,15 @@ module BentPipeHull(
         if(addCenter)
         {
         //End 2 center
-          translate([0, 0, centerHeight-end2WallThickness-fudgeFactor])
-          cylinder(r=inner2PipeRadius, h=end2WallThickness+fudgeFactor*2);
+          translate([0, 0, centerHeight-end3WallThickness-fudgeFactor])
+          cylinder(r=inner3PipeRadius, h=end3WallThickness+fudgeFactor*2);
         }
         
         //End 1
         cylinder(r=inner1PipeRadius, h=end1BaseHeight+fudgeFactor*2);
       }
 
+      //Extention tubes
       for (rotation = [0:end2Count-1])
       {
         //End 2 extentions
@@ -15004,8 +14722,8 @@ module BentPipeHull(
       if(addCenter)
       {
           translate([0, 0, centerHeight-fudgeFactor])
-          cylinder(r=inner2PipeRadius, h=lengthOutHullCenter+fudgeFactor*2);
-        }
+          cylinder(r=inner3PipeRadius, h=lengthOutHullCenter+fudgeFactor*2);
+      }
     }
 
     //Clear start from clipping
@@ -15016,14 +14734,6 @@ module BentPipeHull(
           h=fudgeFactor*2);
 
   }
-}
-
-// rotate as per a, v, but around point pt
-module rotate_about_pt(z, y, pt) {
-    translate(pt)
-        rotate([0, y, z]) // CHANGE HERE
-            translate(-pt)
-                children();
 }
 
 module BentPipe(
@@ -15047,8 +14757,8 @@ module BentPipe(
   baseSupportLength =  baseLength == 0 ? outerPipeDiameter / 1.5  : baseLength;
   baseSupportAngle = baseAngle == 0 ? pipeAngle/2 : baseAngle;
 
-  echo("BentPipe", bendRadius=bendRadius, innerPipeDiameter=innerPipeDiameter,wallThickness=wallThickness, pipeAngle=pipeAngle, zPosition=zPosition);
-  echo("BentPipe", baseSupportWidth=baseSupportWidth, baseSupportLength=baseSupportLength);
+  //echo("BentPipe", bendRadius=bendRadius, innerPipeDiameter=innerPipeDiameter,wallThickness=wallThickness, pipeAngle=pipeAngle, zPosition=zPosition);
+  //echo("BentPipe", baseSupportWidth=baseSupportWidth, baseSupportLength=baseSupportLength);
 
 
   difference() {
@@ -15120,8 +14830,8 @@ module TaperedBentPipe(
     end2Count=1
 )
 {
-    assert(is_num(pipeAngle) &&  pipeAngle > 0, "pipeAngle must be greater than 0")
-    echo("TaperedBentPipe", bendRadius=bendRadius, end1InnerPipeDiameter=end1InnerPipeDiameter, end2InnerPipeDiameter=end2InnerPipeDiameter, end1WallThickness=end1WallThickness, end2WallThickness=end2WallThickness);
+    assert(is_num(pipeAngle) &&  pipeAngle > 0, "pipeAngle must be greater than 0");
+    //echo("TaperedBentPipe", bendRadius=bendRadius, end1InnerPipeDiameter=end1InnerPipeDiameter, end2InnerPipeDiameter=end2InnerPipeDiameter, end1WallThickness=end1WallThickness, end2WallThickness=end2WallThickness);
 
     outerPipeDiameter  = end1InnerPipeDiameter + end1WallThickness * 2;
 
@@ -15138,7 +14848,7 @@ module TaperedBentPipe(
     shapeOuter = shape_circle(sizeStart);
     shapeInner = shape_circle(sizeStart-end1WallThickness);
 
-    echo("TaperedBentPipe", baseSupportThickness=baseSupportThickness,  baseSupportAngle=baseSupportAngle,  baseSupportWidth=baseSupportWidth, baseSupportLength=baseSupportLength);
+    //echo("TaperedBentPipe", baseSupportThickness=baseSupportThickness,  baseSupportAngle=baseSupportAngle,  baseSupportWidth=baseSupportWidth, baseSupportLength=baseSupportLength);
 
     translate([0, 0, zPosition])
     difference(){
@@ -15196,7 +14906,891 @@ module TaperedBentPipe(
       }
     }
   }
-//CombinedEnd from path modules_utility.scad
+
+  /*
+translate([0,0,25])
+Stopper(
+    diameter = 100,
+    outer = true,
+    totalLength = 20,
+    taper1 = [10,10],
+    taper2 = [5,5],
+    wallThickness = 10,
+    stopThickness = 20,
+    marker = false);
+
+
+Stopper(
+    diameter = 100,
+    outer = true,
+    totalLength = 20,
+    taper1 = 0.33,
+    taper2 = 0.33,
+    wallThickness = 10,
+    stopThickness = 20,
+    marker = false);
+*/
+//TODO This seems slow, esp when used for barbs
+module Stopper(
+    diameter,
+    outer = true,
+    totalLength,
+    taper1,
+    taper2,
+    wallThickness,
+    stopThickness,
+    zPosition = 0,
+    marker = false,
+    help
+)
+{
+  if(is_num(taper1)){ assert(taper1 >= 0 || taper1 <= 1, "taper1 should be between 0 to 1");}
+  if(is_num(taper2)){ assert(taper2 >= 0 || taper2 <= 1, "taper1 should be between 0 to 1");}
+  
+  
+  _diameter = outer ? diameter : diameter + wallThickness*2;
+  markPos = (outer ? diameter+wallThickness : diameter-stopThickness*2)/2;
+  
+  taperLength1 = (is_list(taper1) ? taper1.y : totalLength * taper1);
+  zoffset1 = wallThickness*taperLength1/stopThickness;
+  length1= (zoffset1 + totalLength);
+  taperWidth1 = is_list(taper1) ? taper1.x : length1 * stopThickness / taperLength1;
+   
+  taperLength2 = (is_list(taper2) ? taper2.y : totalLength * taper2);
+  zoffset2 = wallThickness * taperLength2 / stopThickness;
+  length2 = (zoffset2 + totalLength);
+  taperWidth2 = is_list(taper2) ? taper2.x : length2 * stopThickness / taperLength2;
+  
+  translate([0,0,zPosition])
+  union(){
+    if(marker)
+      translate([markPos,0,+stopThickness])
+      sphere(d=stopThickness);
+    intersection()
+    {
+      flat = totalLength - taperLength1 - taperLength2;
+      StraightPipe (
+        diameter = outer ? diameter : diameter-stopThickness*2,
+        length = totalLength,
+        wallThickness = wallThickness + stopThickness);
+    
+        //Bottom taper
+        if(taperLength1 > 0)
+        {
+          //taperLength1 = totalLength * taper1;
+          //zoffset1 = wallThickness*taperLength1/stopThickness;
+          //length1= (zoffset1 + totalLength);
+          //width1 = length1 * stopThickness / taperLength1;
+          diameterstart1 = _diameter;
+          diameterend1 = outer ? _diameter :_diameter - taperWidth1*2;
+          Pipe (
+            diameter1 = diameterstart1,
+            diameter2 = diameterend1,
+            length = length1,
+            wallThickness1 = 0,
+            wallThickness2 = taperWidth1,
+            zPosition = -zoffset1);
+        }
+
+        //Top taper
+        if(taperLength2 > 0)
+        {
+          //taperLength2 = totalLength * taper2;
+          //zoffset2 = wallThickness * taperLength2 / stopThickness;
+          //length2 = (zoffset2 + totalLength);
+          //width2 = length2 * stopThickness / taperLength2;
+          diameterstart2 = outer ? _diameter :_diameter - taperWidth2*2;
+          diameterend2 = _diameter;
+          Pipe (
+            diameter1 = diameterstart2,
+            diameter2 = diameterend2,
+            length = length2,
+            wallThickness1 = taperWidth2,
+            wallThickness2 = 0);
+          
+        }
+      }
+   }
+
+ HelpTxt("Stopper",[
+    "diameter", diameter,
+    "totalLength", totalLength,
+    "taper1", taper1,
+    "taper2", taper2,
+    "wallThickness", wallThickness,
+    "stopThickness", stopThickness,
+    "zPosition", zPosition]
+    ,help);  
+}
+//CombinedEnd from path modules_pipe.scad
+//Combined from path shape_circle.scad
+/**
+* shape_circle.scad
+*
+* @copyright Justin Lin, 2020
+* @license https://opensource.org/licenses/lgpl-3.0.html
+*
+* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-shape_circle.html
+*
+**/
+
+
+function shape_circle(radius, n) =
+    let(
+        _frags = __frags(radius),
+        step_a = 360 / _frags,
+        to = (is_undef(n) || n > _frags) ? _frags - 1: n - 1
+    )
+    [
+        for(a = [each [0:to]] * step_a) 
+        [radius * cos(a), radius * sin(a)]
+    ];
+//CombinedEnd from path shape_circle.scad
+//Combined from path __frags.scad
+function __frags(radius) = 
+    $fn == 0 ?  
+        max(min(360 / $fa, radius * 6.283185307179586 / $fs), 5) :
+        max($fn, 3);
+//CombinedEnd from path __frags.scad
+//Combined from path ring_extrude.scad
+/**
+* ring_extrude.scad
+*
+* @copyright Justin Lin, 2017
+* @license https://opensource.org/licenses/lgpl-3.0.html
+*
+* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-ring_extrude.html
+*
+**/
+
+
+module ring_extrude(shape_pts, radius, angle = 360, twist = 0, scale = 1.0, triangles = "SOLID") {
+    if(twist == 0 && scale == 1.0) {
+        rotate_extrude(angle = angle) 
+        translate([radius, 0, 0]) 
+            polygon(shape_pts);
+    } else {
+        a_step = 360 / __frags(radius);
+
+        angles = is_num(angle) ? [0, angle] : angle;
+
+        m = floor(angles[0] / a_step) + 1;
+        n = floor(angles[1] / a_step);
+
+        leng = radius * cos(a_step / 2);
+
+        begin_r = leng / cos((m - 0.5) * a_step - angles[0]);
+        end_r =  leng / cos((n + 0.5) * a_step - angles[1]);
+
+        angs = [
+            [90, 0, angles[0]], 
+            each [for(i = m; i <= n; i = i + 1) [90, 0, a_step * i]]
+        ];
+
+        pts = [
+            __ra_to_xy(begin_r, angles[0]), 
+            each [for(i = m; i <= n; i = i + 1) __ra_to_xy(radius, a_step * i)]
+        ];
+
+        is_angle_frag_end = angs[len(angs) - 1][2] == angles[1];
+        
+        all_angles = is_angle_frag_end ? 
+            angs : [each angs, [90, 0, angles[1]]];
+            
+        all_points = is_angle_frag_end ? 
+            pts : [each pts, __ra_to_xy(end_r, angles[1])];
+
+        sections = cross_sections(shape_pts, all_points, all_angles, twist, scale);
+
+        sweep(
+            sections,
+            triangles = triangles
+        );
+
+        // hook for testing
+        test_ring_extrude(sections, angle);
+    }
+}
+
+// Override it to test
+module test_ring_extrude(sections, angle) {
+
+}
+//CombinedEnd from path ring_extrude.scad
+//Combined from path __ra_to_xy.scad
+function __ra_to_xy(r, a) = [r * cos(a), r * sin(a)];
+//CombinedEnd from path __ra_to_xy.scad
+//Combined from path cross_sections.scad
+/**
+* cross_sections.scad
+*
+* @copyright Justin Lin, 2017
+* @license https://opensource.org/licenses/lgpl-3.0.html
+*
+* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-cross_sections.html
+*
+**/
+
+
+function cross_sections(shape_pts, path_pts, angles, twist = 0, scale = 1.0) =
+    let(
+        len_path_pts_minus_one = len(path_pts) - 1,
+        sh_pts = len(shape_pts[0]) == 3 ? [for(p = shape_pts) [each p, 1]] : [for(p = shape_pts) [each p, 0, 1]],
+        pth_pts = len(path_pts[0]) == 3 ? path_pts : [for(p = path_pts) [each p, 0]]
+    )
+    twist == 0 && scale == 1.0 ?
+    [
+        for(i = [0:len_path_pts_minus_one])
+        let(transform_m = m_translation(pth_pts[i]) * m_rotation(angles[i]))
+        [
+            for(p = sh_pts) 
+            let(transformed = transform_m * p)
+            [transformed.x, transformed.y, transformed.z]
+        ]
+    ] :
+    let(
+        twist_step = twist / len_path_pts_minus_one,
+        scale_step_vt = (is_num(scale) ? let(s = scale - 1) [s, s, 0] : ([each scale, 0] - [1, 1, 0])) / len_path_pts_minus_one,
+        one_s = [1, 1, 1]
+    )
+    [
+        for(i = [0:len_path_pts_minus_one])
+        let(
+            transform_m = m_translation(pth_pts[i]) * 
+                          m_rotation(angles[i]) * 
+                          m_rotation(twist_step * i) * 
+                          m_scaling(scale_step_vt * i + one_s)
+        )
+        [
+            for(p = sh_pts) 
+            let(transformed = transform_m * p)
+            [transformed.x, transformed.y, transformed.z]
+        ]
+    ];
+//CombinedEnd from path cross_sections.scad
+//Combined from path m_scaling.scad
+/**
+* m_scaling.scad
+*
+* @copyright Justin Lin, 2019
+* @license https://opensource.org/licenses/lgpl-3.0.html
+*
+* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-m_scaling.html
+*
+**/
+
+
+function m_scaling(s) = _m_scaling_impl(s);
+//CombinedEnd from path m_scaling.scad
+//Combined from path _m_scaling_impl.scad
+function __m_scaling_to_3_elems_scaling_vect(s) =
+     let(leng = len(s))
+     leng == 3 ? s : 
+     leng == 2 ? [each s, 1] : [s.x, 1, 1];
+
+function __m_scaling_to_scaling_vect(s) = is_num(s) ? [s, s, s] : __m_scaling_to_3_elems_scaling_vect(s);
+
+SCALING_FINAL_ROW = [0, 0, 0, 1];
+function _m_scaling_impl(s) = 
+    let(v = __m_scaling_to_scaling_vect(s))
+    [
+        [v.x, 0, 0, 0],
+        [0, v.y, 0, 0],
+        [0, 0, v.z, 0],
+        SCALING_FINAL_ROW
+    ];
+//CombinedEnd from path _m_scaling_impl.scad
+//Combined from path m_translation.scad
+/**
+* m_translation.scad
+*
+* @copyright Justin Lin, 2019
+* @license https://opensource.org/licenses/lgpl-3.0.html
+*
+* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-m_translation.html
+*
+**/
+
+
+function m_translation(v) = _m_translation_impl(v);
+//CombinedEnd from path m_translation.scad
+//Combined from path _m_translation_impl.scad
+function _to_3_elems_translation_vect(v) =
+     let(leng = len(v))
+     leng == 3 ? v : 
+     leng == 2 ? [each v, 0] : [v.x, 0, 0];
+
+function _to_translation_vect(v) = is_num(v) ? [v, 0, 0] : _to_3_elems_translation_vect(v);
+
+FINAL_ROW = [0, 0, 0, 1];
+function _m_translation_impl(v) = 
+    let(vt = _to_translation_vect(v))
+    [ 
+        [1, 0, 0, vt.x],
+        [0, 1, 0, vt.y],
+        [0, 0, 1, vt.z],
+        FINAL_ROW
+    ];
+//CombinedEnd from path _m_translation_impl.scad
+//Combined from path m_rotation.scad
+/**
+* m_rotation.scad
+*
+* @copyright Justin Lin, 2019
+* @license https://opensource.org/licenses/lgpl-3.0.html
+*
+* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-m_rotation.html
+*
+**/
+
+
+function m_rotation(a, v) = _m_rotation_impl(a, v);
+//CombinedEnd from path m_rotation.scad
+//Combined from path _m_rotation_impl.scad
+
+ROTATION_FINAL_ROW = [0, 0, 0, 1];
+function __m_rotation_q_rotation(a, v) = 
+    let(
+        uv = v / norm(v),
+        s = sin(a / 2) * uv,
+        w = sin(a) * uv,
+
+        xx = 2 * s.x ^ 2,
+        yy = 2 * s.y ^ 2,
+        zz = 2 * s.z ^ 2,
+
+        xy = 2 * s.x * s.y,
+        xz = 2 * s.x * s.z,
+        yz = 2 * s.y * s.z
+    )
+    [
+        [1 - yy - zz, xy - w.z, xz + w.y, 0],
+        [xy + w.z, 1 - xx - zz, yz - w.x, 0],
+        [xz - w.y, yz + w.x, 1 - xx - yy, 0],
+        ROTATION_FINAL_ROW
+    ];
+
+function __m_rotation_xRotation(a) = 
+    let(c = cos(a), s = sin(a))
+    [
+        [1, 0, 0, 0],
+        [0, c, -s, 0],
+        [0, s, c, 0],
+        ROTATION_FINAL_ROW
+    ];
+
+function __m_rotation_yRotation(a) = 
+    let(c = cos(a), s = sin(a))
+    [
+        [c, 0, s, 0],
+        [0, 1, 0, 0],
+        [-s, 0, c, 0],
+        ROTATION_FINAL_ROW
+    ];    
+
+function __m_rotation_zRotation(a) = 
+    let(c = cos(a), s = sin(a))
+    [
+        [c, -s, 0, 0],
+        [s, c, 0, 0],
+        [0, 0, 1, 0],
+        ROTATION_FINAL_ROW
+    ];    
+
+function __m_rotation_xyz_rotation(a) =
+    let(ang = __to_ang_vect(a))
+    __m_rotation_zRotation(ang[2]) * __m_rotation_yRotation(ang[1]) * __m_rotation_xRotation(ang[0]);
+
+function _m_rotation_impl(a, v) = 
+    (a == 0 || a == [0, 0, 0] || a == [0] || a == [0, 0]) ? [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        ROTATION_FINAL_ROW
+    ] : (is_undef(v) ? __m_rotation_xyz_rotation(a) : __m_rotation_q_rotation(a, v));
+//CombinedEnd from path _m_rotation_impl.scad
+//Combined from path __to_ang_vect.scad
+function __to_3_elems_ang_vect(a) =
+     let(leng = len(a))
+     leng == 3 ? a : 
+     leng == 2 ? [each a, 0] : [a.x, 0, 0];
+
+function __to_ang_vect(a) = is_num(a) ? [0, 0, a] : __to_3_elems_ang_vect(a);
+//CombinedEnd from path __to_ang_vect.scad
+//Combined from path sweep.scad
+/**
+* sweep.scad
+*
+* @copyright Justin Lin, 2020
+* @license https://opensource.org/licenses/lgpl-3.0.html
+*
+* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-sweep.html
+*
+**/
+
+
+module sweep(sections, triangles = "SOLID") {
+
+    function side_indexes(sects, begin_idx = 0) = 
+        let(       
+            leng_sects = len(sects),
+            leng_pts_sect = len(sects[0]),
+            range_j = [begin_idx:leng_pts_sect:begin_idx + (leng_sects - 2) * leng_pts_sect],
+            range_i = [0:leng_pts_sect - 1]
+        ) 
+        concat(
+            [
+                for(j = range_j, i = range_i)
+                let(i2 = j + (i + 1) % leng_pts_sect)
+                [
+                    j + i, 
+                    i2, 
+                    i2 + leng_pts_sect
+                ]
+            ],
+            [
+                for(j = range_j, i = range_i)
+                let(ji = j + i)
+                [
+                    ji, 
+                    j + (i + 1) % leng_pts_sect + leng_pts_sect , 
+                    ji + leng_pts_sect
+                ]
+            ]      
+        );
+
+    
+    function the_same_after_twisting(f_sect, l_sect) =
+        let(found = search([l_sect[0]], f_sect)[0], leng = len(l_sect))
+        found != [] && 
+        len([for(i = 0; l_sect[i] == f_sect[(found + i) % leng]; i = i + 1) undef]) == leng;
+
+    function to_v_pts(sects) = [for(sect = sects) each sect];                   
+
+    module solid_sections(sects) {
+        leng_sects = len(sects);
+        leng_pts_sect = len(sects[0]);
+        first_sect = sects[0];
+        last_sect = sects[leng_sects - 1];
+   
+        v_pts = to_v_pts(sects);
+
+        begin_end_the_same =
+            first_sect == last_sect || the_same_after_twisting(first_sect, last_sect);
+
+        if(begin_end_the_same) {
+            f_idxes = side_indexes(sects);
+
+            polyhedron(v_pts, f_idxes); 
+
+            // hook for testing
+            test_sweep_solid(v_pts, f_idxes, triangles);
+        } else {
+            from = leng_pts_sect * (leng_sects - 1);
+            f_idxes = [
+                [each [leng_pts_sect - 1:-1:0]], 
+                each side_indexes(sects), 
+                [each [from:from + leng_pts_sect - 1]]
+            ];
+            
+            polyhedron(v_pts, f_idxes);   
+
+            // hook for testing
+            test_sweep_solid(v_pts, f_idxes, triangles);             
+        }
+    }
+
+    module hollow_sections(sects) {
+        leng_sects = len(sects);
+        leng_sect = len(sects[0]);
+        half_leng_sect = leng_sect / 2;
+        half_leng_v_pts = leng_sects * half_leng_sect;
+
+        function strip_sects(begin_idx, end_idx) = 
+            let(range = [begin_idx:end_idx])
+            [for(sect = sects) [for(j = range) sect[j]]]; 
+
+        range = [0:half_leng_sect - 1];
+        function first_idxes() = 
+            [
+                for(i = range) 
+                let(i3 = (i + 1) % half_leng_sect)
+                [
+                    i,
+                    i + half_leng_v_pts,
+                    i3 + half_leng_v_pts, 
+                    i3
+                ] 
+            ];
+
+        function last_idxes(begin_idx) = 
+            [
+                for(i = range) 
+                let(bi = begin_idx + i, i2 = begin_idx + (i + 1) % half_leng_sect)
+                [
+                    bi,
+                    i2,
+                    i2 + half_leng_v_pts,
+                    bi + half_leng_v_pts
+                ]     
+            ];            
+
+        outer_sects = strip_sects(0, half_leng_sect - 1);
+        inner_sects = strip_sects(half_leng_sect, leng_sect - 1);
+
+        outer_idxes = side_indexes(outer_sects);
+        inner_idxes = [for(idxes = side_indexes(inner_sects, half_leng_v_pts)) reverse(idxes)];
+
+        first_outer_sect = outer_sects[0];
+        last_outer_sect = outer_sects[leng_sects - 1];
+        first_inner_sect = inner_sects[0];
+        last_inner_sect = inner_sects[leng_sects - 1];
+        
+        leng_pts_sect = len(first_outer_sect);
+
+        begin_end_the_same = 
+           (first_outer_sect == last_outer_sect && first_inner_sect == last_inner_sect) ||
+           (
+               the_same_after_twisting(first_outer_sect, last_outer_sect) && 
+               the_same_after_twisting(first_inner_sect, last_inner_sect)
+           ); 
+
+        v_pts = concat(to_v_pts(outer_sects), to_v_pts(inner_sects));
+
+        if(begin_end_the_same) {
+            f_idxes = concat(outer_idxes, inner_idxes);
+
+            polyhedron(
+                v_pts,
+                f_idxes
+            );      
+
+            // hook for testing
+            test_sweep_solid(v_pts, f_idxes, triangles);                     
+        } else {
+            f_idxes = concat(
+                first_idxes(), 
+                outer_idxes, 
+                inner_idxes, 
+                last_idxes(half_leng_v_pts - half_leng_sect)
+            );
+            
+            polyhedron(
+                v_pts,
+                f_idxes
+            ); 
+
+            // hook for testing
+            test_sweep_solid(v_pts, f_idxes, triangles);              
+        }
+    }
+    
+    module triangles_defined_sections() {
+        faces = [
+            [0, 1, 2], [3, 5, 4], 
+            [1, 3, 4], [2, 1, 4], [2, 3, 0], 
+            [0, 3, 1], [2, 4, 5], [2, 5, 3]
+        ];
+        module two_sections(section1, section2) {
+            for(idx = triangles) {
+                polyhedron(
+                    concat(
+                        [for(i = idx) section1[i]], 
+                        [for(i = idx) section2[i]]
+                    ),
+                    faces
+                );
+            }
+        }
+        
+        for(i = [0:len(sections) - 2]) {
+             two_sections(
+                 sections[i], 
+                 sections[i + 1]
+             );
+        }
+    }
+    
+    if(triangles == "SOLID") {
+        solid_sections(sections);
+    } else if(triangles == "HOLLOW") {
+        hollow_sections(sections);
+    }
+    else {
+        triangles_defined_sections();
+    }
+}
+
+// override it to test
+
+module test_sweep_solid(points, faces, triangles) {
+
+}
+//CombinedEnd from path sweep.scad
+//Combined from path reverse.scad
+/**
+* reverse.scad
+*
+* @copyright Justin Lin, 2019
+* @license https://opensource.org/licenses/lgpl-3.0.html
+*
+* @see https://openhome.cc/eGossip/OpenSCAD/lib3x-reverse.html
+*
+**/ 
+
+function reverse(lt) = [for(i = len(lt) - 1; i > -1; i = i - 1) lt[i]];
+//CombinedEnd from path reverse.scad
+//Combined from path connector_object.scad
+
+iConnector=0;
+iStyle=iConnector+1;
+iWallThickness=iStyle+1;
+iMeasurement=iWallThickness+1;
+iDiameter=iMeasurement+1;
+iLength=iDiameter+1;
+iRotation=iLength+1;
+iTaper=iRotation+1;
+iEndCapDiameter=iTaper+1;
+iEndCapThickness=iEndCapDiameter+1;
+iEndCapGridSize=iEndCapThickness+1;
+iEndCapGridWallThickness=iEndCapGridSize+1;
+iStopThickness=iEndCapGridWallThickness+1;
+iStopLength=iStopThickness+1;
+iStopSymmetrical=iStopLength+1;
+iBarbsCount=iStopSymmetrical+1;
+iBarbsThickness=iBarbsCount+1;
+iBarbsSymmetrical=iBarbsThickness+1;
+iMagnetCount=iBarbsSymmetrical+1;
+iMagnetDiameter=iMagnetCount+1;
+iMagnetThickness=iMagnetDiameter+1;
+iMagnetBorder=iMagnetThickness+1;
+iMagnetFlangeThickness=iMagnetBorder+1;
+iMagnetTwistLockSize=iMagnetFlangeThickness+1;
+iAlignmentRing=iMagnetTwistLockSize+1;
+iAlignmentDepth=iAlignmentRing+1;
+iAlignmentUpperWidth=iAlignmentDepth+1;
+iAlignmentLowerWidth=iAlignmentUpperWidth+1;
+iAlignmentSideClearance=iAlignmentLowerWidth+1;
+iAlignmentDepthClearance=iAlignmentSideClearance+1;
+iFlangeWidth=iAlignmentDepthClearance+1;
+iFlangeThickness=iFlangeWidth+1;
+iFlangeScrewPosition=iFlangeThickness+1;
+iFlangeScrewBorder=iFlangeScrewPosition+1;
+iFlangeScrewCount=iFlangeScrewBorder+1;
+iFlangeScrewDiameter=iFlangeScrewCount+1;
+iNozzleShape=iFlangeScrewDiameter+1;
+iNozzleSize=iNozzleShape+1;
+iNozzleTipWallThickness=iNozzleSize+1;
+iNozzleRadius=iNozzleTipWallThickness+1;
+iNozzleOffset=iNozzleRadius+1;
+iNozzleChamferPercentage=iNozzleOffset+1;
+iNozzleChamferAngle=iNozzleChamferPercentage+1;
+iExtensionLength=iNozzleChamferAngle+1;
+iExtensionGridSize=iExtensionLength+1;
+iExtensionGridWallThickness=iExtensionGridSize+1;
+iExtensionText=iExtensionGridWallThickness+1;
+iExtensionTextSize=iExtensionText+1;
+iAdapterColor=iExtensionTextSize+1;
+iInnerDiameter=iAdapterColor+1;
+iInnerStartDiameter=iInnerDiameter+1;
+iOuterStartDiameter=iInnerStartDiameter+1;
+iInnerEndDiameter=iOuterStartDiameter+1;
+iOuterEndDiameter=iInnerEndDiameter+1;
+
+module echoConnector(name, end, help){ 
+  assert(is_list(end), "end must be a list");
+  HelpTxt(name,[
+    "style", end[iStyle],
+    "iWallThickness", end[iWallThickness],
+    "iMeasurement", end[iMeasurement],
+    "iDiameter", end[iDiameter],
+    "iLength", end[iLength],
+    "iRotation", end[iRotation],
+    "iTaper", end[iTaper],
+    "iEndCapDiameter", end[iEndCapDiameter],
+    "iEndCapThickness", end[iEndCapThickness],
+    "iEndCapGridSize", end[iEndCapGridSize],
+    "iEndCapGridWallThickness", end[iEndCapGridWallThickness],
+    "iStopThickness", end[iStopThickness],
+    "iStopLength", end[iStopLength],
+    "iStopSymmetrical", end[iStopSymmetrical],
+    "iBarbsCount", end[iBarbsCount],
+    "iBarbsThickness", end[iBarbsThickness],
+    "iBarbsSymmetrical", end[iBarbsSymmetrical],
+    "iMagnetCount", end[iMagnetCount],
+    "iMagnetDiameter", end[iMagnetDiameter],
+    "iMagnetThickness", end[iMagnetThickness],
+    "iMagnetBorder", end[iMagnetBorder],
+    "iMagnetFlangeThickness", end[iMagnetFlangeThickness],
+    "iMagnetTwistLockSize", end[iMagnetTwistLockSize],
+    "iAlignmentRing", end[iAlignmentRing],
+    "iAlignmentDepth", end[iAlignmentDepth],
+    "iAlignmentUpperWidth", end[iAlignmentUpperWidth],
+    "iAlignmentLowerWidth", end[iAlignmentLowerWidth],
+    "iAlignmentSideClearance", end[iAlignmentSideClearance],
+    "iAlignmentDepthClearance", end[iAlignmentDepthClearance],
+    "iFlangeWidth", end[iFlangeWidth],
+    "iFlangeThickness", end[iFlangeThickness],
+    "iFlangeScrewPosition", end[iFlangeScrewPosition],
+    "iFlangeScrewBorder", end[iFlangeScrewBorder],
+    "iFlangeScrewCount", end[iFlangeScrewCount],
+    "iFlangeScrewDiameter", end[iFlangeScrewDiameter],
+    "iNozzleShape", end[iNozzleShape],
+    "iNozzleSize", end[iNozzleSize],
+    "iNozzleTipWallThickness", end[iNozzleTipWallThickness],
+    "iNozzleRadius", end[iNozzleRadius],
+    "iNozzleOffset", end[iNozzleOffset],
+    "iNozzleChamferPercentage", end[iNozzleChamferPercentage],
+    "iNozzleChamferAngle", end[iNozzleChamferAngle],
+    "iExtensionLength", end[iExtensionLength],
+    "iExtensionGridSize", end[iExtensionGridSize],
+    "iExtensionGridWallThickness", end[iExtensionGridWallThickness],
+    "iExtensionText", end[iExtensionText],
+    "iExtensionTextSize", end[iExtensionTextSize],
+    "iadapterColor", end[iAdapterColor],
+    "iInnerDiameter", end[iInnerDiameter],
+    "iInnerStartDiameter", end[iInnerStartDiameter],
+    "iOuterStartDiameter", end[iOuterStartDiameter],
+    "iInnerEndDiameter", end[iInnerEndDiameter],
+    "iOuterEndDiameter", end[iOuterEndDiameter]
+    ] ,help); 
+  }
+  
+function getConnector3Setting(transitionHullCenter, con1, con2, con3) = 
+  transitionHullCenter == "end1" ? con1
+  : transitionHullCenter == "end2" ? con2
+  : con3;
+  
+function getConnectorSettings(
+  connector,
+  style, 
+  wallThickness, 
+  measurement, 
+  diameter, 
+  length, 
+  rotation,
+  taper, 
+  endCapDiameter,
+  endCapThickness,
+  endCapGridSize,
+  endCapGridWallThickness,
+  stopThickness,
+  stopLength,
+  stopSymmetrical,
+  barbsCount,
+  barbsThickness,
+  barbsSymmetrical,
+  magnetCount,
+  magnetDiameter,
+  magnetThickness,
+  magnetBorder,
+  magnetFlangeThickness,
+  magnetTwistLockSize,
+  alignmentRing,
+  alignmentDepth,
+  alignmentUpperWidth,
+  alignmentLowerWidth,
+  alignmentSideClearance,
+  alignmentDepthClearance,
+  flangeWidth,
+  flangeThickness,
+  flangeScrewPosition,
+  flangeScrewBorder,
+  flangeScrewCount,
+  flangeScrewDiameter,
+  nozzleShape,
+  nozzleSize,
+  nozzleTipWallThickness,
+  nozzleRadius,
+  nozzleOffset,
+  nozzleChamferPercentage,
+  nozzleChamferAngle,
+  extensionLength,
+  extensionGridSize,
+  extensionGridWallThickness,
+  extensionText,
+  extensionTextSize,
+  adapterColor,
+  con1Measurement, con1Diameter, con1WallThickness) = 
+  let(
+    //For nozzle, if the diameter is 0, then set it to the D1, this will look nice.
+    conMeasurement = let(
+      m = retriveConnectorSetting(style, iSettingsMeasurement, measurement),
+      d = retriveConnectorSetting(style, iSettingsDiameter, diameter))
+        (style == "nozzle" && d == 0) ? connector1Measurement : m,
+    conDiameter = let(d = retriveConnectorSetting(style, iSettingsDiameter, diameter)) 
+      (style == "nozzle" && d == 0) ? connector1Diameter : d,
+    conWallThickness = let(w = retriveConnectorSetting(style, iSettingsWallThickness, wallThickness))
+      (style == "nozzle" && w == 0) ? connector1WallThickness : w,
+    conLength = retriveConnectorSetting(style, iSettingsLength, length),
+    conTaper = retriveConnectorSetting(style, iSettingsTaper, taper),
+    conInnerDiameter = conMeasurement == "inner" ? conDiameter : conDiameter - conWallThickness * 2,
+    conInnerStartDiameter = conInnerDiameter - conTaper / 2,
+    conOuterStartDiameter = conInnerStartDiameter + wallThickness*2,
+    conInnerEndDiameter = conInnerDiameter + conTaper / 2,
+    conOuterEndDiameter = conInnerEndDiameter + wallThickness*2,
+    //If the connector hose is not showm the stop has no thickenss
+    conStopThickness = (conLength <= 0 || style == "mag" || style == "flange") ? 0 : stopThickness,
+    //If the stop has no thickness, it needs no length
+    conStopLength = (conStopThickness > 0 && style == "hose") ? stopLength : 0
+    ) [
+        connector,
+        style, 
+        conWallThickness, 
+        conMeasurement, 
+        conDiameter, 
+        conLength, 
+        rotation,
+        conTaper, 
+        endCapDiameter,
+        endCapThickness,
+        endCapGridSize,
+        endCapGridWallThickness,
+        stopThickness,
+        stopLength,
+        stopSymmetrical,
+        barbsCount,
+        barbsThickness,
+        barbsSymmetrical,
+        magnetCount,
+        magnetDiameter,
+        magnetThickness,
+        magnetBorder,
+        magnetFlangeThickness,
+        magnetTwistLockSize,
+        alignmentRing,
+        alignmentDepth,
+        alignmentUpperWidth,
+        alignmentLowerWidth,
+        alignmentSideClearance,
+        alignmentDepthClearance,
+        flangeWidth,
+        flangeThickness,
+        flangeScrewPosition,
+        flangeScrewBorder,
+        flangeScrewCount,
+        flangeScrewDiameter,
+        nozzleShape,
+        nozzleSize,
+        nozzleTipWallThickness,
+        nozzleRadius,
+        nozzleOffset,
+        nozzleChamferPercentage,
+        nozzleChamferAngle,
+        extensionLength,
+        extensionGridSize,
+        extensionGridWallThickness,
+        extensionText,
+        extensionTextSize,
+        adapterColor,
+        conInnerDiameter,
+        conInnerStartDiameter,
+        conOuterStartDiameter,
+        conInnerEndDiameter,
+        conOuterEndDiameter,
+        conStopThickness,
+        conStopLength];
+//CombinedEnd from path connector_object.scad
 //Combined from path connector_common.scad
 function lookupKey(dictionary, key, default=undef) = let(results = [
   for (record = dictionary)
@@ -15207,14 +15801,14 @@ function lookupKey(dictionary, key, default=undef) = let(results = [
   : results[0][1];
 
 function retriveConnectorConfig(connector, default = undef) = lookupKey(connectorSettings,connector,default);
-function retriveConnectorSetting(connector, setting, default = -1) = let(
+function retriveConnectorSetting(connector, iSetting, default = -1) = let(
   config = retriveConnectorConfig(connector),
-  setting = config == undef ? default 
-    : lookupKey(config, setting, default=default)
+  settingValue = config == undef ? default 
+    : lookupKey(config, iSetting, default=default)
   ) 
-   setting == undef 
+   settingValue == undef 
     ? default 
-    : setting;
+    : settingValue;
 //CombinedEnd from path connector_common.scad
 //Combined from path connector_hose.scad
 
@@ -15224,8 +15818,8 @@ module HoseConnector(
     connectorMeasurement,
     length,
     wallThickness,
-    stopLength,
-    stopWidth,
+    stopLength = 0,
+    stopWidth = 0,
     stopSymmetrical = false,
     barbsCount = 0,
     barbsThickness = 0,
@@ -15339,6 +15933,7 @@ module HoseConnector(
         wallThickness = wallThickness,
         stopThickness = stopWidth,
         zPosition = length,
+        marker = false,
         help = help);
     }
   }
@@ -15364,78 +15959,6 @@ module HoseConnector(
     ],help); 
 }
 
-//TODO This seems slow, esp when used for barbs
-module Stopper(
-    diameter,
-    outer,
-    totalLength,
-    taper1,
-    taper2,
-    wallThickness,
-    stopThickness,
-    zPosition = 0,
-    help
-)
-{
-  intersection()
-  {
-    flat = totalLength * (1 - taper1 - taper2);
-    StraightPipe (
-      diameter = outer ? diameter : diameter-stopThickness*2,
-      length = totalLength,
-      wallThickness = wallThickness + stopThickness,
-      zPosition = zPosition);
-
-      _diameter = outer ? diameter : diameter + wallThickness*2;
-  
-      //Bottom taper
-      if(taper1 > 0)
-      {
-        taperLength1 = totalLength * taper1;
-        zoffset1 = wallThickness*taperLength1/stopThickness;
-        length1= (zoffset1 + totalLength);
-        width1 = length1 * stopThickness / taperLength1;
-        diameterstart1 = _diameter;
-        diameterend1 = outer ? _diameter :_diameter - width1*2;
-        Pipe (
-          diameter1 = diameterstart1,
-          diameter2 = diameterend1,
-          length = length1,
-          wallThickness1 = 0,
-          wallThickness2 = width1,
-          zPosition = zPosition-zoffset1);
-      }
-
-      //Top taper
-      if(taper2 > 0)
-      {
-        taperLength2 = totalLength * taper2;
-        zoffset2 = wallThickness * taperLength2 / stopThickness;
-        length2 = (zoffset2 + totalLength);
-        width2 = length2 * stopThickness / taperLength2;
-        diameterstart2 = outer ? _diameter :_diameter - width2*2;
-        diameterend2 = _diameter;
-        Pipe (
-          diameter1 = diameterstart2,
-          diameter2 = diameterend2,
-          length = length2,
-          wallThickness1 = width2,
-          wallThickness2 = 0,
-          zPosition = zPosition);
-        
-      }
-   }
-
- HelpTxt("Stopper",[
-    "diameter", diameter,
-    "totalLength", totalLength,
-    "taper1", taper1,
-    "taper2", taper2,
-    "wallThickness", wallThickness,
-    "stopThickness", stopThickness,
-    "zPosition", zPosition]
-    ,help);  
-}
 //CombinedEnd from path connector_hose.scad
 //Combined from path connector_flange.scad
 
@@ -15803,7 +16326,7 @@ module Nozzle(
   length,
   wallThickness,
   nozzleShape,
-  nozzleSize,
+  nozzleSize = [0,0,0],
   nozzleTipWallThickness,
   nozzleRadius,
   nozzleOffset = [0,0],
@@ -15812,6 +16335,8 @@ module Nozzle(
   help
 )
 {
+  assert(is_list(nozzleSize) && len(nozzleSize) == 3, "nozzleSize must be a list of length 2");
+
   assert(nozzleShape == "square" || nozzleShape == "circle", str("nozzleShape only supports square and circle. Provided:'", nozzleShape ,"'"));
   innerRadius = innerStartDiameter/2;
   _nozzleRadius = nozzleShape == "circle" && nozzleRadius == 0 ? nozzleSize.x/2 
@@ -15835,6 +16360,14 @@ module Nozzle(
   widthChamfer = min(nozzleWidthChamfer, nozzleWidth);
   lengthChamfer = min(nozzleLengthChamfer, nozzleSize.z);
 
+  //todo, add correction to ensure that the thickness of the walls never reduce to less than wallthickenss1 and wallThickness2
+  //using wallThickness/2 is a sloppy approximation, really need to use trig to would out the correct value
+  leadin = max(fudgeFactor, wallThickness/2);
+  startOuterLeadin = innerStartDiameter > max(nozzleSize.x,nozzleSize.y) ? leadin : fudgeFactor;
+  startInnerLeadin = innerStartDiameter > max(nozzleSize.x,nozzleSize.y) ? fudgeFactor : leadin;
+  endOuterLeadin = max(nozzleSize.x,nozzleSize.y) > innerStartDiameter ? leadin : fudgeFactor;
+  endInnerLeadin = max(nozzleSize.x,nozzleSize.y) > innerStartDiameter ? fudgeFactor : leadin;
+  
   difference()
   {
     //Outer Shape
@@ -15843,11 +16376,11 @@ module Nozzle(
       // Nozzle base
       hull()
       {
-        cylinder(fudgeFactor*2, r=innerRadius+wallThickness);
-        translate([nozzleOffset.y,nozzleOffset.x,length + fudgeFactor])
+        cylinder(startOuterLeadin, r=innerRadius+wallThickness);
+        translate([nozzleOffset.y,nozzleOffset.x,length - endOuterLeadin+ fudgeFactor])
         hull() for (i= [ 0 : len(circlepositions) - 1 ])
           translate([circlepositions[i][0], circlepositions[i][1], 0])
-          cylinder(fudgeFactor, r=_nozzleRadius+wallThickness+fudgeFactor);
+          cylinder(endOuterLeadin, r=_nozzleRadius+wallThickness+fudgeFactor);
       }
 
       // Nozzle
@@ -15865,18 +16398,28 @@ module Nozzle(
     union()
     {
       // Nozzle base
-      hull()
-      {
-        translate([00,0,-fudgeFactor])
-          cylinder(fudgeFactor*2, r=innerRadius);
-        translate([nozzleOffset.y,nozzleOffset.x,length+fudgeFactor])
+      union(){
+        translate([0,0,-fudgeFactor])
+          cylinder(startInnerLeadin+fudgeFactor*2, r=innerRadius);
+      
+        translate([0,0,startInnerLeadin])
+        hull()
+        {
+          cylinder(fudgeFactor, r=innerRadius);
+          translate([nozzleOffset.y,nozzleOffset.x,length-startInnerLeadin-endInnerLeadin])
+            hull() for (i= [ 0 : len(circlepositions) - 1 ])
+              translate([circlepositions[i][0], circlepositions[i][1], 0])
+              cylinder(fudgeFactor, r=_nozzleRadius+fudgeFactor);
+        }
+        translate([nozzleOffset.y,nozzleOffset.x,length-endInnerLeadin-fudgeFactor])
           hull() for (i= [ 0 : len(circlepositions) - 1 ])
             translate([circlepositions[i][0], circlepositions[i][1], 0])
-            cylinder(fudgeFactor*2, r=_nozzleRadius+fudgeFactor);
-      }
-
+            cylinder(endInnerLeadin+fudgeFactor*3, r=_nozzleRadius+fudgeFactor);
+            
+       } 
+        
       // Nozzle
-      translate([nozzleOffset.y,nozzleOffset.x,length+fudgeFactor*2])
+      translate([nozzleOffset.y,nozzleOffset.x,length+fudgeFactor])
       hull() for (i= [ 0 : len(circlepositions) - 1 ])
         translate([circlepositions[i][0], circlepositions[i][1], 0])
         cylinder(nozzleSize.z+fudgeFactor*2, r=_nozzleRadius+fudgeFactor);
@@ -15916,6 +16459,7 @@ module Nozzle(
 //CombinedEnd from path connector_nozzle.scad
 //Combined from path connector_camlock.scad
 
+camlockVersion = "1.0";
 camlockMinLength = 35+3;
 camlockMeasurement = "outer";
 camlockOuterDiameter = 24.25*2;
@@ -15924,9 +16468,17 @@ camlockSettings = ["camlock", [
   [iSettingsLength, camlockMinLength],
   [iSettingsMeasurement, camlockMeasurement],
   [iSettingsDiameter, camlockOuterDiameter],
-  [iSettingsTaper ,0]
+  [iSettingsTaper ,0],
+  [iSettingsVersion, camlockVersion]
   ]];
-  
+ 
+ /*
+ CamlockConnector(
+  innerEndDiameter = camlockOuterDiameter,
+  length = camlockMinLength,
+  wallThickness = 2);
+ */
+ 
 module CamlockConnector(
   innerEndDiameter,
   length,
@@ -15967,7 +16519,7 @@ module CamlockConnector(
       connectorMeasurement = "outer",
       innerStartDiameter = innerDiameter-wallThickness*2,
       innerEndDiameter = innerDiameter-wallThickness*2,
-      length = camlockHeight,
+      length = camlockHeight+camlockStopLength+fudgeFactor*2-(camlockRingClipHeight+wallThickness/2),
       wallThickness = camlockWallThickness,
       stopLength = 0,
       stopWidth = 0,
@@ -15994,25 +16546,106 @@ module CamlockConnector(
 //CombinedEnd from path connector_camlock.scad
 //Combined from path connector_centec.scad
 
+/*
+I printed the Centec male v0.1 adapter. The diameter and length of the part seem to be spot on. The fit of the male part into the female is a bit tighter than the production parts. But it does insert completely and bottom out. The male production part has a diameter of about 44.75 whereas the v0.1 part's diameter is closer to 45. I removed the retention ring from a production male fitting and it is too wide for the slot in the v0.1 fitting. That's not a problem if the part you design will be thinner. Here are some pics.
+*/
+cenTecFemaleVersion = "0.1";
+cenTecFemaleBodyLength =  25;
+cenTecFemaleWallThickness = 3;
+cenTecFemaleMinLength = cenTecFemaleBodyLength+2;
+cenTecFemaleMeasurement = "inner";
+cenTecFemaleInnerDiameter = 22.625*2;
+cenTecFemaleOuterDiameter = cenTecFemaleInnerDiameter + cenTecFemaleWallThickness*2;
 
-cenTecBodyLength =  25;
-cenTecWallThickness = 3;
-cenTecMinLength = cenTecBodyLength+2;
-cenTecMeasurement = "inner";
-cenTecInnerDiameter = 22.625*2;
-cenTecOuterDiameter = cenTecInnerDiameter + cenTecWallThickness*2;
+centecFemaleSettings = ["centec_female", [
+  [iSettingsLength, cenTecFemaleMinLength],
+  [iSettingsMeasurement, cenTecFemaleMeasurement],
+  [iSettingsDiameter, cenTecFemaleInnerDiameter],
+  [iSettingsWallThickness, (cenTecFemaleOuterDiameter - cenTecFemaleInnerDiameter)/2],
+  [iSettingsTaper ,0],
+  [iSettingsVersion, cenTecFemaleVersion]
+  ]];
 
-centecSettings = ["centec", [
-  [iSettingsLength, cenTecMinLength],
-  [iSettingsMeasurement, cenTecMeasurement],
-  [iSettingsDiameter, cenTecInnerDiameter],
-  [iSettingsWallThickness, (cenTecOuterDiameter - cenTecInnerDiameter)/2],
-  [iSettingsTaper ,0]
+cenTecMaleVersion = "0.2";
+cenTecMaleBodyLength =  25.797;
+cenTecMaleMinLength = 32;
+cenTecMaleMeasurement = "outer";
+cenTecMaleInnerDiameter = 32.544;
+cenTecMaleOuterDiameter = 44.75; //v0.1 45.244;
+cenTecMaleWallThickness = (cenTecMaleOuterDiameter - cenTecMaleInnerDiameter)/2;
+ 
+centecMaleSettings = ["centec_male", [
+  [iSettingsLength, cenTecMaleMinLength],
+  [iSettingsMeasurement, cenTecMaleMeasurement],
+  [iSettingsDiameter, cenTecMaleOuterDiameter],
+  [iSettingsWallThickness, (cenTecMaleOuterDiameter - cenTecMaleInnerDiameter)/2],
+  [iSettingsTaper ,0],
+  [iSettingsVersion, cenTecMaleVersion]
   ]];
   
-//CenTecConnector();
+//Test female  
+//CenTecFemaleConnector();
+//Test male
+//CenTecMaleConnector();
 
-module CenTecConnector(){
+module CenTecMaleConnector($fn = 64){
+  connectorLength = cenTecMaleMinLength;
+  connectorInnerRadius= cenTecMaleInnerDiameter/2;
+  connectorOuterRadius= cenTecMaleOuterDiameter/2;
+  StopInnerRadius = 18.2;
+  wallThickness = cenTecMaleWallThickness;
+  StopInnerLength = cenTecFemaleWallThickness;
+
+  clickLength = 6.5;//V0.1 5.556;
+  clickDiameter = 36.513;
+  clickZpos = 8.5;//V0.1 9.128;
+  clickWallThicknessDepth = (cenTecMaleOuterDiameter-clickDiameter);
+  
+  startLipLength = 1.191;
+  startLipDiameter = 35.719;
+  startLipWidthDepth = (cenTecMaleOuterDiameter - startLipDiameter);
+  
+  stopLength = 6;
+  stopWidth = 3.175;
+  stopZpos = connectorLength - stopLength;// 25.797;
+  
+  union(){ 
+  difference(){  
+    Pipe(
+      diameter = connectorInnerRadius*2,
+      length = connectorLength,
+      wallThickness=wallThickness);
+    /*HoseConnector(
+      connectorMeasurement = "outer",
+      innerStartDiameter = connectorInnerRadius*2,
+      innerEndDiameter = connectorInnerRadius*2,
+      length = connectorLength,
+      wallThickness = wallThickness);*/
+    Pipe(
+      diameter = startLipDiameter,
+      length = startLipLength,
+      wallThickness=startLipWidthDepth,
+      zPosition = -fudgeFactor);
+    Pipe(
+      diameter = clickDiameter,
+      length = clickLength,
+      wallThickness=clickWallThicknessDepth,
+      zPosition = clickZpos);
+  }
+  
+  Stopper(
+    diameter = connectorOuterRadius*2-fudgeFactor,
+    outer = true,
+    totalLength = stopLength,
+    taper1 = 0,
+    taper2 = 0.5,
+    wallThickness = 0,
+    stopThickness = stopWidth,
+    zPosition = stopZpos);
+  }
+}
+
+module CenTecFemaleConnector($fn = 64){
 
   pinHoleWidth = 9.5;
   pinHoleHeight = 6;
@@ -16020,12 +16653,12 @@ module CenTecConnector(){
   pinHoleOffset = 11;
 
   pinSlideIndent = 1.5;
-  connectorLength = cenTecBodyLength;
-  connectorInnerEndRadius= cenTecInnerDiameter/2;
-  connectorInnerStartRadius= cenTecInnerDiameter/2+0.275;
+  connectorLength = cenTecFemaleBodyLength;
+  connectorInnerEndRadius= cenTecFemaleInnerDiameter/2;
+  connectorInnerStartRadius= cenTecFemaleInnerDiameter/2+0.275;
   StopInnerRadius = 18.2;
-  wallThickness = cenTecWallThickness;
-  StopInnerLength = cenTecWallThickness;
+  wallThickness = cenTecFemaleWallThickness;
+  StopInnerLength = cenTecFemaleWallThickness;
   
   slideTaper=1;
   
@@ -16057,7 +16690,7 @@ module CenTecConnector(){
       translate([0,connectorInnerEndRadius+wallThickness/2,pinHoleHeight/2+pinHoleOffset])
         union(){
         rotate([90,0,0])
-        roundedCube(
+        centecRoundedCube(
           x=pinHoleWidth,
           y=pinHoleHeight,//max(pinHoleWidth,pinHoleHeight),
           h=wallThickness*2,
@@ -16066,7 +16699,7 @@ module CenTecConnector(){
         
         translate([0,wallThickness/2,0])
         rotate([90,0,180])
-        roundedCube(
+        centecRoundedCube(
           x=pinHoleWidth,
           y=pinHoleHeight,//max(pinHoleWidth,pinHoleHeight),
           h=wallThickness,
@@ -16115,7 +16748,7 @@ module CenTecConnector(){
 //z=height in mm
 //cornerRadius = the radius of the cube corners
 //fn = overrides the #fn function for the corners
-module roundedCube(
+module centecRoundedCube(
   x,
   y,
   h,
@@ -16151,24 +16784,30 @@ module roundedCube(
 //Combined from path connector_dyson.scad
 
 /* [Hidden] */
+dysonVersion = "1.2";
 dysonMinLength = 46;
 dysonMeasurement = "outer";
-dysonOuterDiameter = 34;
+dysonOuterDiameter = 34.1;
 dysonInnerDiameter = 28.5;
+dysonWallThickenss = (dysonOuterDiameter - dysonInnerDiameter)/2;
 
 dysonSettings = ["dyson", [
   [iSettingsLength, dysonMinLength],
   [iSettingsMeasurement, dysonMeasurement],
   [iSettingsDiameter, dysonOuterDiameter],
-  [iSettingsWallThickness, (dysonOuterDiameter - dysonInnerDiameter)/2],
-  [iSettingsTaper ,0]
+  [iSettingsWallThickness, dysonWallThickenss],
+  [iSettingsTaper ,0],
+  [iSettingsVersion, dysonVersion]
   ]];
   
+//DysonConnector();
+
 module DysonConnector(
-  innerEndDiameter,
-  length,
-  wallThickness,
-  IncludeOrientationClip = true
+  innerEndDiameter = dysonInnerDiameter,
+  length = dysonMinLength,
+  wallThickness = dysonWallThickenss,
+  IncludeOrientationClip = true,
+  $fn = 64
 ){
   heightStartShaft = 10;
   heightCutout= 4.45;
@@ -16185,14 +16824,13 @@ module DysonConnector(
   heightMainShaft = orientationClipHeight - (heightStartShaft+heightCutout+heightCutoutTapper) + orientationClipLength;
   height = heightStartShaft+heightCutout+heightCutoutTapper+heightMainShaft;
   innerDiameter = 28.5;
-  outerDiameter = 34;
+  outerDiameter = dysonOuterDiameter;
 
   cutoutRadius = 30.7;// dysonInnerDiameter/2;
   innerRadius = innerDiameter/2;
   outerRadius = outerDiameter/2;
   
   union() {
-
     difference() {
       union() {
         difference() {
@@ -16229,13 +16867,19 @@ module DysonConnector(
               wallThickness = 0,
               stopThickness = orentationClipwallThickness);
             
-            for(i=[0,90,180,270])
+            clipCount = 4;
+            for(i=[0:1:clipCount-1])
             {
-              rotate([0,0,i])
+              rotate([0,0,i*360/clipCount])
               difference() {
                 //Circle cutout for clip
                 translate([0,-outerRadius+4,-23/2+6.5]) rotate([90,0,0])
-                  cylinder(r1=23/2, r2=23.5/2, h=orentationClipwallThickness*3);
+                  union(){
+                    baseclipheight = orentationClipwallThickness*1.7;
+                  cylinder(r=23/2, h=baseclipheight);
+                  translate([0,0,baseclipheight-fudgeFactor])
+                  cylinder(r1=23/2, r2=25/2, h=orentationClipwallThickness);
+                  }
                 //Verticle clip lock
                translate([0,-outerRadius,orientationClipWidth/2]) rotate([90,0,0])
                  hull() {
@@ -16251,13 +16895,15 @@ module DysonConnector(
 
       //remove center
       translate([0,0,-fudgeFactor])
-        cylinder(r=innerRadius, h=height+2);
+        cylinder(r=innerRadius, h=height+fudgeFactor*2);
     }
   }
 }
 //CombinedEnd from path connector_dyson.scad
 //Combined from path connector_dw735.scad
 
+
+dw735Version = "1.2";
 dw735MinLength = 17;
 dw735Measurement = "inner";
 dw735InnerDiameter = 71;
@@ -16266,7 +16912,8 @@ dw735Settings = ["dw735", [
   [iSettingsLength, dw735MinLength],
   [iSettingsMeasurement, dw735Measurement],
   [iSettingsDiameter, dw735InnerDiameter],
-  [iSettingsTaper ,0]
+  [iSettingsTaper ,0],
+  [iSettingsVersion, dw735Version]
   ]];
 
 module Dw735Connector(
@@ -16399,12 +17046,295 @@ module Dw735Connector(
   }
 }
 //CombinedEnd from path connector_dw735.scad
+//Combined from path connector_osvac.scad
+//osVAC
+//Female documentation https://www.thingiverse.com/thing:4562762
+//Male documentation https://www.thingiverse.com/thing:4562789
+
+/* [Hidden] */
+clipCount = 3;
+
+osvacmVersion = "0.1";
+osvacmMinLength = 30;
+osvacmMeasurement = "inner";
+osvacmOuterDiameter = 37.8;
+osvacmInnerDiameter = 32;
+osvacmWallThickness = (osvacmOuterDiameter - osvacmInnerDiameter)/2;
+
+osvacm32Settings = ["osvacm32", [
+  [iSettingsLength, osvacmMinLength],
+  [iSettingsMeasurement, osvacmMeasurement],
+  [iSettingsDiameter, osvacmInnerDiameter],
+  [iSettingsWallThickness, osvacmWallThickness],
+  [iSettingsTaper ,0],
+  [iSettingsVersion, osvacmVersion]
+  ]];
+osvacmSettings = ["osvacm", [
+  [iSettingsLength, osvacmMinLength],
+  [iSettingsMeasurement, osvacmMeasurement],
+  [iSettingsWallThickness, osvacmWallThickness],
+  [iSettingsTaper ,0],
+  [iSettingsVersion, osvacmVersion]
+  ]];
+
+osvacfVersion = "0.1";
+osvacfMinLength = 34.10;
+osvacfMeasurement = "inner";
+osvacfOuterDiameter = 47.265;
+osvacfInnerDiameter = 32;
+osvacfInnerWallDiameter = 38.2;
+osvacfWallThickness = (osvacfOuterDiameter - osvacfInnerDiameter)/2;
+osvacf32Settings = ["osvacf32", [
+  [iSettingsLength, osvacfMinLength],
+  [iSettingsMeasurement, osvacfMeasurement],
+  [iSettingsDiameter, osvacfInnerDiameter],
+  [iSettingsWallThickness, osvacfWallThickness],
+  [iSettingsTaper ,0],
+  [iSettingsVersion, osvacfVersion]
+  ]];
+osvacfSettings = ["osvacf", [
+  [iSettingsLength, osvacfMinLength],
+  [iSettingsMeasurement, osvacfMeasurement],
+  [iSettingsWallThickness, osvacfWallThickness],
+  [iSettingsTaper ,0],
+  [iSettingsVersion, osvacfVersion]
+  ]];
+  
+//Test male connector
+//osVacMaleConnector(innerDiameter = 50, help=true);
+
+//Test female connector
+//osVacFemaleConnector(innerDiameter = 50, help=true);
+
+module osVacFemaleConnector(
+  innerDiameter = osvacfInnerDiameter,
+  length = osvacfMinLength,
+  wallThickness = osvacfWallThickness,
+  help,
+  $fn = 64){
+  innerTaperSize = (osvacfInnerWallDiameter-osvacfInnerDiameter)/2;
+  innerWallDiameter = innerDiameter + innerTaperSize*2;
+  outerDiameter = innerDiameter + wallThickness*2;
+  finalShaftLength = 5;
+  
+  innerShaftLength = 30.5;
+  cutoutz = 3.7;
+  cutoutHeight = 6.35;
+  cutoutDepthz = innerShaftLength - cutoutz;
+  cutoutDepthx = 2;
+  cutoutBumpDepthx = 1.6;
+  cutoutRadius = innerWallDiameter/2+cutoutDepthx;
+  cutoutWidth = 10.2;
+  //The distence is base on a f32, 
+  //The spec defines it as the ARC Length for 35deg on an F32
+  cutoutArcLength = 35/180*PI*(osvacfInnerWallDiameter/2+cutoutDepthx);
+  cutoutArcAngle = (cutoutArcLength*180)/(PI*(innerWallDiameter/2+cutoutDepthx));
+  echo();
+  difference(){
+    //Main outer body
+    cylinder(length, d=outerDiameter);
+
+    //Main inner body removal
+    union(){
+      hull(){
+        translate([0,0,-fudgeFactor])
+          cylinder(innerShaftLength, d=innerWallDiameter);
+        translate([0,0,innerShaftLength])
+          cylinder(innerTaperSize, 
+            d1=innerWallDiameter,
+            d2=innerDiameter);
+      }
+
+      //Opening relief
+      translate([0,0,-fudgeFactor])
+        cylinder(
+          cutoutDepthx/2, 
+          d1=innerWallDiameter+cutoutDepthx,
+          d2=innerWallDiameter
+         );
+      
+      
+      finalShaftLength = length - innerShaftLength;
+      translate([0,0,length-finalShaftLength+fudgeFactor])
+        cylinder(finalShaftLength, d=innerDiameter);
+     
+     translate([0,0,-fudgeFactor])    
+     intersection(){
+        cylinder(cutoutDepthz+fudgeFactor, r=cutoutRadius);
+        for(i = [0:360/clipCount:360]){
+          rotate([0,0,i])
+          union(){
+          translate([0,-cutoutWidth/2,-fudgeFactor])
+            roundedCube(
+              size=[cutoutRadius,cutoutWidth,cutoutDepthz],
+              topRadius = 0,
+              bottomRadius = 0,
+              sideRadius = 2);
+              
+           rotate([0,0,cutoutArcAngle])
+           translate([0,-cutoutWidth/2,cutoutDepthz-cutoutHeight-fudgeFactor])
+            roundedCube(
+              size=[cutoutRadius,cutoutWidth,cutoutHeight],
+              topRadius = 0,
+              bottomRadius = 0,
+              sideRadius = 2);
+
+            //it creates the bump to produce the lock
+            rotate([0,0,cutoutArcAngle/4])
+            translate([0,0,cutoutDepthz-cutoutHeight-fudgeFactor])
+              intersection(){
+                translate([0,0,-cutoutHeight])
+                rotate_extrude(angle=cutoutArcAngle/2)
+                  translate([cutoutRadius-(cutoutDepthx*2),0,0])
+                  square([cutoutDepthx+cutoutBumpDepthx,cutoutHeight*2], center=false);
+              
+              translate([cutoutRadius,0,cutoutHeight-2])
+              rotate([45,0,0])
+                cube([10,cutoutHeight*2,cutoutHeight*2], center=true);
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  HelpTxt("osVacFemaleConnector",[
+    "innerDiameter", innerDiameter,
+    "length", length,
+    "wallThickness", wallThickness,
+    "innerTaperSize", innerTaperSize,
+    "innerWallDiameter", innerWallDiameter,
+    "outerDiameter", outerDiameter,
+    "finalShaftLength", finalShaftLength,
+    "innerShaftLength", innerShaftLength,
+    "cutoutHeight", cutoutHeight,
+    "cutoutz", cutoutz,
+    "cutoutDepthz", cutoutDepthz,
+    "cutoutDepthx", cutoutDepthx,
+    "cutoutArcLength",cutoutArcLength,
+    "cutoutArcAngle",cutoutArcAngle,
+    "cutoutBumpDepthx", cutoutBumpDepthx,
+    "cutoutRadius", cutoutRadius,
+    "cutoutWidth", cutoutWidth,
+    "osvacfWallThickness", osvacfWallThickness,
+    "osvacfMinLength", osvacfMinLength,
+    "osvacfInnerDiameter", osvacfInnerDiameter
+    ],help); 
+}
+
+module osVacMaleConnector(
+  innerDiameter = osvacmInnerDiameter,
+  length = osvacmMinLength,
+  wallThickness = osvacmWallThickness,
+  help,
+  $fn = 64
+){  
+  outerDiameter = innerDiameter+wallThickness*2;
+  
+  hoseEndTaper=0.7;
+  clipHeight = 6.95;
+  clipz = 3.2;
+  clipr = 1;//not right
+  clipThickness = 2; 
+  clipWidth = 9.8; 
+  clipTopTaperz = 5.8;
+  clipTopTaperHeight = clipHeight - clipTopTaperz;
+  
+  union() {
+    difference ()
+    {
+      //outer cylinder
+      union(){
+        cylinder(length, d=outerDiameter);
+        
+        translate([0,0,clipz])
+        difference(){
+          intersection(){
+            roundedCylinder(
+              clipHeight,
+              r=outerDiameter/2+clipThickness,
+              roundedr1=clipr,
+              roundedr2=0);
+            for(i = [0:360/clipCount:360]){
+              rotate([0,0,i])
+              translate([outerDiameter/2-clipThickness,-clipWidth/2,-fudgeFactor])
+                hull(){
+                  roundedCube(
+                    size=[clipThickness,clipWidth,clipHeight],
+                    topRadius = 0,
+                    bottomRadius = 1,
+                    sideRadius = 1);
+                  roundedCube(
+                    size=[clipThickness,clipWidth,clipHeight],
+                    topRadius = 0,
+                    bottomRadius = 1,
+                    sideRadius = 2);
+              }
+            }
+          }
+  
+          Pipe(
+            diameter1 = outerDiameter+clipThickness*2+fudgeFactor,
+            diameter2 = outerDiameter-fudgeFactor*2,
+            length = clipTopTaperHeight,
+            wallThickness1 = 0,
+            wallThickness2 = clipThickness+fudgeFactor,
+            zPosition = clipTopTaperz);
+        }
+      }
+      
+      //Inner cylinder to remove
+      translate([0,0,0-fudgeFactor])
+      cylinder(length+fudgeFactor*2, d=innerDiameter);
+        
+      Pipe(
+        diameter1 = innerDiameter-fudgeFactor,
+        diameter2 = innerDiameter-fudgeFactor,
+        length = hoseEndTaper+fudgeFactor,
+        wallThickness1 = hoseEndTaper,
+        wallThickness2 = 0,
+        zPosition = -fudgeFactor);
+      Pipe(
+        diameter1 = outerDiameter-hoseEndTaper*2,
+        diameter2 = outerDiameter+hoseEndTaper*2,
+        length = hoseEndTaper+hoseEndTaper,
+        wallThickness1 = hoseEndTaper,
+        wallThickness2 = 0,
+        zPosition = -fudgeFactor);
+    }
+  }
+  
+  HelpTxt("osVacMaleConnector",[
+    "innerDiameter", innerDiameter,
+    "length", length,
+    "wallThickness", wallThickness,
+    "outerDiameter", outerDiameter,
+    "hoseEndTaper", hoseEndTaper,
+    "clipz", clipz,
+    "clipr", clipr,
+    "clipThickness", clipThickness,
+    "clipWidth", clipWidth,
+    "clipTopTaperHeight", clipTopTaperHeight,
+    "osvacmWallThickness", osvacmWallThickness,
+    "osvacmMinLength", osvacmMinLength,
+    "osvacmInnerDiameter", osvacmInnerDiameter
+    ],help); 
+}
+
+
+
+//CombinedEnd from path connector_osvac.scad
 //Combined from path connector_common_post.scad
 connectorSettings =[
   camlockSettings,
-  centecSettings,
+  centecFemaleSettings,
+  centecMaleSettings,
   dysonSettings,
-  dw735Settings];
+  dw735Settings,
+  osvacmSettings,
+  osvacm32Settings,
+  osvacfSettings,
+  osvacf32Settings];
 //CombinedEnd from path connector_common_post.scad
 //Combined from path vacuum-hose-adapter-openscad.scad
 // Hose connector
@@ -16423,13 +17353,15 @@ connectorSettings =[
 /* [Hidden] */
 DefaultEnd1Color = "LightPink";
 DefaultEnd2Color = "SkyBlue";
+DefaultEnd3Color = "MediumPurple";
 DefaultTransitionColor = "LightGreen";
+DefaultExtensionColor = "MediumSeaGreen";
 
 /* [Connector 1] */
 //Wall thickness
 End1_Wall_Thickness = 2; //0.01
 //The style of the end
-End1_Style="flange"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec: Cen-Tec quick connect]
+End1_Style="flange"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female]
 // Is the measurement the adapter's outside or inside diameter?
 End1_Measurement = "inner"; //[inner, outer]
 // End 1 diameter of the adapter (mm)
@@ -16458,6 +17390,10 @@ End1_Barbs_Symmetrical = false;
 End1_Hose_EndCap_Diameter = 0;  //0.1
 //Thickness of endcap.
 End1_Hose_EndCap_Thickness = 0;  //0.1
+//End cap grid size for holes
+End1_Hose_EndCap_GridSize = 0;  //0.1
+//Thickness of the walls in the end cap
+End1_Hose_EndCap_GridWallThickness = 0;  //0.1
 
 /* [Connector 1 - Flange] */
 //Width of Flange added to the connector diamater
@@ -16472,7 +17408,6 @@ End1_Flange_Screw_Border = 5;  //0.1
 End1_Flange_Screw_Count = 4;
 //The diameter of the screws (mm)
 End1_Flange_Screw_Diameter = 5;  //0.1
-
 
 /* [Connector 1 - Magnetic Connector] */
 //Number of magnets in the connector
@@ -16490,6 +17425,17 @@ End1_Ring = "no"; //[no: No alignment ring, protruding: protruding ring, recesse
 // Magnetic ring Twist lock bolt size (draft setting)
 End1_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitchen insert,"4":M4,"4cnc":M4 with CNC Kitchen insert,"5":M5,"5cnc":M5 with CNC Kitchen insert]
 
+/* [Connector 1 - Extension] */
+//Length of the extnetion
+End1_Extension_Length = 0;
+//Size of the grid in the extnetion. 0: diameter/6
+End1_Extension_GridSize = 0;  //0.1
+//Size of the grid walls in the extnetion. 0: no grid, -1: uses wall thickness
+End1_Extension_GridWallThickness = 0;  //0.1
+End1_Extension_Text = "";
+End1_Extension_Text_Size = 0;
+
+
 /* [Transition] */
 // tapered for hose connections, flat for attaching to a device
 Transition_Style = "bend+taper"; //[flat, taper+bend: Taper then bend, bend+taper: Bend then taper, organicbend: Tapered bend, hull: Hull for multiple end count, none: no transition]
@@ -16501,36 +17447,37 @@ Transition_Bend_Radius = 0;  //1
 Transition_Angle = 0;  //1
 // offset for the connector, not supported on taperedbend.
 Transition_Offset = [0,0]; // 0.1
+
 /* [Transition Multiple connector settings] */
 // Dupliacte the second connector. Adjust angle and bend radius to make it work.
 Transition_End2_Count = 1;  //[1, 2, 3, 4, 5, 6]
 // MulitConnector, connector in hull length.
 Transition_HullLength = 0; // 0.1
+// MulitConnector, add center connector.
+Transition_HullCenter = "disabled"; //[disabled,end1,end2,end3]
 Transition_HullCenterLength = 0;
 // MulitConnector, connector in hull offset.
 Transition_HullyOffset = 0; // 0.1
-// MulitConnector, add center connector.
-Transition_HullCenter = false;
 // MulitConnector, center connector height. default is 2*lengthInHull
 Transition_HullCenterHeight = 0;
-  
 
 /* [Transition Support For Angled Pipes] */
 // Include a flate section on the transition to assist with printing
 Transition_Base_Type="none"; // [none, oval, rectangle]
 //Support Base Additional Thickness;
 Transition_Base_Thickness=0;
-//Support Base Width, Default is half diameter;
+//Support Base Width, Default is half diameter
 Transition_Base_Width=0;
-// Support Base Length Default is 2/3 diameter;;
+// Support Base Length Default is 2/3 diameter
 Transition_Base_Length=0;
 // Support Base Angle position, default half of Bend Radius;
 Transition_Base_Angle=0;
 
+
 /* [Connector 2] */
 //Wall thickness
 End2_Wall_Thickness = 2; //0.01
-End2_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec: Cen-Tec quick connect, none: None]
+End2_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, none: None]
 // Is the measurement the adapter's outside or inside diameter?
 End2_Measurement = "outer"; //[inner, outer]
 // End 2 diameter of the adapter (mm)
@@ -16564,7 +17511,6 @@ End2_Hose_EndCap_GridSize = 0;  //0.1
 //Thickness of the walls in the end cap
 End2_Hose_EndCap_GridWallThickness = 0;  //0.1
 
-
 /* [Connector 2 - Flange] */
 //Width of Flange added to the connector diamater
 End2_Flange_Width = 20;
@@ -16595,7 +17541,6 @@ End2_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recesse
 // Magnetic ring twist lock bolt size (draft setting)
 End2_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitchen insert,"4":M4,"4cnc":M4 with CNC Kitchen insert,"5":M5,"5cnc":M5 with CNC Kitchen insert]
 
-
 /* [Connector 2 - Nozzle] */
 // Is the measurement the adapter's outside or inside diameter?
 End2_Nozzle_Shape = "square"; //[square, circle]
@@ -16605,6 +17550,105 @@ End2_Nozzle_Radius = 0; //0.1
 End2_Nozzle_Offset = [0,0]; //0.1
 End2_Nozzle_Chamfer_Percentage = 0; //0.1
 End2_Nozzle_Chamfer_Angle = 0; //0.1
+
+/* [Connector 2 - Extension] */
+//Length of the extnetion
+End2_Extension_Length = 0;
+//Size of the grid in the extnetion. 0: diameter/6
+End2_Extension_GridSize = 0;  //0.1
+//Size of the grid walls in the extnetion. 0: no grid, -1: uses wall thickness
+End2_Extension_GridWallThickness = 0;  //0.1
+End2_Extension_Text = "";
+End2_Extension_Text_Size = 0;
+
+
+/* [Connector 3] */
+//Wall thickness
+End3_Wall_Thickness = 2; //0.01
+End3_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, none: None]
+// Is the measurement the adapter's outside or inside diameter?
+End3_Measurement = "outer"; //[inner, outer]
+// End 2 diameter of the adapter (mm)
+End3_Diameter = 40;  //0.05
+//Length of the pipe coming out of the flange.
+End3_Length= 40;  //1
+//Rotation around the z axis. Userfull for non symeterical connectors.
+End3_Rotation= 0;  
+//Taper of the start connector, use negative to taper other direction.
+End3_Taper = 0;  //0.1
+
+/*[Connector 3 - Hose connector] */
+//Thickness of hose stop
+End3_StopThickness = 0;  //1
+//Length of hose stop
+End3_StopLength = 0;  //1
+//Should the stop be tapered both sides. Might easier to print.
+End3_Stop_Symmetrical = false;
+//Number of barbs
+End3_Barbs_Count = 0;
+//Thickness of the barbs, default is half wall thickness
+End3_Barbs_Thickness = 0; //0.1
+//Should the barbes be tapered both sides. Might be easier to print.
+End3_Barbs_Symmetrical = false;
+//Thickness of endcap, 0 means disabled
+End3_Hose_EndCap_Thickness = 0;  //0.1
+//End Cap Inner Diameter.
+End3_Hose_EndCap_Diameter = 0;  //0.1
+//End cap grid size for holes
+End3_Hose_EndCap_GridSize = 0;  //0.1
+//Thickness of the walls in the end cap
+End3_Hose_EndCap_GridWallThickness = 0;  //0.1
+
+
+/* [Connector 3 - Flange] */
+//Width of Flange added to the connector diamater
+End3_Flange_Width = 20;
+//Thickness of the flange
+End3_Flange_Thickness = 5;
+//Position of the screws added to the connector diamater, 0 = middle of flange
+End3_Flange_Screw_Position= 0;
+//Minium amount of the material around the magnets (mm), 0 = End1_Flange_Width / 4
+End3_Flange_Screw_Border = 5;  //0.1
+//Number of Screw holes flange
+End3_Flange_Screw_Count = 4;
+//The diameter of the screws (mm)
+End3_Flange_Screw_Diameter = 5;  //0.1
+
+/* [Connector 3 - Magnetic Flange] */
+//Number of magnets in the flange
+End3_Magnets_Count = 6;  //1
+//The diameter of the magnets
+End3_Magnet_Diameter = 12;  //0.1
+//The thickness of the magnets
+End3_Magnet_Thickness = 3;  //0.1
+//Size of the material around the magnets
+End3_Magnet_Border = 2;  //0.1
+// Inner diameter of the Magnet flange
+End3_Magnet_Flange_Thickness = 10;  //0.1
+// Include a flange alignment ring
+End3_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recessed: Recessed ring]
+// Magnetic ring twist lock bolt size (draft setting)
+End3_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitchen insert,"4":M4,"4cnc":M4 with CNC Kitchen insert,"5":M5,"5cnc":M5 with CNC Kitchen insert]
+
+/* [Connector 3 - Nozzle] */
+// Is the measurement the adapter's outside or inside diameter?
+End3_Nozzle_Shape = "square"; //[square, circle]
+End3_Nozzle_Size = [10,5,10]; //0.1
+End3_Nozzle_Tip_Wall_Thickness = 0; //0.1
+End3_Nozzle_Radius = 0; //0.1
+End3_Nozzle_Offset = [0,0]; //0.1
+End3_Nozzle_Chamfer_Percentage = 0; //0.1
+End3_Nozzle_Chamfer_Angle = 0; //0.1
+
+/* [Connector 3 - Extension] */
+//Length of the extnetion
+End3_Extension_Length = 0;
+//Size of the grid in the extnetion. 0: diameter/6
+End3_Extension_GridSize = 0;  //0.1
+//Size of the grid walls in the extnetion. 0: no grid, -1: uses wall thickness
+End3_Extension_GridWallThickness = 0;  //0.1
+End3_Extension_Text = "";
+End3_Extension_Text_Size = 0;
 
 /* [Alignment Ring] */
 //draw just the alignment ring
@@ -16628,7 +17672,9 @@ Enable_Calipers_Slice = false;
 Enable_Help = false;
 End1_Color = [DefaultEnd1Color,1];  //0.1
 End2_Color = [DefaultEnd2Color,1];  //0.1
+End3_Color = [DefaultEnd3Color,1];  //0.1
 Transition_Color = [DefaultTransitionColor,1]; //The color, then the alpha value
+Extension_Color = [DefaultExtensionColor,1]; //The color, then the alpha value
 
 /* [Hidden] */
 //Detail
@@ -16637,7 +17683,7 @@ $fn=120;
 module end_of_customizer_opts() {}
 
 function getColor(colorSetting, defaultColor) = 
-  assert(is_list(colorSetting), "colorSetting must be a list")
+  assert(is_list(colorSetting), str("colorSetting must be a list colorSetting=", colorSetting, " defaultColor", defaultColor))
   assert(len(colorSetting) == 2, "colorSetting be length 2")
   let(
     c = colorSetting[0] == "" ? defaultColor : colorSetting[0],
@@ -16709,308 +17755,421 @@ module adapterAlignmentRing(
 }
           
 module adapter(
-    connector = 2,
-    wallThickness = 2,
-    style= "hose",
-    measurement= "inner",
-    innerDiameter,
-    innerStartDiameter = 0,
-    innerEndDiameter = 0,
-    length = 0,
-    rotation = 0,
-    taper = 0,
-    endCapDiameter = 0,
-    endCapThickness = 0,
-    endCapGridSize = 0,
-    endCapGridWallThickness = 0,
-    stopThickness = 0,
-    stopLength = 0,
-    stopSymmetrical = false,
-    barbsCount = 0,
-    barbsThickness = 0,
-    barbsSymmetrical = false,
-    magnetCount = 0,
-    magnetDiameter = 0,
-    magnetThickness = 0,
-    magnetBorder = 0,
-    magnetFlangeThickness = 0,
-    magnetTwistLockSize = 0,
-    alignmentRing = 0,
-    alignmentDepth = 0,
-    alignmentUpperWidth = 0,
-    alignmentLowerWidth = 0,
-    alignmentSideClearance = 0,
-    alignmentDepthClearance = 0,
-    flangeWidth = 0,
-    flangeThickness = 0,
-    flangeScrewPosition = 0,
-    flangeScrewBorder = 0,
-    flangeScrewCount = 0,
-    flangeScrewDiameter = 0,
+    con =[],
+    connectorPos = 1,
     transitionAngle = 0,
-    nozzleShape = "square",
-    nozzleSize = [20,10,50],
-    nozzleTipWallThickness = 0,
-    nozzleRadius = 5,
-    nozzleOffset = [0,0],
-    nozzleChamferPercentage = 0,
-    nozzleChamferAngle = 0,
-    adapterColor = ["blue",1],
     debug = false,
     showCaliper=false,
     help
 ){
-  assert(is_list(adapterColor), "adapterColor must be a list")
-  assert(len(adapterColor) == 2, "adapterColor be length 2")
+  assert(is_list(con), "con must be a list")
+  assert(is_num(con[iLength]), "length must be a number");
+  assert(is_num(con[iStopLength]), "stopLength must be a number");
+  assert(is_list(con[iAdapterColor]), "adapterColor must be a list")
+  assert(len(con[iAdapterColor]) == 2, "adapterColor be length 2")
   
   //Create the start connector
-  if(length > 0)
+  if(con[iLength] > 0)
   {
     difference()
     {
-      color(adapterColor[0], adapterColor[1])
-      rotate([0,0,rotation])
+      color(con[iAdapterColor][0], con[iAdapterColor][1])
+      rotate([0,0,con[iRotation]])
       union(){
-        if(style == "mag")
+        if(con[iStyle] == "mag")
         {
-          translate([0, 0, length+stopLength])
+          translate([0, 0, con[iLength]+con[iStopLength]])
           mirror ([0,0,1])
           MagneticConnector(
-              innerStartDiameter = innerStartDiameter,
-              innerEndDiameter = innerEndDiameter,
-              length = length,
-              wallThickness = wallThickness,
-              magnetDiameter = magnetDiameter,
-              magnetThickness = magnetThickness,
-              magnetBorder = magnetBorder,
-              flangeThickness = magnetFlangeThickness,
-              magnetCount = magnetCount,
-              alignmentRing = alignmentRing,
-              alignmentDepth = alignmentDepth,
-              alignmentUpperWidth = alignmentUpperWidth,
-              alignmentLowerWidth = alignmentLowerWidth,
-              alignmentSideClearance = alignmentSideClearance,
-              alignmentDepthClearance = alignmentDepthClearance,
-              twistLockSize = magnetTwistLockSize);
+              innerStartDiameter = con[iInnerStartDiameter],
+              innerEndDiameter = con[iInnerEndDiameter],
+              length = con[iLength],
+              wallThickness = con[iWallThickness],
+              magnetDiameter = con[iMagnetDiameter],
+              magnetThickness = con[iMagnetThickness],
+              magnetBorder = con[iMagnetBorder],
+              flangeThickness = con[iMagnetFlangeThickness],
+              magnetCount = con[iMagnetCount],
+              alignmentRing = con[iAlignmentRing],
+              alignmentDepth = con[iAlignmentDepth],
+              alignmentUpperWidth = con[iAlignmentUpperWidth],
+              alignmentLowerWidth = con[iAlignmentLowerWidth],
+              alignmentSideClearance = con[iAlignmentSideClearance],
+              alignmentDepthClearance = con[iAlignmentDepthClearance],
+              twistLockSize = con[iMagnetTwistLockSize],
+              $fn = $fn);
         }
-        else if(style == "flange")
+        else if(con[iStyle] == "flange")
         {
-          translate([0, 0, length+stopLength])
+          translate([0, 0, con[iLength]+con[iStopLength]])
           mirror ([0,0,1])
           FlangeConnector(
-            innerStartDiameter = innerStartDiameter,
-            innerEndDiameter = innerEndDiameter,
-            length = length,
-            wallThickness = wallThickness,
-            flangeThickness = flangeThickness,
-            flangeWidth = flangeWidth,
-            screwPosition = flangeScrewPosition,
-            screwBorder = flangeScrewBorder,
-            screwCount = flangeScrewCount,
-            screwDiameter = flangeScrewDiameter,
-            help = help);
+            innerStartDiameter = con[iInnerStartDiameter],
+            innerEndDiameter = con[iInnerEndDiameter],
+            length = con[iLength],
+            wallThickness = con[iWallThickness],
+            flangeThickness = con[iFlangeThickness],
+            flangeWidth = con[iFlangeWidth],
+            screwPosition = con[iFlangeScrewPosition],
+            screwBorder = con[iFlangeScrewBorder],
+            screwCount = con[iFlangeScrewCount],
+            screwDiameter = con[iFlangeScrewDiameter],
+            help = help,
+            $fn = $fn);
         }
 
-        else if(style == "hose")
+        else if(con[iStyle] == "hose")
         {
-          translate([0, 0, length+stopLength])
+          translate([0, 0, con[iLength]+con[iStopLength]])
           mirror ([0,0,1])
           HoseConnector(
-            innerStartDiameter = innerStartDiameter,
-            innerEndDiameter = innerEndDiameter,
-            connectorMeasurement = measurement,
-            length = length,
-            wallThickness = wallThickness,
-            stopLength = stopLength,
-            stopWidth = stopThickness,
-            stopSymmetrical = stopSymmetrical,
-            barbsCount  = barbsCount,
-            barbsThickness = barbsThickness,
-            barbsSymmetrical = barbsSymmetrical,
-            endCapDiameter = endCapDiameter,
-            endCapThickness = endCapThickness,
-            endCapGridSize = endCapGridSize,
-            endCapGridWallThickness = endCapGridWallThickness,
-            help = help);
+            innerStartDiameter = con[iInnerStartDiameter],
+            innerEndDiameter = con[iInnerEndDiameter],
+            connectorMeasurement = con[iMeasurement],
+            length = con[iLength],
+            wallThickness = con[iWallThickness],
+            stopLength = con[iStopLength],
+            stopWidth = con[iStopThickness],
+            stopSymmetrical = con[iStopSymmetrical],
+            barbsCount  = con[iBarbsCount],
+            barbsThickness = con[iBarbsThickness],
+            barbsSymmetrical = con[iBarbsSymmetrical],
+            endCapDiameter = con[iEndCapDiameter],
+            endCapThickness = con[iEndCapThickness],
+            endCapGridSize = con[iEndCapGridSize],
+            endCapGridWallThickness = con[iEndCapGridWallThickness],
+            help = help,
+            $fn = $fn);
         }
-        else if(style == "dyson")
+        else if(con[iStyle] == "dyson")
         {
-          translate([0, 0, length+stopLength])
+          translate([0, 0, con[iLength]+con[iStopLength]])
           mirror ([0,0,1])
           DysonConnector(
-            innerEndDiameter = innerEndDiameter,
-            length = length,
-            wallThickness = wallThickness,
-            IncludeOrientationClip = true);
+            innerEndDiameter = con[iInnerEndDiameter],
+            length = con[iLength],
+            wallThickness = con[iWallThickness],
+            IncludeOrientationClip = true,
+            $fn = $fn);
         }
-        else if(style == "camlock")
+        else if(con[iStyle] == "camlock")
         {
-          translate([0, 0, length+stopLength])
+          translate([0, 0, con[iLength]+con[iStopLength]])
           mirror ([0,0,1])
           CamlockConnector(
-            innerEndDiameter = innerEndDiameter,
-            length = length,
-            wallThickness = wallThickness);
+            innerEndDiameter = con[iInnerEndDiameter],
+            length = con[iLength],
+            wallThickness = con[iWallThickness],
+            $fn = $fn);
         }
-        else if(style == "dw735")
+        else if(con[iStyle] == "dw735")
         {
-          translate([0, 0, length+stopLength])
+          translate([0, 0, con[iLength]+con[iStopLength]])
           mirror ([0,0,1])
           Dw735Connector(
-            innerEndDiameter = innerEndDiameter,
-            length = length,
-            wallThickness = wallThickness,
-            connectorCount = transitionAngle > 0 ? 6 : 1);
+            innerEndDiameter = con[iInnerEndDiameter],
+            length = con[iLength],
+            wallThickness = con[iWallThickness],
+            connectorCount = transitionAngle > 0 ? 6 : 1,
+            $fn = $fn);
         }
-        else if(style == "centec")
+        else if(con[iStyle] == "centec_female")
         {
-          translate([0, 0, length+stopLength])
+          translate([0, 0, con[iLength]+con[iStopLength]])
           mirror ([0,0,1])
-          CenTecConnector();
+          CenTecFemaleConnector($fn = $fn);
         }
-        else if(style == "nozzle")
+        else if(con[iStyle] == "centec_male")
+        {
+          translate([0, 0, con[iLength]+con[iStopLength]])
+          mirror ([0,0,1])
+          CenTecMaleConnector($fn = $fn);
+        }
+        else if(con[iStyle] == "osvacm" || con[iStyle] == "osvacm32")
+        {
+          translate([0, 0, con[iLength]+con[iStopLength]])
+          mirror ([0,0,1])
+          osVacMaleConnector(
+          innerDiameter = con[iInnerEndDiameter],
+          length = con[iLength],
+          help = help,
+          $fn = $fn);
+        }
+        else if(con[iStyle] == "osvacf" || con[iStyle] == "osvacf32")
+        {
+          translate([0, 0, con[iLength]+con[iStopLength]])
+          mirror ([0,0,1])
+          osVacFemaleConnector(
+          innerDiameter = con[iInnerEndDiameter],
+          length = con[iLength],
+          help = help,
+          $fn = $fn);
+        }
+        else if(con[iStyle] == "nozzle")
         {
           Nozzle(
-            innerStartDiameter = innerStartDiameter,
-            length = length,
-            wallThickness = wallThickness,
-            nozzleShape = nozzleShape,
-            nozzleSize = nozzleSize,
-            nozzleTipWallThickness = nozzleTipWallThickness,
-            nozzleRadius = nozzleRadius,
-            nozzleOffset = nozzleOffset,
-            nozzleChamferPercentage = nozzleChamferPercentage,
-            nozzleChamferAngle = nozzleChamferAngle,
-            help = help);
-        } else if(style == "none"){
-        }
+            innerStartDiameter = con[iInnerStartDiameter],
+            length = con[iLength],
+            wallThickness = con[iWallThickness],
+            nozzleShape = con[iNozzleShape],
+            nozzleSize = con[iNozzleSize],
+            nozzleTipWallThickness = con[iNozzleTipWallThickness],
+            nozzleRadius = con[iNozzleRadius],
+            nozzleOffset = con[iNozzleOffset],
+            nozzleChamferPercentage = con[iNozzleChamferPercentage],
+            nozzleChamferAngle = con[iNozzleChamferAngle],
+            help = help,
+            $fn = $fn);
+        } else if(con[iStyle] == "none"){ }
         else {
-         assert(false, str("style not supported style: ", style));
+         assert(false, str("style not supported style: ", con[iStyle]));
         }
       }
-      if($preview&&debug){
-        cubeSziex = max(innerStartDiameter,innerEndDiameter)*2;
-        cubeSziey = max(innerStartDiameter,innerEndDiameter)*1.5;
-        cubeSziez = length+stopLength+fudgeFactor*4
-          +(style == "nozzle"? nozzleSize.z+fudgeFactor : 0)
-          +(style == "mag"? alignmentDepth: 0);
+      if($preview&&debug&&con[iStyle]!="none"){
+        cubeSziex = max(con[iInnerStartDiameter],con[iInnerEndDiameter])*2;
+        cubeSziey = max(con[iInnerStartDiameter],con[iInnerEndDiameter])*1.5;
+        cubeSziez = con[iLength]+con[iStopLength]+fudgeFactor*4
+          +(con[iStyle] == "nozzle"? con[iNozzleSize].z+fudgeFactor : 0)
+          +(con[iStyle] == "mag"? con[iAlignmentDepth]: 0);
         translate([-cubeSziex/2, -cubeSziey, -fudgeFactor*2])
         cube([cubeSziex,cubeSziey,cubeSziez]);
       }
     } 
   }
 
-  if($preview&&showCaliper){
+  if($preview&&showCaliper&&con[iStyle]!="none"){
     color("Gold")
-    translate([0, 0, length+stopLength])
+    translate([0, 0, con[iLength]+con[iStopLength]])
     mirror ([0,0,1])
-    mirror (connector == 2 ? [1,0,0] : [0,0,0])
+    mirror (connectorPos == 1 ? [0,0,0] : [1,0,0])
     union(){
-      endStyle = measurement == "inner" ? 3 : 4;
-      addwidth = measurement == "outer" ? wallThickness*2 : 0;
-      translate(style == "nozzle" ? [0,0,length] :[0,0,length/2])
+      endStyle = con[iMeasurement] == "inner" ? 3 : 4;
+      addwidth = con[iMeasurement] == "outer" ? con[iWallThickness]*2 : 0;
+      translate(con[iStyle] == "nozzle" ? [0,0,con[iLength]] :[0,0,con[iLength]/2])
       rotate([90,0,0])
        Caliper(messpunkt = false, help=0, size = 7,h = 0.1,
-          l=innerDiameter + addwidth, 
+          l=con[iInnerDiameter] + addwidth, 
           end=endStyle, 
-          in=connector == 1 ? 1 : 0, 
-          txt2 = str("con", connector, " ", measurement));
-      if(innerDiameter != innerStartDiameter){
+          in=connectorPos == 1 ? 1 : 0, 
+          txt2 = str("con", con[iConnector], " ", con[iMeasurement]));
+      if(con[iInnerDiameter] != con[iInnerStartDiameter]){
         translate([0,0,0])
         rotate([90,0,0])
         Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
-            l=innerStartDiameter + addwidth, 
+            l=con[iInnerStartDiameter] + addwidth, 
             end=endStyle, 
-            in=connector == 1 ? 1 : 0,
-            txt2 = str("con", connector, " start ", measurement));
+            in=connectorPos == 1 ? 1 : 0,
+            txt2 = str("con", con[iConnector], " start ", con[iMeasurement]));
       }
-      if(innerDiameter != innerEndDiameter){
-        translate([0,0,length])
+      if(con[iInnerDiameter] != con[iInnerEndDiameter]){
+        translate([0,0,con[iLength]])
         rotate([90,0,0])
         Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
-            l=innerEndDiameter + addwidth, 
+            l=con[iInnerEndDiameter] + addwidth, 
             end=3, 
-            in=connector == 1 ? 1 : 0,
-            txt2 = str("con", connector, " end ", measurement));     
+            in=connectorPos == 1 ? 1 : 0,
+            txt2 = str("con", con[iConnector], " end ", con[iMeasurement]));     
       }
       
-      barWidth = wallThickness*8;
-      position = innerDiameter/2 + wallThickness*2;
-      translate([(connector == 1 ? position  : -position), 0, length/2])
+      barWidth = con[iWallThickness]*8;
+      position = con[iInnerDiameter]/2 + con[iWallThickness]*2;
+      translate([(connectorPos == 1 ? position  : -position), 0, con[iLength]/2])
       rotate([90,0,0])
       Caliper(messpunkt = false, help=0, h = 0.1,
             center=true,
-            l=length,
+            l=con[iLength],
             cx= 0,
             end=0, 
             size = 8,
-            in=connector == 1 ? 2 : 3,
-            translate= connector == 1 ? [15,0,0] : [-15,0,0],
-            txt2 = str("con", connector, " length"));
+            in=connectorPos == 1 ? 2 : 3,
+            translate= connectorPos == 1 ? [15,0,0] : [-15,0,0],
+            txt2 = str("con", con[iConnector], " length"));
         
-      if(style == "nozzle")
+      if(con[iStyle] == "nozzle")
       {
-        translate([(connector == 1 ? position  : -position), 0,-nozzleSize.z/2])
+        translate([(connectorPos == 1 ? position  : -position), 0,-con[iNozzleSize].z/2])
         rotate([90,0,0])
         Caliper(messpunkt = false, help=0, h = 0.1,
-              l=nozzleSize.z,
+              l=con[iNozzleSize].z,
               cx= 0,
               end=0, 
               size = 8,
-              in=connector == 1 ? 2 : 3,
-              translate= connector == 1 ? [15,0,0] : [-15,0,0],
-              txt2 = str("nozzle ", connector, " length"));
+              in=connectorPos == 1 ? 2 : 3,
+              translate= connectorPos == 1 ? [15,0,0] : [-15,0,0],
+              txt2 = str("nozzle ", con[iConnector], " length"));
       }     
     }
   }
   HelpTxt("adapter",[
-    "connector", connector,
-    "wallThickness", wallThickness,
-    "style", style,
-    "measurement", measurement,
-    "innerDiameter", innerDiameter,
-    "innerStartDiameter", innerStartDiameter,
-    "innerEndDiameter", innerEndDiameter,
-    "length", length,
-    "rotation", rotation,
-    "taper", taper,
-    "endCapDiameter", endCapDiameter,
-    "endCapThickness", endCapThickness,
-    "endCapGridSize", endCapGridSize,
-    "endCapGridWallThickness", endCapGridWallThickness,
-    "stopThickness", stopThickness,
-    "stopLength", stopLength,
-    "stopSymmetrical", stopSymmetrical,
-    "barbsCount", barbsCount,
-    "barbsThickness", barbsThickness,
-    "barbsSymmetrical", barbsSymmetrical,
-    "magnetCount", magnetCount,
-    "magnetDiameter", magnetDiameter,
-    "magnetThickness", magnetThickness,
-    "magnetBorder", magnetBorder,
-    "magnetFlangeThickness", magnetFlangeThickness,
-    "alignmentRing", alignmentRing,
-    "alignmentDepth", alignmentDepth,
-    "alignmentUpperWidth", alignmentUpperWidth,
-    "alignmentLowerWidth", alignmentLowerWidth,
-    "alignmentSideClearance", alignmentSideClearance,
-    "alignmentDepthClearance", alignmentDepthClearance,
-    "flangeWidth", flangeWidth,
-    "flangeThickness", flangeThickness,
-    "flangeScrewPosition", flangeScrewPosition,
-    "flangeScrewBorder", flangeScrewBorder,
-    "flangeScrewCount", flangeScrewCount,
-    "flangeScrewDiameter", flangeScrewDiameter,
+    "con", con,
     "transitionAngle", transitionAngle,
-    "nozzleShape", nozzleShape,
-    "nozzleSize", nozzleSize,
-    "nozzleTipWallThickness", nozzleTipWallThickness,
-    "nozzleRadius", nozzleRadius,
-    "nozzleOffset", nozzleOffset,
-    "nozzleChamferPercentage", nozzleChamferPercentage,
-    "nozzleChamferAngle", nozzleChamferAngle,
-    "adapterColor", adapterColor,
     "debug", debug]
+    ,help);
+}
+
+module transitionExtension(
+  connector,
+  innerDiameter = 0,
+  wallThickness = 0,
+  length = 0 ,
+  gridSize = 0,
+  gridWallThickness = 0,
+  transitionColor = ["LightGreen",1],
+  debug = false,
+  showCaliper=false,
+  txt="",
+  txtSize=0,
+  includeHook = 0,
+  help){
+  assert(is_list(transitionColor), "transitionColor must be a list");
+  assert(len(transitionColor) == 2, "transitionColor be length 2");
+  assert(is_num(connector) && (connector ==1 || connector ==2), "connector must be 1 or 2");
+  assert(is_num(innerDiameter), "innerDiameter must be a number");
+  assert(is_num(wallThickness), "wallThickness must be a number");
+  assert(is_num(length), "length must be a number");
+  assert(is_num(gridSize), "gridSize must be a number");
+  assert(is_num(gridWallThickness), "gridWallThickness must be a number");
+
+  //gridWallThickness, -1 use wall thickness
+  gridWallThickness = gridWallThickness < 0 
+    ? min(wallThickness, length)
+    : min(gridWallThickness, length);
+    
+  //gridWallThickness == 0 will disable grid
+  gridSize = gridWallThickness <= 0 
+    ? 0 
+    : gridSize <=0 
+      ? innerDiameter/6 - gridWallThickness
+      : gridSize;
+  
+  if(length > 0)
+  {
+    difference(){
+      color(transitionColor[0], transitionColor[1])
+      union(){
+      HoseConnector(
+        innerStartDiameter = innerDiameter,
+        innerEndDiameter = innerDiameter,
+        connectorMeasurement = "inner",
+        length,
+        endCapThickness = gridWallThickness,
+        wallThickness = wallThickness,
+        endCapGridSize = gridSize,
+        endCapGridWallThickness = gridWallThickness,
+        help);
+        
+        if(includeHook == 1){
+          hootLength = min(15, length);
+          hookSize = wallThickness*2;
+          intersection(){ 
+            difference(){
+              Stopper(
+                diameter = (innerDiameter+wallThickness),
+                outer = (innerDiameter+wallThickness*2)+hookSize*2,
+                totalLength = hootLength,
+                taper1 = 0.25,
+                taper2 = 0.25,
+                wallThickness = wallThickness/2,
+                stopThickness = hookSize);
+
+              translate([0,0,wallThickness])
+              Stopper(
+                diameter = (innerDiameter-wallThickness),
+                outer = (innerDiameter+wallThickness),
+                totalLength = hootLength-wallThickness*2,
+                taper1 = 0.3,
+                taper2 = 0.3,
+                wallThickness = wallThickness/2,
+                stopThickness = hookSize);
+              }
+              
+              cubeSize = [innerDiameter+hookSize,5,hootLength];
+              translate([-cubeSize.x,-cubeSize.y/2,0])
+              cube([innerDiameter+hookSize,cubeSize.y,cubeSize.z]);
+          }
+        /*
+          difference(){
+            cylinder(h=length, d=(innerDiameter+wallThickness*2)+hookSize);
+            translate([0,0,-fudgeFactor])
+            cylinder(h=length+fudgeFactor*2, d=(innerDiameter+wallThickness));
+          }*/
+        }
+      }
+      if($preview&&debug){
+        cubeSize = [innerDiameter*2,innerDiameter*1.5, length+fudgeFactor*4];
+        translate([-cubeSize.x/2, (connector == 1 ? -cubeSize.y : 0), -fudgeFactor*2])
+        cube(cubeSize);
+      }
+      
+      if(is_string(txt) && len(txt) > 0){
+        textExtrude = min(wallThickness,1);
+        border = length * .2; //border above and below the text
+        translate([0,0,border])
+        RoundText(
+          textvalue = txt,
+          font = "Liberation:style=Bold",
+          fontSize = txtSize > 0 ? txtSize : length-border*2,
+          radius = innerDiameter/2+wallThickness - textExtrude/2,
+          textExtrude = textExtrude,
+          forceRound = true,
+          center = true,
+          $fn=64);
+      }  
+    }
+
+    if($preview&&showCaliper){
+    /*render on left side
+      color("Gold")
+      translate(connector == 1 ? [0, 0, length] : [0, 0, length] )
+      mirror(connector == 1 ? [0,0,1] : [0,0,1])
+      rotate(connector == 1 ? [0,0,180] : [0,0,0])
+      union(){
+        barWidth = wallThickness*8;
+        position = innerDiameter/2 + wallThickness*2;
+        translate([(connector == 1 ? position  : -position), 0, length/2])
+        rotate([90,0,0])
+        Caliper(messpunkt = false, help=0, h = 0.1,
+              center=true,
+              l=length,
+              cx= -1,
+              end=0, 
+              size = 8,
+              in=connector == 1 ? 3 : 2,
+              translate= connector == 1 ? [15,0,0] : [-15,0,0],
+              txt2 = str("Extension ", connector, " length"));
+      }
+    }
+    */
+      color("Aquamarine")
+      translate(connector == 1 ? [0, 0, 0] : [0, 0, 0] )
+      mirror(connector == 1 ? [0,0,0] : [0,0,0])
+      rotate(connector == 1 ? [0,0,0] : [0,0,180])
+      union(){
+        barWidth = wallThickness*8;
+        position = innerDiameter/2 + wallThickness*2;
+        translate([(connector == 1 ? position  : -position), 0, length/2])
+        rotate([90,0,0])
+        Caliper(messpunkt = false, help=0, h = 0.1,
+              center=true,
+              l=length,
+              cx=0,
+              end=0, 
+              size=6,
+              in=connector == 1 ? 2 : 3,
+              translate= connector == 1 ? [15,0,0] : [-15,0,0],
+              txt2 = str("Extension ", connector, " length"));
+      }
+    }
+  }
+  HelpTxt("transitionExtension",[
+    "innerDiameter", innerDiameter,
+    "wallThickness", wallThickness,
+    "length", length,
+    "gridSize", gridSize,
+    "gridWallThickness", gridWallThickness,
+    "transitionColor", transitionColor,
+    "debug", debug,
+    "showCaliper", showCaliper]
     ,help);
 }
 
@@ -17019,8 +18178,10 @@ module transition(
   length,
   connector1InnerEndDiameter,
   connector2InnerStartDiameter,
+  connector3InnerStartDiameter,
   connector1WallThickness,
   connector2WallThickness,
+  connector3WallThickness,
   thickness,
   bendRadius,
   angle,
@@ -17083,8 +18244,10 @@ module transition(
         BentPipeHull(
             inner1PipeRadius = connector1InnerEndDiameter/2,
             inner2PipeRadius = connector2InnerStartDiameter/2,
+            inner3PipeRadius = connector3InnerStartDiameter/2,
             end1WallThickness = connector1WallThickness,
             end2WallThickness = connector2WallThickness,
+            end3WallThickness = connector3WallThickness,
             pipeAngle = angle,
             end2Count = connector2Count,
             lengthInHull = lengthInHull,
@@ -17183,8 +18346,10 @@ module transition(
     "length", length,
     "connector1InnerEndDiameter", connector1InnerEndDiameter,
     "connector2InnerStartDiameter", connector2InnerStartDiameter,
+    "connector3InnerStartDiameter", connector3InnerStartDiameter,
     "connector1WallThickness", connector1WallThickness,
     "connector2WallThickness", connector2WallThickness,
+    "connector3WallThickness", connector3WallThickness,
     "thickness", thickness,
     "bendRadius", bendRadius,
     "angle", angle,
@@ -17222,6 +18387,8 @@ module HoseAdapter(
   connector1Taper = End1_Taper,
   connector1EndCapDiameter  = End1_Hose_EndCap_Diameter,
   connector1EndCapThickness = End1_Hose_EndCap_Thickness,
+  connector1EndCapGridSize  = End1_Hose_EndCap_GridSize,
+  connector1EndCapGridWallThickness = End1_Hose_EndCap_GridWallThickness,
   connector1StopThickness = End1_StopThickness,
   connector1StopLength = End1_StopLength,
   connector1StopSymmetrical = End1_Stop_Symmetrical,
@@ -17243,6 +18410,12 @@ module HoseAdapter(
   connector1FlangeScrewBorder = End1_Flange_Screw_Border,
   connector1FlangeScrewCount = End1_Flange_Screw_Count,
   connector1FlangeScrewDiameter = End1_Flange_Screw_Diameter,
+
+  connector1ExtensionLength = End1_Extension_Length,
+  connector1ExtensionGridSize = End1_Extension_GridSize,
+  connector1ExtensionGridWallThickness = End1_Extension_GridWallThickness,
+  connector1ExtensionText = End1_Extension_Text,
+  connector1ExtensionTextSize=End1_Extension_Text_Size,
 
   transitionStyle = Transition_Style,
   transitionLength = Transition_Length,
@@ -17301,62 +18474,242 @@ module HoseAdapter(
   connector2NozzleOffset = End2_Nozzle_Offset,
   connector2NozzleChamferPercentage = End2_Nozzle_Chamfer_Percentage,
   connector2NozzleChamferAngle = End2_Nozzle_Chamfer_Angle,
+  
+  connector2ExtensionLength = End2_Extension_Length,
+  connector2ExtensionGridSize = End2_Extension_GridSize,
+  connector2ExtensionGridWallThickness = End2_Extension_GridWallThickness,
+  connector2ExtensionText = End2_Extension_Text,
+  connector2ExtensionTextSize=End2_Extension_Text_Size,
+  
+  connector3Style = End3_Style,
+  connector3WallThickness  = End3_Wall_Thickness,
+  connector3Measurement = End3_Measurement,
+  connector3Diameter = End3_Diameter,
+  connector3Length = End3_Length,
+  connector3Rotation = End3_Rotation,
+  connector3Taper = End3_Taper,
+  connector3EndCapDiameter  = End3_Hose_EndCap_Diameter,
+  connector3EndCapThickness = End3_Hose_EndCap_Thickness,
+  connector3EndCapGridSize  = End3_Hose_EndCap_GridSize,
+  connector3EndCapGridWallThickness = End3_Hose_EndCap_GridWallThickness,
+  connector3StopThickness = End3_StopThickness,
+  connector3StopLength = End3_StopLength,
+  connector3StopSymmetrical = End3_Stop_Symmetrical,
+  connector3BarbsCount = End3_Barbs_Count,
+  connector3BarbsThickness = End3_Barbs_Thickness,
+  connector3BarbsSymmetrical = End3_Barbs_Symmetrical,
+
+  connector3MagnetCount = End3_Magnets_Count,
+  connector3MagnetDiameter = End3_Magnet_Diameter,
+  connector3MagnetThickness = End3_Magnet_Thickness,
+  connector3MagnetBorder = End3_Magnet_Border,
+  connector3MagnetFlangeThickness = End3_Magnet_Flange_Thickness,
+  connector3MagnetTwistLockSize = End3_Magnet_Twist_Lock_Size,
+  connector3Ring = End3_Ring,
+
+  connector3FlangeWidth = End3_Flange_Width,
+  connector3FlangeThickness = End3_Flange_Thickness,
+  connector3FlangeScrewPosition = End3_Flange_Screw_Position,
+  connector3FlangeScrewBorder = End3_Flange_Screw_Border,
+  connector3FlangeScrewCount = End3_Flange_Screw_Count,
+  connector3FlangeScrewDiameter = End3_Flange_Screw_Diameter,
+  
+  connector3NozzleShape = End3_Nozzle_Shape,
+  connector3NozzleSize = End3_Nozzle_Size,
+  connector3NozzleTipWallThickness = End3_Nozzle_Tip_Wall_Thickness,
+  connector3NozzleRadius = End3_Nozzle_Radius,
+  connector3NozzleOffset = End3_Nozzle_Offset,
+  connector3NozzleChamferPercentage = End3_Nozzle_Chamfer_Percentage,
+  connector3NozzleChamferAngle = End3_Nozzle_Chamfer_Angle,
+  
+  connector3ExtensionLength = End3_Extension_Length,
+  connector3ExtensionGridSize = End3_Extension_GridSize,
+  connector3ExtensionGridWallThickness = End3_Extension_GridWallThickness,
+  connector3ExtensionText = End3_Extension_Text,
+  connector3ExtensionTextSize=End3_Extension_Text_Size,
+  
   sliceDebug = Enable_Debug_Slice,
   showCaliper = Enable_Calipers_Slice,
   end1Color = End1_Color,
   end2Color = End2_Color,
+  end3Color = End3_Color,
   transitionColor = Transition_Color,
+  extensionColor = Extension_Color,
   help = Enable_Help
 ){
   assert(is_num(connector1Length), "connector1Length must be a number");
   
   $gha=[["connector1",[0,0,0]],["connector2",[0,0,0]],["trasnition",[0,0,0]]];
+
+  end1 = getConnectorSettings(
+    connector=1,
+    style=connector1Style, 
+    wallThickness=connector1WallThickness, 
+    measurement=connector1Measurement, 
+    diameter=connector1Diameter, 
+    length=connector1Length, 
+    rotation=connector1Rotation,
+    taper=connector1Taper, 
+    endCapDiameter=connector1EndCapDiameter,
+    endCapThickness=connector1EndCapThickness,
+    endCapGridSize=connector1EndCapGridSize,
+    endCapGridWallThickness=connector1EndCapGridWallThickness,
+    stopThickness=connector1StopThickness,
+    stopLength=connector1StopLength,
+    stopSymmetrical=connector1StopSymmetrical,
+    barbsCount=connector1BarbsCount,
+    barbsThickness=connector1BarbsThickness,
+    barbsSymmetrical=connector1BarbsSymmetrical,
+    magnetCount=connector1MagnetCount,
+    magnetDiameter=connector1MagnetDiameter,
+    magnetThickness=connector1MagnetThickness,
+    magnetBorder=connector1MagnetBorder,
+    magnetFlangeThickness=connector1MagnetFlangeThickness,
+    magnetTwistLockSize=connector1MagnetTwistLockSize,
+    alignmentRing=connector1Ring,
+    alignmentDepth=alignmentDepth,
+    alignmentUpperWidth=alignmentUpperWidth,
+    alignmentLowerWidth=alignmentLowerWidth,
+    alignmentSideClearance=alignmentSideClearance,
+    alignmentDepthClearance=alignmentDepthClearance,
+    flangeWidth=connector1FlangeWidth,
+    flangeThickness=connector1FlangeThickness,
+    flangeScrewPosition=connector1FlangeScrewPosition,
+    flangeScrewBorder=connector1FlangeScrewBorder,
+    flangeScrewCount=connector1FlangeScrewCount,
+    flangeScrewDiameter=connector1FlangeScrewDiameter,
+    //nozzleShape=connector1NozzleShape,
+    //nozzleSize=connector1NozzleSize,
+    //nozzleTipWallThickness=connector1NozzleTipWallThickness,
+    //nozzleRadius=connector1NozzleRadius,
+    //nozzleOffset=connector1NozzleOffset,
+    //nozzleChamferPercentage=connector1NozzleChamferPercentage,
+    //nozzleChamferAngle=connector1NozzleChamferAngle,
+    extensionLength=connector1ExtensionLength,
+    extensionGridSize=connector1ExtensionGridSize,
+    extensionGridWallThickness=connector1ExtensionGridWallThickness,
+    extensionText=connector1ExtensionText,
+    extensionTextSize=connector1ExtensionTextSize,
+    adapterColor = getColor(end1Color, DefaultEnd1Color),
+    con1Measurement=connector1Measurement, 
+    con1Diameter=connector1Diameter, 
+    con1WallThickness=connector1WallThickness);
   
-  //Apply defauls and overrides
-  connector1Measurement = retriveConnectorSetting(connector1Style, iSettingsMeasurement, connector1Measurement);
-  connector1Diameter = retriveConnectorSetting(connector1Style, iSettingsDiameter, connector1Diameter);
-  connector1WallThickness = retriveConnectorSetting(connector1Style, iSettingsWallThickness, connector1WallThickness);
-  connector1Length = retriveConnectorSetting(connector1Style, iSettingsLength, connector1Length);
-  connector1Taper = retriveConnectorSetting(connector1Style, iSettingsTaper, connector1Taper);
-    
-  connector2Measurement = retriveConnectorSetting(connector2Style, iSettingsMeasurement, connector2Measurement);
-  connector2Diameter = let(d2 = retriveConnectorSetting(connector2Style, iSettingsDiameter, connector2Diameter)) 
-    //For nozzle, if the diameter is 0, then set it to the D1, this will look nice.
-    (connector2Style == "nozzle" && d2 == 0) ? connector1Diameter : d2;
-  connector2WallThickness = retriveConnectorSetting(connector2Style, iSettingsWallThickness, connector2WallThickness);
-  connector2Length = retriveConnectorSetting(connector2Style, iSettingsLength, connector2Length);
-  connector2Taper = retriveConnectorSetting(connector2Style, iSettingsTaper, connector2Taper);
-    
-  end1InnerDiameter = 
-    (connector1Measurement == "inner") ? connector1Diameter : 
-    connector1Diameter - connector1WallThickness * 2;
+  end2 = getConnectorSettings(
+    connector=2,
+    style=connector2Style, 
+    wallThickness=connector2WallThickness, 
+    measurement=connector2Measurement, 
+    diameter=connector2Diameter, 
+    length=connector2Length, 
+    rotation=connector2Rotation,
+    taper=connector2Taper, 
+    endCapDiameter=connector2EndCapDiameter,
+    endCapThickness=connector2EndCapThickness,
+    endCapGridSize=connector2EndCapGridSize,
+    endCapGridWallThickness=connector2EndCapGridWallThickness,
+    stopThickness=connector2StopThickness,
+    stopLength=connector2StopLength,
+    stopSymmetrical=connector2StopSymmetrical,
+    barbsCount=connector2BarbsCount,
+    barbsThickness=connector2BarbsThickness,
+    barbsSymmetrical=connector2BarbsSymmetrical,
+    magnetCount=connector2MagnetCount,
+    magnetDiameter=connector2MagnetDiameter,
+    magnetThickness=connector2MagnetThickness,
+    magnetBorder=connector2MagnetBorder,
+    magnetFlangeThickness=connector2MagnetFlangeThickness,
+    magnetTwistLockSize=connector2MagnetTwistLockSize,
+    alignmentRing=connector2Ring,
+    alignmentDepth=alignmentDepth,
+    alignmentUpperWidth=alignmentUpperWidth,
+    alignmentLowerWidth=alignmentLowerWidth,
+    alignmentSideClearance=alignmentSideClearance,
+    alignmentDepthClearance=alignmentDepthClearance,
+    flangeWidth=connector2FlangeWidth,
+    flangeThickness=connector2FlangeThickness,
+    flangeScrewPosition=connector2FlangeScrewPosition,
+    flangeScrewBorder=connector2FlangeScrewBorder,
+    flangeScrewCount=connector2FlangeScrewCount,
+    flangeScrewDiameter=connector2FlangeScrewDiameter,
+    nozzleShape=connector2NozzleShape,
+    nozzleSize=connector2NozzleSize,
+    nozzleTipWallThickness=connector2NozzleTipWallThickness,
+    nozzleRadius=connector2NozzleRadius,
+    nozzleOffset=connector2NozzleOffset,
+    nozzleChamferPercentage=connector2NozzleChamferPercentage,
+    nozzleChamferAngle=connector2NozzleChamferAngle,
+    extensionLength=connector2ExtensionLength,
+    extensionGridSize=connector2ExtensionGridSize,
+    extensionGridWallThickness=connector2ExtensionGridWallThickness,
+    extensionText=connector2ExtensionText,
+    extensionTextSize=connector2ExtensionTextSize,
+    adapterColor = getColor(end2Color, DefaultEnd2Color),
+    con1Measurement=end1[iMeasurement], 
+    con1Diameter=end1[iDiameter], 
+    con1WallThickness=end1[iWallThickness]);
+
+  end3 = getConnectorSettings(
+    connector=3,
+    style=connector3Style, 
+    wallThickness=connector3WallThickness, 
+    measurement=connector3Measurement, 
+    diameter=connector3Diameter, 
+    length=connector3Length, 
+    rotation=connector3Rotation,
+    taper=connector3Taper, 
+    endCapDiameter=connector3EndCapDiameter,
+    endCapThickness=connector3EndCapThickness,
+    endCapGridSize=connector3EndCapGridSize,
+    endCapGridWallThickness=connector3EndCapGridWallThickness,
+    stopThickness=connector3StopThickness,
+    stopLength=connector3StopLength,
+    stopSymmetrical=connector3StopSymmetrical,
+    barbsCount=connector3BarbsCount,
+    barbsThickness=connector3BarbsThickness,
+    barbsSymmetrical=connector3BarbsSymmetrical,
+    magnetCount=connector3MagnetCount,
+    magnetDiameter=connector3MagnetDiameter,
+    magnetThickness=connector3MagnetThickness,
+    magnetBorder=connector3MagnetBorder,
+    magnetFlangeThickness=connector3MagnetFlangeThickness,
+    magnetTwistLockSize=connector3MagnetTwistLockSize,
+    alignmentRing=connector3Ring,
+    alignmentDepth=alignmentDepth,
+    alignmentUpperWidth=alignmentUpperWidth,
+    alignmentLowerWidth=alignmentLowerWidth,
+    alignmentSideClearance=alignmentSideClearance,
+    alignmentDepthClearance=alignmentDepthClearance,
+    flangeWidth=connector3FlangeWidth,
+    flangeThickness=connector3FlangeThickness,
+    flangeScrewPosition=connector3FlangeScrewPosition,
+    flangeScrewBorder=connector3FlangeScrewBorder,
+    flangeScrewCount=connector3FlangeScrewCount,
+    flangeScrewDiameter=connector3FlangeScrewDiameter,
+    nozzleShape=connector3NozzleShape,
+    nozzleSize=connector3NozzleSize,
+    nozzleTipWallThickness=connector3NozzleTipWallThickness,
+    nozzleRadius=connector3NozzleRadius,
+    nozzleOffset=connector3NozzleOffset,
+    nozzleChamferPercentage=connector3NozzleChamferPercentage,
+    nozzleChamferAngle=connector3NozzleChamferAngle,
+    extensionLength=connector3ExtensionLength,
+    extensionGridSize=connector3ExtensionGridSize,
+    extensionGridWallThickness=connector3ExtensionGridWallThickness,
+    extensionText=connector3ExtensionText,
+    extensionTextSize=connector3ExtensionTextSize,
+    adapterColor = getColor(end3Color, DefaultEnd3Color),
+    con1Measurement=end1[iMeasurement], 
+    con1Diameter=end1[iDiameter], 
+    con1WallThickness=end1[iWallThickness]);
+
+  echoConnector("end1", end1, help); 
+  echoConnector("end2", end2, help); 
+  echoConnector("end3", end3, transitionHullCenter == "end3" ? help : false); 
   
-  end2InnerDiameter = connector2Measurement == "inner" ? connector2Diameter : connector2Diameter - connector2WallThickness * 2;
-
-  //Apply taper, from small to big
-  end1InnerStartDiameter = end1InnerDiameter - connector1Taper / 2;
-  end1OuterStartDiameter = end1InnerStartDiameter + connector1WallThickness*2;
-  end1InnerEndDiameter = end1InnerDiameter + connector1Taper / 2;
-  end1OuterEndDiameter = end1InnerEndDiameter + connector1WallThickness*2;
-
-  //Apply taper, from big to small
-  end2InnerStartDiameter = end2InnerDiameter + connector2Taper / 2;
-  end2OuterStartDiameter = end2InnerStartDiameter + connector2WallThickness*2;
-  end2InnerEndDiameter = end2InnerDiameter - connector2Taper / 2;
-  end2OuterEndDiameter = end2InnerEndDiameter + connector2WallThickness*2;
-
-  //If the connector hose is not showm the stop has no thickenss
-  connector1StopThickness = (connector1Length <= 0 || connector1Style == "mag" || connector1Style == "flange") ? 0 : connector1StopThickness;
-  connector2StopThickness = (connector2Length <= 0 || connector2Style == "mag" || connector2Style == "flange") ? 0 : connector2StopThickness;
-
-  //If the stop has no thickness, it needs no length
-  connector1StopLength = (connector1StopThickness > 0 && connector1Style == "hose") ? connector1StopLength : 0;
-  connector2StopLength = (connector2StopThickness > 0 && connector2Style == "hose") ? connector2StopLength : 0;
-
-
   //Transition settings 
   //Total length of connector 1
-      endConnector1 = connector1Length + connector1StopLength;
+  endConnector1 = end1[iLength] + end1[iStopLength];
 
       // transitionLength is not wanted for sweep
       _transitionAngle = (transitionStyle == "flat") ? 0 : transitionAngle;
@@ -17364,27 +18717,29 @@ module HoseAdapter(
       _transitionLength = _transitionStyle == "organicbend" //|| _transitionStyle == "hull"
         ? 0
         : transitionLength == 0
-          ? abs(end1OuterEndDiameter - end2OuterStartDiameter)/2
+          ? max(abs(end1[iOuterEndDiameter] - end2[iOuterStartDiameter])/2, abs(end1[iInnerEndDiameter] - end2[iInnerStartDiameter])/2)
           : transitionLength;
-    
+
       //Calculate the bend radius
       //organicbend, the '0' value must be max of connector 1 or 2 diameter, plus the wall thickness * 2 otherwise it will clip, then add provided radius.
       //transition the '0' value must be end 1 diameter/2 + wall thickenss *2 to prevent clipping, then addd provided radius.
 
-      //((end2InnerStartDiameter + connector1WallThickness)/ sin(_transitionAngle / 2)/2)/ sin(_transitionAngle) + transitionBendRadius
-      taperedAverageDiameter = (max(end1OuterEndDiameter,end2OuterStartDiameter)*2 + min(end1OuterEndDiameter,end2OuterStartDiameter))/3;
+      //((end2[iInnerStartDiameter] + connector1WallThickness)/ sin(_transitionAngle / 2)/2)/ sin(_transitionAngle) + transitionBendRadius
+      //For organic bend only
+      taperedAverageDiameter = (max(end1[iOuterEndDiameter],end2[iOuterStartDiameter])*2 + min(end1[iOuterEndDiameter],end2[iOuterStartDiameter]))/3;
 
-      hoseSpacer = connector2WallThickness;
-      shapeOverlap = ((end1OuterEndDiameter/2-hoseSpacer)-(cos(_transitionAngle)*end2OuterStartDiameter))/sin(_transitionAngle);
+      hoseSpacer = end2[iWallThickness];
+      shapeOverlap = ((end1[iOuterEndDiameter]/2-hoseSpacer)-(cos(_transitionAngle)*end2[iOuterStartDiameter]))/sin(_transitionAngle);
       lengthInHull = _transitionStyle == "hull"
         ? (shapeOverlap > 0 ? 0 : shapeOverlap * -1) + _transitionLength
         : 0;
       transitionCenterHeight = transitionHullCenterHeight == 0 ? lengthInHull * 2 : transitionHullCenterHeight;
   
+      //Push end horizontially out from verticle center line 
       edgeOffset = _transitionStyle == "hull"
         ? (shapeOverlap > 50
-          ? (end1OuterEndDiameter - end2OuterStartDiameter)/2-shapeOverlap/2 + transitionHullyOffset
-          : (end1OuterEndDiameter - end2OuterStartDiameter)/2 + transitionHullyOffset) * cos(_transitionAngle)
+          ? (end1[iOuterEndDiameter] - end2[iOuterStartDiameter])/2-shapeOverlap/2 + transitionHullyOffset
+          : (end1[iOuterEndDiameter] - end2[iOuterStartDiameter])/2 + transitionHullyOffset) * cos(_transitionAngle)
         : 0;
       //end hull settings
       bendRadius = _transitionStyle == "organicbend"
@@ -17393,28 +18748,28 @@ module HoseAdapter(
           : taperedAverageDiameter + transitionBendRadius
         : _transitionStyle == "bend+taper"
           ? transitionEnd2Count > 1
-            ? -(end1OuterEndDiameter/2)/(cos(_transitionAngle)-1)-end1OuterEndDiameter/2 + transitionBendRadius
-            : end1OuterEndDiameter/2 + transitionBendRadius
+            ? -(end1[iOuterEndDiameter]/2)/(cos(_transitionAngle)-1)-end1[iOuterEndDiameter]/2 + transitionBendRadius
+            : end1[iOuterEndDiameter]/2 + transitionBendRadius
           : _transitionStyle == "taper+bend"
             ? transitionEnd2Count > 1
-              ? -(end2OuterStartDiameter/2)/(cos(_transitionAngle)-1)-end2OuterStartDiameter/2 + transitionBendRadius
-              : end2OuterStartDiameter/2 + transitionBendRadius
+              ? -(end2[iOuterStartDiameter]/2)/(cos(_transitionAngle)-1)-end2[iOuterStartDiameter]/2 + transitionBendRadius
+              : end2[iOuterStartDiameter]/2 + transitionBendRadius
             : _transitionStyle == "hull"
               ? 0
               : 0;
-      
+
   if(drawAlignmentRing == "end1" || drawAlignmentRing == "end2")
   {
     adapterAlignmentRing(
       centerDiameter = drawAlignmentRing == "end1" 
-        ? end1InnerStartDiameter + connector1MagnetBorder + alignmentUpperWidth
-        : end2InnerStartDiameter + connector2MagnetBorder + alignmentUpperWidth,
+        ? end1[iInnerStartDiameter] + end1[iMagnetBorder] + alignmentUpperWidth
+        : end2[iInnerStartDiameter] + end2[iMagnetBorder] + alignmentUpperWidth,
       alignmentDepth = alignmentDepth,
       alignmentUpperWidth = alignmentUpperWidth,
       alignmentLowerWidth = alignmentLowerWidth,
       alignmentSideClearance = alignmentSideClearance,
       alignmentDepthClearance = alignmentDepthClearance,
-      magnetBorder = drawAlignmentRing == "end1" ? connector1MagnetBorder : connector2MagnetBorder,
+      magnetBorder = drawAlignmentRing == "end1" ? end1[iMagnetBorder] : end2[iMagnetBorder],
       debug = sliceDebug,
       showCaliper = showCaliper,
       help = help);
@@ -17423,58 +18778,42 @@ module HoseAdapter(
     {
       union() 
       {
-        translate([0, 0, connector1Length+connector1StopLength])
+        //End1
+        translate([0, 0, endConnector1])
         mirror ([0,0,1])
         adapter(
-          connector = 1,
-          wallThickness = connector1WallThickness,
-          style= connector1Style,
-          measurement= connector1Measurement,
-          innerDiameter = end1InnerDiameter,
-          innerStartDiameter = end1InnerStartDiameter,
-          innerEndDiameter = end1InnerEndDiameter,
-          length = connector1Length,
-          rotation = connector1Rotation,
-          endCapDiameter = connector1EndCapDiameter,
-          endCapThickness = connector1EndCapThickness,
-          stopThickness = connector1StopThickness,
-          stopLength = connector1StopLength,
-          stopSymmetrical = connector1StopSymmetrical,
-          barbsCount = connector1BarbsCount,
-          barbsThickness = connector1BarbsThickness,
-          barbsSymmetrical = connector1BarbsSymmetrical,
-          magnetCount = connector1MagnetCount,
-          magnetDiameter = connector1MagnetDiameter,
-          magnetThickness = connector1MagnetThickness,
-          magnetBorder = connector1MagnetBorder,
-          magnetFlangeThickness = connector1MagnetFlangeThickness,
-          magnetTwistLockSize = connector1MagnetTwistLockSize,
-          alignmentRing = connector1Ring,
-          alignmentDepth = alignmentDepth,
-          alignmentUpperWidth = alignmentUpperWidth,
-          alignmentLowerWidth = alignmentLowerWidth,
-          alignmentSideClearance = alignmentSideClearance,
-          alignmentDepthClearance = alignmentDepthClearance,
-          flangeWidth = connector1FlangeWidth,
-          flangeThickness = connector1FlangeThickness,
-          flangeScrewPosition = connector1FlangeScrewPosition,
-          flangeScrewBorder = connector1FlangeScrewBorder,
-          flangeScrewCount = connector1FlangeScrewCount,
-          flangeScrewDiameter = connector1FlangeScrewDiameter,
+          con = end1,
+          connectorPos=1,
           transitionAngle =_transitionAngle,
-          adapterColor = getColor(end1Color, DefaultEnd1Color),
           debug = sliceDebug,
           showCaliper = showCaliper,
           help = help);
            
         translate([0, 0, endConnector1])
+        transitionExtension(
+          connector = 1,
+          innerDiameter = end1[iInnerEndDiameter],
+          wallThickness = end1[iWallThickness],
+          length = end1[iExtensionLength],
+          gridSize = end1[iExtensionGridSize],
+          gridWallThickness = end1[iExtensionGridWallThickness],
+          txt = end1[iExtensionText],
+          txtSize=end1[iExtensionTextSize],
+          transitionColor = getColor(extensionColor, DefaultTransitionColor),
+          debug = sliceDebug,
+          showCaliper = showCaliper,
+          help = help);
+  
+        translate([0, 0, endConnector1 + end1[iExtensionLength]])
         transition(
           style = _transitionStyle,
           length = _transitionLength,
-          connector1InnerEndDiameter = end1InnerEndDiameter,
-          connector2InnerStartDiameter = end2InnerEndDiameter,
-          connector1WallThickness = connector1WallThickness,
-          connector2WallThickness = connector2WallThickness,
+          connector1InnerEndDiameter = end1[iInnerEndDiameter],
+          connector2InnerStartDiameter = end2[iInnerEndDiameter],
+          connector3InnerStartDiameter = getConnector3Setting(transitionHullCenter, end1, end2, end3)[iInnerEndDiameter],
+          connector1WallThickness = end1[iWallThickness],
+          connector2WallThickness = end2[iWallThickness],
+          connector3WallThickness = getConnector3Setting(transitionHullCenter, end1, end2, end3)[iWallThickness],
           bendRadius = bendRadius,
           angle = _transitionAngle,
           baseType = transitionBaseType,
@@ -17487,7 +18826,7 @@ module HoseAdapter(
           hullLength = transitionHullLength,
           hullCenterLength = transitionHullCenterLength,
           edgeOffset = edgeOffset,
-          hullCenter = transitionHullCenter,
+          hullCenter = transitionHullCenter != "disabled",
           centerHeight = transitionCenterHeight,
           Offset = transitionOffset,
           debug = sliceDebug,
@@ -17496,154 +18835,97 @@ module HoseAdapter(
           help = help);
 
         // Create the end connector
-        if(connector2Length > 0)
+        if(end2[iLength] > 0)
         {
-          preRotation = [
+          postRotation = [
             ((_transitionStyle == "taper+bend") ? transitionOffset.x
-              : _transitionStyle == "hull" ? -end1OuterEndDiameter/2
+              : _transitionStyle == "hull" ? -end1[iOuterEndDiameter]/2
               : 0) - bendRadius,
             ((_transitionStyle == "taper+bend") ? transitionOffset.y : 0),
             ((_transitionStyle == "taper+bend" || _transitionStyle == "flat" || _transitionStyle == "none") ? _transitionLength
               : _transitionStyle == "hull" ? 0
-              : 0) + endConnector1];
+              : 0) + endConnector1 + end1[iExtensionLength]];
 
-          postRotation = [
+          preRotation = [
             ((_transitionStyle == "bend+taper") ? transitionOffset.x
-              : _transitionStyle == "hull" ? end1OuterEndDiameter/2-edgeOffset
+              : _transitionStyle == "hull" ? end1[iOuterEndDiameter]/2-edgeOffset
               : 0) + bendRadius,
             ((_transitionStyle == "bend+taper") ? transitionOffset.y : 0),
             ((_transitionStyle == "bend+taper") ? _transitionLength
-              : _transitionStyle == "hull" ? max(transitionHullLength,transitionHullLength)+lengthInHull+connector2WallThickness
+              : _transitionStyle == "hull" ? transitionHullLength+lengthInHull+end2[iWallThickness]
               : 0)];
-          //The max above is a bug.
     
           for (rotation = [0:transitionEnd2Count-1])
           {
             if(sliceDebug == false || rotation ==0)
             rotate([0, 0, rotation*(360/transitionEnd2Count)])
-            translate(preRotation)
-            rotate([0, -_transitionAngle, 0])
             translate(postRotation)
-            adapter(
-              connector = 2,
-              wallThickness = connector2WallThickness,
-              style= connector2Style,
-              measurement= connector2Measurement,
-              innerDiameter = end2InnerDiameter,
-              innerStartDiameter = end2InnerStartDiameter,
-              innerEndDiameter = end2InnerEndDiameter,
-              length = connector2Length,
-              rotation = connector2Rotation,
-              endCapDiameter = connector2EndCapDiameter,
-              endCapThickness = connector2EndCapThickness,
-              endCapGridSize = connector2EndCapGridSize,
-              endCapGridWallThickness = connector2EndCapGridWallThickness,
-              stopThickness = connector2StopThickness,
-              stopLength = connector2StopLength,
-              stopSymmetrical = connector2StopSymmetrical,
-              barbsCount = connector2BarbsCount,
-              barbsThickness = connector2BarbsThickness,
-              barbsSymmetrical = connector2BarbsSymmetrical,
-              magnetCount = connector2MagnetCount,
-              magnetDiameter = connector2MagnetDiameter,
-              magnetThickness = connector2MagnetThickness,
-              magnetBorder = connector2MagnetBorder,
-              magnetFlangeThickness = connector2MagnetFlangeThickness,
-              magnetTwistLockSize = connector2MagnetTwistLockSize,
-              alignmentRing = connector2Ring,
-              alignmentDepth = alignmentDepth,
-              alignmentUpperWidth = alignmentUpperWidth,
-              alignmentLowerWidth = alignmentLowerWidth,
-              alignmentSideClearance = alignmentSideClearance,
-              alignmentDepthClearance = alignmentDepthClearance,
-              flangeWidth = connector2FlangeWidth,
-              flangeThickness = connector2FlangeThickness,
-              flangeScrewPosition = connector2FlangeScrewPosition,
-              flangeScrewBorder = connector2FlangeScrewBorder,
-              flangeScrewCount = connector2FlangeScrewCount,
-              flangeScrewDiameter = connector2FlangeScrewDiameter,
-              nozzleShape = connector2NozzleShape,
-              nozzleSize = connector2NozzleSize,
-              nozzleTipWallThickness = connector2NozzleTipWallThickness,
-              nozzleRadius = connector2NozzleRadius,
-              nozzleOffset = connector2NozzleOffset,
-              nozzleChamferPercentage = connector2NozzleChamferPercentage,
-              nozzleChamferAngle = connector2NozzleChamferAngle,
-              transitionAngle =_transitionAngle,
-              adapterColor = getColor(end2Color, DefaultEnd2Color),
-              debug = sliceDebug,
-              showCaliper = rotation == 0 ? showCaliper : false,
-              help = help);
+            rotate([0, -_transitionAngle, 0])
+            translate(preRotation)
+            union(){
+              translate([0, 0, end2[iExtensionLength]])
+              mirror([0,0,1])
+              mirror([0,1,0])
+              transitionExtension(
+                connector = 2,
+                innerDiameter = end2[iInnerStartDiameter],
+                wallThickness = end2[iWallThickness],
+                length = end2[iExtensionLength],
+                gridSize = end2[iExtensionGridSize],
+                gridWallThickness = end2[iExtensionGridWallThickness],
+                txt = end2[iExtensionText],
+                txtSize=end2[iExtensionTextSize],
+                transitionColor = getColor(extensionColor, DefaultTransitionColor),
+                debug = sliceDebug,
+                showCaliper = showCaliper,
+                help = help);
+                
+              translate([0, 0, end2[iExtensionLength]])
+              adapter(
+                con = end2,
+                connectorPos=2,
+                transitionAngle =_transitionAngle,
+                debug = sliceDebug,
+                showCaliper = rotation == 0 ? showCaliper : false,
+                help = help);
+              }
           }
 
-          if(_transitionStyle == "hull" && transitionHullCenter)
+          if(_transitionStyle == "hull" && transitionHullCenter != "disabled")
           {
-            translate([0, 0, endConnector1+connector2StopLength+transitionCenterHeight+transitionHullCenterLength])
-            adapter(
-              connector = 2,
-              wallThickness = connector2WallThickness,
-              style= connector2Style,
-              measurement= connector2Measurement,
-              innerDiameter = end2InnerDiameter,
-              innerStartDiameter = end2InnerStartDiameter,
-              innerEndDiameter = end2InnerEndDiameter,
-              length = connector2Length,
-              rotation = connector2Rotation,
-              endCapDiameter = connector2EndCapDiameter,
-              endCapThickness = connector2EndCapThickness,
-              endCapGridSize = connector2EndCapGridSize,
-              endCapGridWallThickness = connector2EndCapGridWallThickness,
-              stopThickness = connector2StopThickness,
-              stopLength = connector2StopLength,
-              stopSymmetrical = connector2StopSymmetrical,
-              barbsCount = connector2BarbsCount,
-              barbsThickness = connector2BarbsThickness,
-              barbsSymmetrical = connector2BarbsSymmetrical,
-              magnetCount = connector2MagnetCount,
-              magnetDiameter = connector2MagnetDiameter,
-              magnetThickness = connector2MagnetThickness,
-              magnetBorder = connector2MagnetBorder,
-              magnetFlangeThickness = connector2MagnetFlangeThickness,
-              magnetTwistLockSize = connector2MagnetTwistLockSize,
-              alignmentRing = connector1Ring,
-              alignmentDepth = alignmentDepth,
-              alignmentUpperWidth = alignmentUpperWidth,
-              alignmentLowerWidth = alignmentLowerWidth,
-              alignmentSideClearance = alignmentSideClearance,
-              alignmentDepthClearance = alignmentDepthClearance,
-              flangeWidth = connector2FlangeWidth,
-              flangeThickness = connector2FlangeThickness,
-              flangeScrewPosition = connector2FlangeScrewPosition,
-              flangeScrewBorder = connector2FlangeScrewBorder,
-              flangeScrewCount = connector2FlangeScrewCount,
-              flangeScrewDiameter = connector2FlangeScrewDiameter,
-              nozzleShape = connector2NozzleShape,
-              nozzleSize = connector2NozzleSize,
-              nozzleTipWallThickness = connector2NozzleTipWallThickness,
-              nozzleRadius = connector2NozzleRadius,
-              nozzleOffset = connector2NozzleOffset,
-              nozzleChamferPercentage = connector2NozzleChamferPercentage,
-              nozzleChamferAngle = connector2NozzleChamferAngle,
-              transitionAngle =_transitionAngle,    
-              adapterColor = getColor(end2Color, DefaultEnd2Color), 
-              debug = sliceDebug,
-              showCaliper = showCaliper,
-              help = help);
-          }
+            translate([0, 0, endConnector1+end1[iExtensionLength]+end3[iStopLength]+transitionCenterHeight+transitionHullCenterLength])
+              union(){
+                translate([0, 0, end2[iExtensionLength]])
+                mirror([0,0,1])
+                mirror([0,1,0])
+                transitionExtension(
+                  connector = 2,
+                  innerDiameter = end3[iInnerStartDiameter],
+                  wallThickness = end3[iWallThickness],
+                  length = end3[iExtensionLength],
+                  gridSize = end3[iExtensionGridSize],
+                  gridWallThickness = end3[iExtensionGridWallThickness],
+                  txt = end3[iExtensionText],
+                  txtSize=end3[iExtensionTextSize],
+                  transitionColor = getColor(extensionColor, DefaultTransitionColor),
+                  debug = sliceDebug,
+                  showCaliper = showCaliper,
+                  help = help);
+                translate([0, 0, end2[iExtensionLength]])
+                adapter(
+                  con = getConnector3Setting(transitionHullCenter, end1, end2, end3),
+                  connectorPos=3,
+                  transitionAngle =_transitionAngle,    
+                  debug = sliceDebug,
+                  showCaliper = showCaliper,
+                  help = help);
+                }
+            }
         }
       }
     }
-    /*
-    if(sliceDebug){
-      cubeSziex = max(end1InnerDiameter,end2InnerDiameter)*3;
-      cubeSziey = max(end1InnerDiameter,end2InnerDiameter)*1.5;
-      cubeSziez = (connector1Length + connector2Length)*3;
-      translate([-cubeSziex/2, -cubeSziey, -fudgeFactor])
-      cube([cubeSziex,cubeSziey,cubeSziez]);
-    }*/
   }
 }
-
 //CombinedEnd from path vacuum-hose-adapter-openscad.scad
 
 //Apply defaults

@@ -86,7 +86,6 @@ End1_Flange_Screw_Count = 4;
 //The diameter of the screws (mm)
 End1_Flange_Screw_Diameter = 5;  //0.1
 
-
 /* [Connector 1 - Magnetic Connector] */
 //Number of magnets in the connector
 End1_Magnets_Count = 8;
@@ -105,13 +104,14 @@ End1_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitche
 
 /* [Connector 1 - Extension] */
 //Length of the extnetion
-End1_Extension_Length = 10;
+End1_Extension_Length = 0;
 //Size of the grid in the extnetion. 0: diameter/6
 End1_Extension_GridSize = 0;  //0.1
 //Size of the grid walls in the extnetion. 0: no grid, -1: uses wall thickness
 End1_Extension_GridWallThickness = 0;  //0.1
 End1_Extension_Text = "";
 End1_Extension_Text_Size = 0;
+
 
 /* [Transition] */
 // tapered for hose connections, flat for attaching to a device
@@ -150,6 +150,7 @@ Transition_Base_Length=0;
 // Support Base Angle position, default half of Bend Radius;
 Transition_Base_Angle=0;
 
+
 /* [Connector 2] */
 //Wall thickness
 End2_Wall_Thickness = 2; //0.01
@@ -187,7 +188,6 @@ End2_Hose_EndCap_GridSize = 0;  //0.1
 //Thickness of the walls in the end cap
 End2_Hose_EndCap_GridWallThickness = 0;  //0.1
 
-
 /* [Connector 2 - Flange] */
 //Width of Flange added to the connector diamater
 End2_Flange_Width = 20;
@@ -218,7 +218,6 @@ End2_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recesse
 // Magnetic ring twist lock bolt size (draft setting)
 End2_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitchen insert,"4":M4,"4cnc":M4 with CNC Kitchen insert,"5":M5,"5cnc":M5 with CNC Kitchen insert]
 
-
 /* [Connector 2 - Nozzle] */
 // Is the measurement the adapter's outside or inside diameter?
 End2_Nozzle_Shape = "square"; //[square, circle]
@@ -231,13 +230,14 @@ End2_Nozzle_Chamfer_Angle = 0; //0.1
 
 /* [Connector 2 - Extension] */
 //Length of the extnetion
-End2_Extension_Length = 10;
+End2_Extension_Length = 0;
 //Size of the grid in the extnetion. 0: diameter/6
 End2_Extension_GridSize = 0;  //0.1
 //Size of the grid walls in the extnetion. 0: no grid, -1: uses wall thickness
 End2_Extension_GridWallThickness = 0;  //0.1
 End2_Extension_Text = "";
 End2_Extension_Text_Size = 0;
+
 
 /* [Connector 3] */
 //Wall thickness
@@ -319,7 +319,7 @@ End3_Nozzle_Chamfer_Angle = 0; //0.1
 
 /* [Connector 3 - Extension] */
 //Length of the extnetion
-End3_Extension_Length = 10;
+End3_Extension_Length = 0;
 //Size of the grid in the extnetion. 0: diameter/6
 End3_Extension_GridSize = 0;  //0.1
 //Size of the grid walls in the extnetion. 0: no grid, -1: uses wall thickness
@@ -360,7 +360,7 @@ $fn=120;
 module end_of_customizer_opts() {}
 
 function getColor(colorSetting, defaultColor) = 
-  assert(is_list(colorSetting), "colorSetting must be a list")
+  assert(is_list(colorSetting), str("colorSetting must be a list colorSetting=", colorSetting, " defaultColor", defaultColor))
   assert(len(colorSetting) == 2, "colorSetting be length 2")
   let(
     c = colorSetting[0] == "" ? defaultColor : colorSetting[0],
@@ -1089,7 +1089,7 @@ module HoseAdapter(
   connector1FlangeScrewCount = End1_Flange_Screw_Count,
   connector1FlangeScrewDiameter = End1_Flange_Screw_Diameter,
 
-  connector1ExtensionPostLength = End1_Extension_Length,
+  connector1ExtensionLength = End1_Extension_Length,
   connector1ExtensionGridSize = End1_Extension_GridSize,
   connector1ExtensionGridWallThickness = End1_Extension_GridWallThickness,
   connector1ExtensionText = End1_Extension_Text,
@@ -1153,7 +1153,7 @@ module HoseAdapter(
   connector2NozzleChamferPercentage = End2_Nozzle_Chamfer_Percentage,
   connector2NozzleChamferAngle = End2_Nozzle_Chamfer_Angle,
   
-  connector2ExtensionPostLength = End2_Extension_Length,
+  connector2ExtensionLength = End2_Extension_Length,
   connector2ExtensionGridSize = End2_Extension_GridSize,
   connector2ExtensionGridWallThickness = End2_Extension_GridWallThickness,
   connector2ExtensionText = End2_Extension_Text,
@@ -1200,7 +1200,7 @@ module HoseAdapter(
   connector3NozzleChamferPercentage = End3_Nozzle_Chamfer_Percentage,
   connector3NozzleChamferAngle = End3_Nozzle_Chamfer_Angle,
   
-  connector3ExtensionPostLength = End3_Extension_Length,
+  connector3ExtensionLength = End3_Extension_Length,
   connector3ExtensionGridSize = End3_Extension_GridSize,
   connector3ExtensionGridWallThickness = End3_Extension_GridWallThickness,
   connector3ExtensionText = End3_Extension_Text,
@@ -1263,7 +1263,7 @@ module HoseAdapter(
     //nozzleOffset=connector1NozzleOffset,
     //nozzleChamferPercentage=connector1NozzleChamferPercentage,
     //nozzleChamferAngle=connector1NozzleChamferAngle,
-    extensionPostLength=connector1ExtensionPostLength,
+    extensionLength=connector1ExtensionLength,
     extensionGridSize=connector1ExtensionGridSize,
     extensionGridWallThickness=connector1ExtensionGridWallThickness,
     extensionText=connector1ExtensionText,
@@ -1317,11 +1317,11 @@ module HoseAdapter(
     nozzleOffset=connector2NozzleOffset,
     nozzleChamferPercentage=connector2NozzleChamferPercentage,
     nozzleChamferAngle=connector2NozzleChamferAngle,
-    extensionPostLength=connector1ExtensionPostLength,
-    extensionGridSize=connector1ExtensionGridSize,
-    extensionGridWallThickness=connector1ExtensionGridWallThickness,
-    extensionText=connector1ExtensionText,
-    extensionTextSize=connector1ExtensionTextSize,
+    extensionLength=connector2ExtensionLength,
+    extensionGridSize=connector2ExtensionGridSize,
+    extensionGridWallThickness=connector2ExtensionGridWallThickness,
+    extensionText=connector2ExtensionText,
+    extensionTextSize=connector2ExtensionTextSize,
     adapterColor = getColor(end2Color, DefaultEnd2Color),
     con1Measurement=end1[iMeasurement], 
     con1Diameter=end1[iDiameter], 
@@ -1371,11 +1371,11 @@ module HoseAdapter(
     nozzleOffset=connector3NozzleOffset,
     nozzleChamferPercentage=connector3NozzleChamferPercentage,
     nozzleChamferAngle=connector3NozzleChamferAngle,
-    extensionPostLength=connector1ExtensionPostLength,
-    extensionGridSize=connector1ExtensionGridSize,
-    extensionGridWallThickness=connector1ExtensionGridWallThickness,
-    extensionText=connector1ExtensionText,
-    extensionTextSize=connector1ExtensionTextSize,
+    extensionLength=connector3ExtensionLength,
+    extensionGridSize=connector3ExtensionGridSize,
+    extensionGridWallThickness=connector3ExtensionGridWallThickness,
+    extensionText=connector3ExtensionText,
+    extensionTextSize=connector3ExtensionTextSize,
     adapterColor = getColor(end3Color, DefaultEnd3Color),
     con1Measurement=end1[iMeasurement], 
     con1Diameter=end1[iDiameter], 

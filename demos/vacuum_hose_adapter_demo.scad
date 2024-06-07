@@ -64,7 +64,14 @@ iconnector1FlangeScrewBorder = 3+ic1flange;
 iconnector1FlangeScrewCount = 4+ic1flange;
 iconnector1FlangeScrewDiameter = 5+ic1flange;
 
-it=6+ic1flange;
+ic1Extension = 6+ic1flange;
+iconnector1ExtensionLength = 0+ic1Extension;
+iconnector1ExtensionGridSize = 1+ic1Extension;
+iconnector1ExtensionGridWallThickness = 2+ic1Extension;
+iconnector1ExtensionText = 3+ic1Extension;
+iconnector1ExtensionTextSize = 4+ic1Extension;
+
+it=5+ic1Extension;
 itransitionStyle = 0+it;
 itransitionLength = 1+it;
 itransitionBendRadius = 2+it;
@@ -82,19 +89,7 @@ itransitionHullyOffset = 13+it;
 itransitionHullCenter = 14+it;
 itransitionHullCenterHeight = 15+it;
 
-te=16+it;
-itransitionPreLength = 0+te;
-itransitionPreGridSize = 1+te;
-itransitionPreGridWallThickness = 2+te; 
-itransitionPreText = 3+te; 
-itransitionPreTextSize = 4+te; 
-itransitionPostLength = 5+te;
-itransitionPostGridSize = 6+te;
-itransitionPostGridWallThickness = 7+te;
-itransitionPostText = 8+te; 
-itransitionPostTextSize = 9+te; 
-
-ic2=10+te;
+ic2=16+it;
 iconnector2Style = 0+ic2;
 iconnector2WallThickness = 1+ic2;
 iconnector2Measurement = 2+ic2;
@@ -139,14 +134,75 @@ iconnector2NozzleOffset = 4+ic2nozzle;
 iconnector2NozzleChamferPercentage = 5+ic2nozzle;
 iconnector2NozzleChamferAngle = 6+ic2nozzle;
 
-iother=7+ic2nozzle;
+ic2Extension = 7+ic2nozzle;
+iconnector2ExtensionLength = 0+ic2Extension;
+iconnector2ExtensionGridSize = 1+ic2Extension;
+iconnector2ExtensionGridWallThickness = 2+ic2Extension;
+iconnector2ExtensionText = 3+ic2Extension;
+iconnector2ExtensionTextSize = 4+ic2Extension;
+
+ic3=5+ic2Extension;
+iconnector3Style = 0+ic3;
+iconnector3WallThickness = 1+ic3;
+iconnector3Measurement = 2+ic3;
+iconnector3Diameter = 3+ic3;
+iconnector3Length = 4+ic3;
+iconnector3Taper = 5+ic3;
+iconnector3Rotation = 6+ic3;
+
+ic3hose = 7+ic3;
+iconnector3EndCapDiameter = 0+ic3hose;
+iconnector3EndCapThickness = 1+ic3hose;
+iconnector3StopThickness = 2+ic3hose;
+iconnector3StopLength = 3+ic3hose;
+iconnector3StopSymmetrical = 4+ic3hose;
+iconnector3BarbsCount = 5+ic3hose;
+iconnector3BarbsThickness = 6+ic3hose;
+iconnector3BarbsSymmetrical = 7+ic3hose;
+
+ic3magnet = 8+ic3hose;
+iconnector3MagnetCount = 0+ic3magnet;
+iconnector3MagnetDiameter = 1+ic3magnet;
+iconnector3MagnetThickness = 2+ic3magnet;
+iconnector3MagnetBorder = 3+ic3magnet;
+iconnector3MagnetFlangeThickness = 4+ic3magnet;
+iconnector3Ring = 5+ic3magnet;
+iconnector3MagnetTwistLockSize = 6+ic3magnet;
+
+ic3flange = 7+ic3magnet;
+iconnector3FlangeWidth = 0+ic3flange;
+iconnector3FlangeThickness = 1+ic3flange;
+iconnector3FlangeScrewPosition = 2+ic3flange;
+iconnector3FlangeScrewBorder = 3+ic3flange;
+iconnector3FlangeScrewCount = 4+ic3flange;
+iconnector3FlangeScrewDiameter = 5+ic3flange;
+
+ic3nozzle=6+ic3flange;
+iconnector3NozzleShape = 0+ic3nozzle;
+iconnector3NozzleSize = 1+ic3nozzle;
+iconnector3NozzleTipWallThickness = 2+ic3nozzle;
+iconnector3NozzleRadius = 3+ic3nozzle;
+iconnector3NozzleOffset = 4+ic3nozzle;
+iconnector3NozzleChamferPercentage = 5+ic3nozzle;
+iconnector3NozzleChamferAngle = 6+ic3nozzle;
+
+ic3Extension = 7+ic3nozzle;
+iconnector3ExtensionLength = 0+ic3Extension;
+iconnector3ExtensionGridSize = 1+ic3Extension;
+iconnector3ExtensionGridWallThickness = 2+ic3Extension;
+iconnector3ExtensionText = 3+ic3Extension;
+iconnector3ExtensionTextSize = 4+ic3Extension;
+
+iother=5+ic3Extension;
 isliceDebug = 0+iother;
 ishowCaliper = 1+iother;
 iend1Color = 2+iother;
 iend2Color = 3+iother;
-itransitionColor = 4+iother;
+iend3Color = 4+iother;
+itransitionColor = 5+iother;
+iextensionColor = 6+iother;
 
-irenderer=4+iother;
+irenderer=7+iother;
 itranslate = 0+irenderer;
 irotate = 1+irenderer;
 irendercount = 2+irenderer;
@@ -192,17 +248,15 @@ defaultDemoSetting = [
     8,19.5,2.5,2,6,"no","0",
     //connector1FlangeWidth, connector1FlangeThickness, connector1FlangeScrewPosition, connector1FlangeScrewBorder, connector1FlangeScrewCount, connector1FlangeScrewDiameter,
     20,5,0,5,4,5,
+    //connector1ExtensionLength, connector1ExtensionGridSize, connector1ExtensionGridWallThickness, connector1ExtensionText, connector1ExtensionTextSize
+    0,0,0,"",0,
 
     //transitionStyle, transitionLength, transitionBendRadius, transitionAngle, transitionOffset,
     "bend+taper", 10,0,0,[0,0],
     //transitionBaseType, transitionBaseThickness, transitionBaseWidth, transitionBaseLength, transitionBaseAngle, 
     "none",0,0,0,0,
     //transitionEnd2Count, transitionHullLength, transitionHullCenterLength, transitionHullyOffset, transitionHullCenter, transitionHullCenterHeight,
-    1,0,0,0,false,0,
-    //transitionPreLength,transitionPreGridSize,transitionPreGridWallThickness,transitionPreText,transitionPostSize
-    0,0,0,"",0,
-    //transitionPostLength,transitionPostGridSize,transitionPostGridWallThickness,transitionPostText,transitionPostTextSize
-    0,0,0,"",0,
+    1,0,0,0,"disabled",0,
     
     //connector2Style, connector2WallThickness, connector2Measurement, connector2Diameter, connector2Length, connector2Taper, connector2Rotation
     "hose", 2, "outer", 30,20,0,0,
@@ -218,8 +272,29 @@ defaultDemoSetting = [
     "square",[10,5,10],0,0,
     //connector2NozzleOffset, connector2NozzleChamferPercentage, connector2NozzleChamferAngle,
     [0,0],0,0,
-    //sliceDebug, showCaliper, end1Color, end2Color, transitionColor
-    false, false, ["",-1], ["",-1], ["",-1],
+    //connector2ExtensionLength, connector2ExtensionGridSize, connector2ExtensionGridWallThickness, connector2ExtensionText, connector2ExtensionTextSize
+    0,0,0,"",0,
+    
+    //connector3Style, connector3WallThickness, connector3Measurement, connector3Diameter, connector3Length, connector3Taper, connector3Rotation
+    "hose", 2, "outer", 30,20,0,0,
+    //connector3EndCapDiameter, connector3EndCapThickness, connector3StopThickness, connector3StopLength, connector3StopSymmetrical, 
+    0,0,0,0,false,
+    //connector3BarbsCount, connector3BarbsThickness, connector3BarbsSymmetrical,
+    0,0,0,
+    //connector3MagnetCount, connector3MagnetDiameter, connector3MagnetThickness, connector3MagnetBorder, connector3MagnetFlangeThickness, connector3Ring,connector3MagnetTwistLockSize
+    6,12,3,2,10,"no","0",
+    //connector3FlangeWidth, connector3FlangeThickness, connector3FlangeScrewPosition, connector3FlangeScrewBorder, connector3FlangeScrewCount, connector3FlangeScrewDiameter,
+    20,5,0,5,4,5,
+    //connector3NozzleShape, connector3NozzleSize, connector3NozzleTipWallThickness, connector3NozzleRadius,
+    "square",[10,5,10],0,0,
+    //connector3NozzleOffset, connector3NozzleChamferPercentage, connector3NozzleChamferAngle,
+    [0,0],0,0,
+    //connector3ExtensionLength, connector3ExtensionGridSize, connector3ExtensionGridWallThickness, connector3ExtensionText, connector3ExtensionTextSize
+    0,0,0,"",0,
+
+    //sliceDebug, showCaliper, end1Color, end2Color, end3Color, transitionColor, extensionColor
+    false, false, ["",-1], ["",-1], ["",-1],["",-1], ["",-1],
+        
     //rotate, translate, rendercount, renderseparation, textposition, rotaterende1, rotaterende2
     [0,0,0], [0,0,0], 1, [], [], [0,0,0], [0,0,0]];
 
@@ -527,7 +602,7 @@ function getScenario(scenario) =
       ["45", [[iconnector2NozzleChamferAngle, 45]]]
     ]    
         
-    : scenario == "base_smple" ? [["Sample",1,[[],[0,0,20],250],[[itextposition,[0,-40,20]], [irotate, [0,0,-90]],[itransitionColor, coloredDeemphasize], [iend2Color, coloredDeemphasize], [itransitionStyle,"none"], [iconnector2Style, "none"], [itransitionPreLength, 10]]],
+    : scenario == "base_smple" ? [["Sample",1,[[],[0,0,20],250],[[itextposition,[0,-40,20]], [irotate, [0,0,-90]],[itransitionColor, coloredDeemphasize], [iend2Color, coloredDeemphasize], [itransitionStyle,"none"], [iconnector2Style, "none"], [iconnector1ExtensionLength, 10]]],
       ["", []]
     ]
     : scenario == "base_dmo" ? [["Sample",5,[[90,0,0],[0,0,60],350],[[irendercount,2], [itextposition,[0,-40,-30]], [irenderseparation,[80,0,0]], [itransitionColor,coloredDeemphasize], [iend2Color,coloredDeemphasize]]],
@@ -539,42 +614,46 @@ function getScenario(scenario) =
     ]
     //camlock 
     //camlock_sample,base_dmo
-    : scenario == "camlock_sample" ? [["CamLock Quick Connect",1,[],[[iconnector1Style, "camlock"], [itransitionPreText, str("Camlock - v" ,retriveConnectorSetting("camlock", iSettingsVersion))]],"base_smple"]]
+    : scenario == "camlock_sample" ? [["CamLock Quick Connect",1,[],[[iconnector1Style, "camlock"], [iconnector1ExtensionText, str("Camlock - v" ,retriveConnectorSetting("camlock", iSettingsVersion))]],"base_smple"]]
     : scenario == "camlock_demo" ? [["CamLock Quick Connect",5,[],[[iconnector1Style, "camlock"]],"base_dmo"]]
     //centec 
     //centec_female_sample,centec_female_demo,centec_male_sample,centec_male_demo
-    : scenario == "centec_female_sample" ? [["Centec Female",1,[],[[iconnector1Style, "centec_female"], [itransitionPreText, str("Centec Female - v" ,retriveConnectorSetting("centec_female", iSettingsVersion))]],"base_smple"]]
+    : scenario == "centec_female_sample" ? [["Centec Female",1,[],[[iconnector1Style, "centec_female"], [iconnector1ExtensionText, str("Centec Female - v" ,retriveConnectorSetting("centec_female", iSettingsVersion))]],"base_smple"]]
     : scenario == "centec_female_demo" ? [["Centec Female Quick Connect",5,[],[[iconnector1Style, "centec_female"]],"base_dmo"]]
-    : scenario == "centec_male_sample" ? [["Centec Male",1,[],[[iconnector1Style, "centec_male"], [itransitionPreText, str("Centec Male - V" ,retriveConnectorSetting("centec_male", iSettingsVersion))]],"base_smple"]]
+    : scenario == "centec_male_sample" ? [["Centec Male",1,[],[[iconnector1Style, "centec_male"], [iconnector1ExtensionText, str("Centec Male - V" ,retriveConnectorSetting("centec_male", iSettingsVersion))]],"base_smple"]]
     : scenario == "centec_male_demo" ? [["Centec Male Quick Connect",5,[],[[iconnector1Style, "centec_male"]],"base_dmo"]]
     //dyson 
     //dyson_sample,dyson_demo
-    : scenario == "dyson_sample" ? [["Dyson V6",1,[],[[iconnector1Style, "dyson"], [itransitionPreText, str("Dyson V6 - v" ,retriveConnectorSetting("dyson", iSettingsVersion))]],"base_smple"]]
+    : scenario == "dyson_sample" ? [["Dyson V6",1,[],[[iconnector1Style, "dyson"], [iconnector1ExtensionText, str("Dyson V6 - v" ,retriveConnectorSetting("dyson", iSettingsVersion))]],"base_smple"]]
     : scenario == "dyson_demo" ? [["Dyson",5,[],[[iconnector1Style, "dyson"]],"base_dmo"]] 
     //dw735 
     //dw735_sample,dw735_demo
-    : scenario == "dw735_sample" ? [["Dewalt 735",1,[],[[iconnector1Style, "dw735"], [itransitionPreText, str("Dewalt 735 - v" ,retriveConnectorSetting("dw735", iSettingsVersion))]],"base_smple"]]
+    : scenario == "dw735_sample" ? [["Dewalt 735",1,[],[[iconnector1Style, "dw735"], [iconnector1ExtensionText, str("Dewalt 735 - v" ,retriveConnectorSetting("dw735", iSettingsVersion))]],"base_smple"]]
     : scenario == "dw735_demo" ? [["Dewalt 735",5,[],[[iconnector1Style, "dw735"]],"base_dmo"]] 
   //osvacm32_sample,osvacm32_demo,osvacm_sample,osvacm_demo,osvacf32_sample,osvacf32_demo,osvacf_sample,osvacf_demo
-    : scenario == "osvacm32_sample" ? [["osVAC32 Male",1,[],[[iconnector1Style, "osvacm32"], [itransitionPreText, str("osVAC32 Male - v" ,retriveConnectorSetting("osvacm32", iSettingsVersion))]],"base_smple"]]
+    : scenario == "osvacm32_sample" ? [["osVAC32 Male",1,[],[[iconnector1Style, "osvacm32"], [iconnector1ExtensionText, str("osVAC32 Male - v" ,retriveConnectorSetting("osvacm32", iSettingsVersion))]],"base_smple"]]
     : scenario == "osvacm32_demo" ? [["osVAC32 Male",5,[],[[iconnector1Style, "osvacm32"]],"base_dmo"]] 
-    : scenario == "osvacm_sample" ? [["osVAC Male",1,[],[[iconnector1Style, "osvacm"], [itransitionPreText, str("osVAC Male - v" ,retriveConnectorSetting("osvacm", iSettingsVersion))]],"base_smple"]]
+    : scenario == "osvacm_sample" ? [["osVAC Male",1,[],[[iconnector1Style, "osvacm"], [iconnector1ExtensionText, str("osVAC Male - v" ,retriveConnectorSetting("osvacm", iSettingsVersion))]],"base_smple"]]
     : scenario == "osvacm_demo" ? [["osVAC Male",5,[],[[iconnector1Style, "osvacm"]],"base_dmo"]] 
-    : scenario == "osvacf32_sample" ? [["osVAC32 Female",1,[],[[iconnector1Style, "osvacf32"], [itransitionPreText, str("osVAC32 Female - v" ,retriveConnectorSetting("osvacf32", iSettingsVersion))]],"base_smple"]]
+    : scenario == "osvacf32_sample" ? [["osVAC32 Female",1,[],[[iconnector1Style, "osvacf32"], [iconnector1ExtensionText, str("osVAC32 Female - v" ,retriveConnectorSetting("osvacf32", iSettingsVersion))]],"base_smple"]]
     : scenario == "osvacf32_demo" ? [["osVAC32 Female",5,[],[[iconnector1Style, "osvacf32"]],"base_dmo"]] 
-    : scenario == "osvacf_sample" ? [["osVAC Female",1,[],[[iconnector1Style, "osvacf"], [itransitionPreText, str("osVAC Female - v" ,retriveConnectorSetting("osvacf", iSettingsVersion))]],"base_smple"]]
+    : scenario == "osvacf_sample" ? [["osVAC Female",1,[],[[iconnector1Style, "osvacf"], [iconnector1ExtensionText, str("osVAC Female - v" ,retriveConnectorSetting("osvacf", iSettingsVersion))]],"base_smple"]]
     : scenario == "osvacf_demo" ? [["osVAC Female",5,[],[[iconnector1Style, "osvacf"]],"base_dmo"]] 
     
     //transition
     //transition_demo,transition_bendtaper,transition_taperbend,transition_organicbend,transition_flat,
-    : scenario == "transition_demo" ? [["Transition",6,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [irenderseparation,[80,0,0]], [itransitionBendRadius,20],[itransitionAngle,20], [iend1Color, deemphasize], [iend2Color, deemphasize]]],
+    : scenario == "transition_demo" ? [["Transition",9,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [irenderseparation,[80,0,0]], [itransitionBendRadius,20],[itransitionAngle,20], [iend1Color, coloredDeemphasize], [iend2Color, coloredDeemphasize], [iend3Color, coloredDeemphasize]]],
+      ["hull 3", [[itransitionStyle, "hull"],[itransitionEnd2Count, 1], [itransitionAngle,45],  [itransitionHullCenter,true], [itransitionHullCenterHeight,45], [itransitionHullLength,20], [iconnector2Diameter, 20], [iconnector3Diameter, 30], [itransitionHullLength, 10]]],
       ["bend+taper", [[itransitionStyle, "bend+taper"]]],
       ["taper+bend", [[itransitionStyle, "taper+bend"]]],
       ["organicbend", [[itransitionStyle, "organicbend"]]],
       ["hull 1", [[itransitionStyle, "hull"]]],
       ["hull 2", [[itransitionStyle, "hull"],[itransitionEnd2Count, 2]]],
+      ["hull 3", [[itransitionStyle, "hull"],[itransitionEnd2Count, 1], [itransitionAngle,45],  [itransitionHullCenter,true], [itransitionHullCenterHeight,45], [itransitionHullLength,20], [iconnector2Diameter, 20], [iconnector3Diameter, 30], [itransitionHullLength, 10]]],
+      ["hull 4", [[itransitionStyle, "hull"],[itransitionEnd2Count, 2], [itransitionAngle,45],  [itransitionHullCenter,true], [itransitionHullCenterHeight,45], [itransitionHullLength,20], [iconnector2Diameter, 20], [iconnector3Diameter, 30], [itransitionHullLength, 10], [irotaterender1,[0,0,-25]], [irotaterender2,[0,0,-25]]]],
       ["flat", [[itransitionStyle, "flat"]]]
     ]
+    
     : scenario == "transition_bendtaper" ? [["Transition Bend + Taper",4,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [irenderseparation,[100,0,0]], [itransitionBendRadius,10], [iend1Color, deemphasize], [iend2Color, deemphasize], [itransitionStyle, "bend+taper"]]],
       ["0deg 1 end", [[itransitionAngle,0], [itransitionEnd2Count,1]]],
       ["45deg 1 end", [[itransitionAngle,45], [itransitionEnd2Count,1]]],
@@ -690,41 +769,41 @@ function getScenario(scenario) =
     //transitionext_demo, transitionextpre_length,transitionextpre_gridSize,transitionextpre_wallthickness, transitionextpost_length,transitionextpost_gridSize,transitionextpost_wallthickness
     : scenario == "transitionext_demo" ? [["Transition Extension",4,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [irenderseparation,[80,0,0]], [itransitionBendRadius,10], [itransitionAngle,45], [itransitionEnd2Count,2], [iend1Color, deemphasize], [iend2Color, deemphasize], [itransitionStyle, "hull"]]],
      ["", []],
-     ["Pre 10mm", [[itransitionPreLength,10]]],
-     ["Pre and Post 10mm", [[itransitionPreLength,10], [itransitionPostLength,10]]],
-     ["Pre grid", [[itransitionPreLength,10], [itransitionPostLength,10], [itransitionPreGridWallThickness,-1]]]
+     ["Pre 10mm", [[iconnector1ExtensionLength,10]]],
+     ["Pre and Post 10mm", [[iconnector1ExtensionLength,10], [iconnector2ExtensionLength,10]]],
+     ["Pre grid", [[iconnector1ExtensionLength,10], [iconnector2ExtensionLength,10], [iconnector1ExtensionGridWallThickness,-1]]]
     ]
     : scenario == "transitionextpre_length" ? [["Pre Transition Extension Length",3,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [itransitionBendRadius,10], [irenderseparation,[80,0,0]], [iend1Color,deemphasize], [iend2Color,deemphasize]]],
-      ["0mm", [[itransitionPreLength,0]]],
-      ["5mm", [[itransitionPreLength,5]]],
-      ["10mm", [[itransitionPreLength,10]]]
+      ["0mm", [[iconnector1ExtensionLength,0]]],
+      ["5mm", [[iconnector1ExtensionLength,5]]],
+      ["10mm", [[iconnector1ExtensionLength,10]]]
     ]
-    : scenario == "transitionextpre_gridSize" ? [["Pre Transition Extension Grid Size",3,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [itransitionBendRadius,10], [irenderseparation,[80,0,0]], [itransitionPreLength,5],[itransitionPreGridWallThickness,2], [iend1Color,deemphasize], [iend2Color,deemphasize]]],
-      ["0mm", [[itransitionPreGridSize,0]]],
-      ["5mm", [[itransitionPreGridSize,5]]],
-      ["10mm", [[itransitionPreGridSize,10]]]
+    : scenario == "transitionextpre_gridSize" ? [["Pre Transition Extension Grid Size",3,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [itransitionBendRadius,10], [irenderseparation,[80,0,0]], [iconnector1ExtensionLength,5],[iconnector1ExtensionGridWallThickness,2], [iend1Color,deemphasize], [iend2Color,deemphasize]]],
+      ["0mm", [[iconnector1ExtensionGridSize,0]]],
+      ["5mm", [[iconnector1ExtensionGridSize,5]]],
+      ["10mm", [[iconnector1ExtensionGridSize,10]]]
     ]
-    : scenario == "transitionextpre_wallthickness" ? [["Pre Transition Extension WallThickness",4,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [itransitionBendRadius,10], [irenderseparation,[80,0,0]], [itransitionPreLength,5], [itransitionPreGridSize,5], [iend1Color,deemphasize], [iend2Color,deemphasize]]],
-      ["0mm", [[itransitionPreGridWallThickness,0]]],
-      ["2mm", [[itransitionPreGridWallThickness,2]]],
-      ["3mm", [[itransitionPreGridWallThickness,3]]],
-      ["5mm", [[itransitionPreGridWallThickness,5]]]
+    : scenario == "transitionextpre_wallthickness" ? [["Pre Transition Extension WallThickness",4,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [itransitionBendRadius,10], [irenderseparation,[80,0,0]], [iconnector1ExtensionLength,5], [iconnector1ExtensionGridSize,5], [iend1Color,deemphasize], [iend2Color,deemphasize]]],
+      ["0mm", [[iconnector1ExtensionGridWallThickness,0]]],
+      ["2mm", [[iconnector1ExtensionGridWallThickness,2]]],
+      ["3mm", [[iconnector1ExtensionGridWallThickness,3]]],
+      ["5mm", [[iconnector1ExtensionGridWallThickness,5]]]
     ]
         : scenario == "transitionextpost_length" ? [["Post Transition Extension Length",3,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [itransitionBendRadius,10], [irenderseparation,[80,0,0]], [iend1Color,deemphasize], [iend2Color,deemphasize]]],
-      ["0mm", [[itransitionPostLength,0]]],
-      ["5mm", [[itransitionPostLength,5]]],
-      ["10mm", [[itransitionPostLength,10]]]
+      ["0mm", [[iconnector2ExtensionLength,0]]],
+      ["5mm", [[iconnector2ExtensionLength,5]]],
+      ["10mm", [[iconnector2ExtensionLength,10]]]
     ]
-    : scenario == "transitionextpost_gridSize" ? [["Post Transition Extension Grid Size",3,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [itransitionBendRadius,10], [irenderseparation,[80,0,0]], [itransitionPostLength,5],[itransitionPostGridWallThickness,2], [iend1Color,deemphasize], [iend2Color,deemphasize]]],
-      ["0mm", [[itransitionPostGridSize,0]]],
-      ["5mm", [[itransitionPostGridSize,5]]],
-      ["10mm", [[itransitionPostGridSize,10]]]
+    : scenario == "transitionextpost_gridSize" ? [["Post Transition Extension Grid Size",3,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [itransitionBendRadius,10], [irenderseparation,[80,0,0]], [iconnector2ExtensionLength,5],[iconnector2ExtensionGridWallThickness,2], [iend1Color,deemphasize], [iend2Color,deemphasize]]],
+      ["0mm", [[iconnector2ExtensionGridSize,0]]],
+      ["5mm", [[iconnector2ExtensionGridSize,5]]],
+      ["10mm", [[iconnector2ExtensionGridSize,10]]]
     ]
-    : scenario == "transitionextpost_wallthickness" ? [["Post Transition Extension WallThickness",4,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [itransitionBendRadius,10], [irenderseparation,[80,0,0]], [itransitionPostLength,5], [itransitionPostGridSize,5], [iend1Color,deemphasize], [iend2Color,deemphasize]]],
-      ["0mm", [[itransitionPostGridWallThickness,0]]],
-      ["2mm", [[itransitionPostGridWallThickness,2]]],
-      ["3mm", [[itransitionPostGridWallThickness,3]]],
-      ["5mm", [[itransitionPostGridWallThickness,5]]]
+    : scenario == "transitionextpost_wallthickness" ? [["Post Transition Extension WallThickness",4,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [itransitionBendRadius,10], [irenderseparation,[80,0,0]], [iconnector2ExtensionLength,5], [iconnector2ExtensionGridSize,5], [iend1Color,deemphasize], [iend2Color,deemphasize]]],
+      ["0mm", [[iconnector2ExtensionGridWallThickness,0]]],
+      ["2mm", [[iconnector2ExtensionGridWallThickness,2]]],
+      ["3mm", [[iconnector2ExtensionGridWallThickness,3]]],
+      ["5mm", [[iconnector2ExtensionGridWallThickness,5]]]
     ]
 
     : assert(false, str("unknow scenario - '", scenario, "'"));
@@ -853,6 +932,12 @@ module RenderScenario(scenario, showtext=true, stepIndex=-1, sliceDebug = false,
         connector1FlangeScrewCount = currentStepSettings[iconnector1FlangeScrewCount],
         connector1FlangeScrewDiameter = currentStepSettings[iconnector1FlangeScrewDiameter],
 
+        connector1ExtensionLength = currentStepSettings[iconnector1ExtensionLength],
+        connector1ExtensionGridSize = currentStepSettings[iconnector1ExtensionGridSize],
+        connector1ExtensionGridWallThickness = currentStepSettings[iconnector1ExtensionGridWallThickness],
+        connector1ExtensionText = currentStepSettings[iconnector1ExtensionText],
+        connector1ExtensionTextSize=currentStepSettings[iconnector1ExtensionTextSize],
+
         transitionStyle = currentStepSettings[itransitionStyle],
         transitionLength = currentStepSettings[itransitionLength],
         transitionBendRadius = currentStepSettings[itransitionBendRadius],
@@ -870,16 +955,6 @@ module RenderScenario(scenario, showtext=true, stepIndex=-1, sliceDebug = false,
         transitionHullyOffset = currentStepSettings[itransitionHullyOffset],
         transitionHullCenter = currentStepSettings[itransitionHullCenter],
         transitionHullCenterHeight = currentStepSettings[itransitionHullCenterHeight],
-        transitionPreLength = currentStepSettings[itransitionPreLength],
-        transitionPreGridSize = currentStepSettings[itransitionPreGridSize],
-        transitionPreGridWallThickness = currentStepSettings[itransitionPreGridWallThickness],
-        transitionPreText = currentStepSettings[itransitionPreText],
-        transitionPreTextSize = currentStepSettings[itransitionPreTextSize],
-        transitionPostLength = currentStepSettings[itransitionPostLength],
-        transitionPostGridSize = currentStepSettings[itransitionPostGridSize],
-        transitionPostGridWallThickness = currentStepSettings[itransitionPostGridWallThickness],
-        transitionPostText = currentStepSettings[itransitionPostText],
-        transitionPostTextSize = currentStepSettings[itransitionPostTextSize],
 
         connector2Style = currentStepSettings[iconnector2Style],
         connector2WallThickness  = currentStepSettings[iconnector2WallThickness ],
@@ -920,10 +995,65 @@ module RenderScenario(scenario, showtext=true, stepIndex=-1, sliceDebug = false,
         connector2NozzleOffset = currentStepSettings[iconnector2NozzleOffset],
         connector2NozzleChamferPercentage = currentStepSettings[iconnector2NozzleChamferPercentage],
         connector2NozzleChamferAngle = currentStepSettings[iconnector2NozzleChamferAngle],
+
+        connector2ExtensionLength = currentStepSettings[iconnector2ExtensionLength],
+        connector2ExtensionGridSize = currentStepSettings[iconnector2ExtensionGridSize],
+        connector2ExtensionGridWallThickness = currentStepSettings[iconnector2ExtensionGridWallThickness],
+        connector2ExtensionText = currentStepSettings[iconnector2ExtensionText],
+        connector2ExtensionTextSize=currentStepSettings[iconnector2ExtensionTextSize],
+
+        connector3Style = currentStepSettings[iconnector3Style],
+        connector3WallThickness  = currentStepSettings[iconnector3WallThickness ],
+        connector3Measurement = currentStepSettings[iconnector3Measurement],
+        connector3Diameter = currentStepSettings[iconnector3Diameter],
+        connector3Length = currentStepSettings[iconnector3Length],
+        connector3Taper = currentStepSettings[iconnector3Taper],
+        connector3Rotation = currentStepSettings[iconnector3Rotation],
+
+        connector3EndCapDiameter  = currentStepSettings[iconnector3EndCapDiameter ],
+        connector3EndCapThickness = currentStepSettings[iconnector3EndCapThickness],
+        connector3StopThickness = currentStepSettings[iconnector3StopThickness],
+        connector3StopLength = currentStepSettings[iconnector3StopLength],
+        connector3StopSymmetrical = currentStepSettings[iconnector3StopSymmetrical],
+        connector3BarbsCount = currentStepSettings[iconnector3BarbsCount],
+        connector3BarbsThickness = currentStepSettings[iconnector3BarbsThickness],
+        connector3BarbsSymmetrical = currentStepSettings[iconnector3BarbsSymmetrical],
+
+        connector3MagnetCount = currentStepSettings[iconnector3MagnetCount],
+        connector3MagnetDiameter = currentStepSettings[iconnector3MagnetDiameter],
+        connector3MagnetThickness = currentStepSettings[iconnector3MagnetThickness],
+        connector3MagnetBorder = currentStepSettings[iconnector3MagnetBorder],
+        connector3MagnetFlangeThickness = currentStepSettings[iconnector3MagnetFlangeThickness],
+        connector3Ring = currentStepSettings[iconnector3Ring],
+        connector3MagnetTwistLockSize = currentStepSettings[iconnector3MagnetTwistLockSize],
+        
+        connector3FlangeWidth = currentStepSettings[iconnector3FlangeWidth],
+        connector3FlangeThickness = currentStepSettings[iconnector3FlangeThickness],
+        connector3FlangeScrewPosition = currentStepSettings[iconnector3FlangeScrewPosition],
+        connector3FlangeScrewBorder = currentStepSettings[iconnector3FlangeScrewBorder],
+        connector3FlangeScrewCount = currentStepSettings[iconnector3FlangeScrewCount],
+        connector3FlangeScrewDiameter = currentStepSettings[iconnector3FlangeScrewDiameter],
+        
+        connector3NozzleShape = currentStepSettings[iconnector3NozzleShape],
+        connector3NozzleSize = currentStepSettings[iconnector3NozzleSize],
+        connector3NozzleTipWallThickness = currentStepSettings[iconnector3NozzleTipWallThickness],
+        connector3NozzleRadius = currentStepSettings[iconnector3NozzleRadius],
+        connector3NozzleOffset = currentStepSettings[iconnector3NozzleOffset],
+        connector3NozzleChamferPercentage = currentStepSettings[iconnector3NozzleChamferPercentage],
+        connector3NozzleChamferAngle = currentStepSettings[iconnector3NozzleChamferAngle],
+
+        connector3ExtensionLength = currentStepSettings[iconnector3ExtensionLength],
+        connector3ExtensionGridSize = currentStepSettings[iconnector3ExtensionGridSize],
+        connector3ExtensionGridWallThickness = currentStepSettings[iconnector3ExtensionGridWallThickness],
+        connector3ExtensionText = currentStepSettings[iconnector3ExtensionText],
+        connector3ExtensionTextSize=currentStepSettings[iconnector3ExtensionTextSize],
+
         sliceDebug = sliceDebug || currentStepSettings[isliceDebug],
         end1Color = currentStepSettings[iend1Color],
         end2Color = currentStepSettings[iend2Color],
+        end3Color = currentStepSettings[iend3Color],
         transitionColor = currentStepSettings[itransitionColor],
+        extensionColor = currentStepSettings[iextensionColor],
         showCaliper = showCaliper || currentStepSettings[ishowCaliper],
         help=help);
 }

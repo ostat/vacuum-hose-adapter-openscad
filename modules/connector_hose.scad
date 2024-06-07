@@ -149,4 +149,3 @@ module HoseConnector(
     "chamferWidth", chamferWidth
     ],help); 
 }
-
