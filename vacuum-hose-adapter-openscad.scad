@@ -17,11 +17,7 @@ include <modules/connector_hose.scad>
 include <modules/connector_flange.scad>
 include <modules/connector_magnetic.scad>
 include <modules/connector_nozzle.scad>
-include <modules/connector_camlock.scad>
-include <modules/connector_centec.scad>
-include <modules/connector_dyson.scad>
-include <modules/connector_dw735.scad>
-include <modules/connector_osvac.scad>
+
 include <modules/connector_common_post.scad>
 
 //TODO Ideas
@@ -38,7 +34,7 @@ DefaultExtensionColor = "MediumSeaGreen";
 //Wall thickness
 End1_Wall_Thickness = 2; //0.01
 //The style of the end
-End1_Style="flange"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female]
+End1_Style="flange"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector]
 // Is the measurement the adapter's outside or inside diameter?
 End1_Measurement = "inner"; //[inner, outer]
 // End 1 diameter of the adapter (mm)
@@ -154,7 +150,7 @@ Transition_Base_Angle=0;
 /* [Connector 2] */
 //Wall thickness
 End2_Wall_Thickness = 2; //0.01
-End2_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, none: None]
+End2_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, none: None]
 // Is the measurement the adapter's outside or inside diameter?
 End2_Measurement = "outer"; //[inner, outer]
 // End 2 diameter of the adapter (mm)
@@ -242,7 +238,7 @@ End2_Extension_Text_Size = 0;
 /* [Connector 3] */
 //Wall thickness
 End3_Wall_Thickness = 2; //0.01
-End3_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, none: None]
+End3_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, none: None]
 // Is the measurement the adapter's outside or inside diameter?
 End3_Measurement = "outer"; //[inner, outer]
 // End 2 diameter of the adapter (mm)
@@ -563,25 +559,33 @@ module adapter(
           mirror ([0,0,1])
           CenTecMaleConnector($fn = $fn);
         }
+        else if(con[iStyle] == "makita_male")
+        {
+          translate([0, 0, con[iLength]+con[iStopLength]])
+          mirror ([0,0,1])
+          MakitaMaleConnector(
+            help = help,
+            $fn = $fn);
+        }
         else if(con[iStyle] == "osvacm" || con[iStyle] == "osvacm32")
         {
           translate([0, 0, con[iLength]+con[iStopLength]])
           mirror ([0,0,1])
           osVacMaleConnector(
-          innerDiameter = con[iInnerEndDiameter],
-          length = con[iLength],
-          help = help,
-          $fn = $fn);
+            innerDiameter = con[iInnerEndDiameter],
+            length = con[iLength],
+            help = help,
+            $fn = $fn);
         }
         else if(con[iStyle] == "osvacf" || con[iStyle] == "osvacf32")
         {
           translate([0, 0, con[iLength]+con[iStopLength]])
           mirror ([0,0,1])
           osVacFemaleConnector(
-          innerDiameter = con[iInnerEndDiameter],
-          length = con[iLength],
-          help = help,
-          $fn = $fn);
+            innerDiameter = con[iInnerEndDiameter],
+            length = con[iLength],
+            help = help,
+            $fn = $fn);
         }
         else if(con[iStyle] == "nozzle")
         {
