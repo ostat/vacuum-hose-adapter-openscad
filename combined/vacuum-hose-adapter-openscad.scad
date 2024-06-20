@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter-openscad.scad'. Generated 2024-06-07 23:37
+//Combined version of 'vacuum-hose-adapter-openscad.scad'. Generated 2024-06-21 08:27
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -8,6 +8,7 @@
 // I give permision to use this script as you want, you are also free to sell models generated using this script. When sharing or selling models generated please provide attribution, with a link to the repo.
 //
 // I don't approve of you hosting or uploading this script it to any site or 3d modeling site.
+
 
 
 
@@ -25,7 +26,7 @@ DefaultExtensionColor = "MediumSeaGreen";
 //Wall thickness
 End1_Wall_Thickness = 2; //0.01
 //The style of the end
-End1_Style="flange"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female]
+End1_Style="flange"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector]
 // Is the measurement the adapter's outside or inside diameter?
 End1_Measurement = "inner"; //[inner, outer]
 // End 1 diameter of the adapter (mm)
@@ -141,7 +142,7 @@ Transition_Base_Angle=0;
 /* [Connector 2] */
 //Wall thickness
 End2_Wall_Thickness = 2; //0.01
-End2_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, none: None]
+End2_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, none: None]
 // Is the measurement the adapter's outside or inside diameter?
 End2_Measurement = "outer"; //[inner, outer]
 // End 2 diameter of the adapter (mm)
@@ -229,7 +230,7 @@ End2_Extension_Text_Size = 0;
 /* [Connector 3] */
 //Wall thickness
 End3_Wall_Thickness = 2; //0.01
-End3_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, none: None]
+End3_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, none: None]
 // Is the measurement the adapter's outside or inside diameter?
 End3_Measurement = "outer"; //[inner, outer]
 // End 2 diameter of the adapter (mm)
@@ -16132,6 +16133,8 @@ module HoseConnector(
     help
 )
 {
+  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, "innerEndDiameter must be a number greater than 0");
+  assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");
   _barbsThickness = barbsThickness == 0 ? wallThickness/2 : barbsThickness;
   barbLength = length/(barbsCount*2+1);
   union() {
@@ -16257,7 +16260,6 @@ module HoseConnector(
     "chamferWidth", chamferWidth
     ],help); 
 }
-
 //CombinedEnd from path connector_hose.scad
 //Combined from path connector_flange.scad
 
@@ -16756,6 +16758,20 @@ module Nozzle(
     ],help); 
 }
 //CombinedEnd from path connector_nozzle.scad
+//Combined from path connector_common_post.scad
+
+connectorSettings =[
+  camlockSettings,
+  centecFemaleSettings,
+  centecMaleSettings,
+  dysonSettings,
+  dw735Settings,
+  osvacmSettings,
+  osvacm32Settings,
+  osvacfSettings,
+  osvacf32Settings,
+  makitaMaleSettings];
+//CombinedEnd from path connector_common_post.scad
 //Combined from path connector_camlock.scad
 
 camlockVersion = "1.0";
@@ -16845,9 +16861,6 @@ module CamlockConnector(
 //CombinedEnd from path connector_camlock.scad
 //Combined from path connector_centec.scad
 
-/*
-I printed the Centec male v0.1 adapter. The diameter and length of the part seem to be spot on. The fit of the male part into the female is a bit tighter than the production parts. But it does insert completely and bottom out. The male production part has a diameter of about 44.75 whereas the v0.1 part's diameter is closer to 45. I removed the retention ring from a production male fitting and it is too wide for the slot in the v0.1 fitting. That's not a problem if the part you design will be thinner. Here are some pics.
-*/
 cenTecFemaleVersion = "0.1";
 cenTecFemaleBodyLength =  25;
 cenTecFemaleWallThickness = 3;
@@ -17623,18 +17636,89 @@ module osVacMaleConnector(
 
 
 //CombinedEnd from path connector_osvac.scad
-//Combined from path connector_common_post.scad
-connectorSettings =[
-  camlockSettings,
-  centecFemaleSettings,
-  centecMaleSettings,
-  dysonSettings,
-  dw735Settings,
-  osvacmSettings,
-  osvacm32Settings,
-  osvacfSettings,
-  osvacf32Settings];
-//CombinedEnd from path connector_common_post.scad
+//Combined from path connector_makita.scad
+//from here https://cad.onshape.com/documents/b952efdb75aae7a041c428d2/w/8d2594b7d94e0bbfda74354e/e/ce4460e84e97931fc7b7869b
+
+makitaVersion = "0.1";
+makitaMinLength = 53.3;
+makitaMeasurement = "outer";
+makitaOuterDiameter = 38.5;
+makitaInnerDiameter = 31;
+makitaWallThickness = (makitaOuterDiameter-makitaInnerDiameter)/2;
+
+makitaMaleSettings = ["makita_male", [
+  [iSettingsLength, makitaMinLength],
+  [iSettingsMeasurement, makitaMeasurement],
+  [iSettingsDiameter, makitaOuterDiameter],
+  [iSettingsTaper ,0],
+  [iSettingsWallThickness, makitaWallThickness],
+  [iSettingsVersion, makitaVersion]
+  ]];
+ 
+ /*
+ makitaConnector(
+  innerEndDiameter = makitaOuterDiameter,
+  length = makitaMinLength,
+  wallThickness = 2);
+ */
+
+//MakitaMaleConnector();
+ 
+module MakitaMaleConnector(
+  help,
+  $fn = 64){
+  outerDiameter = makitaOuterDiameter;
+  innerDiameter =  outerDiameter - makitaWallThickness*2;
+  
+  makitaRingClipRadius = outerDiameter - 1.85*2;
+  makitaRingClipHeight = 10.5;
+  makitaRingClipPosition = 29.5;
+  
+  lowerInnerLipDiameter = 33;
+  lowerInnerLipLength = 3;
+  makitaChamfer = 1;
+  makitaChamferLength = 4.5;
+  endStopDiameter = 51;
+  endStopLength = 4;
+  
+ echo("makitaConnector", innerDiameter = innerDiameter, outerDiameter=outerDiameter, makitaMinLength=makitaMinLength, makitaWallThickness = makitaWallThickness);
+    
+  difference(){
+    union(){
+    HoseConnector(
+      connectorMeasurement = "outer",
+      innerStartDiameter = innerDiameter,
+      innerEndDiameter = innerDiameter,
+      length = makitaMinLength,
+      wallThickness = makitaWallThickness,
+      stopSymmetrical = 0,
+      chamferLength = makitaChamferLength,
+      chamferWidth= makitaChamfer
+    );
+      
+      Stopper(
+        diameter = makitaOuterDiameter-fudgeFactor,
+        outer = true,
+        totalLength = endStopLength,
+        taper1 = 0,
+        taper2 = 0.5,
+        wallThickness = 0,
+        stopThickness = (endStopDiameter-makitaOuterDiameter)/2,
+        zPosition = makitaMinLength-endStopLength);
+    }
+  
+    translate([0,0,-fudgeFactor])
+    cylinder(d=lowerInnerLipDiameter, h=lowerInnerLipLength);
+    
+    //subtract the ring lock
+    Pipe (
+      diameter = makitaRingClipRadius,
+      length = makitaRingClipHeight,
+      wallThickness = makitaWallThickness,
+      zPosition = makitaRingClipPosition);
+  }
+}
+//CombinedEnd from path connector_makita.scad
 
 function getColor(colorSetting, defaultColor) = 
   assert(is_list(colorSetting), str("colorSetting must be a list colorSetting=", colorSetting, " defaultColor", defaultColor))
@@ -17840,25 +17924,33 @@ module adapter(
           mirror ([0,0,1])
           CenTecMaleConnector($fn = $fn);
         }
+        else if(con[iStyle] == "makita_male")
+        {
+          translate([0, 0, con[iLength]+con[iStopLength]])
+          mirror ([0,0,1])
+          MakitaMaleConnector(
+            help = help,
+            $fn = $fn);
+        }
         else if(con[iStyle] == "osvacm" || con[iStyle] == "osvacm32")
         {
           translate([0, 0, con[iLength]+con[iStopLength]])
           mirror ([0,0,1])
           osVacMaleConnector(
-          innerDiameter = con[iInnerEndDiameter],
-          length = con[iLength],
-          help = help,
-          $fn = $fn);
+            innerDiameter = con[iInnerEndDiameter],
+            length = con[iLength],
+            help = help,
+            $fn = $fn);
         }
         else if(con[iStyle] == "osvacf" || con[iStyle] == "osvacf32")
         {
           translate([0, 0, con[iLength]+con[iStopLength]])
           mirror ([0,0,1])
           osVacFemaleConnector(
-          innerDiameter = con[iInnerEndDiameter],
-          length = con[iLength],
-          help = help,
-          $fn = $fn);
+            innerDiameter = con[iInnerEndDiameter],
+            length = con[iLength],
+            help = help,
+            $fn = $fn);
         }
         else if(con[iStyle] == "nozzle")
         {
