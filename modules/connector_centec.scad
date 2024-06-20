@@ -1,5 +1,4 @@
 include <constants.scad>
-
 include <modules_utility.scad>
 include <connector_hose.scad>
 
@@ -20,12 +19,12 @@ centecFemaleSettings = ["centec_female", [
   [iSettingsVersion, cenTecFemaleVersion]
   ]];
 
-cenTecMaleVersion = "0.1";
+cenTecMaleVersion = "0.2";
 cenTecMaleBodyLength =  25.797;
 cenTecMaleMinLength = 32;
 cenTecMaleMeasurement = "outer";
 cenTecMaleInnerDiameter = 32.544;
-cenTecMaleOuterDiameter = 45.244; 
+cenTecMaleOuterDiameter = 44.75; //v0.1 45.244;
 cenTecMaleWallThickness = (cenTecMaleOuterDiameter - cenTecMaleInnerDiameter)/2;
  
 centecMaleSettings = ["centec_male", [
@@ -39,10 +38,10 @@ centecMaleSettings = ["centec_male", [
   
 //Test female  
 //CenTecFemaleConnector();
-//Test female
+//Test male
 //CenTecMaleConnector();
 
-module CenTecMaleConnector( ){
+module CenTecMaleConnector($fn = 64){
   connectorLength = cenTecMaleMinLength;
   connectorInnerRadius= cenTecMaleInnerDiameter/2;
   connectorOuterRadius= cenTecMaleOuterDiameter/2;
@@ -50,9 +49,9 @@ module CenTecMaleConnector( ){
   wallThickness = cenTecMaleWallThickness;
   StopInnerLength = cenTecFemaleWallThickness;
 
-  clickLength = 5.556;
+  clickLength = 6.5;//V0.1 5.556;
   clickDiameter = 36.513;
-  clickZpos = 9.128;
+  clickZpos = 8.5;//V0.1 9.128;
   clickWallThicknessDepth = (cenTecMaleOuterDiameter-clickDiameter);
   
   startLipLength = 1.191;
