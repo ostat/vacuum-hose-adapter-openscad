@@ -27,19 +27,28 @@ module Pipe(
   //todo, add correction to ensure that the thickness of the walls never reduce to less than wallthickenss1 and wallThickness2
   //using wallThickness/2 is a sloppy approximation, really need to use trig to would out the correct value
   leadin = max(fudgeFactor, min(wallThickness1, wallThickness2, length)/2);
-  startOuterLeadin = diameter1 > diameter2 ? leadin : fudgeFactor;
-  startInnerLeadin = diameter1 > diameter2 ? fudgeFactor : leadin;
-  endOuterLeadin = diameter2 > diameter1 ? leadin : fudgeFactor;
-  endInnerLeadin = diameter2 > diameter1 ? fudgeFactor : leadin;
   
+  //a = b × tan(α)
+  //atan(a/b) = angle;
+  
+  startOuterLeadin = diameter1+wallThickness1*2 > diameter2+wallThickness2*2 ? leadin : fudgeFactor;
+  startInnerLeadin = diameter1 > diameter2 ? fudgeFactor : leadin;
+  endOuterLeadin = diameter2+wallThickness2*2> diameter1+wallThickness1*2 ? leadin : fudgeFactor;
+  endInnerLeadin = diameter2 > diameter1 ? fudgeFactor : leadin;
+  hasLeadinWallCorrection = 
+    startOuterLeadin != fudgeFactor ||
+    startInnerLeadin != fudgeFactor ||
+    endOuterLeadin != fudgeFactor ||
+    endInnerLeadin != fudgeFactor;
+  //echo("Pipe", hasLeadinWallCorrection=hasLeadinWallCorrection, startOuterLeadin=startOuterLeadin, startInnerLeadin=startInnerLeadin, endOuterLeadin=endOuterLeadin, endInnerLeadin=endInnerLeadin);
   difference ()
   {
     //outer cylinder
     translate([0,0,zPosition])
     hull()
     {
-      if(Offset.x>0 || Offset.y>0 || 
-        (diameter1 != diameter2 && diameter1+wallThickness1*2 != diameter2+wallThickness2*2)) {
+      if(Offset.x>0 || Offset.y>0 || hasLeadinWallCorrection) {
+        //(diameter1 != diameter2 && diameter1+wallThickness1*2 != diameter2+wallThickness2*2)) {
         cylinder(h=startOuterLeadin, d=diameter1+wallThickness1*2);
         translate([Offset.x,Offset.y,length-endOuterLeadin])
           cylinder(h=endOuterLeadin, d=diameter2+wallThickness2*2);
@@ -55,8 +64,8 @@ module Pipe(
     translate([0,0,zPosition])
       union()
       {
-      if(Offset.x > 0 || Offset.y>0 ||
-        (diameter1 != diameter2 && diameter1+wallThickness1*2 != diameter2+wallThickness2*2)) {
+      if(Offset.x > 0 || Offset.y>0 || hasLeadinWallCorrection) {
+        //(diameter1 != diameter2 && diameter1+wallThickness1*2 != diameter2+wallThickness2*2)) {
       
         translate([0,0,-fudgeFactor])
         cylinder(startInnerLeadin+fudgeFactor*2, d=diameter1);

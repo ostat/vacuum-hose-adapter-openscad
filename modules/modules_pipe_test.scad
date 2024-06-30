@@ -6,6 +6,8 @@ difference(){
   thickness = 10;
 
   union(){
+
+    
     Pipe(
         diameter1 = 100,
         diameter2 = 40,
@@ -17,7 +19,12 @@ difference(){
         diameter2 = 100,
         length = 20,
         wallThickness = 2);
-      
+    translate([0,0,60])
+    Pipe(
+        diameter1 = 20,
+        diameter2 = 100,
+        length = 10,
+        wallThickness = 2);     
     translate([100,0,0])
     Pipe(
         diameter1 = radius*2,
