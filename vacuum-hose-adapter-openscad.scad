@@ -68,6 +68,12 @@ End1_Hose_EndCap_GridSize = 0;  //0.1
 //Thickness of the walls in the end cap
 End1_Hose_EndCap_GridWallThickness = 0;  //0.1
 
+//Enable threads (beta feature)
+End1_Hose_Enable_Threads = false;  
+End1_Hose_Threads_Pitch = 0;  
+End1_Hose_Threads_Tooth_Angle = 30;  
+End1_Hose_Threads_Tooth_Height = 0;  
+
 /* [Connector 1 - Flange] */
 //Width of Flange added to the connector diamater
 End1_Flange_Width = 20;
@@ -183,6 +189,11 @@ End2_Hose_EndCap_Diameter = 0;  //0.1
 End2_Hose_EndCap_GridSize = 0;  //0.1
 //Thickness of the walls in the end cap
 End2_Hose_EndCap_GridWallThickness = 0;  //0.1
+//Enable threads (beta feature)
+End2_Hose_Enable_Threads = false;  
+End2_Hose_Threads_Pitch = 0;  
+End2_Hose_Threads_Tooth_Angle = 30;  
+End2_Hose_Threads_Tooth_Height = 0;  
 
 /* [Connector 2 - Flange] */
 //Width of Flange added to the connector diamater
@@ -271,7 +282,11 @@ End3_Hose_EndCap_Diameter = 0;  //0.1
 End3_Hose_EndCap_GridSize = 0;  //0.1
 //Thickness of the walls in the end cap
 End3_Hose_EndCap_GridWallThickness = 0;  //0.1
-
+//Enable threads (beta feature)
+End3_Hose_Enable_Threads = false;  
+End3_Hose_Threads_Pitch = 0;  
+End3_Hose_Threads_Tooth_Angle = 30;  
+End3_Hose_Threads_Tooth_Height = 0;  
 
 /* [Connector 3 - Flange] */
 //Width of Flange added to the connector diamater
@@ -512,6 +527,10 @@ module adapter(
             endCapThickness = con[iEndCapThickness],
             endCapGridSize = con[iEndCapGridSize],
             endCapGridWallThickness = con[iEndCapGridWallThickness],
+            enableThreads=con[iEnableThreads],
+            threadPitch=con[iThreadPitch], 
+            threadToothAngle=con[iThreadToothAngle], 
+            threadToothHeight=con[iThreadToothHeight],
             help = help,
             $fn = $fn);
         }
@@ -1077,6 +1096,10 @@ module HoseAdapter(
   connector1BarbsCount = End1_Barbs_Count,
   connector1BarbsThickness = End1_Barbs_Thickness,
   connector1BarbsSymmetrical = End1_Barbs_Symmetrical,
+  connector1HoseEnableThreads = End1_Hose_Enable_Threads,
+  connector1HoseThreadsPitch = End1_Hose_Threads_Pitch,
+  connector1HoseThreadsToothAngle = End1_Hose_Threads_Tooth_Angle,
+  connector1HoseThreadsToothHeight = End1_Hose_Threads_Tooth_Height,
 
   connector1MagnetCount = End1_Magnets_Count,
   connector1MagnetDiameter = End1_Magnet_Diameter,
@@ -1133,7 +1156,11 @@ module HoseAdapter(
   connector2BarbsCount = End2_Barbs_Count,
   connector2BarbsThickness = End2_Barbs_Thickness,
   connector2BarbsSymmetrical = End2_Barbs_Symmetrical,
-
+  connector2HoseEnableThreads = End2_Hose_Enable_Threads,
+  connector2HoseThreadsPitch = End2_Hose_Threads_Pitch,
+  connector2HoseThreadsToothAngle = End2_Hose_Threads_Tooth_Angle,
+  connector2HoseThreadsToothHeight = End2_Hose_Threads_Tooth_Height,
+  
   connector2MagnetCount = End2_Magnets_Count,
   connector2MagnetDiameter = End2_Magnet_Diameter,
   connector2MagnetThickness = End2_Magnet_Thickness,
@@ -1180,7 +1207,11 @@ module HoseAdapter(
   connector3BarbsCount = End3_Barbs_Count,
   connector3BarbsThickness = End3_Barbs_Thickness,
   connector3BarbsSymmetrical = End3_Barbs_Symmetrical,
-
+  connector3HoseEnableThreads = End3_Hose_Enable_Threads,
+  connector3HoseThreadsPitch = End3_Hose_Threads_Pitch,
+  connector3HoseThreadsToothAngle = End3_Hose_Threads_Tooth_Angle,
+  connector3HoseThreadsToothHeight = End3_Hose_Threads_Tooth_Height,
+  
   connector3MagnetCount = End3_Magnets_Count,
   connector3MagnetDiameter = End3_Magnet_Diameter,
   connector3MagnetThickness = End3_Magnet_Thickness,
@@ -1242,6 +1273,10 @@ module HoseAdapter(
     barbsCount=connector1BarbsCount,
     barbsThickness=connector1BarbsThickness,
     barbsSymmetrical=connector1BarbsSymmetrical,
+    enableThreads=connector1HoseEnableThreads,
+    threadPitch=connector1HoseThreadsPitch,
+    threadToothAngle=connector1HoseThreadsToothAngle,
+    threadToothHeight=connector1HoseThreadsToothHeight,
     magnetCount=connector1MagnetCount,
     magnetDiameter=connector1MagnetDiameter,
     magnetThickness=connector1MagnetThickness,
@@ -1296,6 +1331,10 @@ module HoseAdapter(
     barbsCount=connector2BarbsCount,
     barbsThickness=connector2BarbsThickness,
     barbsSymmetrical=connector2BarbsSymmetrical,
+    enableThreads=connector2HoseEnableThreads,
+    threadPitch=connector2HoseThreadsPitch,
+    threadToothAngle=connector2HoseThreadsToothAngle,
+    threadToothHeight=connector2HoseThreadsToothHeight,
     magnetCount=connector2MagnetCount,
     magnetDiameter=connector2MagnetDiameter,
     magnetThickness=connector2MagnetThickness,
@@ -1350,6 +1389,10 @@ module HoseAdapter(
     barbsCount=connector3BarbsCount,
     barbsThickness=connector3BarbsThickness,
     barbsSymmetrical=connector3BarbsSymmetrical,
+    enableThreads=connector3HoseEnableThreads,
+    threadPitch=connector3HoseThreadsPitch,
+    threadToothAngle=connector3HoseThreadsToothAngle,
+    threadToothHeight=connector3HoseThreadsToothHeight,
     magnetCount=connector3MagnetCount,
     magnetDiameter=connector3MagnetDiameter,
     magnetThickness=connector3MagnetThickness,
