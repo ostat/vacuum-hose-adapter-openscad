@@ -18,6 +18,13 @@ include <modules/connector_flange.scad>
 include <modules/connector_magnetic.scad>
 include <modules/connector_nozzle.scad>
 
+include <modules/connector_camlock.scad>
+include <modules/connector_centec.scad>
+include <modules/connector_dyson.scad>
+include <modules/connector_dw735.scad>
+include <modules/connector_osvac.scad>
+include <modules/connector_makita.scad>
+
 include <modules/connector_common_post.scad>
 
 //TODO Ideas
