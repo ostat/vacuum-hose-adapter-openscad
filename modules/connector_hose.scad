@@ -2,6 +2,7 @@ include <constants.scad>
 use <ub.scad>
 use <modules_utility.scad>
 use <modules_pipe.scad>
+use <modules_threads.scad>
 
 module HoseConnector(
     innerStartDiameter,
@@ -21,6 +22,10 @@ module HoseConnector(
     endCapGridWallThickness = 0,
     chamferLength = 0,
     chamferWidth = 0,
+    enableThreads=false,
+    threadPitch=0, 
+    threadToothAngle=30, 
+    threadToothHeight=0,
     help
 )
 {
@@ -61,6 +66,26 @@ module HoseConnector(
           wallThickness1 = chamferWidth*2,
           wallThickness2 = 0,
           zPosition = -fudgeFactor);
+      }
+    }
+
+    if(enableThreads){
+      if(connectorMeasurement == "outer"){
+        ExternalHoseThread(
+          diameter = innerStartDiameter+wallThickness, 
+          wallThickness=wallThickness, 
+          height=length, 
+          pitch=threadPitch, 
+          tooth_angle=threadToothAngle, 
+          tooth_height=threadToothHeight);      
+      } else {
+       InternalHoseThread(
+        diameter = innerStartDiameter, 
+        wallThickness=wallThickness, 
+        height=length, 
+        pitch=threadPitch, 
+        tooth_angle=threadToothAngle, 
+        tooth_height=threadToothHeight);
       }
     }
 

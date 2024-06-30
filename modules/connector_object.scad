@@ -17,7 +17,11 @@ iStopSymmetrical=iStopLength+1;
 iBarbsCount=iStopSymmetrical+1;
 iBarbsThickness=iBarbsCount+1;
 iBarbsSymmetrical=iBarbsThickness+1;
-iMagnetCount=iBarbsSymmetrical+1;
+iEnableThreads=iBarbsSymmetrical+1;
+iThreadPitch=iEnableThreads+1;
+iThreadToothAngle=iThreadPitch+1;
+iThreadToothHeight=iThreadToothAngle+1;
+iMagnetCount=iThreadToothHeight+1;
 iMagnetDiameter=iMagnetCount+1;
 iMagnetThickness=iMagnetDiameter+1;
 iMagnetBorder=iMagnetThickness+1;
@@ -74,6 +78,10 @@ module echoConnector(name, end, help){
     "iBarbsCount", end[iBarbsCount],
     "iBarbsThickness", end[iBarbsThickness],
     "iBarbsSymmetrical", end[iBarbsSymmetrical],
+    "iEnableThreads", end[iEnableThreads],
+    "iThreadPitch", end[iThreadPitch],
+    "iThreadToothAngle", end[iThreadToothAngle],
+    "iThreadToothHeight", end[iThreadToothHeight],
     "iMagnetCount", end[iMagnetCount],
     "iMagnetDiameter", end[iMagnetDiameter],
     "iMagnetThickness", end[iMagnetThickness],
@@ -137,6 +145,10 @@ function getConnectorSettings(
   barbsCount,
   barbsThickness,
   barbsSymmetrical,
+  enableThreads,
+  threadPitch,
+  threadToothAngle,
+  threadToothHeight,
   magnetCount,
   magnetDiameter,
   magnetThickness,
@@ -180,7 +192,8 @@ function getConnectorSettings(
     conWallThickness = let(w = retriveConnectorSetting(style, iSettingsWallThickness, wallThickness))
       (style == "nozzle" && w == 0) ? connector1WallThickness : w,
     conLength = retriveConnectorSetting(style, iSettingsLength, length),
-    conTaper = retriveConnectorSetting(style, iSettingsTaper, taper),
+    conTaper = let(t = retriveConnectorSetting(style, iSettingsTaper, taper))
+      (style == "hose" && enableThreads) ? 0 : t,
     conInnerDiameter = conMeasurement == "inner" ? conDiameter : conDiameter - conWallThickness * 2,
     conInnerStartDiameter = conInnerDiameter - conTaper / 2,
     conOuterStartDiameter = conInnerStartDiameter + wallThickness*2,
@@ -209,6 +222,10 @@ function getConnectorSettings(
         barbsCount,
         barbsThickness,
         barbsSymmetrical,
+        enableThreads,
+        threadPitch,
+        threadToothAngle,
+        threadToothHeight,
         magnetCount,
         magnetDiameter,
         magnetThickness,
