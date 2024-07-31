@@ -21,7 +21,8 @@ iMagnetCount=iBarbsSymmetrical+1;
 iMagnetDiameter=iMagnetCount+1;
 iMagnetThickness=iMagnetDiameter+1;
 iMagnetBorder=iMagnetThickness+1;
-iMagnetFlangeThickness=iMagnetBorder+1;
+iMagnetZOffset=iMagnetBorder+1;
+iMagnetFlangeThickness=iMagnetZOffset+1;
 iMagnetTwistLockSize=iMagnetFlangeThickness+1;
 iAlignmentRing=iMagnetTwistLockSize+1;
 iAlignmentDepth=iAlignmentRing+1;
@@ -78,6 +79,7 @@ module echoConnector(name, end, help){
     "iMagnetDiameter", end[iMagnetDiameter],
     "iMagnetThickness", end[iMagnetThickness],
     "iMagnetBorder", end[iMagnetBorder],
+    "iMagnetZOffset", end[iMagnetZOffset],
     "iMagnetFlangeThickness", end[iMagnetFlangeThickness],
     "iMagnetTwistLockSize", end[iMagnetTwistLockSize],
     "iAlignmentRing", end[iAlignmentRing],
@@ -141,6 +143,7 @@ function getConnectorSettings(
   magnetDiameter,
   magnetThickness,
   magnetBorder,
+  magnetZOffset,
   magnetFlangeThickness,
   magnetTwistLockSize,
   alignmentRing,
@@ -213,6 +216,7 @@ function getConnectorSettings(
         magnetDiameter,
         magnetThickness,
         magnetBorder,
+        magnetZOffset,
         magnetFlangeThickness,
         magnetTwistLockSize,
         alignmentRing,

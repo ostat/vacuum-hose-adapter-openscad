@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'funnels.scad'. Generated 2024-06-07 23:37
+//Combined version of 'funnels.scad'. Generated 2024-07-31 23:03
 ///////////////////////////////////////
 // Hose connector examples
 // version 2022-09-26
@@ -128,10 +128,10 @@ Changelog (archive at the very bottom)
 
 
 // libraries direkt (program folder\oscad\libaries) !
-/*[UB lib]*/
+/*UB lib*/
 test=42;
 designVersion=0;
-/*[Global]*/
+/*Global*/
 
 /// activates help in console window
 helpsw=false; 
@@ -210,8 +210,8 @@ texton=name!=undef&&name!=""?$preview?true:false:false;
 /// Colors (version 2019)
 helpMColor="";//"#5500aa";
 
-/*[Constant]*/
-/*[Hidden]*/
+/*Constant*/
+/*Hidden*/
 Version=23.305;//                <<< ---   VERSION  VERSION VERSION ••••••••••••••••
 useVersion=undef;
 UB=true;
@@ -15564,7 +15564,8 @@ iMagnetCount=iBarbsSymmetrical+1;
 iMagnetDiameter=iMagnetCount+1;
 iMagnetThickness=iMagnetDiameter+1;
 iMagnetBorder=iMagnetThickness+1;
-iMagnetFlangeThickness=iMagnetBorder+1;
+iMagnetZOffset=iMagnetBorder+1;
+iMagnetFlangeThickness=iMagnetZOffset+1;
 iMagnetTwistLockSize=iMagnetFlangeThickness+1;
 iAlignmentRing=iMagnetTwistLockSize+1;
 iAlignmentDepth=iAlignmentRing+1;
@@ -15621,6 +15622,7 @@ module echoConnector(name, end, help){
     "iMagnetDiameter", end[iMagnetDiameter],
     "iMagnetThickness", end[iMagnetThickness],
     "iMagnetBorder", end[iMagnetBorder],
+    "iMagnetZOffset", end[iMagnetZOffset],
     "iMagnetFlangeThickness", end[iMagnetFlangeThickness],
     "iMagnetTwistLockSize", end[iMagnetTwistLockSize],
     "iAlignmentRing", end[iAlignmentRing],
@@ -15684,6 +15686,7 @@ function getConnectorSettings(
   magnetDiameter,
   magnetThickness,
   magnetBorder,
+  magnetZOffset,
   magnetFlangeThickness,
   magnetTwistLockSize,
   alignmentRing,
@@ -15756,6 +15759,7 @@ function getConnectorSettings(
         magnetDiameter,
         magnetThickness,
         magnetBorder,
+        magnetZOffset,
         magnetFlangeThickness,
         magnetTwistLockSize,
         alignmentRing,
@@ -15833,6 +15837,8 @@ module HoseConnector(
     help
 )
 {
+  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, "innerEndDiameter must be a number greater than 0");
+  assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");
   _barbsThickness = barbsThickness == 0 ? wallThickness/2 : barbsThickness;
   barbLength = length/(barbsCount*2+1);
   union() {
@@ -15958,7 +15964,6 @@ module HoseConnector(
     "chamferWidth", chamferWidth
     ],help); 
 }
-
 //CombinedEnd from path connector_hose.scad
 //Combined from path connector_flange.scad
 
@@ -16070,6 +16075,7 @@ module FlangeConnector(
 //CombinedEnd from path connector_flange.scad
 //Combined from path connector_magnetic.scad
 
+
 module MagneticConnector(
     innerStartDiameter,
     innerEndDiameter,
@@ -16078,6 +16084,7 @@ module MagneticConnector(
     magnetDiameter,
     magnetThickness,
     magnetBorder,
+    magnetZOffset,
     flangeThickness,
     magnetCount,
     alignmentRing,
@@ -16088,8 +16095,7 @@ module MagneticConnector(
     alignmentDepthClearance,
     twistLockSize,
 )
-{
-  
+{ 
   //These sizes need to be tested.
   //head, outer thread for slot, thread hole size
   lockingSize = 
@@ -16138,10 +16144,20 @@ module MagneticConnector(
 
             // flange aound the magnets
             hull () {
+                roundover = lockingSize !=[0,0,0] ? 0 
+                  : max(flangeThickness-magnetThickness-magnetZOffset,0);
+                  echo(roundover=roundover);
                 for (i = [0: magnetCount-1]) {
                     rotate ([0, 0, i * magnetDivisionAngle])
                     translate ([magnetPosition, 0, 0])
-                    cylinder (d = magnetDiameter + magnetBorder * 2, flangeThickness);
+                    if(roundover > 0){
+                      roundedCylinder(
+                        h = flangeThickness,
+                        r = (magnetDiameter + magnetBorder)/2,
+                        roundedr2=roundover);
+                    }else {
+                      cylinder (d = magnetDiameter + magnetBorder * 2, flangeThickness);
+                    }
                 }
              
               //flage around locks
@@ -16203,7 +16219,7 @@ module MagneticConnector(
         //Magnet cut out
         for (i = [0: magnetCount-1]) {
             rotate ([0, 0, i* 360 / magnetCount])
-            translate ([magnetPosition, 0, - fudgeFactor])
+            translate ([magnetPosition, 0, magnetZOffset - fudgeFactor])
             cylinder (d = magnetDiameter, h = magnetThickness + fudgeFactor);
         }
         
@@ -16546,9 +16562,6 @@ module CamlockConnector(
 //CombinedEnd from path connector_camlock.scad
 //Combined from path connector_centec.scad
 
-/*
-I printed the Centec male v0.1 adapter. The diameter and length of the part seem to be spot on. The fit of the male part into the female is a bit tighter than the production parts. But it does insert completely and bottom out. The male production part has a diameter of about 44.75 whereas the v0.1 part's diameter is closer to 45. I removed the retention ring from a production male fitting and it is too wide for the slot in the v0.1 fitting. That's not a problem if the part you design will be thinner. Here are some pics.
-*/
 cenTecFemaleVersion = "0.1";
 cenTecFemaleBodyLength =  25;
 cenTecFemaleWallThickness = 3;
@@ -16783,7 +16796,7 @@ module centecRoundedCube(
 //CombinedEnd from path connector_centec.scad
 //Combined from path connector_dyson.scad
 
-/* [Hidden] */
+/* Hidden */
 dysonVersion = "1.2";
 dysonMinLength = 46;
 dysonMeasurement = "outer";
@@ -17051,7 +17064,7 @@ module Dw735Connector(
 //Female documentation https://www.thingiverse.com/thing:4562762
 //Male documentation https://www.thingiverse.com/thing:4562789
 
-/* [Hidden] */
+/* Hidden */
 clipCount = 3;
 
 osvacmVersion = "0.1";
@@ -17324,6 +17337,89 @@ module osVacMaleConnector(
 
 
 //CombinedEnd from path connector_osvac.scad
+//Combined from path connector_makita.scad
+//from here https://cad.onshape.com/documents/b952efdb75aae7a041c428d2/w/8d2594b7d94e0bbfda74354e/e/ce4460e84e97931fc7b7869b
+
+makitaVersion = "0.1";
+makitaMinLength = 53.3;
+makitaMeasurement = "outer";
+makitaOuterDiameter = 38.5;
+makitaInnerDiameter = 31;
+makitaWallThickness = (makitaOuterDiameter-makitaInnerDiameter)/2;
+
+makitaMaleSettings = ["makita_male", [
+  [iSettingsLength, makitaMinLength],
+  [iSettingsMeasurement, makitaMeasurement],
+  [iSettingsDiameter, makitaOuterDiameter],
+  [iSettingsTaper ,0],
+  [iSettingsWallThickness, makitaWallThickness],
+  [iSettingsVersion, makitaVersion]
+  ]];
+ 
+ /*
+ makitaConnector(
+  innerEndDiameter = makitaOuterDiameter,
+  length = makitaMinLength,
+  wallThickness = 2);
+ */
+
+//MakitaMaleConnector();
+ 
+module MakitaMaleConnector(
+  help,
+  $fn = 64){
+  outerDiameter = makitaOuterDiameter;
+  innerDiameter =  outerDiameter - makitaWallThickness*2;
+  
+  makitaRingClipRadius = outerDiameter - 1.85*2;
+  makitaRingClipHeight = 10.5;
+  makitaRingClipPosition = 29.5;
+  
+  lowerInnerLipDiameter = 33;
+  lowerInnerLipLength = 3;
+  makitaChamfer = 1;
+  makitaChamferLength = 4.5;
+  endStopDiameter = 51;
+  endStopLength = 4;
+  
+ echo("makitaConnector", innerDiameter = innerDiameter, outerDiameter=outerDiameter, makitaMinLength=makitaMinLength, makitaWallThickness = makitaWallThickness);
+    
+  difference(){
+    union(){
+    HoseConnector(
+      connectorMeasurement = "outer",
+      innerStartDiameter = innerDiameter,
+      innerEndDiameter = innerDiameter,
+      length = makitaMinLength,
+      wallThickness = makitaWallThickness,
+      stopSymmetrical = 0,
+      chamferLength = makitaChamferLength,
+      chamferWidth= makitaChamfer
+    );
+      
+      Stopper(
+        diameter = makitaOuterDiameter-fudgeFactor,
+        outer = true,
+        totalLength = endStopLength,
+        taper1 = 0,
+        taper2 = 0.5,
+        wallThickness = 0,
+        stopThickness = (endStopDiameter-makitaOuterDiameter)/2,
+        zPosition = makitaMinLength-endStopLength);
+    }
+  
+    translate([0,0,-fudgeFactor])
+    cylinder(d=lowerInnerLipDiameter, h=lowerInnerLipLength);
+    
+    //subtract the ring lock
+    Pipe (
+      diameter = makitaRingClipRadius,
+      length = makitaRingClipHeight,
+      wallThickness = makitaWallThickness,
+      zPosition = makitaRingClipPosition);
+  }
+}
+//CombinedEnd from path connector_makita.scad
 //Combined from path connector_common_post.scad
 connectorSettings =[
   camlockSettings,
@@ -17334,7 +17430,8 @@ connectorSettings =[
   osvacmSettings,
   osvacm32Settings,
   osvacfSettings,
-  osvacf32Settings];
+  osvacf32Settings,
+  makitaMaleSettings];
 //CombinedEnd from path connector_common_post.scad
 //Combined from path vacuum-hose-adapter-openscad.scad
 // Hose connector
@@ -17347,21 +17444,23 @@ connectorSettings =[
 
 
 
+
+
 //TODO Ideas
 //All pre and post trasition length. so a flat section before and after the taper.abs
 
-/* [Hidden] */
+/* Hidden */
 DefaultEnd1Color = "LightPink";
 DefaultEnd2Color = "SkyBlue";
 DefaultEnd3Color = "MediumPurple";
 DefaultTransitionColor = "LightGreen";
 DefaultExtensionColor = "MediumSeaGreen";
 
-/* [Connector 1] */
+/* Connector 1 */
 //Wall thickness
 End1_Wall_Thickness = 2; //0.01
 //The style of the end
-End1_Style="flange"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female]
+End1_Style="flange"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector]
 // Is the measurement the adapter's outside or inside diameter?
 End1_Measurement = "inner"; //[inner, outer]
 // End 1 diameter of the adapter (mm)
@@ -17373,7 +17472,7 @@ End1_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End1_Taper = 0;  //0.1
 
-/* [Connector 1 - Hose connector] */
+/* Connector 1 - Hose connector */
 //Thickness of hose stop
 End1_StopThickness = 0;  //1
 //Length of hose stop
@@ -17395,7 +17494,7 @@ End1_Hose_EndCap_GridSize = 0;  //0.1
 //Thickness of the walls in the end cap
 End1_Hose_EndCap_GridWallThickness = 0;  //0.1
 
-/* [Connector 1 - Flange] */
+/* Connector 1 - Flange */
 //Width of Flange added to the connector diamater
 End1_Flange_Width = 20;
 //Thickness of the flange
@@ -17409,7 +17508,7 @@ End1_Flange_Screw_Count = 4;
 //The diameter of the screws (mm)
 End1_Flange_Screw_Diameter = 5;  //0.1
 
-/* [Connector 1 - Magnetic Connector] */
+/* Connector 1 - Magnetic Connector */
 //Number of magnets in the connector
 End1_Magnets_Count = 8;
 //The diameter of the magnets (mm)
@@ -17418,6 +17517,8 @@ End1_Magnet_Diameter = 10.5;  //0.1
 End1_Magnet_Thickness = 2.5;  //0.1
 //Minium amount of the material around the magnets (mm)
 End1_Magnet_Border = 2;  //0.1
+//Raises the magent so it is fully enclosed (mm)
+End1_Magnet_ZOffset = 0;  //0.1
 // Thickness of the magnet flange (mm)
 End1_Magnet_Flange_Thickness = 6;  //0.1
 // Include a flange alignment ring
@@ -17425,7 +17526,7 @@ End1_Ring = "no"; //[no: No alignment ring, protruding: protruding ring, recesse
 // Magnetic ring Twist lock bolt size (draft setting)
 End1_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitchen insert,"4":M4,"4cnc":M4 with CNC Kitchen insert,"5":M5,"5cnc":M5 with CNC Kitchen insert]
 
-/* [Connector 1 - Extension] */
+/* Connector 1 - Extension */
 //Length of the extnetion
 End1_Extension_Length = 0;
 //Size of the grid in the extnetion. 0: diameter/6
@@ -17436,7 +17537,7 @@ End1_Extension_Text = "";
 End1_Extension_Text_Size = 0;
 
 
-/* [Transition] */
+/* Transition */
 // tapered for hose connections, flat for attaching to a device
 Transition_Style = "bend+taper"; //[flat, taper+bend: Taper then bend, bend+taper: Bend then taper, organicbend: Tapered bend, hull: Hull for multiple end count, none: no transition]
 //Length of the transition between the two ends
@@ -17448,7 +17549,7 @@ Transition_Angle = 0;  //1
 // offset for the connector, not supported on taperedbend.
 Transition_Offset = [0,0]; // 0.1
 
-/* [Transition Multiple connector settings] */
+/* Transition Multiple connector settings */
 // Dupliacte the second connector. Adjust angle and bend radius to make it work.
 Transition_End2_Count = 1;  //[1, 2, 3, 4, 5, 6]
 // MulitConnector, connector in hull length.
@@ -17461,7 +17562,7 @@ Transition_HullyOffset = 0; // 0.1
 // MulitConnector, center connector height. default is 2*lengthInHull
 Transition_HullCenterHeight = 0;
 
-/* [Transition Support For Angled Pipes] */
+/* Transition Support For Angled Pipes */
 // Include a flate section on the transition to assist with printing
 Transition_Base_Type="none"; // [none, oval, rectangle]
 //Support Base Additional Thickness;
@@ -17474,10 +17575,10 @@ Transition_Base_Length=0;
 Transition_Base_Angle=0;
 
 
-/* [Connector 2] */
+/* Connector 2 */
 //Wall thickness
 End2_Wall_Thickness = 2; //0.01
-End2_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, none: None]
+End2_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, none: None]
 // Is the measurement the adapter's outside or inside diameter?
 End2_Measurement = "outer"; //[inner, outer]
 // End 2 diameter of the adapter (mm)
@@ -17489,7 +17590,7 @@ End2_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End2_Taper = 0;  //0.1
 
-/*[Connector 2 - Hose connector] */
+/*Connector 2 - Hose connector */
 //Thickness of hose stop
 End2_StopThickness = 0;  //1
 //Length of hose stop
@@ -17511,7 +17612,7 @@ End2_Hose_EndCap_GridSize = 0;  //0.1
 //Thickness of the walls in the end cap
 End2_Hose_EndCap_GridWallThickness = 0;  //0.1
 
-/* [Connector 2 - Flange] */
+/* Connector 2 - Flange */
 //Width of Flange added to the connector diamater
 End2_Flange_Width = 20;
 //Thickness of the flange
@@ -17525,7 +17626,7 @@ End2_Flange_Screw_Count = 4;
 //The diameter of the screws (mm)
 End2_Flange_Screw_Diameter = 5;  //0.1
 
-/* [Connector 2 - Magnetic Flange] */
+/* Connector 2 - Magnetic Flange */
 //Number of magnets in the flange
 End2_Magnets_Count = 6;  //1
 //The diameter of the magnets
@@ -17534,14 +17635,16 @@ End2_Magnet_Diameter = 12;  //0.1
 End2_Magnet_Thickness = 3;  //0.1
 //Size of the material around the magnets
 End2_Magnet_Border = 2;  //0.1
-// Inner diameter of the Magnet flange
+//Raises the magent so it is fully enclosed (mm)
+End2_Magnet_ZOffset = 0;  //0.1
+//Inner diameter of the Magnet flange
 End2_Magnet_Flange_Thickness = 10;  //0.1
-// Include a flange alignment ring
+//Include a flange alignment ring
 End2_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recessed: Recessed ring]
-// Magnetic ring twist lock bolt size (draft setting)
+//Magnetic ring twist lock bolt size (draft setting)
 End2_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitchen insert,"4":M4,"4cnc":M4 with CNC Kitchen insert,"5":M5,"5cnc":M5 with CNC Kitchen insert]
 
-/* [Connector 2 - Nozzle] */
+/* Connector 2 - Nozzle */
 // Is the measurement the adapter's outside or inside diameter?
 End2_Nozzle_Shape = "square"; //[square, circle]
 End2_Nozzle_Size = [10,5,10]; //0.1
@@ -17551,7 +17654,7 @@ End2_Nozzle_Offset = [0,0]; //0.1
 End2_Nozzle_Chamfer_Percentage = 0; //0.1
 End2_Nozzle_Chamfer_Angle = 0; //0.1
 
-/* [Connector 2 - Extension] */
+/* Connector 2 - Extension */
 //Length of the extnetion
 End2_Extension_Length = 0;
 //Size of the grid in the extnetion. 0: diameter/6
@@ -17562,10 +17665,10 @@ End2_Extension_Text = "";
 End2_Extension_Text_Size = 0;
 
 
-/* [Connector 3] */
+/* Connector 3 */
 //Wall thickness
 End3_Wall_Thickness = 2; //0.01
-End3_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, none: None]
+End3_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, none: None]
 // Is the measurement the adapter's outside or inside diameter?
 End3_Measurement = "outer"; //[inner, outer]
 // End 2 diameter of the adapter (mm)
@@ -17577,7 +17680,7 @@ End3_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End3_Taper = 0;  //0.1
 
-/*[Connector 3 - Hose connector] */
+/*Connector 3 - Hose connector */
 //Thickness of hose stop
 End3_StopThickness = 0;  //1
 //Length of hose stop
@@ -17600,7 +17703,7 @@ End3_Hose_EndCap_GridSize = 0;  //0.1
 End3_Hose_EndCap_GridWallThickness = 0;  //0.1
 
 
-/* [Connector 3 - Flange] */
+/* Connector 3 - Flange */
 //Width of Flange added to the connector diamater
 End3_Flange_Width = 20;
 //Thickness of the flange
@@ -17614,7 +17717,7 @@ End3_Flange_Screw_Count = 4;
 //The diameter of the screws (mm)
 End3_Flange_Screw_Diameter = 5;  //0.1
 
-/* [Connector 3 - Magnetic Flange] */
+/* Connector 3 - Magnetic Flange */
 //Number of magnets in the flange
 End3_Magnets_Count = 6;  //1
 //The diameter of the magnets
@@ -17623,6 +17726,8 @@ End3_Magnet_Diameter = 12;  //0.1
 End3_Magnet_Thickness = 3;  //0.1
 //Size of the material around the magnets
 End3_Magnet_Border = 2;  //0.1
+//Raises the magent so it is fully enclosed (mm)
+End3_Magnet_ZOffset = 0;  //0.1
 // Inner diameter of the Magnet flange
 End3_Magnet_Flange_Thickness = 10;  //0.1
 // Include a flange alignment ring
@@ -17630,7 +17735,7 @@ End3_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recesse
 // Magnetic ring twist lock bolt size (draft setting)
 End3_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitchen insert,"4":M4,"4cnc":M4 with CNC Kitchen insert,"5":M5,"5cnc":M5 with CNC Kitchen insert]
 
-/* [Connector 3 - Nozzle] */
+/* Connector 3 - Nozzle */
 // Is the measurement the adapter's outside or inside diameter?
 End3_Nozzle_Shape = "square"; //[square, circle]
 End3_Nozzle_Size = [10,5,10]; //0.1
@@ -17640,7 +17745,7 @@ End3_Nozzle_Offset = [0,0]; //0.1
 End3_Nozzle_Chamfer_Percentage = 0; //0.1
 End3_Nozzle_Chamfer_Angle = 0; //0.1
 
-/* [Connector 3 - Extension] */
+/* Connector 3 - Extension */
 //Length of the extnetion
 End3_Extension_Length = 0;
 //Size of the grid in the extnetion. 0: diameter/6
@@ -17650,7 +17755,7 @@ End3_Extension_GridWallThickness = 0;  //0.1
 End3_Extension_Text = "";
 End3_Extension_Text_Size = 0;
 
-/* [Alignment Ring] */
+/* Alignment Ring */
 //draw just the alignment ring
 Draw_Alignment_Ring = "no"; //[end1: Draw end 1, end2: Draw end 2, no: Don't draw]
 //Alignment depth in to flange (mm)
@@ -17664,7 +17769,7 @@ Alignment_Side_Clearance = 0.25;  //0.01
 //Alignment Depth Clearance, to prevent hitting bottom (mm).
 Alignment_Depth_Clearance = .75;  //0.01
 
-/* [other] */
+/* other */
 //Slice model inhalf to be able to easy see inside
 Enable_Debug_Slice = false;
 //Will only show if debug is also enabled
@@ -17676,7 +17781,7 @@ End3_Color = [DefaultEnd3Color,1];  //0.1
 Transition_Color = [DefaultTransitionColor,1]; //The color, then the alpha value
 Extension_Color = [DefaultExtensionColor,1]; //The color, then the alpha value
 
-/* [Hidden] */
+/* Hidden */
 //Detail
 $fn=120;
 
@@ -17788,6 +17893,7 @@ module adapter(
               magnetDiameter = con[iMagnetDiameter],
               magnetThickness = con[iMagnetThickness],
               magnetBorder = con[iMagnetBorder],
+              magnetZOffset = con[iMagnetZOffset],
               flangeThickness = con[iMagnetFlangeThickness],
               magnetCount = con[iMagnetCount],
               alignmentRing = con[iAlignmentRing],
@@ -17885,25 +17991,33 @@ module adapter(
           mirror ([0,0,1])
           CenTecMaleConnector($fn = $fn);
         }
+        else if(con[iStyle] == "makita_male")
+        {
+          translate([0, 0, con[iLength]+con[iStopLength]])
+          mirror ([0,0,1])
+          MakitaMaleConnector(
+            help = help,
+            $fn = $fn);
+        }
         else if(con[iStyle] == "osvacm" || con[iStyle] == "osvacm32")
         {
           translate([0, 0, con[iLength]+con[iStopLength]])
           mirror ([0,0,1])
           osVacMaleConnector(
-          innerDiameter = con[iInnerEndDiameter],
-          length = con[iLength],
-          help = help,
-          $fn = $fn);
+            innerDiameter = con[iInnerEndDiameter],
+            length = con[iLength],
+            help = help,
+            $fn = $fn);
         }
         else if(con[iStyle] == "osvacf" || con[iStyle] == "osvacf32")
         {
           translate([0, 0, con[iLength]+con[iStopLength]])
           mirror ([0,0,1])
           osVacFemaleConnector(
-          innerDiameter = con[iInnerEndDiameter],
-          length = con[iLength],
-          help = help,
-          $fn = $fn);
+            innerDiameter = con[iInnerEndDiameter],
+            length = con[iLength],
+            help = help,
+            $fn = $fn);
         }
         else if(con[iStyle] == "nozzle")
         {
@@ -18400,6 +18514,7 @@ module HoseAdapter(
   connector1MagnetDiameter = End1_Magnet_Diameter,
   connector1MagnetThickness = End1_Magnet_Thickness,
   connector1MagnetBorder = End1_Magnet_Border,
+  connector1MagnetZOffset = End1_Magnet_ZOffset,
   connector1MagnetFlangeThickness = End1_Magnet_Flange_Thickness,
   connector1MagnetTwistLockSize = End1_Magnet_Twist_Lock_Size,
   connector1Ring = End1_Ring,
@@ -18456,6 +18571,7 @@ module HoseAdapter(
   connector2MagnetDiameter = End2_Magnet_Diameter,
   connector2MagnetThickness = End2_Magnet_Thickness,
   connector2MagnetBorder = End2_Magnet_Border,
+  connector2MagnetZOffset = End2_Magnet_ZOffset,
   connector2MagnetFlangeThickness = End2_Magnet_Flange_Thickness,
   connector2MagnetTwistLockSize = End2_Magnet_Twist_Lock_Size,
   connector2Ring = End2_Ring,
@@ -18503,6 +18619,7 @@ module HoseAdapter(
   connector3MagnetDiameter = End3_Magnet_Diameter,
   connector3MagnetThickness = End3_Magnet_Thickness,
   connector3MagnetBorder = End3_Magnet_Border,
+  connector3MagnetZOffset = End3_Magnet_ZOffset,
   connector3MagnetFlangeThickness = End3_Magnet_Flange_Thickness,
   connector3MagnetTwistLockSize = End3_Magnet_Twist_Lock_Size,
   connector3Ring = End3_Ring,
@@ -18564,6 +18681,7 @@ module HoseAdapter(
     magnetDiameter=connector1MagnetDiameter,
     magnetThickness=connector1MagnetThickness,
     magnetBorder=connector1MagnetBorder,
+    magnetZOffset=connector1MagnetZOffset,
     magnetFlangeThickness=connector1MagnetFlangeThickness,
     magnetTwistLockSize=connector1MagnetTwistLockSize,
     alignmentRing=connector1Ring,
@@ -18618,6 +18736,7 @@ module HoseAdapter(
     magnetDiameter=connector2MagnetDiameter,
     magnetThickness=connector2MagnetThickness,
     magnetBorder=connector2MagnetBorder,
+    magnetZOffset=connector2MagnetZOffset,
     magnetFlangeThickness=connector2MagnetFlangeThickness,
     magnetTwistLockSize=connector2MagnetTwistLockSize,
     alignmentRing=connector2Ring,
@@ -18672,6 +18791,7 @@ module HoseAdapter(
     magnetDiameter=connector3MagnetDiameter,
     magnetThickness=connector3MagnetThickness,
     magnetBorder=connector3MagnetBorder,
+    magnetZOffset=connector3MagnetZOffset,
     magnetFlangeThickness=connector3MagnetFlangeThickness,
     magnetTwistLockSize=connector3MagnetTwistLockSize,
     alignmentRing=connector3Ring,

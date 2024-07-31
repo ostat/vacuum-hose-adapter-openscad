@@ -1,4 +1,6 @@
 include <constants.scad>
+include <modules_utility.scad>
+
 
 module MagneticConnector(
     innerStartDiameter,
@@ -8,6 +10,7 @@ module MagneticConnector(
     magnetDiameter,
     magnetThickness,
     magnetBorder,
+    magnetZOffset,
     flangeThickness,
     magnetCount,
     alignmentRing,
@@ -18,8 +21,7 @@ module MagneticConnector(
     alignmentDepthClearance,
     twistLockSize,
 )
-{
-  
+{ 
   //These sizes need to be tested.
   //head, outer thread for slot, thread hole size
   lockingSize = 
@@ -68,10 +70,20 @@ module MagneticConnector(
 
             // flange aound the magnets
             hull () {
+                roundover = lockingSize !=[0,0,0] ? 0 
+                  : max(flangeThickness-magnetThickness-magnetZOffset,0);
+                  echo(roundover=roundover);
                 for (i = [0: magnetCount-1]) {
                     rotate ([0, 0, i * magnetDivisionAngle])
                     translate ([magnetPosition, 0, 0])
-                    cylinder (d = magnetDiameter + magnetBorder * 2, flangeThickness);
+                    if(roundover > 0){
+                      roundedCylinder(
+                        h = flangeThickness,
+                        r = (magnetDiameter + magnetBorder)/2,
+                        roundedr2=roundover);
+                    }else {
+                      cylinder (d = magnetDiameter + magnetBorder * 2, flangeThickness);
+                    }
                 }
              
               //flage around locks
@@ -133,7 +145,7 @@ module MagneticConnector(
         //Magnet cut out
         for (i = [0: magnetCount-1]) {
             rotate ([0, 0, i* 360 / magnetCount])
-            translate ([magnetPosition, 0, - fudgeFactor])
+            translate ([magnetPosition, 0, magnetZOffset - fudgeFactor])
             cylinder (d = magnetDiameter, h = magnetThickness + fudgeFactor);
         }
         

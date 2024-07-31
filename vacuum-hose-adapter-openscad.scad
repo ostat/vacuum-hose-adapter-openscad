@@ -98,6 +98,8 @@ End1_Magnet_Diameter = 10.5;  //0.1
 End1_Magnet_Thickness = 2.5;  //0.1
 //Minium amount of the material around the magnets (mm)
 End1_Magnet_Border = 2;  //0.1
+//Raises the magent so it is fully enclosed (mm)
+End1_Magnet_ZOffset = 0;  //0.1
 // Thickness of the magnet flange (mm)
 End1_Magnet_Flange_Thickness = 6;  //0.1
 // Include a flange alignment ring
@@ -214,11 +216,13 @@ End2_Magnet_Diameter = 12;  //0.1
 End2_Magnet_Thickness = 3;  //0.1
 //Size of the material around the magnets
 End2_Magnet_Border = 2;  //0.1
-// Inner diameter of the Magnet flange
+//Raises the magent so it is fully enclosed (mm)
+End2_Magnet_ZOffset = 0;  //0.1
+//Inner diameter of the Magnet flange
 End2_Magnet_Flange_Thickness = 10;  //0.1
-// Include a flange alignment ring
+//Include a flange alignment ring
 End2_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recessed: Recessed ring]
-// Magnetic ring twist lock bolt size (draft setting)
+//Magnetic ring twist lock bolt size (draft setting)
 End2_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitchen insert,"4":M4,"4cnc":M4 with CNC Kitchen insert,"5":M5,"5cnc":M5 with CNC Kitchen insert]
 
 /* [Connector 2 - Nozzle] */
@@ -303,6 +307,8 @@ End3_Magnet_Diameter = 12;  //0.1
 End3_Magnet_Thickness = 3;  //0.1
 //Size of the material around the magnets
 End3_Magnet_Border = 2;  //0.1
+//Raises the magent so it is fully enclosed (mm)
+End3_Magnet_ZOffset = 0;  //0.1
 // Inner diameter of the Magnet flange
 End3_Magnet_Flange_Thickness = 10;  //0.1
 // Include a flange alignment ring
@@ -469,6 +475,7 @@ module adapter(
               magnetDiameter = con[iMagnetDiameter],
               magnetThickness = con[iMagnetThickness],
               magnetBorder = con[iMagnetBorder],
+              magnetZOffset = con[iMagnetZOffset],
               flangeThickness = con[iMagnetFlangeThickness],
               magnetCount = con[iMagnetCount],
               alignmentRing = con[iAlignmentRing],
@@ -1089,6 +1096,7 @@ module HoseAdapter(
   connector1MagnetDiameter = End1_Magnet_Diameter,
   connector1MagnetThickness = End1_Magnet_Thickness,
   connector1MagnetBorder = End1_Magnet_Border,
+  connector1MagnetZOffset = End1_Magnet_ZOffset,
   connector1MagnetFlangeThickness = End1_Magnet_Flange_Thickness,
   connector1MagnetTwistLockSize = End1_Magnet_Twist_Lock_Size,
   connector1Ring = End1_Ring,
@@ -1145,6 +1153,7 @@ module HoseAdapter(
   connector2MagnetDiameter = End2_Magnet_Diameter,
   connector2MagnetThickness = End2_Magnet_Thickness,
   connector2MagnetBorder = End2_Magnet_Border,
+  connector2MagnetZOffset = End2_Magnet_ZOffset,
   connector2MagnetFlangeThickness = End2_Magnet_Flange_Thickness,
   connector2MagnetTwistLockSize = End2_Magnet_Twist_Lock_Size,
   connector2Ring = End2_Ring,
@@ -1192,6 +1201,7 @@ module HoseAdapter(
   connector3MagnetDiameter = End3_Magnet_Diameter,
   connector3MagnetThickness = End3_Magnet_Thickness,
   connector3MagnetBorder = End3_Magnet_Border,
+  connector3MagnetZOffset = End3_Magnet_ZOffset,
   connector3MagnetFlangeThickness = End3_Magnet_Flange_Thickness,
   connector3MagnetTwistLockSize = End3_Magnet_Twist_Lock_Size,
   connector3Ring = End3_Ring,
@@ -1253,6 +1263,7 @@ module HoseAdapter(
     magnetDiameter=connector1MagnetDiameter,
     magnetThickness=connector1MagnetThickness,
     magnetBorder=connector1MagnetBorder,
+    magnetZOffset=connector1MagnetZOffset,
     magnetFlangeThickness=connector1MagnetFlangeThickness,
     magnetTwistLockSize=connector1MagnetTwistLockSize,
     alignmentRing=connector1Ring,
@@ -1307,6 +1318,7 @@ module HoseAdapter(
     magnetDiameter=connector2MagnetDiameter,
     magnetThickness=connector2MagnetThickness,
     magnetBorder=connector2MagnetBorder,
+    magnetZOffset=connector2MagnetZOffset,
     magnetFlangeThickness=connector2MagnetFlangeThickness,
     magnetTwistLockSize=connector2MagnetTwistLockSize,
     alignmentRing=connector2Ring,
@@ -1361,6 +1373,7 @@ module HoseAdapter(
     magnetDiameter=connector3MagnetDiameter,
     magnetThickness=connector3MagnetThickness,
     magnetBorder=connector3MagnetBorder,
+    magnetZOffset=connector3MagnetZOffset,
     magnetFlangeThickness=connector3MagnetFlangeThickness,
     magnetTwistLockSize=connector3MagnetTwistLockSize,
     alignmentRing=connector3Ring,

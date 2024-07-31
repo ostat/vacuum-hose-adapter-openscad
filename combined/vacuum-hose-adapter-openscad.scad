@@ -1,5 +1,5 @@
 ﻿///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter-openscad.scad'. Generated 2024-06-21 08:27
+//Combined version of 'vacuum-hose-adapter-openscad.scad'. Generated 2024-07-31 23:03
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -8,6 +8,7 @@
 // I give permision to use this script as you want, you are also free to sell models generated using this script. When sharing or selling models generated please provide attribution, with a link to the repo.
 //
 // I don't approve of you hosting or uploading this script it to any site or 3d modeling site.
+
 
 
 
@@ -83,6 +84,8 @@ End1_Magnet_Diameter = 10.5;  //0.1
 End1_Magnet_Thickness = 2.5;  //0.1
 //Minium amount of the material around the magnets (mm)
 End1_Magnet_Border = 2;  //0.1
+//Raises the magent so it is fully enclosed (mm)
+End1_Magnet_ZOffset = 0;  //0.1
 // Thickness of the magnet flange (mm)
 End1_Magnet_Flange_Thickness = 6;  //0.1
 // Include a flange alignment ring
@@ -199,11 +202,13 @@ End2_Magnet_Diameter = 12;  //0.1
 End2_Magnet_Thickness = 3;  //0.1
 //Size of the material around the magnets
 End2_Magnet_Border = 2;  //0.1
-// Inner diameter of the Magnet flange
+//Raises the magent so it is fully enclosed (mm)
+End2_Magnet_ZOffset = 0;  //0.1
+//Inner diameter of the Magnet flange
 End2_Magnet_Flange_Thickness = 10;  //0.1
-// Include a flange alignment ring
+//Include a flange alignment ring
 End2_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recessed: Recessed ring]
-// Magnetic ring twist lock bolt size (draft setting)
+//Magnetic ring twist lock bolt size (draft setting)
 End2_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitchen insert,"4":M4,"4cnc":M4 with CNC Kitchen insert,"5":M5,"5cnc":M5 with CNC Kitchen insert]
 
 /* [Connector 2 - Nozzle] */
@@ -288,6 +293,8 @@ End3_Magnet_Diameter = 12;  //0.1
 End3_Magnet_Thickness = 3;  //0.1
 //Size of the material around the magnets
 End3_Magnet_Border = 2;  //0.1
+//Raises the magent so it is fully enclosed (mm)
+End3_Magnet_ZOffset = 0;  //0.1
 // Inner diameter of the Magnet flange
 End3_Magnet_Flange_Thickness = 10;  //0.1
 // Include a flange alignment ring
@@ -428,10 +435,10 @@ Changelog (archive at the very bottom)
 
 
 // libraries direkt (program folder\oscad\libaries) !
-/*[UB lib]*/
+/*UB lib*/
 test=42;
 designVersion=0;
-/*[Global]*/
+/*Global*/
 
 /// activates help in console window
 helpsw=false; 
@@ -510,8 +517,8 @@ texton=name!=undef&&name!=""?$preview?true:false:false;
 /// Colors (version 2019)
 helpMColor="";//"#5500aa";
 
-/*[Constant]*/
-/*[Hidden]*/
+/*Constant*/
+/*Hidden*/
 Version=23.305;//                <<< ---   VERSION  VERSION VERSION ••••••••••••••••
 useVersion=undef;
 UB=true;
@@ -15864,7 +15871,8 @@ iMagnetCount=iBarbsSymmetrical+1;
 iMagnetDiameter=iMagnetCount+1;
 iMagnetThickness=iMagnetDiameter+1;
 iMagnetBorder=iMagnetThickness+1;
-iMagnetFlangeThickness=iMagnetBorder+1;
+iMagnetZOffset=iMagnetBorder+1;
+iMagnetFlangeThickness=iMagnetZOffset+1;
 iMagnetTwistLockSize=iMagnetFlangeThickness+1;
 iAlignmentRing=iMagnetTwistLockSize+1;
 iAlignmentDepth=iAlignmentRing+1;
@@ -15921,6 +15929,7 @@ module echoConnector(name, end, help){
     "iMagnetDiameter", end[iMagnetDiameter],
     "iMagnetThickness", end[iMagnetThickness],
     "iMagnetBorder", end[iMagnetBorder],
+    "iMagnetZOffset", end[iMagnetZOffset],
     "iMagnetFlangeThickness", end[iMagnetFlangeThickness],
     "iMagnetTwistLockSize", end[iMagnetTwistLockSize],
     "iAlignmentRing", end[iAlignmentRing],
@@ -15984,6 +15993,7 @@ function getConnectorSettings(
   magnetDiameter,
   magnetThickness,
   magnetBorder,
+  magnetZOffset,
   magnetFlangeThickness,
   magnetTwistLockSize,
   alignmentRing,
@@ -16056,6 +16066,7 @@ function getConnectorSettings(
         magnetDiameter,
         magnetThickness,
         magnetBorder,
+        magnetZOffset,
         magnetFlangeThickness,
         magnetTwistLockSize,
         alignmentRing,
@@ -16371,6 +16382,7 @@ module FlangeConnector(
 //CombinedEnd from path connector_flange.scad
 //Combined from path connector_magnetic.scad
 
+
 module MagneticConnector(
     innerStartDiameter,
     innerEndDiameter,
@@ -16379,6 +16391,7 @@ module MagneticConnector(
     magnetDiameter,
     magnetThickness,
     magnetBorder,
+    magnetZOffset,
     flangeThickness,
     magnetCount,
     alignmentRing,
@@ -16389,8 +16402,7 @@ module MagneticConnector(
     alignmentDepthClearance,
     twistLockSize,
 )
-{
-  
+{ 
   //These sizes need to be tested.
   //head, outer thread for slot, thread hole size
   lockingSize = 
@@ -16439,10 +16451,20 @@ module MagneticConnector(
 
             // flange aound the magnets
             hull () {
+                roundover = lockingSize !=[0,0,0] ? 0 
+                  : max(flangeThickness-magnetThickness-magnetZOffset,0);
+                  echo(roundover=roundover);
                 for (i = [0: magnetCount-1]) {
                     rotate ([0, 0, i * magnetDivisionAngle])
                     translate ([magnetPosition, 0, 0])
-                    cylinder (d = magnetDiameter + magnetBorder * 2, flangeThickness);
+                    if(roundover > 0){
+                      roundedCylinder(
+                        h = flangeThickness,
+                        r = (magnetDiameter + magnetBorder)/2,
+                        roundedr2=roundover);
+                    }else {
+                      cylinder (d = magnetDiameter + magnetBorder * 2, flangeThickness);
+                    }
                 }
              
               //flage around locks
@@ -16504,7 +16526,7 @@ module MagneticConnector(
         //Magnet cut out
         for (i = [0: magnetCount-1]) {
             rotate ([0, 0, i* 360 / magnetCount])
-            translate ([magnetPosition, 0, - fudgeFactor])
+            translate ([magnetPosition, 0, magnetZOffset - fudgeFactor])
             cylinder (d = magnetDiameter, h = magnetThickness + fudgeFactor);
         }
         
@@ -16758,20 +16780,6 @@ module Nozzle(
     ],help); 
 }
 //CombinedEnd from path connector_nozzle.scad
-//Combined from path connector_common_post.scad
-
-connectorSettings =[
-  camlockSettings,
-  centecFemaleSettings,
-  centecMaleSettings,
-  dysonSettings,
-  dw735Settings,
-  osvacmSettings,
-  osvacm32Settings,
-  osvacfSettings,
-  osvacf32Settings,
-  makitaMaleSettings];
-//CombinedEnd from path connector_common_post.scad
 //Combined from path connector_camlock.scad
 
 camlockVersion = "1.0";
@@ -17095,7 +17103,7 @@ module centecRoundedCube(
 //CombinedEnd from path connector_centec.scad
 //Combined from path connector_dyson.scad
 
-/* [Hidden] */
+/* Hidden */
 dysonVersion = "1.2";
 dysonMinLength = 46;
 dysonMeasurement = "outer";
@@ -17363,7 +17371,7 @@ module Dw735Connector(
 //Female documentation https://www.thingiverse.com/thing:4562762
 //Male documentation https://www.thingiverse.com/thing:4562789
 
-/* [Hidden] */
+/* Hidden */
 clipCount = 3;
 
 osvacmVersion = "0.1";
@@ -17719,6 +17727,19 @@ module MakitaMaleConnector(
   }
 }
 //CombinedEnd from path connector_makita.scad
+//Combined from path connector_common_post.scad
+connectorSettings =[
+  camlockSettings,
+  centecFemaleSettings,
+  centecMaleSettings,
+  dysonSettings,
+  dw735Settings,
+  osvacmSettings,
+  osvacm32Settings,
+  osvacfSettings,
+  osvacf32Settings,
+  makitaMaleSettings];
+//CombinedEnd from path connector_common_post.scad
 
 function getColor(colorSetting, defaultColor) = 
   assert(is_list(colorSetting), str("colorSetting must be a list colorSetting=", colorSetting, " defaultColor", defaultColor))
@@ -17827,6 +17848,7 @@ module adapter(
               magnetDiameter = con[iMagnetDiameter],
               magnetThickness = con[iMagnetThickness],
               magnetBorder = con[iMagnetBorder],
+              magnetZOffset = con[iMagnetZOffset],
               flangeThickness = con[iMagnetFlangeThickness],
               magnetCount = con[iMagnetCount],
               alignmentRing = con[iAlignmentRing],
@@ -18447,6 +18469,7 @@ module HoseAdapter(
   connector1MagnetDiameter = End1_Magnet_Diameter,
   connector1MagnetThickness = End1_Magnet_Thickness,
   connector1MagnetBorder = End1_Magnet_Border,
+  connector1MagnetZOffset = End1_Magnet_ZOffset,
   connector1MagnetFlangeThickness = End1_Magnet_Flange_Thickness,
   connector1MagnetTwistLockSize = End1_Magnet_Twist_Lock_Size,
   connector1Ring = End1_Ring,
@@ -18503,6 +18526,7 @@ module HoseAdapter(
   connector2MagnetDiameter = End2_Magnet_Diameter,
   connector2MagnetThickness = End2_Magnet_Thickness,
   connector2MagnetBorder = End2_Magnet_Border,
+  connector2MagnetZOffset = End2_Magnet_ZOffset,
   connector2MagnetFlangeThickness = End2_Magnet_Flange_Thickness,
   connector2MagnetTwistLockSize = End2_Magnet_Twist_Lock_Size,
   connector2Ring = End2_Ring,
@@ -18550,6 +18574,7 @@ module HoseAdapter(
   connector3MagnetDiameter = End3_Magnet_Diameter,
   connector3MagnetThickness = End3_Magnet_Thickness,
   connector3MagnetBorder = End3_Magnet_Border,
+  connector3MagnetZOffset = End3_Magnet_ZOffset,
   connector3MagnetFlangeThickness = End3_Magnet_Flange_Thickness,
   connector3MagnetTwistLockSize = End3_Magnet_Twist_Lock_Size,
   connector3Ring = End3_Ring,
@@ -18611,6 +18636,7 @@ module HoseAdapter(
     magnetDiameter=connector1MagnetDiameter,
     magnetThickness=connector1MagnetThickness,
     magnetBorder=connector1MagnetBorder,
+    magnetZOffset=connector1MagnetZOffset,
     magnetFlangeThickness=connector1MagnetFlangeThickness,
     magnetTwistLockSize=connector1MagnetTwistLockSize,
     alignmentRing=connector1Ring,
@@ -18665,6 +18691,7 @@ module HoseAdapter(
     magnetDiameter=connector2MagnetDiameter,
     magnetThickness=connector2MagnetThickness,
     magnetBorder=connector2MagnetBorder,
+    magnetZOffset=connector2MagnetZOffset,
     magnetFlangeThickness=connector2MagnetFlangeThickness,
     magnetTwistLockSize=connector2MagnetTwistLockSize,
     alignmentRing=connector2Ring,
@@ -18719,6 +18746,7 @@ module HoseAdapter(
     magnetDiameter=connector3MagnetDiameter,
     magnetThickness=connector3MagnetThickness,
     magnetBorder=connector3MagnetBorder,
+    magnetZOffset=connector3MagnetZOffset,
     magnetFlangeThickness=connector3MagnetFlangeThickness,
     magnetTwistLockSize=connector3MagnetTwistLockSize,
     alignmentRing=connector3Ring,
