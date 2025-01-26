@@ -129,7 +129,7 @@ function measurement_to_mm(input) =
   assert(is_num(input) || (is_list(input) && len(input) == 2), "input must be number or list of length 2 ")
   is_num(input) 
     ? input
-    : is_num(input[i_measurement_inch]) && input[i_measurement_inch] > 0 ? input[i_measurement_inch] * 2.54 : input[i_measurement_mm];
+    : is_num(input[i_measurement_inch]) && input[i_measurement_inch] > 0 ? input[i_measurement_inch] * 25.4 : input[i_measurement_mm];
   
 function getConnectorSettings(
   connector,
