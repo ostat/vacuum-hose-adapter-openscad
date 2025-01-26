@@ -44,10 +44,10 @@ End1_Wall_Thickness = 2; //0.01
 End1_Style="flange"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector]
 // Is the measurement the adapter's outside or inside diameter?
 End1_Measurement = "inner"; //[inner, outer]
-// End 1 diameter of the adapter (mm)
-End1_Diameter = 50;  //0.01
-//Length of the start connector (including the flange).
-End1_Length= 15;  //0.1
+// End 1 diameter of the adapter (mm, inch)
+End1_Diameter = [50,0];  //0.01
+//Length of the start connector, including the flange (mm, inch).
+End1_Length = [15,0];  //0.1
 //Rotation around the z axis. Userfull for non symeterical connectors.
 End1_Rotation= 0;  
 //Taper of the start connector, use negative to taper other direction.
@@ -155,17 +155,16 @@ Transition_Base_Length=0;
 // Support Base Angle position, default half of Bend Radius;
 Transition_Base_Angle=0;
 
-
 /* [Connector 2] */
 //Wall thickness
 End2_Wall_Thickness = 2; //0.01
 End2_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, none: None]
 // Is the measurement the adapter's outside or inside diameter?
 End2_Measurement = "outer"; //[inner, outer]
-// End 2 diameter of the adapter (mm)
-End2_Diameter = 40;  //0.05
-//Length of the pipe coming out of the flange.
-End2_Length= 40;  //1
+// End 2 diameter of the adapter (mm, inch)
+End2_Diameter = [40,0];  //0.01
+//Length of the start connector, including the flange (mm, inch).
+End2_Length = [40 ,0];  //0.1
 //Rotation around the z axis. Userfull for non symeterical connectors.
 End2_Rotation= 0;  
 //Taper of the start connector, use negative to taper other direction.
@@ -252,10 +251,10 @@ End3_Wall_Thickness = 2; //0.01
 End3_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, none: None]
 // Is the measurement the adapter's outside or inside diameter?
 End3_Measurement = "outer"; //[inner, outer]
-// End 2 diameter of the adapter (mm)
-End3_Diameter = 40;  //0.05
-//Length of the pipe coming out of the flange.
-End3_Length= 40;  //1
+// End 3 diameter of the adapter (mm, inch)
+End3_Diameter = [40,0];  //0.01
+//Length of the start connector, including the flange (mm, inch).
+End3_Length = [40 ,0];  //0.1
 //Rotation around the z axis. Userfull for non symeterical connectors.
 End3_Rotation= 0;  
 //Taper of the start connector, use negative to taper other direction.

@@ -119,6 +119,17 @@ function getConnector3Setting(transitionHullCenter, con1, con2, con3) =
   transitionHullCenter == "end1" ? con1
   : transitionHullCenter == "end2" ? con2
   : con3;
+ 
+ i_measurement_inch = 1;
+ i_measurement_mm = 0;
+ 
+ 
+//input can be number of mm or [mm, inch], mm is deafault inch overrides mm.
+function measurement_to_mm(input) = 
+  assert(is_num(input) || (is_list(input) && len(input) == 2), "input must be number or list of length 2 ")
+  is_num(input) 
+    ? input
+    : is_num(input[i_measurement_inch]) && input[i_measurement_inch] > 0 ? input[i_measurement_inch] * 2.54 : input[i_measurement_mm];
   
 function getConnectorSettings(
   connector,
@@ -173,16 +184,18 @@ function getConnectorSettings(
   adapterColor,
   con1Measurement, con1Diameter, con1WallThickness) = 
   let(
+    _diameter = measurement_to_mm(diameter),
+    _length = measurement_to_mm(length),
     //For nozzle, if the diameter is 0, then set it to the D1, this will look nice.
     conMeasurement = let(
       m = retriveConnectorSetting(style, iSettingsMeasurement, measurement),
-      d = retriveConnectorSetting(style, iSettingsDiameter, diameter))
+      d = retriveConnectorSetting(style, iSettingsDiameter, _diameter))
         (style == "nozzle" && d == 0) ? connector1Measurement : m,
-    conDiameter = let(d = retriveConnectorSetting(style, iSettingsDiameter, diameter)) 
+    conDiameter = let(d = retriveConnectorSetting(style, iSettingsDiameter, _diameter)) 
       (style == "nozzle" && d == 0) ? connector1Diameter : d,
     conWallThickness = let(w = retriveConnectorSetting(style, iSettingsWallThickness, wallThickness))
       (style == "nozzle" && w == 0) ? connector1WallThickness : w,
-    conLength = retriveConnectorSetting(style, iSettingsLength, length),
+    conLength = retriveConnectorSetting(style, iSettingsLength, _length),
     conTaper = retriveConnectorSetting(style, iSettingsTaper, taper),
     conInnerDiameter = conMeasurement == "inner" ? conDiameter : conDiameter - conWallThickness * 2,
     conInnerStartDiameter = conInnerDiameter - conTaper / 2,
