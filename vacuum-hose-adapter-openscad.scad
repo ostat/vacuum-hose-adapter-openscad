@@ -449,7 +449,7 @@ module adapter(
     help
 ){
   assert(is_list(con), "con must be a list")
-  assert(is_num(con[iLength]), "length must be a number");
+  assert(is_num(con[iLength]), str("length must be a number :", con[iLength]));
   assert(is_num(con[iStopLength]), "stopLength must be a number");
   assert(is_list(con[iAdapterColor]), "adapterColor must be a list")
   assert(len(con[iAdapterColor]) == 2, "adapterColor be length 2")
@@ -917,40 +917,40 @@ module transition(
       }
       if(style == "organicbend")
       {
-          //Bent pipe that tapers through the bend.
-          color(transitionColor[0], transitionColor[1])
-          TaperedBentPipe(
-              bendRadius = bendRadius,
-              end1InnerPipeDiameter = connector1InnerEndDiameter,
-              end2InnerPipeDiameter = connector2InnerStartDiameter,
-              end1WallThickness = connector1WallThickness,
-              end2WallThickness = connector2WallThickness,
-              pipeAngle = angle,
-              baseType = baseType,
-              baseThickness = baseThickness,
-              baseWidth = baseWidth,
-              baseLength = baseLength,
-              baseAngle = baseAngle,
-              end2Count = connector2Count);
+        //Bent pipe that tapers through the bend.
+        color(transitionColor[0], transitionColor[1])
+        TaperedBentPipe(
+          bendRadius = bendRadius,
+          end1InnerPipeDiameter = connector1InnerEndDiameter,
+          end2InnerPipeDiameter = connector2InnerStartDiameter,
+          end1WallThickness = connector1WallThickness,
+          end2WallThickness = connector2WallThickness,
+          pipeAngle = angle,
+          baseType = baseType,
+          baseThickness = baseThickness,
+          baseWidth = baseWidth,
+          baseLength = baseLength,
+          baseAngle = baseAngle,
+          end2Count = connector2Count);
       }
       else if(style == "hull")
       {
         color(transitionColor[0], transitionColor[1])
         BentPipeHull(
-            inner1PipeRadius = connector1InnerEndDiameter/2,
-            inner2PipeRadius = connector2InnerStartDiameter/2,
-            inner3PipeRadius = connector3InnerStartDiameter/2,
-            end1WallThickness = connector1WallThickness,
-            end2WallThickness = connector2WallThickness,
-            end3WallThickness = connector3WallThickness,
-            pipeAngle = angle,
-            end2Count = connector2Count,
-            lengthInHull = lengthInHull,
-            lengthOutHull = hullLength,
-            lengthOutHullCenter = hullCenterLength,
-            edgeOffset = edgeOffset,
-            addCenter = hullCenter,
-            centerHeight= centerHeight
+          inner1PipeRadius = connector1InnerEndDiameter/2,
+          inner2PipeRadius = connector2InnerStartDiameter/2,
+          inner3PipeRadius = connector3InnerStartDiameter/2,
+          end1WallThickness = connector1WallThickness,
+          end2WallThickness = connector2WallThickness,
+          end3WallThickness = connector3WallThickness,
+          pipeAngle = angle,
+          end2Count = connector2Count,
+          lengthInHull = lengthInHull,
+          lengthOutHull = hullLength,
+          lengthOutHullCenter = hullCenterLength,
+          edgeOffset = edgeOffset,
+          addCenter = hullCenter,
+          centerHeight= centerHeight
         );
       }
       else if(style == "bend+taper")
@@ -1235,8 +1235,6 @@ module HoseAdapter(
   extensionColor = Extension_Color,
   help = Enable_Help
 ){
-  assert(is_num(connector1Length), "connector1Length must be a number");
-  
   $gha=[["connector1",[0,0,0]],["connector2",[0,0,0]],["trasnition",[0,0,0]]];
 
   end1 = getConnectorSettings(
@@ -1293,8 +1291,8 @@ module HoseAdapter(
     con1Measurement=connector1Measurement, 
     con1Diameter=connector1Diameter, 
     con1WallThickness=connector1WallThickness);
-  
-  end2 = getConnectorSettings(
+
+    end2 = getConnectorSettings(
     connector=2,
     style=connector2Style, 
     wallThickness=connector2WallThickness, 
@@ -1412,9 +1410,10 @@ module HoseAdapter(
   //Total length of connector 1
   endConnector1 = end1[iLength] + end1[iStopLength];
 
+    
       // transitionLength is not wanted for sweep
-      _transitionAngle = (transitionStyle == "flat") ? 0 : transitionAngle;
-      _transitionStyle = _transitionAngle == 0 && transitionStyle == "organicbend" ? "bend+taper" : transitionStyle;
+  _transitionAngle = (transitionStyle == "flat") ? 0 : transitionAngle;
+  _transitionStyle = _transitionAngle == 0 && transitionStyle == "organicbend" ? "bend+taper" : transitionStyle;
       _transitionLength = _transitionStyle == "organicbend" //|| _transitionStyle == "hull"
         ? 0
         : transitionLength == 0
