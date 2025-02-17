@@ -1,5 +1,12 @@
 include <constants.scad>
 
+nozzleVersion = "1.0";
+
+nozzleSettings = ["nozzle", [
+  [iSettingsTaper, 0],
+  [iSettingsVersion, nozzleVersion]
+  ]];
+  
 module Nozzle(
   innerStartDiameter,
   length,

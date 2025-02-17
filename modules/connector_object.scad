@@ -196,7 +196,7 @@ function getConnectorSettings(
     conWallThickness = let(w = retriveConnectorSetting(style, iSettingsWallThickness, wallThickness))
       (style == "nozzle" && w == 0) ? connector1WallThickness : w,
     conLength = retriveConnectorSetting(style, iSettingsLength, _length),
-    conTaper = retriveConnectorSetting(style, iSettingsTaper, taper),
+    conTaper = let(t = retriveConnectorSetting(style, iSettingsTaper, taper)) conMeasurement == "inner" ? t*-1 : t,
     conInnerDiameter = conMeasurement == "inner" ? conDiameter : conDiameter - conWallThickness * 2,
     conInnerStartDiameter = conInnerDiameter - conTaper / 2,
     conOuterStartDiameter = conInnerStartDiameter + wallThickness*2,

@@ -1,4 +1,5 @@
 connectorSettings =[
+  nozzleSettings,
   camlockSettings,
   centecFemaleSettings,
   centecMaleSettings,
