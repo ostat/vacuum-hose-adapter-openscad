@@ -1422,7 +1422,6 @@ module HoseAdapter(
           abs(end1[iInnerEndDiameter] - end2[iInnerEndDiameter])/2)+(end1[iWallThickness]/2+end2[iWallThickness]/2)
       : transitionLength;
       
-    //echo(_transitionLength=_transitionLength, end1_iOuterEndDiameter=end1[iOuterEndDiameter], end2_iOuterStartDiameter=end2[iOuterEndDiameter]);
       //Calculate the bend radius
       //organicbend, the '0' value must be max of connector 1 or 2 diameter, plus the wall thickness * 2 otherwise it will clip, then add provided radius.
       //transition the '0' value must be end 1 diameter/2 + wall thickenss *2 to prevent clipping, then addd provided radius.
@@ -1432,7 +1431,7 @@ module HoseAdapter(
       taperedAverageDiameter = (max(end1[iOuterEndDiameter],end2[iOuterStartDiameter])*2 + min(end1[iOuterEndDiameter],end2[iOuterStartDiameter]))/3;
 
       hoseSpacer = end2[iWallThickness];
-      shapeOverlap = ((end1[iOuterEndDiameter]/2-hoseSpacer)-(cos(_transitionAngle)*end2[iOuterStartDiameter]))/sin(_transitionAngle);
+      shapeOverlap = ((end1[iOuterEndDiameter]/2-hoseSpacer)-(cos(_transitionAngle)*end2[iOuterEndDiameter]))/sin(_transitionAngle);
       lengthInHull = _transitionStyle == "hull"
         ? (shapeOverlap > 0 ? 0 : shapeOverlap * -1) + _transitionLength
         : 0;
@@ -1441,8 +1440,8 @@ module HoseAdapter(
       //Push end horizontially out from verticle center line 
       edgeOffset = _transitionStyle == "hull"
         ? (shapeOverlap > 50
-          ? (end1[iOuterEndDiameter] - end2[iOuterStartDiameter])/2-shapeOverlap/2 + transitionHullyOffset
-          : (end1[iOuterEndDiameter] - end2[iOuterStartDiameter])/2 + transitionHullyOffset) * cos(_transitionAngle)
+          ? (end1[iOuterEndDiameter] - end2[iOuterEndDiameter])/2-shapeOverlap/2 + transitionHullyOffset
+          : (end1[iOuterEndDiameter] - end2[iOuterEndDiameter])/2 + transitionHullyOffset) * cos(_transitionAngle)
         : 0;
       //end hull settings
       bendRadius = _transitionStyle == "organicbend"
@@ -1455,12 +1454,14 @@ module HoseAdapter(
             : end1[iOuterEndDiameter]/2 + transitionBendRadius
           : _transitionStyle == "taper+bend"
             ? transitionEnd2Count > 1
-              ? -(end2[iOuterStartDiameter]/2)/(cos(_transitionAngle)-1)-end2[iOuterStartDiameter]/2 + transitionBendRadius
-              : end2[iOuterStartDiameter]/2 + transitionBendRadius
+              ? -(end2[iOuterEndDiameter]/2)/(cos(_transitionAngle)-1)-end2[iOuterEndDiameter]/2 + transitionBendRadius
+              : end2[iOuterEndDiameter]/2 + transitionBendRadius
             : _transitionStyle == "hull"
               ? 0
               : 0;
 
+  echo("HoseAdapter", _transitionLength=_transitionLength, bendRadius=bendRadius, edgeOffset=edgeOffset, end1_iOuterEndDiameter=end1[iOuterEndDiameter], end2_iOuterStartDiameter=end2[iOuterEndDiameter]);
+                  
   if(drawAlignmentRing == "end1" || drawAlignmentRing == "end2")
   {
     adapterAlignmentRing(
