@@ -1414,12 +1414,15 @@ module HoseAdapter(
       // transitionLength is not wanted for sweep
   _transitionAngle = (transitionStyle == "flat") ? 0 : transitionAngle;
   _transitionStyle = _transitionAngle == 0 && transitionStyle == "organicbend" ? "bend+taper" : transitionStyle;
-      _transitionLength = _transitionStyle == "organicbend" //|| _transitionStyle == "hull"
-        ? 0
-        : transitionLength == 0
-          ? max(abs(end1[iOuterEndDiameter] - end2[iOuterStartDiameter])/2, abs(end1[iInnerEndDiameter] - end2[iInnerStartDiameter])/2)
-          : transitionLength;
-
+  _transitionLength = _transitionStyle == "organicbend" //|| _transitionStyle == "hull"
+    ? 0
+    : transitionLength == 0
+      ? max(
+          abs(end1[iOuterEndDiameter] - end2[iOuterEndDiameter])/2, 
+          abs(end1[iInnerEndDiameter] - end2[iInnerEndDiameter])/2)+(end1[iWallThickness]/2+end2[iWallThickness]/2)
+      : transitionLength;
+      
+    //echo(_transitionLength=_transitionLength, end1_iOuterEndDiameter=end1[iOuterEndDiameter], end2_iOuterStartDiameter=end2[iOuterEndDiameter]);
       //Calculate the bend radius
       //organicbend, the '0' value must be max of connector 1 or 2 diameter, plus the wall thickness * 2 otherwise it will clip, then add provided radius.
       //transition the '0' value must be end 1 diameter/2 + wall thickenss *2 to prevent clipping, then addd provided radius.
