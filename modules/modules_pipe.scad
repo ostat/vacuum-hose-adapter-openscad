@@ -8,6 +8,17 @@ include <dotSCAD/ring_extrude.scad>
 //wallThickness1 Thickness of the walls at the start
 //wallThickness2 Thickness of the walls at the end
 //zPosition: Start Z position.
+
+debug_pipe = false;
+
+if(debug_pipe ){
+Pipe(
+    diameter1=100,
+    diameter2=70,
+    length=50,
+    wallThickness = 2,
+    Offset = [15,0]);
+}
 module Pipe(
     diameter,
     diameter1,
@@ -76,7 +87,7 @@ module Pipe(
           translate([Offset.x,Offset.y,length-startInnerLeadin-endInnerLeadin])
             cylinder(fudgeFactor, d=diameter2);
         }
-        translate([0,0,length-endInnerLeadin-fudgeFactor])
+        translate([Offset.x,Offset.y,length-endInnerLeadin-fudgeFactor])
         cylinder(endInnerLeadin+fudgeFactor*2, d=diameter2);
       } else {
         // main removal
@@ -87,7 +98,7 @@ module Pipe(
         cylinder(fudgeFactor*2, d=diameter1);
 
       // top glitch correction
-      translate([0,0,length-fudgeFactor])
+      translate([Offset.x,Offset.y,length-fudgeFactor])
         cylinder(fudgeFactor*2, d=diameter2);
     }
   }
