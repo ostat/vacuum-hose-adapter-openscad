@@ -1,0 +1,9 @@
+[project]
+name = "Ostat hose and pipe adapter"
+uri = "https://github.com/ostat/vacuum-hose-adapter-openscad"
+export-filename-prefix = "hose"
+mode = "multi"
+head-extra = ''
+
+[[model]]
+file = "vacuum-hose-adapter-openscad.scad"
