@@ -41,17 +41,17 @@ DefaultExtensionColor = "MediumSeaGreen";
 //Wall thickness
 End1_Wall_Thickness = 2; //0.01
 //The style of the end
-End1_Style="flange"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector]
+End1_Style="hose"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector]
 // Is the measurement the adapter's outside or inside diameter?
-End1_Measurement = "inner"; //[inner, outer]
+End1_Measurement = "outer"; //[inner, outer]
 // End 1 diameter of the adapter (mm, inch)
-End1_Diameter = [50,0];  //0.01
+End1_Diameter = [100,0];  //0.01
 //Length of the start connector, including the flange (mm, inch).
-End1_Length = [15,0];  //0.1
+End1_Length = [40,0];  //0.1
 //Rotation around the z axis. Userfull for non symeterical connectors.
 End1_Rotation= 0;  
 //Taper of the start connector, use negative to taper other direction.
-End1_Taper = 0;  //0.1
+End1_Taper = 1;  //0.1
 
 /* [Connector 1 - Hose connector] */
 //Thickness of hose stop
@@ -114,7 +114,7 @@ End1_Extension_Length = 0;
 End1_Extension_GridSize = 0;  //0.1
 //Size of the grid walls in the extnetion. 0: no grid, -1: uses wall thickness
 End1_Extension_GridWallThickness = 0;  //0.1
-End1_Extension_Text = "";
+End1_Extension_Text = "asd-\u0020-asd";
 End1_Extension_Text_Size = 0;
 
 
@@ -122,7 +122,7 @@ End1_Extension_Text_Size = 0;
 // tapered for hose connections, flat for attaching to a device
 Transition_Style = "bend+taper"; //[flat, taper+bend: Taper then bend, bend+taper: Bend then taper, organicbend: Tapered bend, hull: Hull for multiple end count, none: no transition]
 //Length of the transition between the two ends
-Transition_Length = 10;  //1
+Transition_Length = 0;  //1
 // Radius of transition bend (mm)
 Transition_Bend_Radius = 0;  //1
 //Angle of bend through the transition section.
@@ -143,6 +143,8 @@ Transition_HullyOffset = 0; // 0.1
 // MulitConnector, center connector height. default is 2*lengthInHull
 Transition_HullCenterHeight = 0;
 
+Transition_End2_Angle = 0;
+
 /* [Transition Support For Angled Pipes] */
 // Include a flate section on the transition to assist with printing
 Transition_Base_Type="none"; // [none, oval, rectangle]
@@ -158,17 +160,17 @@ Transition_Base_Angle=0;
 /* [Connector 2] */
 //Wall thickness
 End2_Wall_Thickness = 2; //0.01
-End2_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, none: None]
+End2_Style="hose"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, none: None]
 // Is the measurement the adapter's outside or inside diameter?
 End2_Measurement = "outer"; //[inner, outer]
 // End 2 diameter of the adapter (mm, inch)
-End2_Diameter = [40,0];  //0.01
+End2_Diameter = [60,0];  //0.01
 //Length of the start connector, including the flange (mm, inch).
 End2_Length = [40 ,0];  //0.1
 //Rotation around the z axis. Userfull for non symeterical connectors.
 End2_Rotation= 0;  
 //Taper of the start connector, use negative to taper other direction.
-End2_Taper = 0;  //0.1
+End2_Taper = 1;  //0.1
 
 /*[Connector 2 - Hose connector] */
 //Thickness of hose stop
@@ -361,11 +363,21 @@ End3_Color = [DefaultEnd3Color,1];  //0.1
 Transition_Color = [DefaultTransitionColor,1]; //The color, then the alpha value
 Extension_Color = [DefaultExtensionColor,1]; //The color, then the alpha value
 
-/* [Hidden] */
-//Detail
-$fn=120;
+/* [Model detail] */
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
+fa = 3; 
+// minimum size of a fragment.  Low is more fragments
+fs = 0.1; 
+// number of fragments, overrides $fa and $fs
+fn = 0;  
 
+/* [Hidden] */
 module end_of_customizer_opts() {}
+
+//Some online generators do not like direct setting of fa,fs,fn
+$fa = fa; 
+$fs = fs; 
+$fn = fn;  
 
 function getColor(colorSetting, defaultColor) = 
   assert(is_list(colorSetting), str("colorSetting must be a list colorSetting=", colorSetting, " defaultColor", defaultColor))
@@ -886,6 +898,7 @@ module transition(
   baseLength,
   baseAngle,
   connector2Count,
+  connector2Angle,
   lengthInHull,
   hullLength,
   hullCenterLength,
@@ -898,9 +911,11 @@ module transition(
   showCaliper = false,
   help
 ){
-  assert(is_list(transitionColor), "adapterColor must be a list")
-  assert(len(transitionColor) == 2, "adapterColor be length 2")
+  assert(is_list(transitionColor), "adapterColor must be a list");
+  assert(len(transitionColor) == 2, "adapterColor be length 2");
   
+  multiConnectorAngle = connector2Angle > 0 ? connector2Angle : 360/connector2Count;
+  echo("transition", multiConnectorAngle=multiConnectorAngle);
   difference()
   {
     union()
@@ -931,7 +946,8 @@ module transition(
           baseWidth = baseWidth,
           baseLength = baseLength,
           baseAngle = baseAngle,
-          end2Count = connector2Count);
+          end2Count = connector2Count,
+          eng2Angle = connector2Angle);
       }
       else if(style == "hull")
       {
@@ -945,6 +961,7 @@ module transition(
           end3WallThickness = connector3WallThickness,
           pipeAngle = angle,
           end2Count = connector2Count,
+          end2Angle = connector2Angle,
           lengthInHull = lengthInHull,
           lengthOutHull = hullLength,
           lengthOutHullCenter = hullCenterLength,
@@ -970,7 +987,8 @@ module transition(
             baseWidth = baseWidth,
             baseLength = baseLength,
             baseAngle = baseAngle,
-            end2Count = connector2Count);
+            end2Count = connector2Count,
+            eng2Angle = connector2Angle);
         }
 
         //Tapered section position to the end of the bent pipe
@@ -978,7 +996,7 @@ module transition(
         {
           //color("SpringGreen")
           color(transitionColor[0], transitionColor[1])
-          rotate([0, 0, rotation*(360/connector2Count)])
+          rotate([0, 0, rotation*multiConnectorAngle])
           translate([-bendRadius, 0, 0])
             rotate([0, -angle, 0])
             translate([bendRadius, 0, 0])
@@ -1020,7 +1038,8 @@ module transition(
             baseWidth = baseWidth,
             baseLength = baseLength,
             baseAngle = baseAngle,
-            end2Count = connector2Count);
+            end2Count = connector2Count,
+            eng2Angle = connector2Angle);
         }
       }
     }
@@ -1054,6 +1073,7 @@ module transition(
     "baseLength", baseLength,
     "baseAngle", baseAngle,
     "connector2Count", connector2Count,
+    "connector2Angle", connector2Angle,
     "lengthInHull", lengthInHull,
     "hullLength", hullLength,
     "hullCenterLength", hullCenterLength,
@@ -1124,6 +1144,7 @@ module HoseAdapter(
   transitionBaseLength = Transition_Base_Length,
   transitionBaseAngle = Transition_Base_Angle,
   transitionEnd2Count = Transition_End2_Count,
+  transitionEnd2Angle = Transition_End2_Angle,
   transitionHullLength = Transition_HullLength,
   transitionHullCenterLength = Transition_HullCenterLength,
   transitionHullyOffset = Transition_HullyOffset,
@@ -1289,7 +1310,6 @@ module HoseAdapter(
     extensionTextSize=connector1ExtensionTextSize,
     adapterColor = getColor(end1Color, DefaultEnd1Color),
     con1Measurement=connector1Measurement, 
-    con1Diameter=connector1Diameter, 
     con1WallThickness=connector1WallThickness);
 
     end2 = getConnectorSettings(
@@ -1344,7 +1364,7 @@ module HoseAdapter(
     extensionTextSize=connector2ExtensionTextSize,
     adapterColor = getColor(end2Color, DefaultEnd2Color),
     con1Measurement=end1[iMeasurement], 
-    con1Diameter=end1[iDiameter], 
+    con1OuterEndDiameter=end1[iOuterEndDiameter],  
     con1WallThickness=end1[iWallThickness]);
 
   end3 = getConnectorSettings(
@@ -1399,7 +1419,7 @@ module HoseAdapter(
     extensionTextSize=connector3ExtensionTextSize,
     adapterColor = getColor(end3Color, DefaultEnd3Color),
     con1Measurement=end1[iMeasurement], 
-    con1Diameter=end1[iDiameter], 
+    con1OuterEndDiameter=end1[iOuterEndDiameter], 
     con1WallThickness=end1[iWallThickness]);
 
   echoConnector("end1", end1, help); 
@@ -1443,24 +1463,37 @@ module HoseAdapter(
           ? (end1[iOuterEndDiameter] - end2[iOuterEndDiameter])/2-shapeOverlap/2 + transitionHullyOffset
           : (end1[iOuterEndDiameter] - end2[iOuterEndDiameter])/2 + transitionHullyOffset) * cos(_transitionAngle)
         : 0;
-      //end hull settings
-      bendRadius = _transitionStyle == "organicbend"
-        ? transitionEnd2Count > 1
-          ? -(taperedAverageDiameter/2)/(cos(_transitionAngle)-1)-taperedAverageDiameter/2 + transitionBendRadius
-          : taperedAverageDiameter + transitionBendRadius
-        : _transitionStyle == "bend+taper"
-          ? transitionEnd2Count > 1
-            ? -(end1[iOuterEndDiameter]/2)/(cos(_transitionAngle)-1)-end1[iOuterEndDiameter]/2 + transitionBendRadius
-            : end1[iOuterEndDiameter]/2 + transitionBendRadius
-          : _transitionStyle == "taper+bend"
-            ? transitionEnd2Count > 1
-              ? -(end2[iOuterEndDiameter]/2)/(cos(_transitionAngle)-1)-end2[iOuterEndDiameter]/2 + transitionBendRadius
-              : end2[iOuterEndDiameter]/2 + transitionBendRadius
-            : _transitionStyle == "hull"
-              ? 0
-              : 0;
+        
+     function bend_radius(transitionAngle, transitionBendRadius, end1OuterEndDiameter, end2OuterEndDiameter, taperedAverageDiameter) = 
+         let(organic_bend_radius = transitionEnd2Count > 1
+                ? -(taperedAverageDiameter/2)/(cos(transitionAngle)-1)-taperedAverageDiameter/2 + transitionBendRadius
+                : taperedAverageDiameter + transitionBendRadius,
+             bend_taper_radius = transitionEnd2Count > 1
+                ? -(end1OuterEndDiameter/2)/(cos(transitionAngle)-1)-end1OuterEndDiameter/2 + transitionBendRadius
+                : end1OuterEndDiameter/2 + transitionBendRadius,
+             taper_bend_radius = transitionEnd2Count > 1
+                ? -(end2OuterEndDiameter/2)/(cos(transitionAngle)-1)-end2OuterEndDiameter/2 + transitionBendRadius
+                : end2OuterEndDiameter/2 + transitionBendRadius,
+             hull_radius = 0 )
+                  transitionStyle == "organicbend" ? organic_bend_radius
+                  : _transitionStyle == "bend+taper" ? bend_taper_radius
+                  : _transitionStyle == "taper+bend" ? taper_bend_radius
+                  : _transitionStyle == "hull" ? hull_radius
+                  : 0;
 
-  echo("HoseAdapter", _transitionLength=_transitionLength, bendRadius=bendRadius, edgeOffset=edgeOffset, end1_iOuterEndDiameter=end1[iOuterEndDiameter], end2_iOuterStartDiameter=end2[iOuterEndDiameter]);
+                  echo(
+        transitionAngle=_transitionAngle, 
+        transitionBendRadius=transitionBendRadius, 
+        end1OuterEndDiameter=end1[iOuterEndDiameter], 
+        end2OuterEndDiameter=end2[iOuterEndDiameter], 
+        taperedAverageDiameter=taperedAverageDiameter);
+      //end hull settings
+      bendRadius = bend_radius(
+        transitionAngle=_transitionAngle, 
+        transitionBendRadius=transitionBendRadius, 
+        end1OuterEndDiameter=end1[iOuterEndDiameter], 
+        end2OuterEndDiameter=end2[iOuterEndDiameter], 
+        taperedAverageDiameter=taperedAverageDiameter);
                   
   if(drawAlignmentRing == "end1" || drawAlignmentRing == "end2")
   {
@@ -1526,6 +1559,7 @@ module HoseAdapter(
           baseLength = transitionBaseLength,
           baseAngle = transitionBaseAngle,
           connector2Count = transitionEnd2Count,
+          connector2Angle = transitionEnd2Angle,
           lengthInHull = lengthInHull,
           hullLength = transitionHullLength,
           hullCenterLength = transitionHullCenterLength,
@@ -1558,11 +1592,13 @@ module HoseAdapter(
             ((_transitionStyle == "bend+taper") ? _transitionLength
               : _transitionStyle == "hull" ? transitionHullLength+lengthInHull+end2[iWallThickness]
               : 0)];
-    
+          
+          multiConnectorAngle = transitionEnd2Angle > 0 ? transitionEnd2Angle : 360/transitionEnd2Count;
+
           for (rotation = [0:transitionEnd2Count-1])
           {
             if(sliceDebug == false || rotation ==0)
-            rotate([0, 0, rotation*(360/transitionEnd2Count)])
+            rotate([0, 0, rotation*multiConnectorAngle])
             translate(postRotation)
             rotate([0, -_transitionAngle, 0])
             translate(preRotation)

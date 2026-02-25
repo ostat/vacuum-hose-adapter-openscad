@@ -182,7 +182,7 @@ function getConnectorSettings(
   extensionText,
   extensionTextSize,
   adapterColor,
-  con1Measurement, con1Diameter, con1WallThickness) = 
+  con1OuterEndDiameter, con1Measurement, con1WallThickness) = 
   let(
     _diameter = measurement_to_mm(diameter),
     _length = measurement_to_mm(length),
@@ -190,18 +190,18 @@ function getConnectorSettings(
     conMeasurement = let(
       m = retriveConnectorSetting(style, iSettingsMeasurement, measurement),
       d = retriveConnectorSetting(style, iSettingsDiameter, _diameter))
-        (style == "nozzle" && d == 0) ? connector1Measurement : m,
+        (style == "nozzle" && d == 0) ? "outer" : m,
     conDiameter = let(d = retriveConnectorSetting(style, iSettingsDiameter, _diameter)) 
-      (style == "nozzle" && d == 0) ? connector1Diameter : d,
+      (style == "nozzle" && d == 0) ? con1OuterEndDiameter : d,
     conWallThickness = let(w = retriveConnectorSetting(style, iSettingsWallThickness, wallThickness))
-      (style == "nozzle" && w == 0) ? connector1WallThickness : w,
+      (style == "nozzle" && w == 0) ? con1WallThickness : w,
     conLength = retriveConnectorSetting(style, iSettingsLength, _length),
-    conTaper = let(t = retriveConnectorSetting(style, iSettingsTaper, taper)) conMeasurement == "inner" ? t*-1 : t,
+    conTaper = let(t = (style == "nozzle") ? 0 : retriveConnectorSetting(style, iSettingsTaper, taper)) conMeasurement == "inner" ? t*-1 : t,
     conInnerDiameter = conMeasurement == "inner" ? conDiameter : conDiameter - conWallThickness * 2,
     conInnerStartDiameter = conInnerDiameter - conTaper / 2,
-    conOuterStartDiameter = conInnerStartDiameter + wallThickness*2,
+    conOuterStartDiameter = conInnerStartDiameter + conWallThickness*2,
     conInnerEndDiameter = conInnerDiameter + conTaper / 2,
-    conOuterEndDiameter = conInnerEndDiameter + wallThickness*2,
+    conOuterEndDiameter = conInnerEndDiameter + conWallThickness*2,
     //If the connector hose is not showm the stop has no thickenss
     conStopThickness = (conLength <= 0 || style == "mag" || style == "flange") ? 0 : stopThickness,
     //If the stop has no thickness, it needs no length

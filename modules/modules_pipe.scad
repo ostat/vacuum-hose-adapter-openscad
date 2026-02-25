@@ -160,6 +160,7 @@ module BentPipeHull(
     pipeAngle = 0,
     zPosition=0,
     end2Count=1,
+    end2Angle=0,
     lengthInHull=0,
     lengthOutHull=0,
     lengthOutHullCenter=0,
@@ -193,6 +194,7 @@ module BentPipeHull(
   end2BaseHeight = end2WallThickness;
   
   //echo("BentPipeHull", _edgeOffset = _edgeOffset, lengthInHull = lengthInHull, centerHeight=centerHeight, lengthOutHull=lengthOutHull, outer1PipeRadius=outer1PipeRadius, outer2PipeRadius=outer2PipeRadius, a= (cos(pipeAngle) * outer2PipeRadius*2));
+  multRotationAngle = end2Angle > 0 ? end2Angle : 360/end2Count;
   
   difference(){
     //Outer shape
@@ -202,7 +204,7 @@ module BentPipeHull(
         for (rotation = [0:end2Count-1])
         {
           //End 2
-          rotate([0,0,rotation*(360/end2Count)])
+          rotate([0,0,rotation*multRotationAngle])
           rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
           translate([-_edgeOffset, 0, lengthInHull])
           cylinder(r=outer2PipeRadius, h=end2WallThickness);
@@ -225,7 +227,7 @@ module BentPipeHull(
         //End 2 extentions
         //echo("Outer shape", pipeAngle=pipeAngle, outer1PipeRadius=outer1PipeRadius, outer2PipeRadius=outer2PipeRadius, _edgeOffset=_edgeOffset, lengthInHull=lengthInHull, end2WallThickness=end2WallThickness );
 
-        rotate([0,0,rotation*(360/end2Count)])
+        rotate([0,0,rotation*multRotationAngle])
         rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
         translate([-_edgeOffset, 0, lengthInHull])
         cylinder(r=outer2PipeRadius, h=lengthOutHull+end2WallThickness+fudgeFactor);
@@ -245,7 +247,7 @@ module BentPipeHull(
         for (rotation = [0:end2Count-1])
         {
           //End 2
-          rotate([0,0,rotation*(360/end2Count)])
+          rotate([0,0,rotation*multRotationAngle])
           rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
           translate([-_edgeOffset, 0, -end2BaseHeight+fudgeFactor+lengthInHull])
           cylinder(r=inner2PipeRadius, h=end2WallThickness+fudgeFactor*2);
@@ -266,7 +268,7 @@ module BentPipeHull(
       for (rotation = [0:end2Count-1])
       {
         //End 2 extentions
-        rotate([0,0,rotation*(360/end2Count)])
+        rotate([0,0,rotation*multRotationAngle])
         rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
         translate([-_edgeOffset, 0, -end2BaseHeight+fudgeFactor+lengthInHull])
         cylinder(r=inner2PipeRadius, h=lengthOutHull+end2WallThickness*2+fudgeFactor*2);
@@ -300,7 +302,8 @@ module BentPipe(
     baseLength=0,
     baseThickness=0,
     baseAngle=0,
-    end2Count=1
+    end2Count=1,
+    end2Angle=0
 )
 {
   outerPipeDiameter  = innerPipeDiameter + wallThickness * 2;
