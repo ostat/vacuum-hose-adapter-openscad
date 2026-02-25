@@ -24,23 +24,23 @@ module Dw735Connector(
   springHoleOffset = 7.875;
   // Spring pin hole
   springHoleDiameter = 6.75;
-  // Slot hole width (diameter) 
+  // Slot hole width (diameter)
   slotDiameter = 6.5;
   // Mounting slot length
-  slotLength = 16;  
-  slotOffset1 = 7.5;  
-  slotOffset2 = 9;  
+  slotLength = 16;
+  slotOffset1 = 7.5;
+  slotOffset2 = 9;
   fixedPinLength = 4.1;
   maxSupportThickness = fixedPinLength - 1.5;
   clearanceHeight = 4;
   clearanceDiameter = innerEndDiameter+9.2;
-  
+
   _connectorCount = max(1,connectorCount);
-  
+
   slotAngle = (slotLength-slotDiameter)/(2*PI*(innerEndDiameter/2+wallThickness))*360;
 
   echo("Dw735Connector", innerEndDiameter=innerEndDiameter, length = length, wallThickness = wallThickness);
-  rotate([0,0,-90])   
+  rotate([0,0,-90])
   difference(){
     union(){
       //Main body
@@ -48,14 +48,14 @@ module Dw735Connector(
         diameter = innerEndDiameter,
         length = length,
         wallThickness = wallThickness);
-      
+
       // Slot support
       intersection(){
         StraightPipe (
           diameter = innerEndDiameter+wallThickness*2,
           length = length,
           wallThickness = fixedPinLength - 1.5);
-        
+
         for (rotation = [0:_connectorCount-1])
         {
           flippedRotation = rotation % 2 == 0 ? rotation : -rotation;
@@ -81,7 +81,7 @@ module Dw735Connector(
         }
       }
     }
-    
+
     Pipe (
       diameter1 = clearanceDiameter,
       diameter2 = clearanceDiameter+wallThickness*2,
@@ -89,24 +89,24 @@ module Dw735Connector(
       wallThickness1 = wallThickness,
       wallThickness2 = 0,
       zPosition = clearanceHeight-fudgeFactor);
-        
+
      StraightPipe (
         diameter = clearanceDiameter,
         length = clearanceHeight+fudgeFactor,
         wallThickness = wallThickness,
         zPosition = -fudgeFactor);
-      
-      
+
+
     for (rotation = [0:_connectorCount-1])
     {
       rotate([0, 0, -rotation*(180/_connectorCount)])
       // Spring pin hole
       translate([0,0,springHoleOffset]){
-        rotate([90,0,0])   
+        rotate([90,0,0])
           cylinder(d=springHoleDiameter,h=innerEndDiameter);
       }
     }
-      
+
     // slot cutout
     intersection(){
       StraightPipe (

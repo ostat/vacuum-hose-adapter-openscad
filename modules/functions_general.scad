@@ -1,7 +1,7 @@
 include <functions_string.scad>
 
 //Replace multiple values in an array
-function replace_Items(keyValueArray, arr) = !(len(keyValueArray)>0) ? arr : 
+function replace_Items(keyValueArray, arr) = !(len(keyValueArray)>0) ? arr :
   assert(is_list(arr), "replace_Items(keyValueArray, arr) - arr is not a list")
   assert(is_list(keyValueArray), "replace_Items(keyValueArray, arr) - keyValueArray is not a list")
   let(currentKeyValue = keyValueArray[0])
@@ -12,11 +12,11 @@ function replace_Items(keyValueArray, arr) = !(len(keyValueArray)>0) ? arr :
 ) concat(replace_Items(keyValueArrayNext, updatedList));
 
 //Replace a value in an array
-function replace(list,position,value) = 
+function replace(list,position,value) =
   assert(is_list(list), "replace(list,position,value) - list is not a list")
   assert(is_num(position), "replace(list,position,value) - position is not a number")
   let (
-    l1 = position > 0 ? partial(list,start=0,end=position-1) : [], 
+    l1 = position > 0 ? partial(list,start=0,end=position-1) : [],
     l2 = position < len(list)-1 ? partial(list,start=position+1,end=len(list)-1) :[]
   ) concat(l1,[value],l2);
 
@@ -44,7 +44,7 @@ U+1F7EB 🟫 LARGE BROWN SQUARE
 U+2B1B ⬛ BLACK LARGE SQUARE
 U+2B1C ⬜ WHITE LARGE SQUARE
 */
-  
+
 function outputCustomConfig(typecode, arr) = let(
   config = createCustomConfig(arr),
   dynamicConfig = str("\"", typecode,"\"", ",", config)
@@ -52,7 +52,7 @@ function outputCustomConfig(typecode, arr) = let(
 
 function createCustomConfig(arr, pos=0, sep = ",") = pos >= len(arr) ? "" :
   let(
-    current = is_list(arr[pos]) ? createCustomConfig(arr[pos], sep=";") 
+    current = is_list(arr[pos]) ? createCustomConfig(arr[pos], sep=";")
       : is_string(arr[pos]) ? str("\"",arr[pos],"\"")
       : arr[pos],
     strNext = createCustomConfig(arr, pos+1, sep)

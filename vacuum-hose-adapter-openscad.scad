@@ -49,7 +49,7 @@ End1_Diameter = [100,0];  //0.01
 //Length of the start connector, including the flange (mm, inch).
 End1_Length = [40,0];  //0.1
 //Rotation around the z axis. Userfull for non symeterical connectors.
-End1_Rotation= 0;  
+End1_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End1_Taper = 1;  //0.1
 
@@ -168,7 +168,7 @@ End2_Diameter = [60,0];  //0.01
 //Length of the start connector, including the flange (mm, inch).
 End2_Length = [40 ,0];  //0.1
 //Rotation around the z axis. Userfull for non symeterical connectors.
-End2_Rotation= 0;  
+End2_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End2_Taper = 1;  //0.1
 
@@ -258,7 +258,7 @@ End3_Diameter = [40,0];  //0.01
 //Length of the start connector, including the flange (mm, inch).
 End3_Length = [40 ,0];  //0.1
 //Rotation around the z axis. Userfull for non symeterical connectors.
-End3_Rotation= 0;  
+End3_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End3_Taper = 0;  //0.1
 
@@ -364,22 +364,22 @@ Transition_Color = [DefaultTransitionColor,1]; //The color, then the alpha value
 Extension_Color = [DefaultExtensionColor,1]; //The color, then the alpha value
 
 /* [Model detail] */
-// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments 
-fa = 3; 
+// minimum angle for a fragment (fragments = 360/fa).  Low is more fragments
+fa = 3;
 // minimum size of a fragment.  Low is more fragments
-fs = 0.1; 
+fs = 0.1;
 // number of fragments, overrides $fa and $fs
-fn = 0;  
+fn = 0;
 
 /* [Hidden] */
 module end_of_customizer_opts() {}
 
 //Some online generators do not like direct setting of fa,fs,fn
-$fa = fa; 
-$fs = fs; 
-$fn = fn;  
+$fa = fa;
+$fs = fs;
+$fn = fn;
 
-function getColor(colorSetting, defaultColor) = 
+function getColor(colorSetting, defaultColor) =
   assert(is_list(colorSetting), str("colorSetting must be a list colorSetting=", colorSetting, " defaultColor", defaultColor))
   assert(len(colorSetting) == 2, "colorSetting be length 2")
   let(
@@ -417,29 +417,29 @@ module adapterAlignmentRing(
       translate([-cubeSziex/2, -cubeSziey, -cubeSziez/2])
         cube([cubeSziex,cubeSziey,cubeSziez]);
       }
-    } 
-     
+    }
+
     if($preview&&showCaliper){
       color("Gold")
       union(){
         rotate([90,0,0])
         Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
           //center=false,
-          l=centerDiameter+max(alignmentUpperWidth, alignmentLowerWidth), 
-          end=0, in=1, 
+          l=centerDiameter+max(alignmentUpperWidth, alignmentLowerWidth),
+          end=0, in=1,
           translate= [0,10,0],
           txt2 = "centerDiameter");
         translate([(centerDiameter)/2,0,0])
         rotate([90,90,0])
         Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
-          l=(alignmentDepth-alignmentDepthClearance)*2, 
-          end=0, in=4,          
+          l=(alignmentDepth-alignmentDepthClearance)*2,
+          end=0, in=4,
           cx= 0,
           translate= [0,5,0],
           txt2 = "alignmentDepth");
         }
     }
-  
+
   HelpTxt("adapterAlignmentRing",[
     "centerDiameter", centerDiameter,
     "magnetBorder", magnetBorder,
@@ -449,9 +449,9 @@ module adapterAlignmentRing(
     "alignmentSideClearance", alignmentSideClearance,
     "alignmentDepthClearance", alignmentDepthClearance,
     "debug", debug]
-    ,help);       
+    ,help);
 }
-          
+
 module adapter(
     con =[],
     connectorPos = 1,
@@ -465,7 +465,7 @@ module adapter(
   assert(is_num(con[iStopLength]), "stopLength must be a number");
   assert(is_list(con[iAdapterColor]), "adapterColor must be a list")
   assert(len(con[iAdapterColor]) == 2, "adapterColor be length 2")
-  
+
   //Create the start connector
   if(con[iLength] > 0)
   {
@@ -641,7 +641,7 @@ module adapter(
         translate([-cubeSziex/2, -cubeSziey, -fudgeFactor*2])
         cube([cubeSziex,cubeSziey,cubeSziez]);
       }
-    } 
+    }
   }
 
   if($preview&&showCaliper&&con[iStyle]!="none"){
@@ -655,16 +655,16 @@ module adapter(
       translate(con[iStyle] == "nozzle" ? [0,0,con[iLength]] :[0,0,con[iLength]/2])
       rotate([90,0,0])
        Caliper(messpunkt = false, help=0, size = 7,h = 0.1,
-          l=con[iInnerDiameter] + addwidth, 
-          end=endStyle, 
-          in=connectorPos == 1 ? 1 : 0, 
+          l=con[iInnerDiameter] + addwidth,
+          end=endStyle,
+          in=connectorPos == 1 ? 1 : 0,
           txt2 = str("con", con[iConnector], " ", con[iMeasurement]));
       if(con[iInnerDiameter] != con[iInnerStartDiameter]){
         translate([0,0,0])
         rotate([90,0,0])
         Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
-            l=con[iInnerStartDiameter] + addwidth, 
-            end=endStyle, 
+            l=con[iInnerStartDiameter] + addwidth,
+            end=endStyle,
             in=connectorPos == 1 ? 1 : 0,
             txt2 = str("con", con[iConnector], " start ", con[iMeasurement]));
       }
@@ -672,12 +672,12 @@ module adapter(
         translate([0,0,con[iLength]])
         rotate([90,0,0])
         Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
-            l=con[iInnerEndDiameter] + addwidth, 
-            end=3, 
+            l=con[iInnerEndDiameter] + addwidth,
+            end=3,
             in=connectorPos == 1 ? 1 : 0,
-            txt2 = str("con", con[iConnector], " end ", con[iMeasurement]));     
+            txt2 = str("con", con[iConnector], " end ", con[iMeasurement]));
       }
-      
+
       barWidth = con[iWallThickness]*8;
       position = con[iInnerDiameter]/2 + con[iWallThickness]*2;
       translate([(connectorPos == 1 ? position  : -position), 0, con[iLength]/2])
@@ -686,12 +686,12 @@ module adapter(
             center=true,
             l=con[iLength],
             cx= 0,
-            end=0, 
+            end=0,
             size = 8,
             in=connectorPos == 1 ? 2 : 3,
             translate= connectorPos == 1 ? [15,0,0] : [-15,0,0],
             txt2 = str("con", con[iConnector], " length"));
-        
+
       if(con[iStyle] == "nozzle")
       {
         translate([(connectorPos == 1 ? position  : -position), 0,-con[iNozzleSize].z/2])
@@ -699,12 +699,12 @@ module adapter(
         Caliper(messpunkt = false, help=0, h = 0.1,
               l=con[iNozzleSize].z,
               cx= 0,
-              end=0, 
+              end=0,
               size = 8,
               in=connectorPos == 1 ? 2 : 3,
               translate= connectorPos == 1 ? [15,0,0] : [-15,0,0],
               txt2 = str("nozzle ", con[iConnector], " length"));
-      }     
+      }
     }
   }
   HelpTxt("adapter",[
@@ -738,17 +738,17 @@ module transitionExtension(
   assert(is_num(gridWallThickness), "gridWallThickness must be a number");
 
   //gridWallThickness, -1 use wall thickness
-  gridWallThickness = gridWallThickness < 0 
+  gridWallThickness = gridWallThickness < 0
     ? min(wallThickness, length)
     : min(gridWallThickness, length);
-    
+
   //gridWallThickness == 0 will disable grid
-  gridSize = gridWallThickness <= 0 
-    ? 0 
-    : gridSize <=0 
+  gridSize = gridWallThickness <= 0
+    ? 0
+    : gridSize <=0
       ? innerDiameter/6 - gridWallThickness
       : gridSize;
-  
+
   if(length > 0)
   {
     difference(){
@@ -764,11 +764,11 @@ module transitionExtension(
         endCapGridSize = gridSize,
         endCapGridWallThickness = gridWallThickness,
         help);
-        
+
         if(includeHook == 1){
           hootLength = min(15, length);
           hookSize = wallThickness*2;
-          intersection(){ 
+          intersection(){
             difference(){
               Stopper(
                 diameter = (innerDiameter+wallThickness),
@@ -789,7 +789,7 @@ module transitionExtension(
                 wallThickness = wallThickness/2,
                 stopThickness = hookSize);
               }
-              
+
               cubeSize = [innerDiameter+hookSize,5,hootLength];
               translate([-cubeSize.x,-cubeSize.y/2,0])
               cube([innerDiameter+hookSize,cubeSize.y,cubeSize.z]);
@@ -807,7 +807,7 @@ module transitionExtension(
         translate([-cubeSize.x/2, (connector == 1 ? -cubeSize.y : 0), -fudgeFactor*2])
         cube(cubeSize);
       }
-      
+
       if(is_string(txt) && len(txt) > 0){
         textExtrude = min(wallThickness,1);
         border = length * .2; //border above and below the text
@@ -821,7 +821,7 @@ module transitionExtension(
           forceRound = true,
           center = true,
           $fn=64);
-      }  
+      }
     }
 
     if($preview&&showCaliper){
@@ -839,7 +839,7 @@ module transitionExtension(
               center=true,
               l=length,
               cx= -1,
-              end=0, 
+              end=0,
               size = 8,
               in=connector == 1 ? 3 : 2,
               translate= connector == 1 ? [15,0,0] : [-15,0,0],
@@ -860,7 +860,7 @@ module transitionExtension(
               center=true,
               l=length,
               cx=0,
-              end=0, 
+              end=0,
               size=6,
               in=connector == 1 ? 2 : 3,
               translate= connector == 1 ? [15,0,0] : [-15,0,0],
@@ -913,7 +913,7 @@ module transition(
 ){
   assert(is_list(transitionColor), "adapterColor must be a list");
   assert(len(transitionColor) == 2, "adapterColor be length 2");
-  
+
   multiConnectorAngle = connector2Angle > 0 ? connector2Angle : 360/connector2Count;
   echo("transition", multiConnectorAngle=multiConnectorAngle);
   difference()
@@ -1050,7 +1050,7 @@ module transition(
       //translate([-100/2, -200, -fudgeFactor*2])
       //    cube([200,200,200]);
     }
-  
+
     if(showCaliper){
     }
   }
@@ -1082,9 +1082,9 @@ module transition(
     "centerHeight", centerHeight,
     "offset", Offset,
     "debug", debug]
-    ,help);   
+    ,help);
 }
-  
+
 module HoseAdapter(
   drawAlignmentRing = Draw_Alignment_Ring,
   alignmentDepth = Alignment_Depth,
@@ -1150,7 +1150,7 @@ module HoseAdapter(
   transitionHullyOffset = Transition_HullyOffset,
   transitionHullCenter = Transition_HullCenter,
   transitionHullCenterHeight= Transition_HullCenterHeight,
-  
+
   connector2Style = End2_Style,
   connector2WallThickness  = End2_Wall_Thickness,
   connector2Measurement = End2_Measurement,
@@ -1184,7 +1184,7 @@ module HoseAdapter(
   connector2FlangeScrewBorder = End2_Flange_Screw_Border,
   connector2FlangeScrewCount = End2_Flange_Screw_Count,
   connector2FlangeScrewDiameter = End2_Flange_Screw_Diameter,
-  
+
   connector2NozzleShape = End2_Nozzle_Shape,
   connector2NozzleSize = End2_Nozzle_Size,
   connector2NozzleTipWallThickness = End2_Nozzle_Tip_Wall_Thickness,
@@ -1192,13 +1192,13 @@ module HoseAdapter(
   connector2NozzleOffset = End2_Nozzle_Offset,
   connector2NozzleChamferPercentage = End2_Nozzle_Chamfer_Percentage,
   connector2NozzleChamferAngle = End2_Nozzle_Chamfer_Angle,
-  
+
   connector2ExtensionLength = End2_Extension_Length,
   connector2ExtensionGridSize = End2_Extension_GridSize,
   connector2ExtensionGridWallThickness = End2_Extension_GridWallThickness,
   connector2ExtensionText = End2_Extension_Text,
   connector2ExtensionTextSize=End2_Extension_Text_Size,
-  
+
   connector3Style = End3_Style,
   connector3WallThickness  = End3_Wall_Thickness,
   connector3Measurement = End3_Measurement,
@@ -1232,7 +1232,7 @@ module HoseAdapter(
   connector3FlangeScrewBorder = End3_Flange_Screw_Border,
   connector3FlangeScrewCount = End3_Flange_Screw_Count,
   connector3FlangeScrewDiameter = End3_Flange_Screw_Diameter,
-  
+
   connector3NozzleShape = End3_Nozzle_Shape,
   connector3NozzleSize = End3_Nozzle_Size,
   connector3NozzleTipWallThickness = End3_Nozzle_Tip_Wall_Thickness,
@@ -1240,13 +1240,13 @@ module HoseAdapter(
   connector3NozzleOffset = End3_Nozzle_Offset,
   connector3NozzleChamferPercentage = End3_Nozzle_Chamfer_Percentage,
   connector3NozzleChamferAngle = End3_Nozzle_Chamfer_Angle,
-  
+
   connector3ExtensionLength = End3_Extension_Length,
   connector3ExtensionGridSize = End3_Extension_GridSize,
   connector3ExtensionGridWallThickness = End3_Extension_GridWallThickness,
   connector3ExtensionText = End3_Extension_Text,
   connector3ExtensionTextSize=End3_Extension_Text_Size,
-  
+
   sliceDebug = Enable_Debug_Slice,
   showCaliper = Enable_Calipers_Slice,
   end1Color = End1_Color,
@@ -1260,13 +1260,13 @@ module HoseAdapter(
 
   end1 = getConnectorSettings(
     connector=1,
-    style=connector1Style, 
-    wallThickness=connector1WallThickness, 
-    measurement=connector1Measurement, 
-    diameter=connector1Diameter, 
-    length=connector1Length, 
+    style=connector1Style,
+    wallThickness=connector1WallThickness,
+    measurement=connector1Measurement,
+    diameter=connector1Diameter,
+    length=connector1Length,
     rotation=connector1Rotation,
-    taper=connector1Taper, 
+    taper=connector1Taper,
     endCapDiameter=connector1EndCapDiameter,
     endCapThickness=connector1EndCapThickness,
     endCapGridSize=connector1EndCapGridSize,
@@ -1309,18 +1309,18 @@ module HoseAdapter(
     extensionText=connector1ExtensionText,
     extensionTextSize=connector1ExtensionTextSize,
     adapterColor = getColor(end1Color, DefaultEnd1Color),
-    con1Measurement=connector1Measurement, 
+    con1Measurement=connector1Measurement,
     con1WallThickness=connector1WallThickness);
 
     end2 = getConnectorSettings(
     connector=2,
-    style=connector2Style, 
-    wallThickness=connector2WallThickness, 
-    measurement=connector2Measurement, 
-    diameter=connector2Diameter, 
-    length=connector2Length, 
+    style=connector2Style,
+    wallThickness=connector2WallThickness,
+    measurement=connector2Measurement,
+    diameter=connector2Diameter,
+    length=connector2Length,
     rotation=connector2Rotation,
-    taper=connector2Taper, 
+    taper=connector2Taper,
     endCapDiameter=connector2EndCapDiameter,
     endCapThickness=connector2EndCapThickness,
     endCapGridSize=connector2EndCapGridSize,
@@ -1363,19 +1363,19 @@ module HoseAdapter(
     extensionText=connector2ExtensionText,
     extensionTextSize=connector2ExtensionTextSize,
     adapterColor = getColor(end2Color, DefaultEnd2Color),
-    con1Measurement=end1[iMeasurement], 
-    con1OuterEndDiameter=end1[iOuterEndDiameter],  
+    con1Measurement=end1[iMeasurement],
+    con1OuterEndDiameter=end1[iOuterEndDiameter],
     con1WallThickness=end1[iWallThickness]);
 
   end3 = getConnectorSettings(
     connector=3,
-    style=connector3Style, 
-    wallThickness=connector3WallThickness, 
-    measurement=connector3Measurement, 
-    diameter=connector3Diameter, 
-    length=connector3Length, 
+    style=connector3Style,
+    wallThickness=connector3WallThickness,
+    measurement=connector3Measurement,
+    diameter=connector3Diameter,
+    length=connector3Length,
     rotation=connector3Rotation,
-    taper=connector3Taper, 
+    taper=connector3Taper,
     endCapDiameter=connector3EndCapDiameter,
     endCapThickness=connector3EndCapThickness,
     endCapGridSize=connector3EndCapGridSize,
@@ -1418,19 +1418,19 @@ module HoseAdapter(
     extensionText=connector3ExtensionText,
     extensionTextSize=connector3ExtensionTextSize,
     adapterColor = getColor(end3Color, DefaultEnd3Color),
-    con1Measurement=end1[iMeasurement], 
-    con1OuterEndDiameter=end1[iOuterEndDiameter], 
+    con1Measurement=end1[iMeasurement],
+    con1OuterEndDiameter=end1[iOuterEndDiameter],
     con1WallThickness=end1[iWallThickness]);
 
-  echoConnector("end1", end1, help); 
-  echoConnector("end2", end2, help); 
-  echoConnector("end3", end3, transitionHullCenter == "end3" ? help : false); 
-  
-  //Transition settings 
+  echoConnector("end1", end1, help);
+  echoConnector("end2", end2, help);
+  echoConnector("end3", end3, transitionHullCenter == "end3" ? help : false);
+
+  //Transition settings
   //Total length of connector 1
   endConnector1 = end1[iLength] + end1[iStopLength];
 
-    
+
       // transitionLength is not wanted for sweep
   _transitionAngle = (transitionStyle == "flat") ? 0 : transitionAngle;
   _transitionStyle = _transitionAngle == 0 && transitionStyle == "organicbend" ? "bend+taper" : transitionStyle;
@@ -1438,10 +1438,10 @@ module HoseAdapter(
     ? 0
     : transitionLength == 0
       ? max(
-          abs(end1[iOuterEndDiameter] - end2[iOuterEndDiameter])/2, 
+          abs(end1[iOuterEndDiameter] - end2[iOuterEndDiameter])/2,
           abs(end1[iInnerEndDiameter] - end2[iInnerEndDiameter])/2)+(end1[iWallThickness]/2+end2[iWallThickness]/2)
       : transitionLength;
-      
+
       //Calculate the bend radius
       //organicbend, the '0' value must be max of connector 1 or 2 diameter, plus the wall thickness * 2 otherwise it will clip, then add provided radius.
       //transition the '0' value must be end 1 diameter/2 + wall thickenss *2 to prevent clipping, then addd provided radius.
@@ -1456,15 +1456,15 @@ module HoseAdapter(
         ? (shapeOverlap > 0 ? 0 : shapeOverlap * -1) + _transitionLength
         : 0;
       transitionCenterHeight = transitionHullCenterHeight == 0 ? lengthInHull * 2 : transitionHullCenterHeight;
-  
-      //Push end horizontially out from verticle center line 
+
+      //Push end horizontially out from verticle center line
       edgeOffset = _transitionStyle == "hull"
         ? (shapeOverlap > 50
           ? (end1[iOuterEndDiameter] - end2[iOuterEndDiameter])/2-shapeOverlap/2 + transitionHullyOffset
           : (end1[iOuterEndDiameter] - end2[iOuterEndDiameter])/2 + transitionHullyOffset) * cos(_transitionAngle)
         : 0;
-        
-     function bend_radius(transitionAngle, transitionBendRadius, end1OuterEndDiameter, end2OuterEndDiameter, taperedAverageDiameter) = 
+
+     function bend_radius(transitionAngle, transitionBendRadius, end1OuterEndDiameter, end2OuterEndDiameter, taperedAverageDiameter) =
          let(organic_bend_radius = transitionEnd2Count > 1
                 ? -(taperedAverageDiameter/2)/(cos(transitionAngle)-1)-taperedAverageDiameter/2 + transitionBendRadius
                 : taperedAverageDiameter + transitionBendRadius,
@@ -1482,23 +1482,23 @@ module HoseAdapter(
                   : 0;
 
                   echo(
-        transitionAngle=_transitionAngle, 
-        transitionBendRadius=transitionBendRadius, 
-        end1OuterEndDiameter=end1[iOuterEndDiameter], 
-        end2OuterEndDiameter=end2[iOuterEndDiameter], 
+        transitionAngle=_transitionAngle,
+        transitionBendRadius=transitionBendRadius,
+        end1OuterEndDiameter=end1[iOuterEndDiameter],
+        end2OuterEndDiameter=end2[iOuterEndDiameter],
         taperedAverageDiameter=taperedAverageDiameter);
       //end hull settings
       bendRadius = bend_radius(
-        transitionAngle=_transitionAngle, 
-        transitionBendRadius=transitionBendRadius, 
-        end1OuterEndDiameter=end1[iOuterEndDiameter], 
-        end2OuterEndDiameter=end2[iOuterEndDiameter], 
+        transitionAngle=_transitionAngle,
+        transitionBendRadius=transitionBendRadius,
+        end1OuterEndDiameter=end1[iOuterEndDiameter],
+        end2OuterEndDiameter=end2[iOuterEndDiameter],
         taperedAverageDiameter=taperedAverageDiameter);
-                  
+
   if(drawAlignmentRing == "end1" || drawAlignmentRing == "end2")
   {
     adapterAlignmentRing(
-      centerDiameter = drawAlignmentRing == "end1" 
+      centerDiameter = drawAlignmentRing == "end1"
         ? end1[iInnerStartDiameter] + end1[iMagnetBorder] + alignmentUpperWidth
         : end2[iInnerStartDiameter] + end2[iMagnetBorder] + alignmentUpperWidth,
       alignmentDepth = alignmentDepth,
@@ -1513,7 +1513,7 @@ module HoseAdapter(
   } else {
     difference()
     {
-      union() 
+      union()
       {
         //End1
         translate([0, 0, endConnector1])
@@ -1525,7 +1525,7 @@ module HoseAdapter(
           debug = sliceDebug,
           showCaliper = showCaliper,
           help = help);
-           
+
         translate([0, 0, endConnector1])
         transitionExtension(
           connector = 1,
@@ -1540,7 +1540,7 @@ module HoseAdapter(
           debug = sliceDebug,
           showCaliper = showCaliper,
           help = help);
-  
+
         translate([0, 0, endConnector1 + end1[iExtensionLength]])
         transition(
           style = _transitionStyle,
@@ -1592,7 +1592,7 @@ module HoseAdapter(
             ((_transitionStyle == "bend+taper") ? _transitionLength
               : _transitionStyle == "hull" ? transitionHullLength+lengthInHull+end2[iWallThickness]
               : 0)];
-          
+
           multiConnectorAngle = transitionEnd2Angle > 0 ? transitionEnd2Angle : 360/transitionEnd2Count;
 
           for (rotation = [0:transitionEnd2Count-1])
@@ -1619,7 +1619,7 @@ module HoseAdapter(
                 debug = sliceDebug,
                 showCaliper = showCaliper,
                 help = help);
-                
+
               translate([0, 0, end2[iExtensionLength]])
               adapter(
                 con = end2,
@@ -1655,7 +1655,7 @@ module HoseAdapter(
                 adapter(
                   con = getConnector3Setting(transitionHullCenter, end1, end2, end3),
                   connectorPos=3,
-                  transitionAngle =_transitionAngle,    
+                  transitionAngle =_transitionAngle,
                   debug = sliceDebug,
                   showCaliper = showCaliper,
                   help = help);

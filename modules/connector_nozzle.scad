@@ -6,7 +6,7 @@ nozzleSettings = ["nozzle", [
   [iSettingsTaper, 0],
   [iSettingsVersion, nozzleVersion]
   ]];
-  
+
 module Nozzle(
   innerStartDiameter,
   length,
@@ -25,8 +25,8 @@ module Nozzle(
 
   assert(nozzleShape == "square" || nozzleShape == "circle", str("nozzleShape only supports square and circle. Provided:'", nozzleShape ,"'"));
   innerRadius = innerStartDiameter/2;
-  _nozzleRadius = nozzleShape == "circle" && nozzleRadius == 0 ? nozzleSize.x/2 
-    : nozzleShape == "square" ? min(nozzleSize.x/2, nozzleSize.y/2, nozzleRadius) 
+  _nozzleRadius = nozzleShape == "circle" && nozzleRadius == 0 ? nozzleSize.x/2
+    : nozzleShape == "square" ? min(nozzleSize.x/2, nozzleSize.y/2, nozzleRadius)
     : nozzleRadius;
   circlepositionx = nozzleShape == "square" ? nozzleSize.x/2 - _nozzleRadius : 0;
   circlepositiony = nozzleShape == "square" ? nozzleSize.y/2 - _nozzleRadius : 0;
@@ -53,7 +53,7 @@ module Nozzle(
   startInnerLeadin = innerStartDiameter > max(nozzleSize.x,nozzleSize.y) ? fudgeFactor : leadin;
   endOuterLeadin = max(nozzleSize.x,nozzleSize.y) > innerStartDiameter ? leadin : fudgeFactor;
   endInnerLeadin = max(nozzleSize.x,nozzleSize.y) > innerStartDiameter ? fudgeFactor : leadin;
-  
+
   difference()
   {
     //Outer Shape
@@ -87,7 +87,7 @@ module Nozzle(
       union(){
         translate([0,0,-fudgeFactor])
           cylinder(startInnerLeadin+fudgeFactor*2, r=innerRadius);
-      
+
         translate([0,0,startInnerLeadin])
         hull()
         {
@@ -101,9 +101,9 @@ module Nozzle(
           hull() for (i= [ 0 : len(circlepositions) - 1 ])
             translate([circlepositions[i][0], circlepositions[i][1], 0])
             cylinder(endInnerLeadin+fudgeFactor*3, r=_nozzleRadius+fudgeFactor);
-            
-       } 
-        
+
+       }
+
       // Nozzle
       translate([nozzleOffset.y,nozzleOffset.x,length+fudgeFactor])
       hull() for (i= [ 0 : len(circlepositions) - 1 ])
@@ -122,7 +122,7 @@ module Nozzle(
                               [nozzleWidth/2+fudgeFactor*2,-lengthChamfer]] );
     }
   }
-  
+
   HelpTxt("Nozzle",[
     "innerStartDiameter", innerStartDiameter,
     "length", length,
@@ -140,5 +140,5 @@ module Nozzle(
     "_nozzleLengthChamfer", nozzleLengthChamfer,
     "_nozzleRadius", _nozzleRadius,
     "_circlepositions", circlepositions,
-    ],help); 
+    ],help);
 }

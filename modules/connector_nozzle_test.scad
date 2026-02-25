@@ -10,8 +10,8 @@ difference(){
       nozzleSize = [10,10,2],
       nozzleTipWallThickness = 1,
       nozzleRadius = 2);
-      
-    translate([0,0,20])    
+
+    translate([0,0,20])
     Nozzle(
       innerStartDiameter = 10,
       length = 10,
@@ -22,6 +22,6 @@ difference(){
       nozzleRadius = 2);
   }
 
-  translate([-100,0,-10])    
+  translate([-100,0,-10])
   cube([200,100,100]);
 }

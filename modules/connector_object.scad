@@ -55,7 +55,7 @@ iOuterStartDiameter=iInnerStartDiameter+1;
 iInnerEndDiameter=iOuterStartDiameter+1;
 iOuterEndDiameter=iInnerEndDiameter+1;
 
-module echoConnector(name, end, help){ 
+module echoConnector(name, end, help){
   assert(is_list(end), "end must be a list");
   HelpTxt(name,[
     "style", end[iStyle],
@@ -112,34 +112,34 @@ module echoConnector(name, end, help){
     "iOuterStartDiameter", end[iOuterStartDiameter],
     "iInnerEndDiameter", end[iInnerEndDiameter],
     "iOuterEndDiameter", end[iOuterEndDiameter]
-    ] ,help); 
+    ] ,help);
   }
-  
-function getConnector3Setting(transitionHullCenter, con1, con2, con3) = 
+
+function getConnector3Setting(transitionHullCenter, con1, con2, con3) =
   transitionHullCenter == "end1" ? con1
   : transitionHullCenter == "end2" ? con2
   : con3;
- 
+
  i_measurement_inch = 1;
  i_measurement_mm = 0;
- 
- 
+
+
 //input can be number of mm or [mm, inch], mm is deafault inch overrides mm.
-function measurement_to_mm(input) = 
+function measurement_to_mm(input) =
   assert(is_num(input) || (is_list(input) && len(input) == 2), "input must be number or list of length 2 ")
-  is_num(input) 
+  is_num(input)
     ? input
     : is_num(input[i_measurement_inch]) && input[i_measurement_inch] > 0 ? input[i_measurement_inch] * 25.4 : input[i_measurement_mm];
-  
+
 function getConnectorSettings(
   connector,
-  style, 
-  wallThickness, 
-  measurement, 
-  diameter, 
-  length, 
+  style,
+  wallThickness,
+  measurement,
+  diameter,
+  length,
   rotation,
-  taper, 
+  taper,
   endCapDiameter,
   endCapThickness,
   endCapGridSize,
@@ -182,7 +182,7 @@ function getConnectorSettings(
   extensionText,
   extensionTextSize,
   adapterColor,
-  con1OuterEndDiameter, con1Measurement, con1WallThickness) = 
+  con1OuterEndDiameter, con1Measurement, con1WallThickness) =
   let(
     _diameter = measurement_to_mm(diameter),
     _length = measurement_to_mm(length),
@@ -191,7 +191,7 @@ function getConnectorSettings(
       m = retriveConnectorSetting(style, iSettingsMeasurement, measurement),
       d = retriveConnectorSetting(style, iSettingsDiameter, _diameter))
         (style == "nozzle" && d == 0) ? "outer" : m,
-    conDiameter = let(d = retriveConnectorSetting(style, iSettingsDiameter, _diameter)) 
+    conDiameter = let(d = retriveConnectorSetting(style, iSettingsDiameter, _diameter))
       (style == "nozzle" && d == 0) ? con1OuterEndDiameter : d,
     conWallThickness = let(w = retriveConnectorSetting(style, iSettingsWallThickness, wallThickness))
       (style == "nozzle" && w == 0) ? con1WallThickness : w,
@@ -208,13 +208,13 @@ function getConnectorSettings(
     conStopLength = (conStopThickness > 0 && style == "hose") ? stopLength : 0
     ) [
         connector,
-        style, 
-        conWallThickness, 
-        conMeasurement, 
-        conDiameter, 
-        conLength, 
+        style,
+        conWallThickness,
+        conMeasurement,
+        conDiameter,
+        conLength,
         rotation,
-        conTaper, 
+        conTaper,
         endCapDiameter,
         endCapThickness,
         endCapGridSize,

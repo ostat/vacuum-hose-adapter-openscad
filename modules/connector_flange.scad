@@ -18,7 +18,7 @@ module FlangeConnector(
   assert(is_num(screwBorder), "screwBorder should be a number");
   assert(is_num(screwCount), "screwCount should be a number");
   assert(is_num(screwDiameter), "screwDiameter should be a number");
-  
+
   //The fillet around the edge
   fillet = flangeThickness;
   border = screwBorder == 0 ? flangeWidth/4 : screwBorder;
@@ -88,7 +88,7 @@ module FlangeConnector(
             d2 = innerEndDiameter,
             h = length + 2 * fudgeFactor*2);
   }
-  
+
   HelpTxt("FlangeConnector",[
     "innerStartDiameter", innerStartDiameter,
     "innerEndDiameter", innerEndDiameter,

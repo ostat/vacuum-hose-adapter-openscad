@@ -39,7 +39,7 @@ module HoseConnector(
         translate([0,0,length-fudgeFactor])
           cylinder(fudgeFactor, d=innerEndDiameter+2*wallThickness);
       }
-      
+
       //Inner cylinder to remove
       translate([0,0,0-fudgeFactor])
       hull()
@@ -51,10 +51,10 @@ module HoseConnector(
       if(chamferLength >0)
       {
         Pipe (
-          diameter1 = connectorMeasurement == "outer" ? 
-            innerStartDiameter + wallThickness*2 - chamferWidth*2 : 
+          diameter1 = connectorMeasurement == "outer" ?
+            innerStartDiameter + wallThickness*2 - chamferWidth*2 :
             innerStartDiameter - chamferWidth*2,
-          diameter2 = connectorMeasurement == "outer" ? 
+          diameter2 = connectorMeasurement == "outer" ?
             innerStartDiameter + wallThickness*2 + chamferWidth*2 :
             innerStartDiameter - chamferWidth*2,
           length = chamferLength*2,
@@ -79,15 +79,15 @@ module HoseConnector(
             stopThickness = _barbsThickness);
       }
     }
-    
+
     // Create the end cap
     if(endCapThickness > 0)
     {
-      difference () 
+      difference ()
       {
         //Main endcap
         cylinder(endCapThickness, d=innerStartDiameter + wallThickness/2);
-        
+
         //endcap grid
         if(endCapGridSize>0)
         intersection(){
@@ -95,16 +95,16 @@ module HoseConnector(
           gridspacing = (endCapGridSize*(sqrt(3)/2))*2 +hexwalls;
           gridsize = ceil(innerEndDiameter*1.4/gridspacing);
           innergridDiameter = endCapDiameter > 0 ? endCapDiameter+wallThickness*2 : 0;
-          
+
           StraightPipe(
             diameter=innergridDiameter,
             length=endCapThickness+fudgeFactor*2,
             wallThickness = (innerEndDiameter-(innergridDiameter))/2,
             zPosition = -fudgeFactor);
-          
+
           translate([0,0,-fudgeFactor])
             HexGrid([gridsize,gridsize],gridspacing)
-            cylinder(r=endCapGridSize, h=endCapThickness+fudgeFactor*4, $fn=6); 
+            cylinder(r=endCapGridSize, h=endCapThickness+fudgeFactor*4, $fn=6);
         }
         if(endCapDiameter > 0)
           //Endcap center hole
@@ -130,7 +130,7 @@ module HoseConnector(
         help = help);
     }
   }
-  
+
    HelpTxt("HoseConnector",[
     "connectorMeasurement", connectorMeasurement,
     "innerStartDiameter", innerStartDiameter,
@@ -149,5 +149,5 @@ module HoseConnector(
     "endCapGridWallThickness", endCapGridWallThickness,
     "chamferLength", chamferLength,
     "chamferWidth", chamferWidth
-    ],help); 
+    ],help);
 }

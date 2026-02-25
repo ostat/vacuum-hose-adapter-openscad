@@ -8,7 +8,7 @@ difference(){
 
   union(){
 
-    
+
     Pipe(
         diameter1 = 100,
         diameter2 = 40,
@@ -25,7 +25,7 @@ difference(){
         diameter1 = 20,
         diameter2 = 100,
         length = 10,
-        wallThickness = 2);     
+        wallThickness = 2);
     translate([100,0,0])
     Pipe(
         diameter1 = radius*2,
@@ -42,14 +42,14 @@ difference(){
         wallThickness1 = 2.8,
         wallThickness2 = 2);
   }
-  
-  translate([-200,0,-10])    
+
+  translate([-200,0,-10])
   cube([400,100,100]);
 }
 
 
-translate([-250,0,0])    
-difference(){  
+translate([-250,0,0])
+difference(){
   BentPipeHull(
     inner1PipeRadius=50,
     inner2PipeRadius=50,
@@ -66,7 +66,7 @@ difference(){
     edgeOffset = 10,
     addCenter = true,
     centerHeight= 50);
- 
-  translate([-200,0,-50])    
-  cube([400,100,200]);   
+
+  translate([-200,0,-50])
+  cube([400,100,200]);
 }

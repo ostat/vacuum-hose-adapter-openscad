@@ -26,7 +26,7 @@ cenTecMaleMeasurement = "outer";
 cenTecMaleInnerDiameter = 32.544;
 cenTecMaleOuterDiameter = 44.75; //v0.1 45.244;
 cenTecMaleWallThickness = (cenTecMaleOuterDiameter - cenTecMaleInnerDiameter)/2;
- 
+
 centecMaleSettings = ["centec_male", [
   [iSettingsLength, cenTecMaleMinLength],
   [iSettingsMeasurement, cenTecMaleMeasurement],
@@ -35,8 +35,8 @@ centecMaleSettings = ["centec_male", [
   [iSettingsTaper ,0],
   [iSettingsVersion, cenTecMaleVersion]
   ]];
-  
-//Test female  
+
+//Test female
 //CenTecFemaleConnector();
 //Test male
 //CenTecMaleConnector();
@@ -53,17 +53,17 @@ module CenTecMaleConnector($fn = 64){
   clickDiameter = 36.513;
   clickZpos = 8.5;//V0.1 9.128;
   clickWallThicknessDepth = (cenTecMaleOuterDiameter-clickDiameter);
-  
+
   startLipLength = 1.191;
   startLipDiameter = 35.719;
   startLipWidthDepth = (cenTecMaleOuterDiameter - startLipDiameter);
-  
+
   stopLength = 6;
   stopWidth = 3.175;
   stopZpos = connectorLength - stopLength;// 25.797;
-  
-  union(){ 
-  difference(){  
+
+  union(){
+  difference(){
     Pipe(
       diameter = connectorInnerRadius*2,
       length = connectorLength,
@@ -85,7 +85,7 @@ module CenTecMaleConnector($fn = 64){
       wallThickness=clickWallThicknessDepth,
       zPosition = clickZpos);
   }
-  
+
   Stopper(
     diameter = connectorOuterRadius*2-fudgeFactor,
     outer = true,
@@ -112,16 +112,16 @@ module CenTecFemaleConnector($fn = 64){
   StopInnerRadius = 18.2;
   wallThickness = cenTecFemaleWallThickness;
   StopInnerLength = cenTecFemaleWallThickness;
-  
+
   slideTaper=1;
-  
+
   _pinHoleRadius = min(pinHoleRadius, pinHoleHeight/2);
-  
-  
+
+
   echo("CenTecConnector", _pinHoleRadius=_pinHoleRadius, pinHoleHeight=pinHoleHeight);
     //Main body
 
-    
+
   difference(){
     HoseConnector(
       connectorMeasurement = "inner",
@@ -149,7 +149,7 @@ module CenTecFemaleConnector($fn = 64){
           h=wallThickness*2,
           r=_pinHoleRadius,
           center = true);
-        
+
         translate([0,wallThickness/2,0])
         rotate([90,0,180])
         centecRoundedCube(
@@ -160,7 +160,7 @@ module CenTecFemaleConnector($fn = 64){
           r2=(_pinHoleRadius+wallThickness)*2, //these values are made up, not sure what a could value should be
           center = true);
     }
-      
+
     //Slide for the clip
     intersection(){
 
@@ -179,7 +179,7 @@ module CenTecFemaleConnector($fn = 64){
         r1=0.1,
         r2=1,
         center = true);*/
-        
+
       translate([0,0,slideLength+slideTaper])
       mirror([0,0,1])
       HoseConnector(
@@ -192,7 +192,7 @@ module CenTecFemaleConnector($fn = 64){
         stopWidth = slideTaper
       );
     }
-  }      
+  }
 }
 
 //Creates a rounded cube
@@ -214,7 +214,7 @@ module centecRoundedCube(
 {
   r1 = is_num(r1) ? r1 : r;
   r2 = is_num(r2) ? r2 : r;
-  
+
   positions=[
      [r1            ,r1            ,0]
     ,[max(x-r1, r1) ,r1            ,0]
@@ -226,9 +226,9 @@ module centecRoundedCube(
   hull(){
     for (x =[0:1:len(positions)-1])
     {
-      //translate(positions[x]) 
+      //translate(positions[x])
       //  circle(cornerRadius, $fn=fn);
-      translate(positions[x]) 
+      translate(positions[x])
         cylinder(r1=r1, r2=r2, h=h,$fn=fn);
     }
   }

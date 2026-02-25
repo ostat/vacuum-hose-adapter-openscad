@@ -54,7 +54,7 @@ osvacfSettings = ["osvacf", [
   [iSettingsTaper ,0],
   [iSettingsVersion, osvacfVersion]
   ]];
-  
+
 //Test male connector
 //osVacMaleConnector(innerDiameter = 50, help=true);
 
@@ -71,7 +71,7 @@ module osVacFemaleConnector(
   innerWallDiameter = innerDiameter + innerTaperSize*2;
   outerDiameter = innerDiameter + wallThickness*2;
   finalShaftLength = 5;
-  
+
   innerShaftLength = 30.5;
   cutoutz = 3.7;
   cutoutHeight = 6.35;
@@ -80,7 +80,7 @@ module osVacFemaleConnector(
   cutoutBumpDepthx = 1.6;
   cutoutRadius = innerWallDiameter/2+cutoutDepthx;
   cutoutWidth = 10.2;
-  //The distence is base on a f32, 
+  //The distence is base on a f32,
   //The spec defines it as the ARC Length for 35deg on an F32
   cutoutArcLength = 35/180*PI*(osvacfInnerWallDiameter/2+cutoutDepthx);
   cutoutArcAngle = (cutoutArcLength*180)/(PI*(innerWallDiameter/2+cutoutDepthx));
@@ -95,7 +95,7 @@ module osVacFemaleConnector(
         translate([0,0,-fudgeFactor])
           cylinder(innerShaftLength, d=innerWallDiameter);
         translate([0,0,innerShaftLength])
-          cylinder(innerTaperSize, 
+          cylinder(innerTaperSize,
             d1=innerWallDiameter,
             d2=innerDiameter);
       }
@@ -103,17 +103,17 @@ module osVacFemaleConnector(
       //Opening relief
       translate([0,0,-fudgeFactor])
         cylinder(
-          cutoutDepthx/2, 
+          cutoutDepthx/2,
           d1=innerWallDiameter+cutoutDepthx,
           d2=innerWallDiameter
          );
-      
-      
+
+
       finalShaftLength = length - innerShaftLength;
       translate([0,0,length-finalShaftLength+fudgeFactor])
         cylinder(finalShaftLength, d=innerDiameter);
-     
-     translate([0,0,-fudgeFactor])    
+
+     translate([0,0,-fudgeFactor])
      intersection(){
         cylinder(cutoutDepthz+fudgeFactor, r=cutoutRadius);
         for(i = [0:360/clipCount:360]){
@@ -125,7 +125,7 @@ module osVacFemaleConnector(
               topRadius = 0,
               bottomRadius = 0,
               sideRadius = 2);
-              
+
            rotate([0,0,cutoutArcAngle])
            translate([0,-cutoutWidth/2,cutoutDepthz-cutoutHeight-fudgeFactor])
             roundedCube(
@@ -142,7 +142,7 @@ module osVacFemaleConnector(
                 rotate_extrude(angle=cutoutArcAngle/2)
                   translate([cutoutRadius-(cutoutDepthx*2),0,0])
                   square([cutoutDepthx+cutoutBumpDepthx,cutoutHeight*2], center=false);
-              
+
               translate([cutoutRadius,0,cutoutHeight-2])
               rotate([45,0,0])
                 cube([10,cutoutHeight*2,cutoutHeight*2], center=true);
@@ -152,7 +152,7 @@ module osVacFemaleConnector(
       }
     }
   }
-  
+
   HelpTxt("osVacFemaleConnector",[
     "innerDiameter", innerDiameter,
     "length", length,
@@ -174,7 +174,7 @@ module osVacFemaleConnector(
     "osvacfWallThickness", osvacfWallThickness,
     "osvacfMinLength", osvacfMinLength,
     "osvacfInnerDiameter", osvacfInnerDiameter
-    ],help); 
+    ],help);
 }
 
 module osVacMaleConnector(
@@ -183,25 +183,25 @@ module osVacMaleConnector(
   wallThickness = osvacmWallThickness,
   help,
   $fn = 64
-){  
+){
   outerDiameter = innerDiameter+wallThickness*2;
-  
+
   hoseEndTaper=0.7;
   clipHeight = 6.95;
   clipz = 3.2;
   clipr = 1;//not right
-  clipThickness = 2; 
-  clipWidth = 9.8; 
+  clipThickness = 2;
+  clipWidth = 9.8;
   clipTopTaperz = 5.8;
   clipTopTaperHeight = clipHeight - clipTopTaperz;
-  
+
   union() {
     difference ()
     {
       //outer cylinder
       union(){
         cylinder(length, d=outerDiameter);
-        
+
         translate([0,0,clipz])
         difference(){
           intersection(){
@@ -227,7 +227,7 @@ module osVacMaleConnector(
               }
             }
           }
-  
+
           Pipe(
             diameter1 = outerDiameter+clipThickness*2+fudgeFactor,
             diameter2 = outerDiameter-fudgeFactor*2,
@@ -237,11 +237,11 @@ module osVacMaleConnector(
             zPosition = clipTopTaperz);
         }
       }
-      
+
       //Inner cylinder to remove
       translate([0,0,0-fudgeFactor])
       cylinder(length+fudgeFactor*2, d=innerDiameter);
-        
+
       Pipe(
         diameter1 = innerDiameter-fudgeFactor,
         diameter2 = innerDiameter-fudgeFactor,
@@ -258,7 +258,7 @@ module osVacMaleConnector(
         zPosition = -fudgeFactor);
     }
   }
-  
+
   HelpTxt("osVacMaleConnector",[
     "innerDiameter", innerDiameter,
     "length", length,
@@ -273,7 +273,7 @@ module osVacMaleConnector(
     "osvacmWallThickness", osvacmWallThickness,
     "osvacmMinLength", osvacmMinLength,
     "osvacmInnerDiameter", osvacmInnerDiameter
-    ],help); 
+    ],help);
 }
 
 

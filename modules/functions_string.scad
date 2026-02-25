@@ -1,12 +1,12 @@
 // String functions found here https://github.com/thehans/funcutils/blob/master/string.scad
-join = function (l,delimiter="") 
+join = function (l,delimiter="")
   let(s = len(l), d = delimiter,
       jb = function (b,e) let(s = e-b, m = floor(b+s/2)) // join binary
         s > 2 ? str(jb(b,m), jb(m,e)) : s == 2 ? str(l[b],l[b+1]) : l[b],
       jd = function (b,e) let(s = e-b, m = floor(b+s/2))  // join delimiter
         s > 2 ? str(jd(b,m), d, jd(m,e)) : s == 2 ? str(l[b],d,l[b+1]) : l[b])
   s > 0 ? (d=="" ? jb(0,s) : jd(0,s)) : "";
-  
+
 substr = function(s,b,e) let(e=is_undef(e) || e > len(s) ? len(s) : e) (b==e) ? "" : join([for(i=[b:1:e-1]) s[i] ]);
 
 split = function(s,separator=" ") separator=="" ? [for(i=[0:1:len(s)-1]) s[i]] :
