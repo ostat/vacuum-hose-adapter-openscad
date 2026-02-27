@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-02-27 22:19
-//Content hash 1B4A7D70C7C41B5D32BBC557AD1DD8080622299DA2629BB16AB391C4FD54F5CE
+//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-02-27 22:33
+//Content hash 5C048A38D2432F8CE4C518B2281CA119BAC80269145C696BFF4D127CF3F172DC
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -3579,9 +3579,9 @@ function getConnectorSettings(
     conTaper = let(t = (style == "nozzle") ? 0 : retriveConnectorSetting(style, iSettingsTaper, taper)) conMeasurement == "inner" ? t*-1 : t,
     conInnerDiameter = conMeasurement == "inner" ? conDiameter : conDiameter - conWallThickness * 2,
     conInnerStartDiameter = conInnerDiameter - conTaper / 2,
-    conOuterStartDiameter = conInnerStartDiameter + conWallThickness*2,
+    conOuterStartDiameter = conInnerStartDiameter + wallThickness*2,
     conInnerEndDiameter = conInnerDiameter + conTaper / 2,
-    conOuterEndDiameter = conInnerEndDiameter + conWallThickness*2,
+    conOuterEndDiameter = conInnerEndDiameter + wallThickness*2,
     //If the connector hose is not showm the stop has no thickenss
     conStopThickness = (conLength <= 0 || style == "mag" || style == "flange") ? 0 : stopThickness,
     //If the stop has no thickness, it needs no length
@@ -3590,9 +3590,9 @@ function getConnectorSettings(
       result = [
         userSettings[iConnector],
         style,
-        userSettings[iWallThickness],
-        measurement,
-        diameter,
+        conWallThickness,
+        conMeasurement,
+        conDiameter,
         conLength,
         userSettings[iRotation],
         conTaper,

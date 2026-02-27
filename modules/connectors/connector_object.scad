@@ -327,9 +327,9 @@ function getConnectorSettings(
     conTaper = let(t = (style == "nozzle") ? 0 : retriveConnectorSetting(style, iSettingsTaper, taper)) conMeasurement == "inner" ? t*-1 : t,
     conInnerDiameter = conMeasurement == "inner" ? conDiameter : conDiameter - conWallThickness * 2,
     conInnerStartDiameter = conInnerDiameter - conTaper / 2,
-    conOuterStartDiameter = conInnerStartDiameter + conWallThickness*2,
+    conOuterStartDiameter = conInnerStartDiameter + wallThickness*2,
     conInnerEndDiameter = conInnerDiameter + conTaper / 2,
-    conOuterEndDiameter = conInnerEndDiameter + conWallThickness*2,
+    conOuterEndDiameter = conInnerEndDiameter + wallThickness*2,
     //If the connector hose is not showm the stop has no thickenss
     conStopThickness = (conLength <= 0 || style == "mag" || style == "flange") ? 0 : stopThickness,
     //If the stop has no thickness, it needs no length
@@ -338,9 +338,9 @@ function getConnectorSettings(
       result = [
         userSettings[iConnector],
         style,
-        userSettings[iWallThickness],
-        measurement,
-        diameter,
+        conWallThickness,
+        conMeasurement,
+        conDiameter,
         conLength,
         userSettings[iRotation],
         conTaper,

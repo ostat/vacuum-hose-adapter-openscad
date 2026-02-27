@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'funnels.scad'. Generated 2026-02-27 22:19
-//Content hash EDD0B289DDC0C5D7F3EFF1BB42792224FA6BCB1FD3A8DFAD57EE53461F3F0954
+//Combined version of 'funnels.scad'. Generated 2026-02-27 22:33
+//Content hash 01149EB67917520E18FB36A5D41A2DEBDB5BA4AC08FFD1754573192D392283F2
 ///////////////////////////////////////
 // funnel
 // version 2026-02-27
@@ -3529,9 +3529,9 @@ function getConnectorSettings(
     conTaper = let(t = (style == "nozzle") ? 0 : retriveConnectorSetting(style, iSettingsTaper, taper)) conMeasurement == "inner" ? t*-1 : t,
     conInnerDiameter = conMeasurement == "inner" ? conDiameter : conDiameter - conWallThickness * 2,
     conInnerStartDiameter = conInnerDiameter - conTaper / 2,
-    conOuterStartDiameter = conInnerStartDiameter + conWallThickness*2,
+    conOuterStartDiameter = conInnerStartDiameter + wallThickness*2,
     conInnerEndDiameter = conInnerDiameter + conTaper / 2,
-    conOuterEndDiameter = conInnerEndDiameter + conWallThickness*2,
+    conOuterEndDiameter = conInnerEndDiameter + wallThickness*2,
     //If the connector hose is not showm the stop has no thickenss
     conStopThickness = (conLength <= 0 || style == "mag" || style == "flange") ? 0 : stopThickness,
     //If the stop has no thickness, it needs no length
@@ -3540,9 +3540,9 @@ function getConnectorSettings(
       result = [
         userSettings[iConnector],
         style,
-        userSettings[iWallThickness],
-        measurement,
-        diameter,
+        conWallThickness,
+        conMeasurement,
+        conDiameter,
         conLength,
         userSettings[iRotation],
         conTaper,
