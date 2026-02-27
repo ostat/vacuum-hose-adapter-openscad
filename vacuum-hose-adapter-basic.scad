@@ -2,14 +2,14 @@
 // version 2024-04-30
 // repo https://github.com/ostat/vacuum-hose-adapter-openscad
 //
-// I give permision to use this script as you want, you are also free to sell models generated using this script. When sharing or selling models generated please provide attribution, with a link to the repo.
+// I give permission to use this script as you want, you are also free to sell models generated using this script. When sharing or selling models generated please provide attribution, with a link to the repo.
 //
 // I don't approve of you hosting or uploading this script it to any site or 3d modeling site.
 
 include <modules/vacuum-hose-adapter.scad>
 
 //TODO Ideas
-//All pre and post trasition length. so a flat section before and after the taper.abs
+//All pre and post transition length. so a flat section before and after the taper.abs
 
 /* [Connector 1] */
 //Wall thickness
@@ -34,7 +34,7 @@ End1_Stop_Symmetrical = false;
 End1_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
 End1_Barbs_Thickness = 0; //0.1
-//Should the barbes be tapered both sides. Might be easier to print.
+//Should the barbs be tapered both sides. Might be easier to print.
 End1_Barbs_Symmetrical = false;
 
 /* [Transition] */
@@ -70,11 +70,11 @@ End2_Stop_Symmetrical = false;
 End2_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
 End2_Barbs_Thickness = 0; //0.1
-//Should the barbes be tapered both sides. Might be easier to print.
+//Should the barbs be tapered both sides. Might be easier to print.
 End2_Barbs_Symmetrical = false;
 
 /* [other] */
-//Slice model inhalf to be able to easy see inside
+//Slice model in half to be able to easy see inside
 Enable_Debug_Slice = false;
 //Will only show if debug is also enabled
 Enable_Calipers_Slice = false;

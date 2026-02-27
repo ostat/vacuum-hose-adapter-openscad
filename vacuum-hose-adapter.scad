@@ -2,14 +2,14 @@
 // version 2024-04-30
 // repo https://github.com/ostat/vacuum-hose-adapter-openscad
 //
-// I give permision to use this script as you want, you are also free to sell models generated using this script. When sharing or selling models generated please provide attribution, with a link to the repo.
+// I give permission to use this script as you want, you are also free to sell models generated using this script. When sharing or selling models generated please provide attribution, with a link to the repo.
 //
 // I don't approve of you hosting or uploading this script it to any site or 3d modeling site.
 
 include <modules/vacuum-hose-adapter.scad>
 
 //TODO Ideas
-//All pre and post trasition length. so a flat section before and after the taper.abs
+//All pre and post transition length. so a flat section before and after the taper.abs
 
 /* [Connector 1] */
 //Wall thickness
@@ -22,7 +22,7 @@ End1_Measurement = "outer"; //[inner, outer]
 End1_Diameter = [100,0];  //0.01
 //Length of the start connector, including the flange (mm, inch).
 End1_Length = [40,0];  //0.1
-//Rotation around the z axis. Userfull for non symeterical connectors.
+//Rotation around the z axis. Useful for non symmetrical connectors.
 End1_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End1_Taper = 1;  //0.1
@@ -38,11 +38,11 @@ End1_Stop_Symmetrical = false;
 End1_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
 End1_Barbs_Thickness = 0; //0.1
-//Should the barbes be tapered both sides. Might be easier to print.
+//Should the barbs be tapered both sides. Might be easier to print.
 End1_Barbs_Symmetrical = false;
 //End Cap Inner Diameter.
 End1_Hose_EndCap_Diameter = 0;  //0.1
-//Thickness of endcap.
+//Thickness of end cap.
 End1_Hose_EndCap_Thickness = 0;  //0.1
 //End cap grid size for holes
 End1_Hose_EndCap_GridSize = 0;  //0.1
@@ -50,11 +50,11 @@ End1_Hose_EndCap_GridSize = 0;  //0.1
 End1_Hose_EndCap_GridWallThickness = 0;  //0.1
 
 /* [Connector 1 - Flange] */
-//Width of Flange added to the connector diamater
+//Width of Flange added to the connector diameter
 End1_Flange_Width = 20;
 //Thickness of the flange
 End1_Flange_Thickness = 5;
-//Position of the screws added to the connector diamater, 0 = middle of flange
+//Position of the screws added to the connector diameter, 0 = middle of flange
 End1_Flange_Screw_Position= 0;
 //Minium amount of the material around the magnet holes(mm), 0 = End1_Flange_Width / 4
 End1_Flange_Screw_Border = 5;  //0.1
@@ -72,7 +72,7 @@ End1_Magnet_Diameter = 10.5;  //0.1
 End1_Magnet_Thickness = 2.5;  //0.1
 //Minium amount of the material around the magnets (mm)
 End1_Magnet_Border = 2;  //0.1
-//Raises the magent so it is fully enclosed (mm)
+//Raises the magnet so it is fully enclosed (mm)
 End1_Magnet_ZOffset = 0;  //0.1
 // Thickness of the magnet flange (mm)
 End1_Magnet_Flange_Thickness = 6;  //0.1
@@ -82,11 +82,11 @@ End1_Ring = "no"; //[no: No alignment ring, protruding: protruding ring, recesse
 End1_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitchen insert,"4":M4,"4cnc":M4 with CNC Kitchen insert,"5":M5,"5cnc":M5 with CNC Kitchen insert]
 
 /* [Connector 1 - Extension] */
-//Length of the extnetion
+//Length of the extension
 End1_Extension_Length = 0;
-//Size of the grid in the extnetion. 0: diameter/6
+//Size of the grid in the extension. 0: diameter/6
 End1_Extension_GridSize = 0;  //0.1
-//Size of the grid walls in the extnetion. 0: no grid, -1: uses wall thickness
+//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
 End1_Extension_GridWallThickness = 0;  //0.1
 End1_Extension_Text = "asd-\u0020-asd";
 End1_Extension_Text_Size = 0;
@@ -105,11 +105,11 @@ Transition_Angle = 0;  //1
 Transition_Offset = [0,0]; // 0.1
 
 /* [Transition Multiple connector settings] */
-// Dupliacte the second connector. Adjust angle and bend radius to make it work.
+// Duplicate the second connector. Adjust angle and bend radius to make it work.
 Transition_End2_Count = 1;  //[1, 2, 3, 4, 5, 6]
 // MulitConnector, connector in hull length.
 Transition_HullLength = 0; // 0.1
-// MulitConnector, add center connector.
+// MulitConnector, add centre connector.
 Transition_HullCenter = "disabled"; //[disabled,end1,end2,end3]
 Transition_HullCenterLength = 0;
 // MulitConnector, connector in hull offset.
@@ -120,7 +120,7 @@ Transition_HullCenterHeight = 0;
 Transition_End2_Angle = 0;
 
 /* [Transition Support For Angled Pipes] */
-// Include a flate section on the transition to assist with printing
+// Include a flat section on the transition to assist with printing
 Transition_Base_Type="none"; // [none, oval, rectangle]
 //Support Base Additional Thickness;
 Transition_Base_Thickness=0;
@@ -141,7 +141,7 @@ End2_Measurement = "outer"; //[inner, outer]
 End2_Diameter = [60,0];  //0.01
 //Length of the start connector, including the flange (mm, inch).
 End2_Length = [40 ,0];  //0.1
-//Rotation around the z axis. Userfull for non symeterical connectors.
+//Rotation around the z axis. Useful for non symmetrical connectors.
 End2_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End2_Taper = 1;  //0.1
@@ -157,9 +157,9 @@ End2_Stop_Symmetrical = false;
 End2_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
 End2_Barbs_Thickness = 0; //0.1
-//Should the barbes be tapered both sides. Might be easier to print.
+//Should the barbs be tapered both sides. Might be easier to print.
 End2_Barbs_Symmetrical = false;
-//Thickness of endcap, 0 means disabled
+//Thickness of end cap, 0 means disabled
 End2_Hose_EndCap_Thickness = 0;  //0.1
 //End Cap Inner Diameter.
 End2_Hose_EndCap_Diameter = 0;  //0.1
@@ -169,11 +169,11 @@ End2_Hose_EndCap_GridSize = 0;  //0.1
 End2_Hose_EndCap_GridWallThickness = 0;  //0.1
 
 /* [Connector 2 - Flange] */
-//Width of Flange added to the connector diamater
+//Width of Flange added to the connector diameter
 End2_Flange_Width = 20;
 //Thickness of the flange
 End2_Flange_Thickness = 5;
-//Position of the screws added to the connector diamater, 0 = middle of flange
+//Position of the screws added to the connector diameter, 0 = middle of flange
 End2_Flange_Screw_Position= 0;
 //Minium amount of the material around the magnets (mm), 0 = End1_Flange_Width / 4
 End2_Flange_Screw_Border = 5;  //0.1
@@ -191,7 +191,7 @@ End2_Magnet_Diameter = 12;  //0.1
 End2_Magnet_Thickness = 3;  //0.1
 //Size of the material around the magnets
 End2_Magnet_Border = 2;  //0.1
-//Raises the magent so it is fully enclosed (mm)
+//Raises the magnet so it is fully enclosed (mm)
 End2_Magnet_ZOffset = 0;  //0.1
 //Inner diameter of the Magnet flange
 End2_Magnet_Flange_Thickness = 10;  //0.1
@@ -211,11 +211,11 @@ End2_Nozzle_Chamfer_Percentage = 0; //0.1
 End2_Nozzle_Chamfer_Angle = 0; //0.1
 
 /* [Connector 2 - Extension] */
-//Length of the extnetion
+//Length of the extension
 End2_Extension_Length = 0;
-//Size of the grid in the extnetion. 0: diameter/6
+//Size of the grid in the extension. 0: diameter/6
 End2_Extension_GridSize = 0;  //0.1
-//Size of the grid walls in the extnetion. 0: no grid, -1: uses wall thickness
+//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
 End2_Extension_GridWallThickness = 0;  //0.1
 End2_Extension_Text = "";
 End2_Extension_Text_Size = 0;
@@ -231,7 +231,7 @@ End3_Measurement = "outer"; //[inner, outer]
 End3_Diameter = [40,0];  //0.01
 //Length of the start connector, including the flange (mm, inch).
 End3_Length = [40 ,0];  //0.1
-//Rotation around the z axis. Userfull for non symeterical connectors.
+//Rotation around the z axis. Useful for non symmetrical connectors.
 End3_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End3_Taper = 0;  //0.1
@@ -247,9 +247,9 @@ End3_Stop_Symmetrical = false;
 End3_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
 End3_Barbs_Thickness = 0; //0.1
-//Should the barbes be tapered both sides. Might be easier to print.
+//Should the barbs be tapered both sides. Might be easier to print.
 End3_Barbs_Symmetrical = false;
-//Thickness of endcap, 0 means disabled
+//Thickness of end cap, 0 means disabled
 End3_Hose_EndCap_Thickness = 0;  //0.1
 //End Cap Inner Diameter.
 End3_Hose_EndCap_Diameter = 0;  //0.1
@@ -260,11 +260,11 @@ End3_Hose_EndCap_GridWallThickness = 0;  //0.1
 
 
 /* [Connector 3 - Flange] */
-//Width of Flange added to the connector diamater
+//Width of Flange added to the connector diameter
 End3_Flange_Width = 20;
 //Thickness of the flange
 End3_Flange_Thickness = 5;
-//Position of the screws added to the connector diamater, 0 = middle of flange
+//Position of the screws added to the connector diameter, 0 = middle of flange
 End3_Flange_Screw_Position= 0;
 //Minium amount of the material around the magnets (mm), 0 = End1_Flange_Width / 4
 End3_Flange_Screw_Border = 5;  //0.1
@@ -273,7 +273,7 @@ End3_Flange_Screw_Count = 4;
 //The diameter of the screws (mm)
 End3_Flange_Screw_Diameter = 5;  //0.1
 
-/* [Connector 3 - Magnetic Flange] */
+/* [Connector 3 - Magnetic connector] */
 //Number of magnets in the flange
 End3_Magnets_Count = 6;  //1
 //The diameter of the magnets
@@ -282,7 +282,7 @@ End3_Magnet_Diameter = 12;  //0.1
 End3_Magnet_Thickness = 3;  //0.1
 //Size of the material around the magnets
 End3_Magnet_Border = 2;  //0.1
-//Raises the magent so it is fully enclosed (mm)
+//Raises the magnet so it is fully enclosed (mm)
 End3_Magnet_ZOffset = 0;  //0.1
 // Inner diameter of the Magnet flange
 End3_Magnet_Flange_Thickness = 10;  //0.1
@@ -302,11 +302,11 @@ End3_Nozzle_Chamfer_Percentage = 0; //0.1
 End3_Nozzle_Chamfer_Angle = 0; //0.1
 
 /* [Connector 3 - Extension] */
-//Length of the extnetion
+//Length of the extension
 End3_Extension_Length = 0;
-//Size of the grid in the extnetion. 0: diameter/6
+//Size of the grid in the extension. 0: diameter/6
 End3_Extension_GridSize = 0;  //0.1
-//Size of the grid walls in the extnetion. 0: no grid, -1: uses wall thickness
+//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
 End3_Extension_GridWallThickness = 0;  //0.1
 End3_Extension_Text = "";
 End3_Extension_Text_Size = 0;
@@ -326,7 +326,7 @@ Alignment_Side_Clearance = 0.25;  //0.01
 Alignment_Depth_Clearance = .75;  //0.01
 
 /* [other] */
-//Slice model inhalf to be able to easy see inside
+//Slice model in half to be able to easy see inside
 Enable_Debug_Slice = false;
 //Will only show if debug is also enabled
 Enable_Calipers_Slice = false;
@@ -388,13 +388,6 @@ HoseAdapter(
     flangeScrewBorder=End1_Flange_Screw_Border,
     flangeScrewCount=End1_Flange_Screw_Count,
     flangeScrewDiameter=End1_Flange_Screw_Diameter,
-    //nozzleShape=connector1NozzleShape,
-    //nozzleSize=connector1NozzleSize,
-    //nozzleTipWallThickness=connector1NozzleTipWallThickness,
-    //nozzleRadius=connector1NozzleRadius,
-    //nozzleOffset=connector1NozzleOffset,
-    //nozzleChamferPercentage=connector1NozzleChamferPercentage,
-    //nozzleChamferAngle=connector1NozzleChamferAngle,
     extensionLength=End1_Extension_Length,
     extensionGridSize=End1_Extension_GridSize,
     extensionGridWallThickness=End1_Extension_GridWallThickness,
