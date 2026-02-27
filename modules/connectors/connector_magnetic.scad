@@ -1,5 +1,5 @@
-include <constants.scad>
-include <modules_utility.scad>
+include <../constants.scad>
+include <../modules_utility.scad>
 
 
 module MagneticConnector(

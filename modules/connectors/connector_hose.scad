@@ -1,7 +1,7 @@
-include <constants.scad>
-use <ub.scad>
-use <modules_utility.scad>
-use <modules_pipe.scad>
+include <../constants.scad>
+use <../thirdparty/ub.scad>
+use <../modules_utility.scad>
+use <../modules_pipe.scad>
 
 module HoseConnector(
     innerStartDiameter,

@@ -1,6 +1,6 @@
-include <constants.scad>
-use <modules_utility.scad>
-use <modules_pipe.scad>
+include <../constants.scad>
+use <../modules_utility.scad>
+use <../modules_pipe.scad>
 
 /* [Hidden] */
 dysonVersion = "1.2";

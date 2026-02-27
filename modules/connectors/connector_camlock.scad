@@ -1,4 +1,4 @@
-include <constants.scad>
+include <../constants.scad>
 
 camlockVersion = "1.0";
 camlockMinLength = 35+3;

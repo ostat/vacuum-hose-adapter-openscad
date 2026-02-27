@@ -1,5 +1,5 @@
-include <constants.scad>
-include <modules_utility.scad>
+include <../constants.scad>
+include <../modules_utility.scad>
 include <connector_hose.scad>
 
 cenTecFemaleVersion = "0.1";

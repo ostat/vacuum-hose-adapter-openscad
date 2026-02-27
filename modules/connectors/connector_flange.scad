@@ -1,4 +1,4 @@
-include <constants.scad>
+include <../constants.scad>
 
 module FlangeConnector(
     innerStartDiameter,

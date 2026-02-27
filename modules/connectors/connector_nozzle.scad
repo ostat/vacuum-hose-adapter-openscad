@@ -1,4 +1,4 @@
-include <constants.scad>
+include <../constants.scad>
 
 nozzleVersion = "1.0";
 

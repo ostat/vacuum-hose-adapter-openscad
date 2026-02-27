@@ -1,6 +1,6 @@
 include <constants.scad>
-include <dotSCAD/shape_circle.scad>
-include <dotSCAD/ring_extrude.scad>
+include <thirdparty/dotSCAD/shape_circle.scad>
+include <thirdparty/dotSCAD/ring_extrude.scad>
 
 //diameter1: Inner start diameter.
 //diameter2: Inner end diameter.

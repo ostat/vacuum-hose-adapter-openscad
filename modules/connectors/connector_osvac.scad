@@ -1,10 +1,10 @@
 //osVAC
 //Female documentation https://www.thingiverse.com/thing:4562762
 //Male documentation https://www.thingiverse.com/thing:4562789
-use <ub.scad>
-include <constants.scad>
-use <modules_utility.scad>
-use <modules_pipe.scad>
+use <../thirdparty/ub.scad>
+include <../constants.scad>
+use <../modules_utility.scad>
+use <../modules_pipe.scad>
 
 /* [Hidden] */
 clipCount = 3;

@@ -1,7 +1,7 @@
-// Hose connector examples
-// version 2022-09-26
+// funnel
+// version 2026-02-27
 
-use <vacuum-hose-adapter-openscad.scad>
+use <modules/vacuum-hose-adapter.scad>
 
 /* [Funnel] */
 //funnel opening diameter
@@ -52,29 +52,36 @@ spoutLength = SpoutLength < 1 ? 1 : SpoutLength;
 spoutDiameter = SpoutDiameter < 1 ? SpoutTipDiameter : SpoutDiameter;
 
   HoseAdapter(
-      connector1Style = "flange",
-      connector1Measurement = "inner",
-      connector1Diameter = OpeningDiameter,
-      connector1WallThickness = WallThickness,
-      connector1FlangeWidth = 7,
-      connector1FlangeThickness = FlangeThickness,
-      connector1FlangeScrewPosition = WallThickness * 2 + HangingHoleDiameter + ScrewBorder,
-      connector1FlangeScrewBorder = ScrewBorder,
-      connector1FlangeScrewCount = 1,
-      connector1FlangeScrewDiameter = HangingHoleDiameter,
-      connector1Length = 3,
+      connector1 = UserConnectorSettings(
+        connector=1,
+        style="flange",
+        wallThickness=WallThickness,
+        measurement="inner",
+        diameter=OpeningDiameter,
+        length=3,
+        flangeWidth=7,
+        flangeThickness=FlangeThickness,
+        flangeScrewPosition=WallThickness * 2 + HangingHoleDiameter + ScrewBorder,
+        flangeScrewBorder=ScrewBorder,
+        flangeScrewCount=1,
+        flangeScrewDiameter=HangingHoleDiameter),
+
       transitionStyle = TransitionStyle,
       transitionLength = transitionLength,
       transitionOffset = SpoutOffset,
       transitionAngle = SpoutAngle,
-      connector2Style = "nozzle",
-      connector2Measurement = "inner",
-      connector2Diameter = spoutDiameter,
-      connector2Length = spoutLength,
-      connector2WallThickness = WallThickness,
-      connector2NozzleShape = "circle",
-      connector2NozzleTipWallThickness = SpoutTipWallThickness,
-      connector2NozzleRadius = SpoutTipDiameter/2,
-      connector2NozzleSize= [0,0,spoutTipLength],
-      connector2NozzleChamferPercentage = 100,
-      connector2NozzleChamferAngle = 30);
+
+      connector2 = UserConnectorSettings(
+        connector=2,
+        style="nozzle",
+        wallThickness=WallThickness,
+        measurement="inner",
+        diameter=spoutDiameter,
+        length=spoutLength,
+        nozzleShape = "circle",
+        nozzleTipWallThickness = SpoutTipWallThickness,
+        nozzleRadius = SpoutTipDiameter/2,
+        nozzleSize= [0,0,spoutTipLength],
+        nozzleChamferPercentage = 100,
+        nozzleChamferAngle = 30)
+  );

@@ -1,4 +1,4 @@
-include <constants.scad>
+include <../constants.scad>
 
 
 dw735Version = "1.2";
