@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-02-27 21:16
-//Content hash A8F957C87C3DE9E487488E3552B21CD7343C3F00097DD8603F24F5ABDF83BCD9
+//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-02-27 21:23
+//Content hash 69B4FB981E4E05BD2FA4EEAFF98B6358FD1FF38C1CA30BCD27E70DFEB8ED09E6
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -1286,7 +1286,7 @@ module transition(
           baseLength = baseLength,
           baseAngle = baseAngle,
           end2Count = connector2Count,
-          eng2Angle = connector2Angle);
+          end2Angle = connector2Angle);
       }
       else if(style == "hull")
       {
@@ -1327,7 +1327,7 @@ module transition(
             baseLength = baseLength,
             baseAngle = baseAngle,
             end2Count = connector2Count,
-            eng2Angle = connector2Angle);
+            end2Angle = connector2Angle);
         }
 
         //Tapered section position to the end of the bent pipe
@@ -1378,7 +1378,7 @@ module transition(
             baseLength = baseLength,
             baseAngle = baseAngle,
             end2Count = connector2Count,
-            eng2Angle = connector2Angle);
+            end2Angle = connector2Angle);
         }
       }
     }

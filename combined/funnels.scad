@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'funnels.scad'. Generated 2026-02-27 21:16
-//Content hash 93A3E76851FF6DAF9886741C8664B9A764FD096B2609A5C4152DD52F0F1CE49A
+//Combined version of 'funnels.scad'. Generated 2026-02-27 21:23
+//Content hash 234CE1214479DD72A1EA8BDDEC0893CD7A8DE4668B6EEA29E0853C6FD14DC1A5
 ///////////////////////////////////////
 // funnel
 // version 2026-02-27
@@ -983,7 +983,7 @@ module transition(
           baseLength = baseLength,
           baseAngle = baseAngle,
           end2Count = connector2Count,
-          eng2Angle = connector2Angle);
+          end2Angle = connector2Angle);
       }
       else if(style == "hull")
       {
@@ -1024,7 +1024,7 @@ module transition(
             baseLength = baseLength,
             baseAngle = baseAngle,
             end2Count = connector2Count,
-            eng2Angle = connector2Angle);
+            end2Angle = connector2Angle);
         }
 
         //Tapered section position to the end of the bent pipe
@@ -1075,7 +1075,7 @@ module transition(
             baseLength = baseLength,
             baseAngle = baseAngle,
             end2Count = connector2Count,
-            eng2Angle = connector2Angle);
+            end2Angle = connector2Angle);
         }
       }
     }

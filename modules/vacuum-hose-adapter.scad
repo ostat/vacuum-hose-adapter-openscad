@@ -931,7 +931,7 @@ module transition(
           baseLength = baseLength,
           baseAngle = baseAngle,
           end2Count = connector2Count,
-          eng2Angle = connector2Angle);
+          end2Angle = connector2Angle);
       }
       else if(style == "hull")
       {
@@ -972,7 +972,7 @@ module transition(
             baseLength = baseLength,
             baseAngle = baseAngle,
             end2Count = connector2Count,
-            eng2Angle = connector2Angle);
+            end2Angle = connector2Angle);
         }
 
         //Tapered section position to the end of the bent pipe
@@ -1023,7 +1023,7 @@ module transition(
             baseLength = baseLength,
             baseAngle = baseAngle,
             end2Count = connector2Count,
-            eng2Angle = connector2Angle);
+            end2Angle = connector2Angle);
         }
       }
     }
