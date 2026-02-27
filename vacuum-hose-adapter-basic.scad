@@ -36,26 +36,16 @@ End1_Barbs_Count = 0;
 End1_Barbs_Thickness = 0; //0.1
 //Should the barbes be tapered both sides. Might be easier to print.
 End1_Barbs_Symmetrical = false;
-//End Cap Inner Diameter.
-End1_Hose_EndCap_Diameter = 0;  //0.1
-//Thickness of endcap.
-End1_Hose_EndCap_Thickness = 0;  //0.1
-//End cap grid size for holes
-End1_Hose_EndCap_GridSize = 0;  //0.1
-//Thickness of the walls in the end cap
-End1_Hose_EndCap_GridWallThickness = 0;  //0.1
 
 /* [Transition] */
 // tapered for hose connections, flat for attaching to a device
-Transition_Style = "bend+taper"; //[flat, taper+bend: Taper then bend, bend+taper: Bend then taper, organicbend: Tapered bend, hull: Hull for multiple end count, none: no transition]
+Transition_Style = "bend+taper"; //[flat, taper+bend: Taper then bend, bend+taper: Bend then taper, organicbend: Tapered bend]
 //Length of the transition between the two ends
 Transition_Length = 0;  //1
 // Radius of transition bend (mm)
 Transition_Bend_Radius = 0;  //1
 //Angle of bend through the transition section.
 Transition_Angle = 0;  //1
-// offset for the connector, not supported on taperedbend.
-Transition_Offset = [0,0]; // 0.1
 
 /* [Connector 2] */
 //Wall thickness
@@ -82,14 +72,6 @@ End2_Barbs_Count = 0;
 End2_Barbs_Thickness = 0; //0.1
 //Should the barbes be tapered both sides. Might be easier to print.
 End2_Barbs_Symmetrical = false;
-//Thickness of endcap, 0 means disabled
-End2_Hose_EndCap_Thickness = 0;  //0.1
-//End Cap Inner Diameter.
-End2_Hose_EndCap_Diameter = 0;  //0.1
-//End cap grid size for holes
-End2_Hose_EndCap_GridSize = 0;  //0.1
-//Thickness of the walls in the end cap
-End2_Hose_EndCap_GridWallThickness = 0;  //0.1
 
 /* [other] */
 //Slice model inhalf to be able to easy see inside
@@ -128,10 +110,6 @@ HoseAdapter(
     diameter=End1_Diameter,
     length=End1_Length,
     taper=End1_Taper,
-    endCapDiameter=End1_Hose_EndCap_Diameter,
-    endCapThickness=End1_Hose_EndCap_Thickness,
-    endCapGridSize=End1_Hose_EndCap_GridSize,
-    endCapGridWallThickness=End1_Hose_EndCap_GridWallThickness,
     stopThickness=End1_StopThickness,
     stopLength=End1_StopLength,
     stopSymmetrical=End1_Stop_Symmetrical,
@@ -147,10 +125,6 @@ HoseAdapter(
     diameter=End2_Diameter,
     length=End2_Length,
     taper=End2_Taper,
-    endCapDiameter=End2_Hose_EndCap_Diameter,
-    endCapThickness=End2_Hose_EndCap_Thickness,
-    endCapGridSize=End2_Hose_EndCap_GridSize,
-    endCapGridWallThickness=End2_Hose_EndCap_GridWallThickness,
     stopThickness=End2_StopThickness,
     stopLength=End2_StopLength,
     stopSymmetrical=End2_Stop_Symmetrical,
@@ -162,14 +136,6 @@ HoseAdapter(
   transitionLength = Transition_Length,
   transitionBendRadius = Transition_Bend_Radius,
   transitionAngle = Transition_Angle,
-  transitionOffset = Transition_Offset,
-  transitionBaseType = Transition_Base_Type,
-  transitionBaseThickness = Transition_Base_Thickness,
-  transitionBaseWidth = Transition_Base_Width,
-  transitionBaseLength = Transition_Base_Length,
-  transitionBaseAngle = Transition_Base_Angle,
-  transitionEnd2Count = Transition_End2_Count,
-  transitionEnd2Angle = Transition_End2_Angle,
 
   sliceDebug = Enable_Debug_Slice,
   showCaliper = Enable_Calipers_Slice,
