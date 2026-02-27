@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter-openscad.scad'. Generated 2026-02-27 20:46
-//Content hash EEA0CCB609003F4010CCBE36ACECBF2D3BA877EBB949FF1A621820E432E1E3EE
+//Combined version of 'vacuum-hose-adapter-openscad.scad'. Generated 2026-02-27 10:47
+//Content hash BE240C7D166BEB3517926DB54D018EE634A73CD96BBEC779B38D04C1FC4D2FD1
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -1763,8 +1763,6 @@ works from OpenSCAD version 2021 or higher   maintained at https://github.com/UB
 Version=23.305;//                <<< ---   VERSION  VERSION VERSION ••••••••••••••••
 useVersion=undef;
 
-/// render with Hires
-hires=false;
 fn=$fn?$fn:$preview?36:
                           hires?144:
                                 72;

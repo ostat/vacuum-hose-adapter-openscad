@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'funnels.scad'. Generated 2026-02-27 20:46
-//Content hash 2894B44D11C7E24AB851E49E03625440584BFBF37215D892F743EBE630D1BE38
+//Combined version of 'funnels.scad'. Generated 2026-02-27 10:47
+//Content hash E02A704A7CBC47082D4870C49A99194D2B966C47728BD3A06ADA4D1737C3F185
 ///////////////////////////////////////
 // funnel
 // version 2026-02-27
@@ -1460,8 +1460,6 @@ works from OpenSCAD version 2021 or higher   maintained at https://github.com/UB
 Version=23.305;//                <<< ---   VERSION  VERSION VERSION ••••••••••••••••
 useVersion=undef;
 
-/// render with Hires
-hires=false;
 fn=$fn?$fn:$preview?36:
                           hires?144:
                                 72;
