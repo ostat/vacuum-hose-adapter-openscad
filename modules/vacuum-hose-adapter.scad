@@ -13,12 +13,6 @@ include <modules_pipe.scad>
 
 include <connectors/connectors.scad>
 
-DefaultEnd1Color = "LightPink";
-DefaultEnd2Color = "SkyBlue";
-DefaultEnd3Color = "MediumPurple";
-DefaultTransitionColor = "LightGreen";
-DefaultExtensionColor = "MediumSeaGreen";
-
 /* [Hidden] */
 module end_of_customizer_opts() {}
 

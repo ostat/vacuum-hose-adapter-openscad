@@ -331,11 +331,11 @@ Enable_Debug_Slice = false;
 //Will only show if debug is also enabled
 Enable_Calipers_Slice = false;
 Enable_Help = false;
-End1_Color = [DefaultEnd1Color,1];  //0.1
-End2_Color = [DefaultEnd2Color,1];  //0.1
-End3_Color = [DefaultEnd3Color,1];  //0.1
-Transition_Color = [DefaultTransitionColor,1]; //The color, then the alpha value
-Extension_Color = [DefaultExtensionColor,1]; //The color, then the alpha value
+End1_Color = ["",1];  //0.1
+End2_Color = ["",1];  //0.1
+End3_Color = ["",1];  //0.1
+Transition_Color = ["",1]; //The color, then the alpha value
+Extension_Color = ["",1]; //The color, then the alpha value
 
 /* [Model detail] */
 // minimum angle for a fragment (fragments = 360/fa).  Low is more fragments

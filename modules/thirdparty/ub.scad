@@ -9,13 +9,13 @@ useVersion=undef;
 
 /// render with Hires
 hires=false;
-fn=$fn?$fn:$preview?36:
+ub_fn=$fn?$fn:$preview?36:
                           hires?144:
                                 72;
 
 
-fs=$preview?.75:hires?.1:.2;
-fa=$preview?10:hires?.5:1;
+ub_fs=$preview?.75:hires?.1:.2;
+ub_fa=$preview?10:hires?.5:1;
 
 needs2D=["Rand","WKreis","Welle","Rund","Rundrum", "LinEx", "RotEx","SBogen","Bogen","HypKehle","Roof"]; /// modules needing 2D children
 
@@ -140,12 +140,12 @@ kreis() generates points on a circle or arc
 \param minF minimum fragments
 */
 
-function Kreis(r=10,rand=+5,grad=360,grad2,fn=fn,center=true,sek=true,r2=0,rand2,rcenter=0,rot=0,t=[0,0])=kreis(r,rand,grad,grad2,fn,center,sek,r2,rand2,rcenter,rot,t);
+function Kreis(r=10,rand=+5,grad=360,grad2,fn=ub_fn,center=true,sek=true,r2=0,rand2,rcenter=0,rot=0,t=[0,0])=kreis(r,rand,grad,grad2,ub_fn,center,sek,r2,rand2,rcenter,rot,t);
 
 
 
 
-function kreis(r=10,rand=+5,grad=360,grad2,fn=fn,center=true,sek=true,r2=0,rand2,rcenter=0,rot=0,t=[0,0],z,d,endPoint=true,fs=fs,fs2,fn2,minF=1,fa=fa)=
+function kreis(r=10,rand=+5,grad=360,grad2,fn=ub_fn,center=true,sek=true,r2=0,rand2,rcenter=0,rot=0,t=[0,0],z,d,endPoint=true,fs=ub_fs,fs2,fn2,minF=1,fa=ub_fa)=
 let (
 minF=bool(minF,bool=false),
 grad2=is_undef(grad2)?grad:grad2,
@@ -155,13 +155,13 @@ rand2=is_undef(rand2)?rand:rand2,
 r2=r2?
     rcenter?r2+rand2/2:r2
     :r,
-ifn=is_num(fn)&&fn>0?max(1,ceil(abs(fn)))
+ifn=is_num(fn)&&ub_fn>0?max(1,ceil(abs(fn)))
                     :min(max(abs(grad)<180?1
                                        :abs(grad)==360?3
                                                       :2,ceil(abs(PI*r*2/360*grad/max(fs,0.001))),minF),round(abs(grad)/fa) ),
 fs2=is_undef(fs2)?fs:fs2,
 
-fn2=is_num(fn)&&fn>0?is_undef(fn2)?ifn:max(1,ceil(abs(fn2)))
+fn2=is_num(fn)&&ub_fn>0?is_undef(fn2)?ifn:max(1,ceil(abs(fn2)))
                     :min(max(abs(grad2)<180?1:abs(grad2)==360?3:2,ceil(abs(PI*(r-rand)*2/360*grad2/max(fs2,0.001))),minF),round(grad/fa)),
 
 step=grad/ifn,
@@ -343,7 +343,7 @@ HelpTxt(titel="InfoTxt",string=["name",name,"string","[text,variable]","info",in
 //Text("HTAMMMMMM",trueSize="textl",size=20,textmetrics=0,spacing=1);
 
 
-module Text(text="»«",size=5,h,cx,cy,cz,center=0,spacing=1,fn,fs=fs,radius=0,rot=[0,0,0],font="Bahnschrift:style=bold",style,help,name,textmetrics=true,viewPos=false,trueSize="body")
+module Text(text="»«",size=5,h,cx,cy,cz,center=0,spacing=1,fn,fs=ub_fs,radius=0,rot=[0,0,0],font="Bahnschrift:style=bold",style,help,name,textmetrics=true,viewPos=false,trueSize="body")
 {
 
 text=str(text);
