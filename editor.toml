@@ -6,96 +6,123 @@ mode = "multi"
 head-extra = ''
 
 [model-template.default]
-description-extra-html = "<br><br>For detailed documentation, check the <a href='https://github.com/ostat/gridfinity_extended_openscad'>README</a>.<br><br>"
+description-extra-html = "<br><br>For detailed documentation, check the <a href='https://github.com/ostat/vacuum-hose-adapter-openscad'>README</a>.<br><br>"
 
 [model-template.section-connector-1]
+[model-template.subdivisions.tab-metadata."Connector 1"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/connectors"
-collapsed = false
 
 [model-template.section-connector-1---hose-connector]
+[model-template.subdivisions.tab-metadata."Connector 1 - Hose connector"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/connectors/hose"
 collapsed = true
 
 [model-template.section-connector-1---flange]
+[model-template.subdivisions.tab-metadata."Connector 1 - Flange"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/connectors/flange"
 collapsed = true
 
 [model-template.section-connector-1---magnetic-connector]
+[model-template.subdivisions.tab-metadata."Connector 1 - Magnetic Connector"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/connectors/magnetic"
 collapsed = true
 
 [model-template.section-connector-1---extension]
+[model-template.subdivisions.tab-metadata."Connector 1 - Extension"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/transition/extension"
 collapsed = true
 
 [model-template.section-transition]
+[model-template.subdivisions.tab-metadata."Transition"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/transition/configuration"
-collapsed = false
 
 [model-template.section-transition-multiple-connector-settings]
+[model-template.subdivisions.tab-metadata."Transition Multiple connector settings"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/transition/multiple-connector"
 collapsed = true
 
 [model-template.section-transition-support-for-angled-pipes]
+[model-template.subdivisions.tab-metadata."Transition Support For Angled Pipes"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/transition/angled-support"
 collapsed = true
 
 [model-template.section-connector-2]
+[model-template.subdivisions.tab-metadata."Connector 2"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/connectors"
-collapsed = false
 
 [model-template.section-connector-2---hose-connector]
+[model-template.subdivisions.tab-metadata."Connector 2 - Hose connector"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/connectors/hose"
 collapsed = true
 
 [model-template.section-connector-2---flange]
+[model-template.subdivisions.tab-metadata."Connector 2 - Flange"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/connectors/flange"
 collapsed = true
 
 [model-template.section-connector-2---magnetic-connector]
+[model-template.subdivisions.tab-metadata."Connector 2 - Magnetic Flange"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/connectors/magnetic"
 collapsed = true
 
 [model-template.section-connector-2---nozzle]
+[model-template.subdivisions.tab-metadata."Connector 2 - Nozzle"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/connectors/nozzle"
 collapsed = true
 
 [model-template.section-connector-2---extension]
+[model-template.subdivisions.tab-metadata."Connector 2 - Extension"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/transition/extension"
 collapsed = true
 
 [model-template.section-connector-3]
+[model-template.subdivisions.tab-metadata."Connector 3"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/connectors"
 collapsed = false
 
 [model-template.section-connector-3---hose-connector]
+[model-template.subdivisions.tab-metadata."Connector 3 - Hose connector"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/connectors/hose"
 collapsed = true
 
 [model-template.section-connector-3---flange]
+[model-template.subdivisions.tab-metadata."Connector 3 - Flange"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/connectors/flange"
 collapsed = true
 
 [model-template.section-connector-3---magnetic-connector]
+[model-template.subdivisions.tab-metadata."Connector 3 - Magnetic connector"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/connectors/magnetic"
 collapsed = true
 
 [model-template.section-connector-3---nozzle]
+[model-template.subdivisions.tab-metadata."Connector 3 - Nozzle"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/connectors/nozzle"
 collapsed = true
 
 [model-template.section-connector-3---extension]
+[model-template.subdivisions.tab-metadata."Connector 3 - Extension"]
 help-link = "https://docs.ostat.com/docs/openscad/hose-adapter/transition/extension"
 collapsed = true
 
+[model-template.section-other]
+[model-template.subdivisions.tab-metadata."other"]
+collapsed = true
+
+[model-template.section-model-detail]
+[model-template.subdivisions.tab-metadata."Model detail"]
+collapsed = true
+
+
 [[model]]
 file = "vacuum-hose-adapter-basic.scad"
-template = [
-    "section-connector-1",
+template = ["section-connector-1",
     "section-connector-1---hose-connector",
     "section-transition",
     "section-connector-2",
     "section-connector-2---hose-connector",
+    "section-other",
+    "section-model-detail"
     ]
 
 [[model]]
@@ -120,7 +147,9 @@ template = [
     "section-connector-3---flange",
     "section-connector-3---magnetic-connector",
     "section-connector-3---nozzle",
-    "section-connector-3---extension"
+    "section-connector-3---extension",
+    "section-other",
+    "section-model-detail"
     ]
 
 [[model]]
