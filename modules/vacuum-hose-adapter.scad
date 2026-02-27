@@ -899,7 +899,7 @@ module transition(
   assert(len(transitionColor) == 2, "adapterColor be length 2");
 
   multiConnectorAngle = connector2Angle > 0 ? connector2Angle : 360/connector2Count;
-  echo("transition", multiConnectorAngle=multiConnectorAngle);
+
   difference()
   {
     union()
@@ -1113,9 +1113,6 @@ module HoseAdapter(
 ){
   $gha=[["connector1",[0,0,0]],["connector2",[0,0,0]],["trasnition",[0,0,0]]];
 
-  echo(connector1=connector1);
-  echo(connector2=connector2);
-  echo(connector3=connector3);
   end1 = getConnectorSettings(
     userSettings=connector1,
     alignmentDepth=alignmentDepth,
@@ -1209,13 +1206,7 @@ module HoseAdapter(
                   : _transitionStyle == "taper+bend" ? taper_bend_radius
                   : _transitionStyle == "hull" ? hull_radius
                   : 0;
-
-                  echo(
-        transitionAngle=_transitionAngle,
-        transitionBendRadius=transitionBendRadius,
-        end1OuterEndDiameter=end1[iOuterEndDiameter],
-        end2OuterEndDiameter=end2[iOuterEndDiameter],
-        taperedAverageDiameter=taperedAverageDiameter);
+        
       //end hull settings
       bendRadius = bend_radius(
         transitionAngle=_transitionAngle,

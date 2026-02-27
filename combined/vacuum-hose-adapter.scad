@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter-openscad.scad'. Generated 2026-02-27 20:46
-//Content hash EEA0CCB609003F4010CCBE36ACECBF2D3BA877EBB949FF1A621820E432E1E3EE
+//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-02-27 21:15
+//Content hash A8F957C87C3DE9E487488E3552B21CD7343C3F00097DD8603F24F5ABDF83BCD9
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -1254,7 +1254,7 @@ module transition(
   assert(len(transitionColor) == 2, "adapterColor be length 2");
 
   multiConnectorAngle = connector2Angle > 0 ? connector2Angle : 360/connector2Count;
-  echo("transition", multiConnectorAngle=multiConnectorAngle);
+
   difference()
   {
     union()
@@ -1468,9 +1468,6 @@ module HoseAdapter(
 ){
   $gha=[["connector1",[0,0,0]],["connector2",[0,0,0]],["trasnition",[0,0,0]]];
 
-  echo(connector1=connector1);
-  echo(connector2=connector2);
-  echo(connector3=connector3);
   end1 = getConnectorSettings(
     userSettings=connector1,
     alignmentDepth=alignmentDepth,
@@ -1564,13 +1561,7 @@ module HoseAdapter(
                   : _transitionStyle == "taper+bend" ? taper_bend_radius
                   : _transitionStyle == "hull" ? hull_radius
                   : 0;
-
-                  echo(
-        transitionAngle=_transitionAngle,
-        transitionBendRadius=transitionBendRadius,
-        end1OuterEndDiameter=end1[iOuterEndDiameter],
-        end2OuterEndDiameter=end2[iOuterEndDiameter],
-        taperedAverageDiameter=taperedAverageDiameter);
+        
       //end hull settings
       bendRadius = bend_radius(
         transitionAngle=_transitionAngle,
@@ -4085,60 +4076,68 @@ function UserConnectorSettings(
 
 function ValidateUserConnectorSettings(userSettings) =
   // Parameter validation asserts
-  assert(is_num(userSettings[iConnector]) && userSettings[iConnector] >= 0, "connector must be a non-negative number")
-  assert(is_string(userSettings[iStyle]), "style must be a string")
-  assert(userSettings[iStyle] == "hose" || userSettings[iStyle] == "mag" || userSettings[iStyle] == "flange" || userSettings[iStyle] == "nozzle", "style must be 'hose', 'mag', 'flange', or 'nozzle'")
-  assert(is_num(userSettings[iWallThickness]) && userSettings[iWallThickness] >= 0, "wallThickness must be a non-negative number")
-  assert(is_string(userSettings[iMeasurement]), "measurement must be a string")
-  assert(userSettings[iMeasurement] == "inner" || userSettings[iMeasurement] == "outer", "measurement must be 'inner' or 'outer'")
-  assert(is_num(userSettings[iDiameter]) || (is_list(userSettings[iDiameter]) && len(userSettings[iDiameter]) == 2), "diameter must be a number or list of length 2")
-  assert(is_num(userSettings[iLength]) || (is_list(userSettings[iLength]) && len(userSettings[iLength]) == 2), "length must be a number or list of length 2")
-  assert(is_num(userSettings[iRotation]), "rotation must be a number")
-  assert(is_num(userSettings[iTaper]), "taper must be a number")
-  assert(is_num(userSettings[iEndCapDiameter]) && userSettings[iEndCapDiameter] >= 0, "endCapDiameter must be a non-negative number")
-  assert(is_num(userSettings[iEndCapThickness]) && userSettings[iEndCapThickness] >= 0, "endCapThickness must be a non-negative number")
-  assert(is_num(userSettings[iEndCapGridSize]) && userSettings[iEndCapGridSize] >= 0, "endCapGridSize must be a non-negative number")
-  assert(is_num(userSettings[iEndCapGridWallThickness]) && userSettings[iEndCapGridWallThickness] >= 0, "endCapGridWallThickness must be a non-negative number")
-  assert(is_num(userSettings[iStopThickness]) && userSettings[iStopThickness] >= 0, "stopThickness must be a non-negative number")
-  assert(is_num(userSettings[iStopLength]) && userSettings[iStopLength] >= 0, "stopLength must be a non-negative number")
-  assert(is_bool(userSettings[iStopSymmetrical]), "stopSymmetrical must be a boolean")
-  assert(is_num(userSettings[iBarbsCount]) && userSettings[iBarbsCount] >= 0, "barbsCount must be a non-negative number")
-  assert(is_num(userSettings[iBarbsThickness]) && userSettings[iBarbsThickness] >= 0, "barbsThickness must be a non-negative number")
-  assert(is_bool(userSettings[iBarbsSymmetrical]), "barbsSymmetrical must be a boolean")
-  assert(is_num(userSettings[iMagnetCount]) && userSettings[iMagnetCount] >= 0, "magnetCount must be a non-negative number")
-  assert(is_num(userSettings[iMagnetDiameter]) && userSettings[iMagnetDiameter] >= 0, "magnetDiameter must be a non-negative number")
-  assert(is_num(userSettings[iMagnetThickness]) && userSettings[iMagnetThickness] >= 0, "magnetThickness must be a non-negative number")
-  assert(is_num(userSettings[iMagnetBorder]) && userSettings[iMagnetBorder] >= 0, "magnetBorder must be a non-negative number")
-  assert(is_num(userSettings[iMagnetZOffset]), "magnetZOffset must be a number")
-  assert(is_num(userSettings[iMagnetFlangeThickness]) && userSettings[iMagnetFlangeThickness] >= 0, "magnetFlangeThickness must be a non-negative number")
-  assert(is_string(userSettings[iMagnetTwistLockSize]), "magnetTwistLockSize must be a string")
-  assert(is_string(userSettings[iAlignmentRing]), "alignmentRing must be a string")
-  assert(userSettings[iAlignmentRing] == "no" || userSettings[iAlignmentRing] == "inner" || userSettings[iAlignmentRing] == "outer", "alignmentRing must be 'no', 'inner', or 'outer'")
-  //assert(is_num(userSettings[iAlignmentDepth]) && userSettings[iAlignmentDepth] >= 0, "alignmentDepth must be a non-negative number")
-  //assert(is_num(userSettings[iAlignmentUpperWidth]) && userSettings[iAlignmentUpperWidth] >= 0, "alignmentUpperWidth must be a non-negative number")
-  //assert(is_num(userSettings[iAlignmentLowerWidth]) && userSettings[iAlignmentLowerWidth] >= 0, "alignmentLowerWidth must be a non-negative number")
-  //assert(is_num(userSettings[iAlignmentSideClearance]) && userSettings[iAlignmentSideClearance] >= 0, "alignmentSideClearance must be a non-negative number")
-  //assert(is_num(userSettings[iAlignmentDepthClearance]) && userSettings[iAlignmentDepthClearance] >= 0, "alignmentDepthClearance must be a non-negative number")
-  assert(is_num(userSettings[iFlangeWidth]) && userSettings[iFlangeWidth] >= 0, "flangeWidth must be a non-negative number")
-  assert(is_num(userSettings[iFlangeThickness]) && userSettings[iFlangeThickness] >= 0, "flangeThickness must be a non-negative number")
-  assert(is_num(userSettings[iFlangeScrewPosition]) && userSettings[iFlangeScrewPosition] >= 0, "flangeScrewPosition must be a non-negative number")
-  assert(is_num(userSettings[iFlangeScrewBorder]) && userSettings[iFlangeScrewBorder] >= 0, "flangeScrewBorder must be a non-negative number")
-  assert(is_num(userSettings[iFlangeScrewCount]) && userSettings[iFlangeScrewCount] >= 0, "flangeScrewCount must be a non-negative number")
-  assert(is_num(userSettings[iFlangeScrewDiameter]) && userSettings[iFlangeScrewDiameter] >= 0, "flangeScrewDiameter must be a non-negative number")
-  assert(is_string(userSettings[iNozzleShape]), "nozzleShape must be a string")
-  assert(userSettings[iNozzleShape] == "square" || userSettings[iNozzleShape] == "circle", "nozzleShape must be 'square', or 'oval'")
-  assert(is_list(userSettings[iNozzleSize]) && len(userSettings[iNozzleSize]) == 3, "nozzleSize must be a list of length 3")
-  assert(is_num(userSettings[iNozzleTipWallThickness]) && userSettings[iNozzleTipWallThickness] >= 0, "nozzleTipWallThickness must be a non-negative number")
-  assert(is_num(userSettings[iNozzleRadius]) && userSettings[iNozzleRadius] >= 0, "nozzleRadius must be a non-negative number")
-  assert(is_list(userSettings[iNozzleOffset]) && len(userSettings[iNozzleOffset]) == 2, "nozzleOffset must be a list of length 2")
-  assert(is_num(userSettings[iNozzleChamferPercentage]) && userSettings[iNozzleChamferPercentage] >= 0 && userSettings[iNozzleChamferPercentage] <= 100, "nozzleChamferPercentage must be between 0 and 100")
-  assert(is_num(userSettings[iNozzleChamferAngle]) && userSettings[iNozzleChamferAngle] >= 0 && userSettings[iNozzleChamferAngle] <= 90, "nozzleChamferAngle must be between 0 and 90 degrees")
-  assert(is_num(userSettings[iExtensionLength]) && userSettings[iExtensionLength] >= 0, "extensionLength must be a non-negative number")
-  assert(is_num(userSettings[iExtensionGridSize]) && userSettings[iExtensionGridSize] >= 0, "extensionGridSize must be a non-negative number")
-  assert(is_num(userSettings[iExtensionGridWallThickness]) && userSettings[iExtensionGridWallThickness] >= 0, "extensionGridWallThickness must be a non-negative number")
-  assert(is_string(userSettings[iExtensionText]), "extensionText must be a string")
-  assert(is_num(userSettings[iExtensionTextSize]) && userSettings[iExtensionTextSize] >= 0, "extensionTextSize must be a non-negative number")
+  assert(is_num(userSettings[iConnector]) && userSettings[iConnector] >= 0, str("connector must be a non-negative number:", userSettings[iConnector]))
+  assert(is_string(userSettings[iStyle]), str("style must be a string:", userSettings[iStyle]))
+  //assert(userSettings[iStyle] == "hose" || userSettings[iStyle] == "mag" || userSettings[iStyle] == "flange" || userSettings[iStyle] == "nozzle", "style must be 'hose', 'mag', 'flange', or 'nozzle'")
+  assert(is_num(userSettings[iWallThickness]) && userSettings[iWallThickness] >= 0, str("wallThickness must be a non-negative number:", userSettings[iWallThickness]))
+  assert(is_string(userSettings[iMeasurement]), str("measurement must be a string:", userSettings[iMeasurement]))
+  assert(userSettings[iMeasurement] == "inner" || userSettings[iMeasurement] == "outer", str("measurement must be 'inner' or 'outer':", userSettings[iMeasurement]))
+  assert(is_num(userSettings[iDiameter]) || (is_list(userSettings[iDiameter]) && len(userSettings[iDiameter]) == 2), str("diameter must be a number or list of length 2:", userSettings[iDiameter]))
+  assert(is_num(userSettings[iLength]) || (is_list(userSettings[iLength]) && len(userSettings[iLength]) == 2), str("length must be a number or list of length 2:", userSettings[iLength]))
+  assert(is_num(userSettings[iRotation]), str("rotation must be a number:", userSettings[iRotation]))
+  assert(is_num(userSettings[iTaper]), str("taper must be a number:", userSettings[iTaper]))
+  assert(is_num(userSettings[iEndCapDiameter]) && userSettings[iEndCapDiameter] >= 0, str("endCapDiameter must be a non-negative number:", userSettings[iEndCapDiameter]))
+  assert(is_num(userSettings[iEndCapThickness]) && userSettings[iEndCapThickness] >= 0, str("endCapThickness must be a non-negative number:", userSettings[iEndCapThickness]))
+  assert(is_num(userSettings[iEndCapGridSize]) && userSettings[iEndCapGridSize] >= 0, str("endCapGridSize must be a non-negative number:", userSettings[iEndCapGridSize]))
+  assert(is_num(userSettings[iEndCapGridWallThickness]) && userSettings[iEndCapGridWallThickness] >= 0, str("endCapGridWallThickness must be a non-negative number:", userSettings[iEndCapGridWallThickness]))
+  assert(is_num(userSettings[iStopThickness]) && userSettings[iStopThickness] >= 0, str("stopThickness must be a non-negative number:", userSettings[iStopThickness]))
+  assert(is_num(userSettings[iStopLength]) && userSettings[iStopLength] >= 0, str("stopLength must be a non-negative number:", userSettings[iStopLength]))
+  assert(is_bool(userSettings[iStopSymmetrical]), str("stopSymmetrical must be a boolean:", userSettings[iStopSymmetrical]))
+  assert(is_num(userSettings[iBarbsCount]) && userSettings[iBarbsCount] >= 0, str("barbsCount must be a non-negative number:", userSettings[iBarbsCount]))
+  assert(is_num(userSettings[iBarbsThickness]) && userSettings[iBarbsThickness] >= 0, str("barbsThickness must be a non-negative number:", userSettings[iBarbsThickness]))
+  assert(is_bool(userSettings[iBarbsSymmetrical]), str("barbsSymmetrical must be a boolean:", userSettings[iBarbsSymmetrical]))
+  assert(is_num(userSettings[iMagnetCount]) && userSettings[iMagnetCount] >= 0, str("magnetCount must be a non-negative number:", userSettings[iMagnetCount]))
+  assert(is_num(userSettings[iMagnetDiameter]) && userSettings[iMagnetDiameter] >= 0, str("magnetDiameter must be a non-negative number:", userSettings[iMagnetDiameter]))
+  assert(is_num(userSettings[iMagnetThickness]) && userSettings[iMagnetThickness] >= 0, str("magnetThickness must be a non-negative number:", userSettings[iMagnetThickness]))
+  assert(is_num(userSettings[iMagnetBorder]) && userSettings[iMagnetBorder] >= 0, str("magnetBorder must be a non-negative number:", userSettings[iMagnetBorder]))
+  assert(is_num(userSettings[iMagnetZOffset]), str("magnetZOffset must be a number:", userSettings[iMagnetZOffset]))
+  assert(is_num(userSettings[iMagnetFlangeThickness]) && userSettings[iMagnetFlangeThickness] >= 0, str("magnetFlangeThickness must be a non-negative number:", userSettings[iMagnetFlangeThickness]))
+  assert(is_string(userSettings[iMagnetTwistLockSize]), str("magnetTwistLockSize must be a string:", userSettings[iMagnetTwistLockSize]))
+  assert(is_string(userSettings[iAlignmentRing]), str("alignmentRing must be a string:", userSettings[iAlignmentRing]))
+  assert(userSettings[iAlignmentRing] == "no" || userSettings[iAlignmentRing] == "inner" || userSettings[iAlignmentRing] == "outer", str("alignmentRing must be 'no', 'inner', or 'outer':", userSettings[iAlignmentRing]))
+  assert(is_num(userSettings[iFlangeWidth]) && userSettings[iFlangeWidth] >= 0, str("flangeWidth must be a non-negative number:", userSettings[iFlangeWidth]))
+  assert(is_num(userSettings[iFlangeThickness]) && userSettings[iFlangeThickness] >= 0, str("flangeThickness must be a non-negative number:", userSettings[iFlangeThickness]))
+  assert(is_num(userSettings[iFlangeScrewPosition]) && userSettings[iFlangeScrewPosition] >= 0, str("flangeScrewPosition must be a non-negative number:", userSettings[iFlangeScrewPosition]))
+  assert(is_num(userSettings[iFlangeScrewBorder]) && userSettings[iFlangeScrewBorder] >= 0, str("flangeScrewBorder must be a non-negative number:", userSettings[iFlangeScrewBorder]))
+  assert(is_num(userSettings[iFlangeScrewCount]) && userSettings[iFlangeScrewCount] >= 0, str("flangeScrewCount must be a non-negative number:", userSettings[iFlangeScrewCount]))
+  assert(is_num(userSettings[iFlangeScrewDiameter]) && userSettings[iFlangeScrewDiameter] >= 0, str("flangeScrewDiameter must be a non-negative number:", userSettings[iFlangeScrewDiameter]))
+  assert(is_string(userSettings[iNozzleShape]), str("nozzleShape must be a string:", userSettings[iNozzleShape]))
+  assert(userSettings[iNozzleShape] == "square" || userSettings[iNozzleShape] == "circle", str("nozzleShape must be 'square', or 'oval':", userSettings[iNozzleShape]))
+  assert(is_list(userSettings[iNozzleSize]) && len(userSettings[iNozzleSize]) == 3, str("nozzleSize must be a list of length 3:", userSettings[iNozzleSize]))
+  assert(is_num(userSettings[iNozzleTipWallThickness]) && userSettings[iNozzleTipWallThickness] >= 0, str("nozzleTipWallThickness must be a non-negative number:", userSettings[iNozzleTipWallThickness]))
+  assert(is_num(userSettings[iNozzleRadius]) && userSettings[iNozzleRadius] >= 0, str("nozzleRadius must be a non-negative number:", userSettings[iNozzleRadius]))
+  assert(is_list(userSettings[iNozzleOffset]) && len(userSettings[iNozzleOffset]) == 2, str("nozzleOffset must be a list of length 2:", userSettings[iNozzleOffset]))
+  assert(is_num(userSettings[iNozzleChamferPercentage]) && userSettings[iNozzleChamferPercentage] >= 0 && userSettings[iNozzleChamferPercentage] <= 100, str("nozzleChamferPercentage must be between 0 and 100:", userSettings[iNozzleChamferPercentage]))
+  assert(is_num(userSettings[iNozzleChamferAngle]) && userSettings[iNozzleChamferAngle] >= 0 && userSettings[iNozzleChamferAngle] <= 90, str("nozzleChamferAngle must be between 0 and 90 degrees:", userSettings[iNozzleChamferAngle]))
+  assert(is_num(userSettings[iExtensionLength]) && userSettings[iExtensionLength] >= 0, str("extensionLength must be a non-negative number:", userSettings[iExtensionLength]))
+  assert(is_num(userSettings[iExtensionGridSize]) && userSettings[iExtensionGridSize] >= 0, str("extensionGridSize must be a non-negative number:", userSettings[iExtensionGridSize]))
+  assert(is_num(userSettings[iExtensionGridWallThickness]) && userSettings[iExtensionGridWallThickness] >= 0, str("extensionGridWallThickness must be a non-negative number:", userSettings[iExtensionGridWallThickness]))
+  assert(is_string(userSettings[iExtensionText]), str("extensionText must be a string:", userSettings[iExtensionText]))
+  assert(is_num(userSettings[iExtensionTextSize]) && userSettings[iExtensionTextSize] >= 0, str("extensionTextSize must be a non-negative number:", userSettings[iExtensionTextSize]))
   userSettings;
+
+function ValidateConnectorSettings(userSettings) =
+  assert(is_num(userSettings[iAlignmentDepth]) && userSettings[iAlignmentDepth] >= 0, str("alignmentDepth must be a non-negative number:", userSettings[iAlignmentDepth]))
+  assert(is_num(userSettings[iAlignmentUpperWidth]) && userSettings[iAlignmentUpperWidth] >= 0, str("alignmentUpperWidth must be a non-negative number:", userSettings[iAlignmentUpperWidth]))
+  assert(is_num(userSettings[iAlignmentLowerWidth]) && userSettings[iAlignmentLowerWidth] >= 0, str("alignmentLowerWidth must be a non-negative number:", userSettings[iAlignmentLowerWidth]))
+  assert(is_num(userSettings[iAlignmentSideClearance]) && userSettings[iAlignmentSideClearance] >= 0, str("alignmentSideClearance must be a non-negative number:", userSettings[iAlignmentSideClearance]))
+  assert(is_list(userSettings[iAdapterColor]), str("adapterColor must be a list:", userSettings[iAdapterColor]))
+  assert(is_num(userSettings[iInnerDiameter]) && userSettings[iInnerDiameter] >= 0, str("innerDiameter must be a non-negative number:", userSettings[iInnerDiameter]))
+  assert(is_num(userSettings[iInnerStartDiameter]) && userSettings[iInnerStartDiameter] >= 0, str("innerStartDiameter must be a non-negative number:", userSettings[iInnerStartDiameter]))
+  assert(is_num(userSettings[iInnerEndDiameter]) && userSettings[iInnerEndDiameter] >= 0, str("innerEndDiameter must be a non-negative number:", userSettings[iInnerEndDiameter]))
+  assert(is_num(userSettings[iOuterStartDiameter]) && userSettings[iOuterStartDiameter] >= 0, str("outerStartDiameter must be a non-negative number:", userSettings[iOuterStartDiameter]))
+  assert(is_num(userSettings[iOuterEndDiameter]) && userSettings[iOuterEndDiameter] >= 0, str("outerEndDiameter must be a non-negative number:", userSettings[iOuterEndDiameter]))
+  ValidateUserConnectorSettings(userSettings);
 
 function getConnectorSettings(
   userSettings = [],
@@ -4183,7 +4182,8 @@ function getConnectorSettings(
     conStopThickness = (conLength <= 0 || style == "mag" || style == "flange") ? 0 : stopThickness,
     //If the stop has no thickness, it needs no length
     conStopLength = (conStopThickness > 0 && style == "hose") ? stopLength : 0
-    ) [
+    ) let (
+      result = [
         userSettings[iConnector],
         style,
         userSettings[iWallThickness],
@@ -4243,7 +4243,8 @@ function getConnectorSettings(
         conOuterEndDiameter,
         conStopThickness,
         conStopLength
-        ];
+        ])
+        ValidateConnectorSettings(result);
 //CombinedEnd from path connector_object.scad
 //Combined from path connector_common.scad
 

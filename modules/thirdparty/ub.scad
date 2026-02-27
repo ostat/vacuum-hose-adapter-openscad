@@ -7,6 +7,8 @@ works from OpenSCAD version 2021 or higher   maintained at https://github.com/UB
 Version=23.305;//                <<< ---   VERSION  VERSION VERSION ••••••••••••••••
 useVersion=undef;
 
+/// render with Hires
+hires=false;
 fn=$fn?$fn:$preview?36:
                           hires?144:
                                 72;
