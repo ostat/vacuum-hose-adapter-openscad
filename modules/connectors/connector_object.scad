@@ -17,7 +17,11 @@ iStopSymmetrical=iStopLength+1;
 iBarbsCount=iStopSymmetrical+1;
 iBarbsThickness=iBarbsCount+1;
 iBarbsSymmetrical=iBarbsThickness+1;
-iMagnetCount=iBarbsSymmetrical+1;
+iEnableThreads=iBarbsSymmetrical+1;
+iThreadPitch=iEnableThreads+1;
+iThreadToothAngle=iThreadPitch+1;
+iThreadToothHeight=iThreadToothAngle+1;
+iMagnetCount=iThreadToothHeight+1;
 iMagnetDiameter=iMagnetCount+1;
 iMagnetThickness=iMagnetDiameter+1;
 iMagnetBorder=iMagnetThickness+1;
@@ -77,6 +81,10 @@ module echoConnector(name, end, help){
     "iBarbsCount", end[iBarbsCount],
     "iBarbsThickness", end[iBarbsThickness],
     "iBarbsSymmetrical", end[iBarbsSymmetrical],
+    "iEnableThreads", end[iEnableThreads],
+    "iThreadPitch", end[iThreadPitch],
+    "iThreadToothAngle", end[iThreadToothAngle],
+    "iThreadToothHeight", end[iThreadToothHeight],
     "iMagnetCount", end[iMagnetCount],
     "iMagnetDiameter", end[iMagnetDiameter],
     "iMagnetThickness", end[iMagnetThickness],
@@ -152,6 +160,10 @@ function UserConnectorSettings(
   barbsCount = 0,
   barbsThickness = 0,
   barbsSymmetrical = false,
+  enableThreads = false,
+  threadPitch = 0,
+  threadToothAngle = 30,
+  threadToothHeight = 0,
   magnetCount = 0,
   magnetDiameter = 0,
   magnetThickness = 0,
@@ -198,6 +210,10 @@ function UserConnectorSettings(
     barbsCount,
     barbsThickness,
     barbsSymmetrical,
+    enableThreads,
+    threadPitch,
+    threadToothAngle,
+    threadToothHeight,
     magnetCount,
     magnetDiameter,
     magnetThickness,
@@ -248,6 +264,10 @@ function ValidateUserConnectorSettings(userSettings) =
   assert(is_num(userSettings[iBarbsCount]) && userSettings[iBarbsCount] >= 0, str("barbsCount must be a non-negative number:", userSettings[iBarbsCount]))
   assert(is_num(userSettings[iBarbsThickness]) && userSettings[iBarbsThickness] >= 0, str("barbsThickness must be a non-negative number:", userSettings[iBarbsThickness]))
   assert(is_bool(userSettings[iBarbsSymmetrical]), str("barbsSymmetrical must be a boolean:", userSettings[iBarbsSymmetrical]))
+  assert(is_bool(userSettings[iEnableThreads]), str("enableThreads must be a boolean:", userSettings[iEnableThreads]))
+  assert(is_num(userSettings[iThreadPitch]) && userSettings[iThreadPitch] >= 0, str("threadPitch must be a positive number:", userSettings[iThreadPitch]))
+  assert(is_num(userSettings[iThreadToothAngle]) && userSettings[iThreadToothAngle] >= 0 && userSettings[iThreadToothAngle] <= 90, str("threadToothAngle must be between 0 and 90:", userSettings[iThreadToothAngle]))
+  assert(is_num(userSettings[iThreadToothHeight]) && userSettings[iThreadToothHeight] >= 0, str("threadToothHeight must be a non-negative number:", userSettings[iThreadToothHeight]))
   assert(is_num(userSettings[iMagnetCount]) && userSettings[iMagnetCount] >= 0, str("magnetCount must be a non-negative number:", userSettings[iMagnetCount]))
   assert(is_num(userSettings[iMagnetDiameter]) && userSettings[iMagnetDiameter] >= 0, str("magnetDiameter must be a non-negative number:", userSettings[iMagnetDiameter]))
   assert(is_num(userSettings[iMagnetThickness]) && userSettings[iMagnetThickness] >= 0, str("magnetThickness must be a non-negative number:", userSettings[iMagnetThickness]))
@@ -354,6 +374,10 @@ function getConnectorSettings(
         userSettings[iBarbsCount],
         userSettings[iBarbsThickness],
         userSettings[iBarbsSymmetrical],
+        userSettings[iEnableThreads],
+        userSettings[iThreadPitch],
+        userSettings[iThreadToothAngle],
+        userSettings[iThreadToothHeight],
         userSettings[iMagnetCount],
         userSettings[iMagnetDiameter],
         userSettings[iMagnetThickness],

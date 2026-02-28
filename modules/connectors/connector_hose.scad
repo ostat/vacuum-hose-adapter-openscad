@@ -2,6 +2,7 @@ include <../constants.scad>
 use <../thirdparty/ub.scad>
 use <../modules_utility.scad>
 use <../modules_pipe.scad>
+use <../modules_threads.scad>
 
 module HoseConnector(
     innerStartDiameter,
@@ -21,13 +22,19 @@ module HoseConnector(
     endCapGridWallThickness = 0,
     chamferLength = 0,
     chamferWidth = 0,
+    enableThreads=false,
+    threadPitch=0,
+    threadToothAngle=30,
+    threadToothHeight=0,
     help
 )
 {
   assert(is_num(innerEndDiameter) && innerEndDiameter > 0, "innerEndDiameter must be a number greater than 0");
   assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");
+
   _barbsThickness = barbsThickness == 0 ? wallThickness/2 : barbsThickness;
   barbLength = length/(barbsCount*2+1);
+
   union() {
     difference ()
     {
@@ -61,6 +68,26 @@ module HoseConnector(
           wallThickness1 = chamferWidth*2,
           wallThickness2 = 0,
           zPosition = -fudgeFactor);
+      }
+    }
+
+    if(enableThreads){
+      if(connectorMeasurement == "outer"){
+        ExternalHoseThread(
+          diameter = innerStartDiameter+wallThickness,
+          wallThickness=wallThickness,
+          height=length,
+          pitch=threadPitch,
+          tooth_angle=threadToothAngle,
+          tooth_height=threadToothHeight);
+      } else {
+       InternalHoseThread(
+        diameter = innerStartDiameter,
+        wallThickness=wallThickness,
+        height=length,
+        pitch=threadPitch,
+        tooth_angle=threadToothAngle,
+        tooth_height=threadToothHeight);
       }
     }
 
@@ -148,6 +175,10 @@ module HoseConnector(
     "endCapGridSize", endCapGridSize,
     "endCapGridWallThickness", endCapGridWallThickness,
     "chamferLength", chamferLength,
-    "chamferWidth", chamferWidth
+    "chamferWidth", chamferWidth,
+    "enableThreads", enableThreads,
+    "threadPitch", threadPitch,
+    "threadToothAngle", threadToothAngle,
+    "threadToothHeight", threadToothHeight
     ],help);
 }

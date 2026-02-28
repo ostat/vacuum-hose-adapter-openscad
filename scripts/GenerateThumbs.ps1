@@ -319,7 +319,8 @@ function Add-ImageCaption{
         [Parameter(ValueFromPipeline=$true)]
         [System.IO.FileInfo]$ImageFile,
         [string]$Title,
-        [int]$PointRatio
+        [int]$PointRatio,
+        [decimal]$Position = 1/6
     )
 
     Write-Host "Add-ImageCaption ImageFile:'$($ImageFile.FullName)'`r`n`tfiles:$($Title)" -ForegroundColor Yellow

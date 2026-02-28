@@ -48,6 +48,14 @@ End1_Hose_EndCap_Thickness = 0;  //0.1
 End1_Hose_EndCap_GridSize = 0;  //0.1
 //Thickness of the walls in the end cap
 End1_Hose_EndCap_GridWallThickness = 0;  //0.1
+// Enable threads Thread side matches Measurement side. Beta feature does not work with taper.
+End1_Hose_Enable_Threads = false;
+// Thread Pitch
+End1_Hose_Threads_Pitch = 0;
+// Thread Tooth Angle
+End1_Hose_Threads_Tooth_Angle = 30;
+// Thread Tooth Height
+End1_Hose_Threads_Tooth_Height = 0;
 
 /* [Connector 1 - Flange] */
 //Width of Flange added to the connector diameter
@@ -167,6 +175,14 @@ End2_Hose_EndCap_Diameter = 0;  //0.1
 End2_Hose_EndCap_GridSize = 0;  //0.1
 //Thickness of the walls in the end cap
 End2_Hose_EndCap_GridWallThickness = 0;  //0.1
+// Enable threads Thread side matches Measurement side. Beta feature does not work with taper.
+End2_Hose_Enable_Threads = false;
+// Thread Pitch
+End2_Hose_Threads_Pitch = 0;
+// Thread Tooth Angle
+End2_Hose_Threads_Tooth_Angle = 30;
+// Thread Tooth Height
+End2_Hose_Threads_Tooth_Height = 0;
 
 /* [Connector 2 - Flange] */
 //Width of Flange added to the connector diameter
@@ -257,7 +273,14 @@ End3_Hose_EndCap_Diameter = 0;  //0.1
 End3_Hose_EndCap_GridSize = 0;  //0.1
 //Thickness of the walls in the end cap
 End3_Hose_EndCap_GridWallThickness = 0;  //0.1
-
+// Enable threads Thread side matches Measurement side. Beta feature does not work with taper.
+End3_Hose_Enable_Threads = false;
+// Thread Pitch
+End3_Hose_Threads_Pitch = 0;
+// Thread Tooth Angle
+End3_Hose_Threads_Tooth_Angle = 30;
+// Thread Tooth Height
+End3_Hose_Threads_Tooth_Height = 0;
 
 /* [Connector 3 - Flange] */
 //Width of Flange added to the connector diameter
@@ -374,6 +397,10 @@ HoseAdapter(
     barbsCount=End1_Barbs_Count,
     barbsThickness=End1_Barbs_Thickness,
     barbsSymmetrical=End1_Barbs_Symmetrical,
+    enableThreads=End1_Hose_Enable_Threads,
+    threadPitch=End1_Hose_Threads_Pitch,
+    threadToothAngle=End1_Hose_Threads_Tooth_Angle,
+    threadToothHeight=End1_Hose_Threads_Tooth_Height,
     magnetCount=End1_Magnets_Count,
     magnetDiameter=End1_Magnet_Diameter,
     magnetThickness=End1_Magnet_Thickness,
@@ -413,6 +440,10 @@ HoseAdapter(
     barbsCount=End2_Barbs_Count,
     barbsThickness=End2_Barbs_Thickness,
     barbsSymmetrical=End2_Barbs_Symmetrical,
+    enableThreads=End2_Hose_Enable_Threads,
+    threadPitch=End2_Hose_Threads_Pitch,
+    threadToothAngle=End2_Hose_Threads_Tooth_Angle,
+    threadToothHeight=End2_Hose_Threads_Tooth_Height,
     magnetCount=End2_Magnets_Count,
     magnetDiameter=End2_Magnet_Diameter,
     magnetThickness=End2_Magnet_Thickness,
@@ -459,6 +490,10 @@ HoseAdapter(
     barbsCount=End3_Barbs_Count,
     barbsThickness=End3_Barbs_Thickness,
     barbsSymmetrical=End3_Barbs_Symmetrical,
+    enableThreads=End3_Hose_Enable_Threads,
+    threadPitch=End3_Hose_Threads_Pitch,
+    threadToothAngle=End3_Hose_Threads_Tooth_Angle,
+    threadToothHeight=End3_Hose_Threads_Tooth_Height,
     magnetCount=End3_Magnets_Count,
     magnetDiameter=End3_Magnet_Diameter,
     magnetThickness=End3_Magnet_Thickness,

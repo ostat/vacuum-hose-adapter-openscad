@@ -172,6 +172,10 @@ module adapter(
             endCapThickness = con[iEndCapThickness],
             endCapGridSize = con[iEndCapGridSize],
             endCapGridWallThickness = con[iEndCapGridWallThickness],
+            enableThreads = con[iEnableThreads],
+            threadPitch = con[iThreadPitch],
+            threadToothAngle = con[iThreadToothAngle],
+            threadToothHeight = con[iThreadToothHeight],
             help = help,
             $fn = $fn);
         }
