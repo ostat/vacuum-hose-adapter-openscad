@@ -1,6 +1,6 @@
-include <constants.scad>
-use <modules_utility.scad>
-use <modules_pipe.scad>
+include <../constants.scad>
+use <../modules_utility.scad>
+use <../modules_pipe.scad>
 
 /* [Hidden] */
 dysonVersion = "1.2";
@@ -18,7 +18,7 @@ dysonSettings = ["dyson", [
   [iSettingsTaper ,0],
   [iSettingsVersion, dysonVersion]
   ]];
-  
+
 //DysonConnector();
 
 module DysonConnector(
@@ -48,7 +48,7 @@ module DysonConnector(
   cutoutRadius = 30.7;// dysonInnerDiameter/2;
   innerRadius = innerDiameter/2;
   outerRadius = outerDiameter/2;
-  
+
   union() {
     difference() {
       union() {
@@ -59,8 +59,8 @@ module DysonConnector(
           diameter2 = innerEndDiameter,
           length = length,
           wallThickness1 = wallThickness,
-          wallThickness2 = wallThickness); 
-        
+          wallThickness2 = wallThickness);
+
         //retaining ring
         Stopper(
             diameter = outerDiameter+fudgeFactor,
@@ -72,10 +72,10 @@ module DysonConnector(
             stopThickness = 1.5,
             zPosition = heightStartShaft);
         }
-        
+
         // orientation clip
         if(IncludeOrientationClip == true){
-          translate([0,0,orientationClipHeight]) 
+          translate([0,0,orientationClipHeight])
           difference() {
             Stopper(
               diameter = outerDiameter,
@@ -85,7 +85,7 @@ module DysonConnector(
               taper2 = 0.2,
               wallThickness = 0,
               stopThickness = orentationClipwallThickness);
-            
+
             clipCount = 4;
             for(i=[0:1:clipCount-1])
             {

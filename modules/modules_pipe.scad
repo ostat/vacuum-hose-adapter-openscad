@@ -1,6 +1,6 @@
 include <constants.scad>
-include <dotSCAD/shape_circle.scad>
-include <dotSCAD/ring_extrude.scad>
+include <thirdparty/dotSCAD/shape_circle.scad>
+include <thirdparty/dotSCAD/ring_extrude.scad>
 
 //diameter1: Inner start diameter.
 //diameter2: Inner end diameter.
@@ -8,6 +8,17 @@ include <dotSCAD/ring_extrude.scad>
 //wallThickness1 Thickness of the walls at the start
 //wallThickness2 Thickness of the walls at the end
 //zPosition: Start Z position.
+
+debug_pipe = false;
+
+if(debug_pipe ){
+Pipe(
+    diameter1=100,
+    diameter2=70,
+    length=50,
+    wallThickness = 2,
+    Offset = [15,0]);
+}
 module Pipe(
     diameter,
     diameter1,
@@ -23,29 +34,38 @@ module Pipe(
   diameter2 = is_undef(diameter) ? diameter2 : diameter;
   wallThickness1 = is_undef(wallThickness) ? wallThickness1 : wallThickness;
   wallThickness2 = is_undef(wallThickness) ? wallThickness2 : wallThickness;
-  
+
   //todo, add correction to ensure that the thickness of the walls never reduce to less than wallthickenss1 and wallThickness2
   //using wallThickness/2 is a sloppy approximation, really need to use trig to would out the correct value
   leadin = max(fudgeFactor, min(wallThickness1, wallThickness2, length)/2);
-  startOuterLeadin = diameter1 > diameter2 ? leadin : fudgeFactor;
+
+  //a = b × tan(α)
+  //atan(a/b) = angle;
+
+  startOuterLeadin = diameter1+wallThickness1*2 > diameter2+wallThickness2*2 ? leadin : fudgeFactor;
   startInnerLeadin = diameter1 > diameter2 ? fudgeFactor : leadin;
-  endOuterLeadin = diameter2 > diameter1 ? leadin : fudgeFactor;
+  endOuterLeadin = diameter2+wallThickness2*2> diameter1+wallThickness1*2 ? leadin : fudgeFactor;
   endInnerLeadin = diameter2 > diameter1 ? fudgeFactor : leadin;
-  
+  hasLeadinWallCorrection =
+    startOuterLeadin != fudgeFactor ||
+    startInnerLeadin != fudgeFactor ||
+    endOuterLeadin != fudgeFactor ||
+    endInnerLeadin != fudgeFactor;
+  //echo("Pipe", hasLeadinWallCorrection=hasLeadinWallCorrection, startOuterLeadin=startOuterLeadin, startInnerLeadin=startInnerLeadin, endOuterLeadin=endOuterLeadin, endInnerLeadin=endInnerLeadin);
   difference ()
   {
     //outer cylinder
     translate([0,0,zPosition])
     hull()
     {
-      if(Offset.x>0 || Offset.y>0 || 
-        (diameter1 != diameter2 && diameter1+wallThickness1*2 != diameter2+wallThickness2*2)) {
+      if(Offset.x>0 || Offset.y>0 || hasLeadinWallCorrection) {
+        //(diameter1 != diameter2 && diameter1+wallThickness1*2 != diameter2+wallThickness2*2)) {
         cylinder(h=startOuterLeadin, d=diameter1+wallThickness1*2);
         translate([Offset.x,Offset.y,length-endOuterLeadin])
           cylinder(h=endOuterLeadin, d=diameter2+wallThickness2*2);
       }
       else{
-        cylinder(length, 
+        cylinder(length,
           d1=diameter1+wallThickness1*2,
           d2=diameter2+wallThickness2*2);
       }
@@ -55,19 +75,19 @@ module Pipe(
     translate([0,0,zPosition])
       union()
       {
-      if(Offset.x > 0 || Offset.y>0 ||
-        (diameter1 != diameter2 && diameter1+wallThickness1*2 != diameter2+wallThickness2*2)) {
-      
+      if(Offset.x > 0 || Offset.y>0 || hasLeadinWallCorrection) {
+        //(diameter1 != diameter2 && diameter1+wallThickness1*2 != diameter2+wallThickness2*2)) {
+
         translate([0,0,-fudgeFactor])
         cylinder(startInnerLeadin+fudgeFactor*2, d=diameter1);
-        
+
         translate([0,0,startInnerLeadin])
         hull() {
           cylinder(fudgeFactor, d=diameter1);
           translate([Offset.x,Offset.y,length-startInnerLeadin-endInnerLeadin])
             cylinder(fudgeFactor, d=diameter2);
         }
-        translate([0,0,length-endInnerLeadin-fudgeFactor])
+        translate([Offset.x,Offset.y,length-endInnerLeadin-fudgeFactor])
         cylinder(endInnerLeadin+fudgeFactor*2, d=diameter2);
       } else {
         // main removal
@@ -78,7 +98,7 @@ module Pipe(
         cylinder(fudgeFactor*2, d=diameter1);
 
       // top glitch correction
-      translate([0,0,length-fudgeFactor])
+      translate([Offset.x,Offset.y,length-fudgeFactor])
         cylinder(fudgeFactor*2, d=diameter2);
     }
   }
@@ -140,6 +160,7 @@ module BentPipeHull(
     pipeAngle = 0,
     zPosition=0,
     end2Count=1,
+    end2Angle=0,
     lengthInHull=0,
     lengthOutHull=0,
     lengthOutHullCenter=0,
@@ -162,18 +183,19 @@ module BentPipeHull(
   assert(is_num(edgeOffset), "edgeOffset must be a number");
   assert(is_bool(addCenter), "addCenter must be a boolean");
   assert(is_num(centerHeight), "centerHeight must be a number");
-  
+
   outer1PipeRadius = inner1PipeRadius + end1WallThickness;
   outer2PipeRadius = inner2PipeRadius + end2WallThickness;
   outer3PipeRadius = inner3PipeRadius + end3WallThickness;
   //_edgeOffset = outer1PipeRadius - outer2PipeRadius - edgeOffset;
   _edgeOffset = edgeOffset;
-  
+
   end1BaseHeight = end1WallThickness;
   end2BaseHeight = end2WallThickness;
-  
+
   //echo("BentPipeHull", _edgeOffset = _edgeOffset, lengthInHull = lengthInHull, centerHeight=centerHeight, lengthOutHull=lengthOutHull, outer1PipeRadius=outer1PipeRadius, outer2PipeRadius=outer2PipeRadius, a= (cos(pipeAngle) * outer2PipeRadius*2));
-  
+  multRotationAngle = end2Angle > 0 ? end2Angle : 360/end2Count;
+
   difference(){
     //Outer shape
     union(){
@@ -182,19 +204,19 @@ module BentPipeHull(
         for (rotation = [0:end2Count-1])
         {
           //End 2
-          rotate([0,0,rotation*(360/end2Count)])
+          rotate([0,0,rotation*multRotationAngle])
           rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
           translate([-_edgeOffset, 0, lengthInHull])
           cylinder(r=outer2PipeRadius, h=end2WallThickness);
         }
-           
+
         if(addCenter)
         {
           //end 2 center
           translate([0, 0, centerHeight-end3WallThickness])
           cylinder(r=outer3PipeRadius, h=end3WallThickness);
         }
-        
+
         //end1
         cylinder(r=outer1PipeRadius, h=end1BaseHeight+fudgeFactor);
       }
@@ -205,12 +227,12 @@ module BentPipeHull(
         //End 2 extentions
         //echo("Outer shape", pipeAngle=pipeAngle, outer1PipeRadius=outer1PipeRadius, outer2PipeRadius=outer2PipeRadius, _edgeOffset=_edgeOffset, lengthInHull=lengthInHull, end2WallThickness=end2WallThickness );
 
-        rotate([0,0,rotation*(360/end2Count)])
+        rotate([0,0,rotation*multRotationAngle])
         rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
         translate([-_edgeOffset, 0, lengthInHull])
         cylinder(r=outer2PipeRadius, h=lengthOutHull+end2WallThickness+fudgeFactor);
       }
-      
+
       if(addCenter)
       {
           translate([0, 0, centerHeight])
@@ -225,7 +247,7 @@ module BentPipeHull(
         for (rotation = [0:end2Count-1])
         {
           //End 2
-          rotate([0,0,rotation*(360/end2Count)])
+          rotate([0,0,rotation*multRotationAngle])
           rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
           translate([-_edgeOffset, 0, -end2BaseHeight+fudgeFactor+lengthInHull])
           cylinder(r=inner2PipeRadius, h=end2WallThickness+fudgeFactor*2);
@@ -237,7 +259,7 @@ module BentPipeHull(
           translate([0, 0, centerHeight-end3WallThickness-fudgeFactor])
           cylinder(r=inner3PipeRadius, h=end3WallThickness+fudgeFactor*2);
         }
-        
+
         //End 1
         cylinder(r=inner1PipeRadius, h=end1BaseHeight+fudgeFactor*2);
       }
@@ -246,12 +268,12 @@ module BentPipeHull(
       for (rotation = [0:end2Count-1])
       {
         //End 2 extentions
-        rotate([0,0,rotation*(360/end2Count)])
+        rotate([0,0,rotation*multRotationAngle])
         rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
         translate([-_edgeOffset, 0, -end2BaseHeight+fudgeFactor+lengthInHull])
         cylinder(r=inner2PipeRadius, h=lengthOutHull+end2WallThickness*2+fudgeFactor*2);
       }
-      
+
       if(addCenter)
       {
           translate([0, 0, centerHeight-fudgeFactor])
@@ -280,7 +302,8 @@ module BentPipe(
     baseLength=0,
     baseThickness=0,
     baseAngle=0,
-    end2Count=1
+    end2Count=1,
+    end2Angle=0
 )
 {
   outerPipeDiameter  = innerPipeDiameter + wallThickness * 2;
@@ -310,7 +333,7 @@ module BentPipe(
             translate([0,0,baseSupportThickness*3/4]) cube( [baseSupportWidth,baseSupportLength,baseSupportThickness/2],center=true);
           else if (baseType == "oval")
             translate([0,0,baseSupportThickness/2])
-            resize([baseSupportWidth,0,0]) 
+            resize([baseSupportWidth,0,0])
             cylinder(h=baseSupportThickness/2,d=baseSupportLength);
         }
 
@@ -479,21 +502,21 @@ module Stopper(
 {
   if(is_num(taper1)){ assert(taper1 >= 0 || taper1 <= 1, "taper1 should be between 0 to 1");}
   if(is_num(taper2)){ assert(taper2 >= 0 || taper2 <= 1, "taper1 should be between 0 to 1");}
-  
-  
+
+
   _diameter = outer ? diameter : diameter + wallThickness*2;
   markPos = (outer ? diameter+wallThickness : diameter-stopThickness*2)/2;
-  
+
   taperLength1 = (is_list(taper1) ? taper1.y : totalLength * taper1);
   zoffset1 = wallThickness*taperLength1/stopThickness;
   length1= (zoffset1 + totalLength);
   taperWidth1 = is_list(taper1) ? taper1.x : length1 * stopThickness / taperLength1;
-   
+
   taperLength2 = (is_list(taper2) ? taper2.y : totalLength * taper2);
   zoffset2 = wallThickness * taperLength2 / stopThickness;
   length2 = (zoffset2 + totalLength);
   taperWidth2 = is_list(taper2) ? taper2.x : length2 * stopThickness / taperLength2;
-  
+
   translate([0,0,zPosition])
   union(){
     if(marker)
@@ -506,7 +529,7 @@ module Stopper(
         diameter = outer ? diameter : diameter-stopThickness*2,
         length = totalLength,
         wallThickness = wallThickness + stopThickness);
-    
+
         //Bottom taper
         if(taperLength1 > 0)
         {
@@ -540,7 +563,7 @@ module Stopper(
             length = length2,
             wallThickness1 = taperWidth2,
             wallThickness2 = 0);
-          
+
         }
       }
    }
@@ -553,5 +576,5 @@ module Stopper(
     "wallThickness", wallThickness,
     "stopThickness", stopThickness,
     "zPosition", zPosition]
-    ,help);  
+    ,help);
 }

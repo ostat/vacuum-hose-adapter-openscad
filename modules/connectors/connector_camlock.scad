@@ -1,4 +1,4 @@
-include <constants.scad>
+include <../constants.scad>
 
 camlockVersion = "1.0";
 camlockMinLength = 35+3;
@@ -12,19 +12,19 @@ camlockSettings = ["camlock", [
   [iSettingsTaper ,0],
   [iSettingsVersion, camlockVersion]
   ]];
- 
+
  /*
  CamlockConnector(
   innerEndDiameter = camlockOuterDiameter,
   length = camlockMinLength,
   wallThickness = 2);
  */
- 
+
 module CamlockConnector(
   innerEndDiameter,
   length,
   wallThickness){
-    
+
   innerDiameter =  20*2;
   //camlockOuterDiameter = 48.5;
   outerDiameter = camlockOuterDiameter;
@@ -37,9 +37,9 @@ module CamlockConnector(
   camlockRingClipPosition = 27.25;
   camlockChamfer = 1.6;
   camlockChamferLength = 1.6;
-    
+
  echo("CamlockConnector", innerDiameter = innerDiameter, outerDiameter=outerDiameter, camlockHeight=camlockHeight, length = length, camlockWallThickness = camlockWallThickness);
-    
+
   difference(){
     HoseConnector(
       connectorMeasurement = "outer",
@@ -53,7 +53,7 @@ module CamlockConnector(
       chamferLength = camlockChamferLength,
       chamferWidth= camlockChamfer
     );
-    
+
     //hollow out top to reduce width and plastic, and match desired width
     translate([0,0,camlockRingClipHeight+wallThickness/2])
     HoseConnector(
@@ -68,14 +68,14 @@ module CamlockConnector(
       chamferLength = camlockWallThickness,
       chamferWidth= camlockWallThickness
     );
-    
+
     //subtract the ring lock
     translate([0,0,camlockRingClipHeight])
       rotate_extrude(angle = 360, convexity = 2)
       translate([camlockRingClipPosition,0,0])
       circle(camlockRingClipRadius);
   }
-  
+
   /*Pipe (
     diameter1 = innerDiameter,
     diameter2 = innerEndDiameter,

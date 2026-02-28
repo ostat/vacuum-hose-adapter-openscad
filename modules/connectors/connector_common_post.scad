@@ -1,11 +1,5 @@
-include <connector_camlock.scad>
-include <connector_centec.scad>
-include <connector_dyson.scad>
-include <connector_dw735.scad>
-include <connector_osvac.scad>
-include <connector_makita.scad>
-
 connectorSettings =[
+  nozzleSettings,
   camlockSettings,
   centecFemaleSettings,
   centecMaleSettings,

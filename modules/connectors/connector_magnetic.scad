@@ -1,4 +1,6 @@
-include <constants.scad>
+include <../constants.scad>
+include <../modules_utility.scad>
+
 
 module MagneticConnector(
     innerStartDiameter,
@@ -8,6 +10,7 @@ module MagneticConnector(
     magnetDiameter,
     magnetThickness,
     magnetBorder,
+    magnetZOffset,
     flangeThickness,
     magnetCount,
     alignmentRing,
@@ -19,10 +22,9 @@ module MagneticConnector(
     twistLockSize,
 )
 {
-  
   //These sizes need to be tested.
   //head, outer thread for slot, thread hole size
-  lockingSize = 
+  lockingSize =
     twistLockSize == "3" ? [5.5+0.3,3,2.5] //m3
     : twistLockSize == "3cnc" ? [5.5+0.3,3,4] //m3
     : twistLockSize == "4" ? [7+0.3,4,3.3] //m4
@@ -32,27 +34,27 @@ module MagneticConnector(
     : [0,0,0];
 
   locking = lockingSize != [0,0,0];
-  
+
   alignmentBorder = alignmentRing != "no" ? magnetBorder/2 : 0;
   magnetPosition = (innerStartDiameter + magnetDiameter) / 2 + magnetBorder +
       (alignmentRing != "no" ? alignmentBorder + alignmentUpperWidth : 0);
 
   //lockingOffset = magnetCount % 2 == 0 ? lockingOffset : false;
   //lockingDivisions = lockingOffset ? magnetCount/2 : magnetCount;
-  
+
   magnetDivisionAngle = 360 / magnetCount;
-  magnetCir = 2*PI*magnetPosition;          
+  magnetCir = 2*PI*magnetPosition;
   magnetDivisionCir = magnetCir / magnetCount;
   lockingSystemSize =  magnetDiameter+lockingSize[0]+lockingSize[1]*2+magnetBorder*3;
   twistLockBorder = magnetBorder * 1.5; //Mostly because the magent would be bigger than the bolt any way
   lockingOffset = magnetCount % 2 == 0 ? (magnetDivisionCir < lockingSystemSize) : false;
   lockingDivisions = lockingOffset ? magnetCount/2 : magnetCount;
-  
+
   endAngleoffset = magnetDivisionAngle * ((magnetDiameter+lockingSize[1])/2+magnetBorder)/magnetDivisionCir; //This needs to be calcualted based on magnet size and bot size.
 
-  startAngleoffset = lockingOffset ? magnetDivisionAngle * ((magnetDiameter+lockingSize[0])/2+magnetBorder)/magnetDivisionCir : endAngleoffset; 
+  startAngleoffset = lockingOffset ? magnetDivisionAngle * ((magnetDiameter+lockingSize[0])/2+magnetBorder)/magnetDivisionCir : endAngleoffset;
 
-  
+
   echo("MagneticConnector_locking", magnetDivisionAngle=magnetDivisionAngle, magnetCir=magnetCir, magnetDivisionCir=magnetDivisionCir, minLockSpace = lockingSystemSize, endAngleoffset=endAngleoffset, endAngleoffset=endAngleoffset);
   fillet = flangeThickness;
     difference ()
@@ -68,12 +70,22 @@ module MagneticConnector(
 
             // flange aound the magnets
             hull () {
+                roundover = lockingSize !=[0,0,0] ? 0
+                  : max(flangeThickness-magnetThickness-magnetZOffset,0);
+                  echo(roundover=roundover);
                 for (i = [0: magnetCount-1]) {
                     rotate ([0, 0, i * magnetDivisionAngle])
                     translate ([magnetPosition, 0, 0])
-                    cylinder (d = magnetDiameter + magnetBorder * 2, flangeThickness);
+                    if(roundover > 0){
+                      roundedCylinder(
+                        h = flangeThickness,
+                        r = (magnetDiameter + magnetBorder)/2,
+                        roundedr2=roundover);
+                    }else {
+                      cylinder (d = magnetDiameter + magnetBorder * 2, flangeThickness);
+                    }
                 }
-             
+
               //flage around locks
               if(locking)
               for (i = [0: magnetCount-1])
@@ -82,19 +94,19 @@ module MagneticConnector(
                   rotate ([0, 0, 0.5*magnetDivisionAngle])
                   translate ([magnetPosition, 0, 0])
                   cylinder (d = lockingSize[0]+twistLockBorder*2, h = flangeThickness + fudgeFactor*2);
-                  
+
                   rotate ([0, 0, magnetDivisionAngle-endAngleoffset])
                   translate ([magnetPosition, 0, 0])
                   cylinder (d = lockingSize[0]+twistLockBorder*2, h = flangeThickness + fudgeFactor*2);
-                  
+
                   rotate ([0, 0, lockingOffset ? startAngleoffset : 0.5*magnetDivisionAngle])
                   rotate_extrude(angle=lockingOffset ? (magnetDivisionAngle-endAngleoffset-startAngleoffset) : (magnetDivisionAngle-endAngleoffset*2)/2)
                   translate ([magnetPosition, flangeThickness/2, 0])
                   square([lockingSize[0]+twistLockBorder*2,flangeThickness],center=true);
                 }
-              
+
             }
-       
+
 
             // protuding magent rung
             if(alignmentRing == "protruding")
@@ -133,20 +145,20 @@ module MagneticConnector(
         //Magnet cut out
         for (i = [0: magnetCount-1]) {
             rotate ([0, 0, i* 360 / magnetCount])
-            translate ([magnetPosition, 0, - fudgeFactor])
+            translate ([magnetPosition, 0, magnetZOffset - fudgeFactor])
             cylinder (d = magnetDiameter, h = magnetThickness + fudgeFactor);
         }
-        
+
         //Lock cut out
         if(locking){
           for (i = [0: lockingDivisions-1]) {
-            
+
             rotate ([0, 0, i*360/lockingDivisions])
             union(){
               rotate ([0, 0, endAngleoffset-(lockingOffset ? 360/magnetCount : 0)])
               translate ([magnetPosition, 0, - fudgeFactor])
               cylinder (d = lockingSize[2], h = length + fudgeFactor*2);
-          
+
               rotate ([0, 0, lockingOffset ? startAngleoffset : 0.5*360/magnetCount])
               translate ([magnetPosition, 0, - fudgeFactor])
               cylinder (d = lockingSize[0], h = length + fudgeFactor*2);
@@ -154,7 +166,7 @@ module MagneticConnector(
               rotate ([0, 0, 360/magnetCount-endAngleoffset])
               translate ([magnetPosition, 0, - fudgeFactor])
               cylinder (d = lockingSize[1], h = length + fudgeFactor*2);
-              
+
               rotate ([0, 0, lockingOffset ? startAngleoffset : 0.5*360/magnetCount])
               rotate_extrude(angle=lockingOffset ? (magnetDivisionAngle-endAngleoffset-startAngleoffset) : (magnetDivisionAngle-endAngleoffset*2)/2)
               translate ([magnetPosition, length/2, 0])
@@ -165,7 +177,7 @@ module MagneticConnector(
                 rotate ([0, 0, 360/magnetCount-endAngleoffset])
                 translate ([magnetPosition, 0, - fudgeFactor])
                 cylinder (d = lockingSize[0], h = length + fudgeFactor*2);
-                
+
                 rotate ([0, 0, lockingOffset ? startAngleoffset : 0.5*360/magnetCount])
                 rotate_extrude(angle=lockingOffset ? (magnetDivisionAngle-endAngleoffset-startAngleoffset) : (magnetDivisionAngle-endAngleoffset*2)/2)
                 translate ([magnetPosition, length/2, 0])

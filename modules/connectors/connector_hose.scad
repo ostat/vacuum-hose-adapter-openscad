@@ -1,8 +1,8 @@
-include <constants.scad>
-use <ub.scad>
-use <modules_utility.scad>
-use <modules_pipe.scad>
-use <modules_threads.scad>
+include <../constants.scad>
+use <../thirdparty/ub.scad>
+use <../modules_utility.scad>
+use <../modules_pipe.scad>
+use <../modules_threads.scad>
 
 module HoseConnector(
     innerStartDiameter,
@@ -23,16 +23,18 @@ module HoseConnector(
     chamferLength = 0,
     chamferWidth = 0,
     enableThreads=false,
-    threadPitch=0, 
-    threadToothAngle=30, 
+    threadPitch=0,
+    threadToothAngle=30,
     threadToothHeight=0,
     help
 )
 {
   assert(is_num(innerEndDiameter) && innerEndDiameter > 0, "innerEndDiameter must be a number greater than 0");
   assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");
+
   _barbsThickness = barbsThickness == 0 ? wallThickness/2 : barbsThickness;
   barbLength = length/(barbsCount*2+1);
+
   union() {
     difference ()
     {
@@ -44,7 +46,7 @@ module HoseConnector(
         translate([0,0,length-fudgeFactor])
           cylinder(fudgeFactor, d=innerEndDiameter+2*wallThickness);
       }
-      
+
       //Inner cylinder to remove
       translate([0,0,0-fudgeFactor])
       hull()
@@ -56,10 +58,10 @@ module HoseConnector(
       if(chamferLength >0)
       {
         Pipe (
-          diameter1 = connectorMeasurement == "outer" ? 
-            innerStartDiameter + wallThickness*2 - chamferWidth*2 : 
+          diameter1 = connectorMeasurement == "outer" ?
+            innerStartDiameter + wallThickness*2 - chamferWidth*2 :
             innerStartDiameter - chamferWidth*2,
-          diameter2 = connectorMeasurement == "outer" ? 
+          diameter2 = connectorMeasurement == "outer" ?
             innerStartDiameter + wallThickness*2 + chamferWidth*2 :
             innerStartDiameter - chamferWidth*2,
           length = chamferLength*2,
@@ -72,19 +74,19 @@ module HoseConnector(
     if(enableThreads){
       if(connectorMeasurement == "outer"){
         ExternalHoseThread(
-          diameter = innerStartDiameter+wallThickness, 
-          wallThickness=wallThickness, 
-          height=length, 
-          pitch=threadPitch, 
-          tooth_angle=threadToothAngle, 
-          tooth_height=threadToothHeight);      
+          diameter = innerStartDiameter+wallThickness,
+          wallThickness=wallThickness,
+          height=length,
+          pitch=threadPitch,
+          tooth_angle=threadToothAngle,
+          tooth_height=threadToothHeight);
       } else {
        InternalHoseThread(
-        diameter = innerStartDiameter, 
-        wallThickness=wallThickness, 
-        height=length, 
-        pitch=threadPitch, 
-        tooth_angle=threadToothAngle, 
+        diameter = innerStartDiameter,
+        wallThickness=wallThickness,
+        height=length,
+        pitch=threadPitch,
+        tooth_angle=threadToothAngle,
         tooth_height=threadToothHeight);
       }
     }
@@ -104,15 +106,15 @@ module HoseConnector(
             stopThickness = _barbsThickness);
       }
     }
-    
+
     // Create the end cap
     if(endCapThickness > 0)
     {
-      difference () 
+      difference ()
       {
         //Main endcap
         cylinder(endCapThickness, d=innerStartDiameter + wallThickness/2);
-        
+
         //endcap grid
         if(endCapGridSize>0)
         intersection(){
@@ -120,16 +122,16 @@ module HoseConnector(
           gridspacing = (endCapGridSize*(sqrt(3)/2))*2 +hexwalls;
           gridsize = ceil(innerEndDiameter*1.4/gridspacing);
           innergridDiameter = endCapDiameter > 0 ? endCapDiameter+wallThickness*2 : 0;
-          
+
           StraightPipe(
             diameter=innergridDiameter,
             length=endCapThickness+fudgeFactor*2,
             wallThickness = (innerEndDiameter-(innergridDiameter))/2,
             zPosition = -fudgeFactor);
-          
+
           translate([0,0,-fudgeFactor])
             HexGrid([gridsize,gridsize],gridspacing)
-            cylinder(r=endCapGridSize, h=endCapThickness+fudgeFactor*4, $fn=6); 
+            cylinder(r=endCapGridSize, h=endCapThickness+fudgeFactor*4, $fn=6);
         }
         if(endCapDiameter > 0)
           //Endcap center hole
@@ -155,7 +157,7 @@ module HoseConnector(
         help = help);
     }
   }
-  
+
    HelpTxt("HoseConnector",[
     "connectorMeasurement", connectorMeasurement,
     "innerStartDiameter", innerStartDiameter,
@@ -173,6 +175,10 @@ module HoseConnector(
     "endCapGridSize", endCapGridSize,
     "endCapGridWallThickness", endCapGridWallThickness,
     "chamferLength", chamferLength,
-    "chamferWidth", chamferWidth
-    ],help); 
+    "chamferWidth", chamferWidth,
+    "enableThreads", enableThreads,
+    "threadPitch", threadPitch,
+    "threadToothAngle", threadToothAngle,
+    "threadToothHeight", threadToothHeight
+    ],help);
 }
