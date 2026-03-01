@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-03-01 05:41
-//Content hash 12960E329405464C7D81B7CE673A676EDE1B23FE7C0206F2E45295E5D7244A08
+//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-03-01 21:49
+//Content hash 113A7D78EEDC096758C4E96C6DA8083C955E80E31EE0C48C2D8D86D4B29755F8
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -381,6 +381,7 @@ module end_of_customizer_opts() {}
 
 
 
+
 // Hose connector
 // version 2024-04-30
 // repo https://github.com/ostat/vacuum-hose-adapter-openscad
@@ -390,9 +391,6 @@ module end_of_customizer_opts() {}
 // I don't approve of you hosting or uploading this script it to any site or 3d modeling site.
 
 
-
-/* Hidden */
-module end_of_customizer_opts() {}
 
 function getColor(colorSetting, defaultColor) =
   assert(is_list(colorSetting), str("colorSetting must be a list colorSetting=", colorSetting, " defaultColor", defaultColor))
@@ -830,7 +828,7 @@ module transitionExtension(
         border = length * .2; //border above and below the text
         translate([0,0,border])
         RoundText(
-          textvalue = txt,
+          text = txt,
           font = "Liberation:style=Bold",
           fontSize = txtSize > 0 ? txtSize : length-border*2,
           radius = innerDiameter/2+wallThickness - textExtrude/2,
@@ -2187,7 +2185,58 @@ DefaultEnd3Color = "MediumPurple";
 DefaultTransitionColor = "LightGreen";
 DefaultExtensionColor = "MediumSeaGreen";
 //CombinedEnd from path constants.scad
+//Combined from path module_conditional.scad
+
+
+module highlight_conditional(enable=false){
+  if(enable)
+    #children();
+  else
+    children();
+}
+
+module color_conditional(color, enable=true, c, alpha = 1){
+  color = is_undef(color) ? c : color;
+  if(!enable || is_undef(color) || !is_string(color) || (is_string(color) && len(color) == 0)){
+    children();
+  } else {
+    color(color, alpha)
+    children();
+  }
+}
+
+module exclusive_conditional(enable=true){
+  if(enable)
+    !children();
+  else
+    children();
+}
+
+module render_conditional(enable=true){
+  if(enable)
+    render()
+      children();
+  else
+    union()
+      children();
+}
+
+module hull_conditional(enabled = true)
+{
+  if(enabled){
+    hull(){
+      children();
+    }
+  }
+  else{
+    union(){
+      children();
+    }
+  }
+}
+//CombinedEnd from path module_conditional.scad
 //Combined from path modules_utility.scad
+
 
 
 
@@ -2199,71 +2248,6 @@ module rotate_about_pt(z, y, pt) {
         rotate([0, y, z]) // CHANGE HERE
             translate(-pt)
                 children();
-}
-
-// takes part of an array
-function getRunningTextWidth(charsMetrics,position=0,end) = //= [for (i = [start:end]) list[i]];
-  assert(is_list(charsMetrics), "charsMetricsmust be a list")
-  assert(is_num(position), str("position must be a number", "provided '", position, "'"))
-  assert(is_num(end), str("end must be a number", "provided '", end, "'"))
-  position < end
-    ? charsMetrics[position].size.y + getRunningTextWidth(charsMetrics, position + 1, end)
-    : charsMetrics[position].size.y;
-
-function subStr(s,length=5) =
-  assert(is_string(s), "s must be a string")
-  assert(is_num(length), "length must be a number")
-  str(chr([for(i=[0 :min(length,len(s))-1])ord(s[i])]));
-
-module RoundText(
-  textvalue = "",
-  font = "Liberation:style=Bold",
-  fontSize = 6.5,
-  radius = 20,
-  textExtrude = 1,
-  forceRound = false,
-  center = true,
-  $fn=64)
-{
-  _radius = forceRound ? radius - textExtrude : radius;
-  charsCount = len(textvalue);
-  charsMetrics = [for(i=[0:1:charsCount-1]) textmetrics(text=str(textvalue[i]),size=fontSize,font=font)];
-
-
-  offsetAngle = center ? textmetrics(text=textvalue,size=fontSize,font=font).size.x/2 : 0;
-
-  // takes part of an array
-  rotate([0,0,-offsetAngle*180/(PI*_radius)])
-  intersection(){
-    union(){
-      for(i=[0:1:charsCount-1]){
-        char = textvalue[i];
-
-        runningMetrix = textmetrics(text=subStr(textvalue, i+1),size=fontSize,font=font);
-        runningLength = runningMetrix.size.x - charsMetrics[i].size.x/2;
-        arcAngle=runningLength*180/(PI*_radius);
-        rotate([0,0,arcAngle])
-          translate( [_radius,0,0])
-            rotate([90,0,90])
-              linear_extrude(textExtrude * (forceRound ? 2:1))
-                text(
-                  textvalue[i],
-                  //valign="center",
-                  halign="center",
-                  size=fontSize,
-                  font=font);
-        }
-    }
-    if(forceRound)
-    {
-      translate([0,0,-fontSize])
-      difference(){
-        cylinder(r=radius+textExtrude,h = fontSize*3,$fn=$fn);
-        translate([0,0,-fudgeFactor])
-        cylinder(r=radius,h = fontSize*3+fudgeFactor*2,$fn=$fn);
-      }
-    }
-  }
 }
 
 //Creates a rounded cube
@@ -2346,7 +2330,7 @@ module roundedDisk(r,roundedr, half=0){
     translate([r-roundedr,0,0])
     difference(){
       circle(roundedr);
-      //Remove inner half so we dont get error when r<roundedr*2
+      //Remove inner half so we don't get error when r<roundedr*2
       translate([-roundedr*2,-roundedr,0])
       square(roundedr*2);
 
@@ -2364,6 +2348,77 @@ module roundedDisk(r,roundedr, half=0){
   }
 }
 //CombinedEnd from path modules_utility.scad
+//Combined from path module_rounded_text.scad
+
+
+// Creates a line of text that goes around a circle, with each character extruded along the circle's surface,
+// Tries to space the chars based on the the character width.
+
+// takes part of an array
+function getRunningTextWidth(charsMetrics,position=0,end) = //= [for (i = [start:end]) list[i]];
+  assert(is_list(charsMetrics), "charsMetrics must be a list")
+  assert(is_num(position), str("position must be a number", "provided '", position, "'"))
+  assert(is_num(end), str("end must be a number", "provided '", end, "'"))
+  position < end
+    ? charsMetrics[position].size.y + getRunningTextWidth(charsMetrics, position + 1, end)
+    : charsMetrics[position].size.y;
+
+function subStr(s,length=5) =
+  assert(is_string(s), "s must be a string")
+  assert(is_num(length), "length must be a number")
+  str(chr([for(i=[0 :min(length,len(s))-1])ord(s[i])]));
+
+module RoundText(
+  text = "",
+  font = "Liberation:style=Bold",
+  fontSize = 6.5,
+  radius = 20,
+  textExtrude = 1,
+  forceRound = false,
+  center = true,
+  $fn=64)
+{
+  _radius = forceRound ? radius - textExtrude : radius;
+  charsCount = len(text);
+  charsMetrics = [for(i=[0:1:charsCount-1]) textmetrics(text=str(text[i]),size=fontSize,font=font)];
+
+
+  offsetAngle = center ? textmetrics(text=text,size=fontSize,font=font).size.x/2 : 0;
+
+  // takes part of an array
+  rotate([0,0,-offsetAngle*180/(PI*_radius)])
+  intersection(){
+    union(){
+      for(i=[0:1:charsCount-1]){
+        char = text[i];
+
+        runningMetrix = textmetrics(text=subStr(text, i+1),size=fontSize,font=font);
+        runningLength = runningMetrix.size.x - charsMetrics[i].size.x/2;
+        arcAngle=runningLength*180/(PI*_radius);
+        rotate([0,0,arcAngle])
+          translate( [_radius,0,0])
+            rotate([90,0,90])
+              linear_extrude(textExtrude * (forceRound ? 2:1))
+                text(
+                  text[i],
+                  //valign="center",
+                  halign="center",
+                  size=fontSize,
+                  font=font);
+        }
+    }
+    if(forceRound)
+    {
+      translate([0,0,-fontSize])
+      difference(){
+        cylinder(r=radius+textExtrude,h = fontSize*3,$fn=$fn);
+        translate([0,0,-fudgeFactor])
+        cylinder(r=radius,h = fontSize*3+fudgeFactor*2,$fn=$fn);
+      }
+    }
+  }
+}
+//CombinedEnd from path module_rounded_text.scad
 //Combined from path modules_pipe.scad
 
 
@@ -2405,34 +2460,34 @@ module Pipe(
   wallThickness1 = is_undef(wallThickness) ? wallThickness1 : wallThickness;
   wallThickness2 = is_undef(wallThickness) ? wallThickness2 : wallThickness;
 
-  //todo, add correction to ensure that the thickness of the walls never reduce to less than wallthickenss1 and wallThickness2
+  //todo, add correction to ensure that the thickness of the walls never reduce to less than wallThickness1 and wallThickness2
   //using wallThickness/2 is a sloppy approximation, really need to use trig to would out the correct value
-  leadin = max(fudgeFactor, min(wallThickness1, wallThickness2, length)/2);
+  leadIn = max(fudgeFactor, min(wallThickness1, wallThickness2, length)/2);
 
   //a = b × tan(α)
   //atan(a/b) = angle;
 
-  startOuterLeadin = diameter1+wallThickness1*2 > diameter2+wallThickness2*2 ? leadin : fudgeFactor;
-  startInnerLeadin = diameter1 > diameter2 ? fudgeFactor : leadin;
-  endOuterLeadin = diameter2+wallThickness2*2> diameter1+wallThickness1*2 ? leadin : fudgeFactor;
-  endInnerLeadin = diameter2 > diameter1 ? fudgeFactor : leadin;
-  hasLeadinWallCorrection =
-    startOuterLeadin != fudgeFactor ||
-    startInnerLeadin != fudgeFactor ||
-    endOuterLeadin != fudgeFactor ||
-    endInnerLeadin != fudgeFactor;
-  //echo("Pipe", hasLeadinWallCorrection=hasLeadinWallCorrection, startOuterLeadin=startOuterLeadin, startInnerLeadin=startInnerLeadin, endOuterLeadin=endOuterLeadin, endInnerLeadin=endInnerLeadin);
+  startOuterLeadIn = diameter1+wallThickness1*2 > diameter2+wallThickness2*2 ? leadIn : fudgeFactor;
+  startInnerLeadIn = diameter1 > diameter2 ? fudgeFactor : leadIn;
+  endOuterLeadIn = diameter2+wallThickness2*2> diameter1+wallThickness1*2 ? leadIn : fudgeFactor;
+  endInnerLeadIn = diameter2 > diameter1 ? fudgeFactor : leadIn;
+  hasLeadInWallCorrection =
+    startOuterLeadIn != fudgeFactor ||
+    startInnerLeadIn != fudgeFactor ||
+    endOuterLeadIn != fudgeFactor ||
+    endInnerLeadIn != fudgeFactor;
+
   difference ()
   {
     //outer cylinder
     translate([0,0,zPosition])
     hull()
     {
-      if(Offset.x>0 || Offset.y>0 || hasLeadinWallCorrection) {
+      if(Offset.x>0 || Offset.y>0 || hasLeadInWallCorrection) {
         //(diameter1 != diameter2 && diameter1+wallThickness1*2 != diameter2+wallThickness2*2)) {
-        cylinder(h=startOuterLeadin, d=diameter1+wallThickness1*2);
-        translate([Offset.x,Offset.y,length-endOuterLeadin])
-          cylinder(h=endOuterLeadin, d=diameter2+wallThickness2*2);
+        cylinder(h=startOuterLeadIn, d=diameter1+wallThickness1*2);
+        translate([Offset.x,Offset.y,length-endOuterLeadIn])
+          cylinder(h=endOuterLeadIn, d=diameter2+wallThickness2*2);
       }
       else{
         cylinder(length,
@@ -2445,25 +2500,25 @@ module Pipe(
     translate([0,0,zPosition])
       union()
       {
-      if(Offset.x > 0 || Offset.y>0 || hasLeadinWallCorrection) {
+      if(Offset.x > 0 || Offset.y>0 || hasLeadInWallCorrection) {
         //(diameter1 != diameter2 && diameter1+wallThickness1*2 != diameter2+wallThickness2*2)) {
 
         translate([0,0,-fudgeFactor])
-        cylinder(startInnerLeadin+fudgeFactor*2, d=diameter1);
+        cylinder(startInnerLeadIn+fudgeFactor*2, d=diameter1);
 
-        translate([0,0,startInnerLeadin])
+        translate([0,0,startInnerLeadIn])
         hull() {
           cylinder(fudgeFactor, d=diameter1);
-          translate([Offset.x,Offset.y,length-startInnerLeadin-endInnerLeadin])
+          translate([Offset.x,Offset.y,length-startInnerLeadIn-endInnerLeadIn])
             cylinder(fudgeFactor, d=diameter2);
         }
-        translate([Offset.x,Offset.y,length-endInnerLeadin-fudgeFactor])
-        cylinder(endInnerLeadin+fudgeFactor*2, d=diameter2);
+        translate([Offset.x,Offset.y,length-endInnerLeadIn-fudgeFactor])
+        cylinder(endInnerLeadIn+fudgeFactor*2, d=diameter2);
       } else {
         // main removal
         cylinder(length, d1=diameter1, d2=diameter2);
       }
-      // bottomtop glitch correction
+      // bottom top glitch correction
       translate([0,0,-fudgeFactor])
         cylinder(fudgeFactor*2, d=diameter1);
 
@@ -2564,7 +2619,7 @@ module BentPipeHull(
   end2BaseHeight = end2WallThickness;
 
   //echo("BentPipeHull", _edgeOffset = _edgeOffset, lengthInHull = lengthInHull, centerHeight=centerHeight, lengthOutHull=lengthOutHull, outer1PipeRadius=outer1PipeRadius, outer2PipeRadius=outer2PipeRadius, a= (cos(pipeAngle) * outer2PipeRadius*2));
-  multRotationAngle = end2Angle > 0 ? end2Angle : 360/end2Count;
+  multiRotationAngle = end2Angle > 0 ? end2Angle : 360/end2Count;
 
   difference(){
     //Outer shape
@@ -2574,7 +2629,7 @@ module BentPipeHull(
         for (rotation = [0:end2Count-1])
         {
           //End 2
-          rotate([0,0,rotation*multRotationAngle])
+          rotate([0,0,rotation*multiRotationAngle])
           rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
           translate([-_edgeOffset, 0, lengthInHull])
           cylinder(r=outer2PipeRadius, h=end2WallThickness);
@@ -2591,13 +2646,13 @@ module BentPipeHull(
         cylinder(r=outer1PipeRadius, h=end1BaseHeight+fudgeFactor);
       }
 
-      //Extentions tubes
+      //Extensions tubes
       for (rotation = [0:end2Count-1])
       {
-        //End 2 extentions
+        //End 2 extensions
         //echo("Outer shape", pipeAngle=pipeAngle, outer1PipeRadius=outer1PipeRadius, outer2PipeRadius=outer2PipeRadius, _edgeOffset=_edgeOffset, lengthInHull=lengthInHull, end2WallThickness=end2WallThickness );
 
-        rotate([0,0,rotation*multRotationAngle])
+        rotate([0,0,rotation*multiRotationAngle])
         rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
         translate([-_edgeOffset, 0, lengthInHull])
         cylinder(r=outer2PipeRadius, h=lengthOutHull+end2WallThickness+fudgeFactor);
@@ -2617,7 +2672,7 @@ module BentPipeHull(
         for (rotation = [0:end2Count-1])
         {
           //End 2
-          rotate([0,0,rotation*multRotationAngle])
+          rotate([0,0,rotation*multiRotationAngle])
           rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
           translate([-_edgeOffset, 0, -end2BaseHeight+fudgeFactor+lengthInHull])
           cylinder(r=inner2PipeRadius, h=end2WallThickness+fudgeFactor*2);
@@ -2634,11 +2689,11 @@ module BentPipeHull(
         cylinder(r=inner1PipeRadius, h=end1BaseHeight+fudgeFactor*2);
       }
 
-      //Extention tubes
+      //Extension tubes
       for (rotation = [0:end2Count-1])
       {
-        //End 2 extentions
-        rotate([0,0,rotation*multRotationAngle])
+        //End 2 extensions
+        rotate([0,0,rotation*multiRotationAngle])
         rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
         translate([-_edgeOffset, 0, -end2BaseHeight+fudgeFactor+lengthInHull])
         cylinder(r=inner2PipeRadius, h=lengthOutHull+end2WallThickness*2+fudgeFactor*2);
@@ -2764,7 +2819,7 @@ module TaperedBentPipe(
     sizeStart = end1InnerPipeDiameter / 2 + end1WallThickness ;
     sizeEnd = end2InnerPipeDiameter / 2 + end2WallThickness ;
 
-    //baseSupportThickness should be between the start and end, but wieghted to the thicker end.
+    //baseSupportThickness should be between the start and end, but weighted to the thicker end.
     supportBaseValue = (max(sizeStart,sizeEnd)*2 + min(sizeStart,sizeEnd))/3;
     baseSupportThickness = supportBaseValue + baseThickness;
     baseSupportWidth =  baseWidth == 0 ? supportBaseValue *1.5 : baseWidth;
@@ -2878,13 +2933,13 @@ module Stopper(
   markPos = (outer ? diameter+wallThickness : diameter-stopThickness*2)/2;
 
   taperLength1 = (is_list(taper1) ? taper1.y : totalLength * taper1);
-  zoffset1 = wallThickness*taperLength1/stopThickness;
-  length1= (zoffset1 + totalLength);
+  zOffSet1 = wallThickness*taperLength1/stopThickness;
+  length1= (zOffSet1 + totalLength);
   taperWidth1 = is_list(taper1) ? taper1.x : length1 * stopThickness / taperLength1;
 
   taperLength2 = (is_list(taper2) ? taper2.y : totalLength * taper2);
-  zoffset2 = wallThickness * taperLength2 / stopThickness;
-  length2 = (zoffset2 + totalLength);
+  zOffSet2 = wallThickness * taperLength2 / stopThickness;
+  length2 = (zOffSet2 + totalLength);
   taperWidth2 = is_list(taper2) ? taper2.x : length2 * stopThickness / taperLength2;
 
   translate([0,0,zPosition])
@@ -2904,32 +2959,32 @@ module Stopper(
         if(taperLength1 > 0)
         {
           //taperLength1 = totalLength * taper1;
-          //zoffset1 = wallThickness*taperLength1/stopThickness;
-          //length1= (zoffset1 + totalLength);
+          //zOffSet1 = wallThickness*taperLength1/stopThickness;
+          //length1= (zOffSet1 + totalLength);
           //width1 = length1 * stopThickness / taperLength1;
-          diameterstart1 = _diameter;
-          diameterend1 = outer ? _diameter :_diameter - taperWidth1*2;
+          diameterStart1 = _diameter;
+          diameterEnd1 = outer ? _diameter :_diameter - taperWidth1*2;
           Pipe (
-            diameter1 = diameterstart1,
-            diameter2 = diameterend1,
+            diameter1 = diameterStart1,
+            diameter2 = diameterEnd1,
             length = length1,
             wallThickness1 = 0,
             wallThickness2 = taperWidth1,
-            zPosition = -zoffset1);
+            zPosition = -zOffSet1);
         }
 
         //Top taper
         if(taperLength2 > 0)
         {
           //taperLength2 = totalLength * taper2;
-          //zoffset2 = wallThickness * taperLength2 / stopThickness;
-          //length2 = (zoffset2 + totalLength);
+          //zOffSet2 = wallThickness * taperLength2 / stopThickness;
+          //length2 = (zOffSet2 + totalLength);
           //width2 = length2 * stopThickness / taperLength2;
-          diameterstart2 = outer ? _diameter :_diameter - taperWidth2*2;
-          diameterend2 = _diameter;
+          diameterStart2 = outer ? _diameter :_diameter - taperWidth2*2;
+          diameterEnd2 = _diameter;
           Pipe (
-            diameter1 = diameterstart2,
-            diameter2 = diameterend2,
+            diameter1 = diameterStart2,
+            diameter2 = diameterEnd2,
             length = length2,
             wallThickness1 = taperWidth2,
             wallThickness2 = 0);
@@ -3648,7 +3703,7 @@ module echoConnector(name, end, help){
     "iExtensionGridWallThickness", end[iExtensionGridWallThickness],
     "iExtensionText", end[iExtensionText],
     "iExtensionTextSize", end[iExtensionTextSize],
-    "iadapterColor", end[iAdapterColor],
+    "iAdapterColor", end[iAdapterColor],
     "iInnerDiameter", end[iInnerDiameter],
     "iInnerStartDiameter", end[iInnerStartDiameter],
     "iOuterStartDiameter", end[iOuterStartDiameter],
@@ -3868,21 +3923,21 @@ function getConnectorSettings(
     _length = measurement_to_mm(length),
     //For nozzle, if the diameter is 0, then set it to the D1, this will look nice.
     conMeasurement = let(
-      m = retriveConnectorSetting(style, iSettingsMeasurement, measurement),
-      d = retriveConnectorSetting(style, iSettingsDiameter, _diameter))
+      m = retrieveConnectorSetting(style, iSettingsMeasurement, measurement),
+      d = retrieveConnectorSetting(style, iSettingsDiameter, _diameter))
         (style == "nozzle" && d == 0) ? "outer" : m,
-    conDiameter = let(d = retriveConnectorSetting(style, iSettingsDiameter, _diameter))
+    conDiameter = let(d = retrieveConnectorSetting(style, iSettingsDiameter, _diameter))
       (style == "nozzle" && d == 0) ? con1OuterEndDiameter : d,
-    conWallThickness = let(w = retriveConnectorSetting(style, iSettingsWallThickness, wallThickness))
+    conWallThickness = let(w = retrieveConnectorSetting(style, iSettingsWallThickness, wallThickness))
       (style == "nozzle" && w == 0) ? con1WallThickness : w,
-    conLength = retriveConnectorSetting(style, iSettingsLength, _length),
-    conTaper = let(t = (style == "nozzle") ? 0 : retriveConnectorSetting(style, iSettingsTaper, taper)) conMeasurement == "inner" ? t*-1 : t,
+    conLength = retrieveConnectorSetting(style, iSettingsLength, _length),
+    conTaper = let(t = (style == "nozzle") ? 0 : retrieveConnectorSetting(style, iSettingsTaper, taper)) conMeasurement == "inner" ? t*-1 : t,
     conInnerDiameter = conMeasurement == "inner" ? conDiameter : conDiameter - conWallThickness * 2,
     conInnerStartDiameter = conInnerDiameter - conTaper / 2,
     conOuterStartDiameter = conInnerStartDiameter + wallThickness*2,
     conInnerEndDiameter = conInnerDiameter + conTaper / 2,
     conOuterEndDiameter = conInnerEndDiameter + wallThickness*2,
-    //If the connector hose is not showm the stop has no thickenss
+    //If the connector hose is not shown the stop has no thickness
     conStopThickness = (conLength <= 0 || style == "mag" || style == "flange") ? 0 : stopThickness,
     //If the stop has no thickness, it needs no length
     conStopLength = (conStopThickness > 0 && style == "hose") ? stopLength : 0
@@ -3965,9 +4020,10 @@ function lookupKey(dictionary, key, default=undef) = let(results = [
   ? default
   : results[0][1];
 
-function retriveConnectorConfig(connector, default = undef) = lookupKey(connectorSettings,connector,default);
-function retriveConnectorSetting(connector, iSetting, default = -1) = let(
-  config = retriveConnectorConfig(connector),
+function retrieveConnectorConfig(connector, default = undef) = lookupKey(connectorSettings,connector,default);
+
+function retrieveConnectorSetting(connector, iSetting, default = -1) = let(
+  config = retrieveConnectorConfig(connector),
   settingValue = config == undef ? default
     : lookupKey(config, iSetting, default=default)
   )
@@ -4194,7 +4250,7 @@ module InternalHoseThread(
     pitch=pitch,
     tooth_angle=tooth_angle,
     tooth_height=tooth_height)
-    cylinder(h=height, r=diameter/2+wallThickness, $fn=32);
+    cylinder(h=height, r=diameter/2+wallThickness);
 }
 
 // create an external thread outside a hose (like a bolt)
@@ -4210,7 +4266,7 @@ module ExternalHoseThread(
   tooth_height=0,
   tip_min_fract=0.75) {
 
-  fudegeFactor = 0.01;
+  fudgeFactor = 0.01;
 
   translate([0,0,height])
   rotate([0,180,0])
@@ -4226,8 +4282,8 @@ module ExternalHoseThread(
         tip_min_fract=tip_min_fract,
         referenceThreadOuter= false);
 
-    translate([0,0,-fudegeFactor])
-      cylinder(h=height+fudegeFactor*2, d=diameter, $fn=32);
+    translate([0,0,-fudgeFactor])
+      cylinder(h=height+fudgeFactor*2, d=diameter);
     }
 }
 //CombinedEnd from path modules_threads.scad

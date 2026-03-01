@@ -5,7 +5,7 @@ $outputFolder = Join-Path $script:SourceFolder 'generated\demos'
 $script:ScadExePath = 'C:\Program Files\OpenSCAD\openscad.exe'
 $script:ImageMagickPath = 'C:\Program Files\ImageMagick-7.1.1-Q16-HDRI\magick.exe'
 
-$script:ScenarioFilter = 'transitionext'
+$script:ScenarioFilter = ''
 $renderOptions = @('text') #@('png','text','stl')
 
 echo $outputFolder

@@ -116,7 +116,7 @@ module echoConnector(name, end, help){
     "iExtensionGridWallThickness", end[iExtensionGridWallThickness],
     "iExtensionText", end[iExtensionText],
     "iExtensionTextSize", end[iExtensionTextSize],
-    "iadapterColor", end[iAdapterColor],
+    "iAdapterColor", end[iAdapterColor],
     "iInnerDiameter", end[iInnerDiameter],
     "iInnerStartDiameter", end[iInnerStartDiameter],
     "iOuterStartDiameter", end[iOuterStartDiameter],
@@ -336,21 +336,21 @@ function getConnectorSettings(
     _length = measurement_to_mm(length),
     //For nozzle, if the diameter is 0, then set it to the D1, this will look nice.
     conMeasurement = let(
-      m = retriveConnectorSetting(style, iSettingsMeasurement, measurement),
-      d = retriveConnectorSetting(style, iSettingsDiameter, _diameter))
+      m = retrieveConnectorSetting(style, iSettingsMeasurement, measurement),
+      d = retrieveConnectorSetting(style, iSettingsDiameter, _diameter))
         (style == "nozzle" && d == 0) ? "outer" : m,
-    conDiameter = let(d = retriveConnectorSetting(style, iSettingsDiameter, _diameter))
+    conDiameter = let(d = retrieveConnectorSetting(style, iSettingsDiameter, _diameter))
       (style == "nozzle" && d == 0) ? con1OuterEndDiameter : d,
-    conWallThickness = let(w = retriveConnectorSetting(style, iSettingsWallThickness, wallThickness))
+    conWallThickness = let(w = retrieveConnectorSetting(style, iSettingsWallThickness, wallThickness))
       (style == "nozzle" && w == 0) ? con1WallThickness : w,
-    conLength = retriveConnectorSetting(style, iSettingsLength, _length),
-    conTaper = let(t = (style == "nozzle") ? 0 : retriveConnectorSetting(style, iSettingsTaper, taper)) conMeasurement == "inner" ? t*-1 : t,
+    conLength = retrieveConnectorSetting(style, iSettingsLength, _length),
+    conTaper = let(t = (style == "nozzle") ? 0 : retrieveConnectorSetting(style, iSettingsTaper, taper)) conMeasurement == "inner" ? t*-1 : t,
     conInnerDiameter = conMeasurement == "inner" ? conDiameter : conDiameter - conWallThickness * 2,
     conInnerStartDiameter = conInnerDiameter - conTaper / 2,
     conOuterStartDiameter = conInnerStartDiameter + wallThickness*2,
     conInnerEndDiameter = conInnerDiameter + conTaper / 2,
     conOuterEndDiameter = conInnerEndDiameter + wallThickness*2,
-    //If the connector hose is not showm the stop has no thickenss
+    //If the connector hose is not shown the stop has no thickness
     conStopThickness = (conLength <= 0 || style == "mag" || style == "flange") ? 0 : stopThickness,
     //If the stop has no thickness, it needs no length
     conStopLength = (conStopThickness > 0 && style == "hose") ? stopLength : 0

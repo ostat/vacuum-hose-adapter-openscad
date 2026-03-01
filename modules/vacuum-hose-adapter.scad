@@ -8,13 +8,11 @@
 
 use <thirdparty/ub.scad>
 include <constants.scad>
+include <module_conditional.scad>
 include <modules_utility.scad>
 include <modules_pipe.scad>
 
 include <connectors/connectors.scad>
-
-/* [Hidden] */
-module end_of_customizer_opts() {}
 
 function getColor(colorSetting, defaultColor) =
   assert(is_list(colorSetting), str("colorSetting must be a list colorSetting=", colorSetting, " defaultColor", defaultColor))
@@ -452,7 +450,7 @@ module transitionExtension(
         border = length * .2; //border above and below the text
         translate([0,0,border])
         RoundText(
-          textvalue = txt,
+          text = txt,
           font = "Liberation:style=Bold",
           fontSize = txtSize > 0 ? txtSize : length-border*2,
           radius = innerDiameter/2+wallThickness - textExtrude/2,

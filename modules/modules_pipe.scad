@@ -35,34 +35,34 @@ module Pipe(
   wallThickness1 = is_undef(wallThickness) ? wallThickness1 : wallThickness;
   wallThickness2 = is_undef(wallThickness) ? wallThickness2 : wallThickness;
 
-  //todo, add correction to ensure that the thickness of the walls never reduce to less than wallthickenss1 and wallThickness2
+  //todo, add correction to ensure that the thickness of the walls never reduce to less than wallThickness1 and wallThickness2
   //using wallThickness/2 is a sloppy approximation, really need to use trig to would out the correct value
-  leadin = max(fudgeFactor, min(wallThickness1, wallThickness2, length)/2);
+  leadIn = max(fudgeFactor, min(wallThickness1, wallThickness2, length)/2);
 
   //a = b × tan(α)
   //atan(a/b) = angle;
 
-  startOuterLeadin = diameter1+wallThickness1*2 > diameter2+wallThickness2*2 ? leadin : fudgeFactor;
-  startInnerLeadin = diameter1 > diameter2 ? fudgeFactor : leadin;
-  endOuterLeadin = diameter2+wallThickness2*2> diameter1+wallThickness1*2 ? leadin : fudgeFactor;
-  endInnerLeadin = diameter2 > diameter1 ? fudgeFactor : leadin;
-  hasLeadinWallCorrection =
-    startOuterLeadin != fudgeFactor ||
-    startInnerLeadin != fudgeFactor ||
-    endOuterLeadin != fudgeFactor ||
-    endInnerLeadin != fudgeFactor;
-  //echo("Pipe", hasLeadinWallCorrection=hasLeadinWallCorrection, startOuterLeadin=startOuterLeadin, startInnerLeadin=startInnerLeadin, endOuterLeadin=endOuterLeadin, endInnerLeadin=endInnerLeadin);
+  startOuterLeadIn = diameter1+wallThickness1*2 > diameter2+wallThickness2*2 ? leadIn : fudgeFactor;
+  startInnerLeadIn = diameter1 > diameter2 ? fudgeFactor : leadIn;
+  endOuterLeadIn = diameter2+wallThickness2*2> diameter1+wallThickness1*2 ? leadIn : fudgeFactor;
+  endInnerLeadIn = diameter2 > diameter1 ? fudgeFactor : leadIn;
+  hasLeadInWallCorrection =
+    startOuterLeadIn != fudgeFactor ||
+    startInnerLeadIn != fudgeFactor ||
+    endOuterLeadIn != fudgeFactor ||
+    endInnerLeadIn != fudgeFactor;
+
   difference ()
   {
     //outer cylinder
     translate([0,0,zPosition])
     hull()
     {
-      if(Offset.x>0 || Offset.y>0 || hasLeadinWallCorrection) {
+      if(Offset.x>0 || Offset.y>0 || hasLeadInWallCorrection) {
         //(diameter1 != diameter2 && diameter1+wallThickness1*2 != diameter2+wallThickness2*2)) {
-        cylinder(h=startOuterLeadin, d=diameter1+wallThickness1*2);
-        translate([Offset.x,Offset.y,length-endOuterLeadin])
-          cylinder(h=endOuterLeadin, d=diameter2+wallThickness2*2);
+        cylinder(h=startOuterLeadIn, d=diameter1+wallThickness1*2);
+        translate([Offset.x,Offset.y,length-endOuterLeadIn])
+          cylinder(h=endOuterLeadIn, d=diameter2+wallThickness2*2);
       }
       else{
         cylinder(length,
@@ -75,25 +75,25 @@ module Pipe(
     translate([0,0,zPosition])
       union()
       {
-      if(Offset.x > 0 || Offset.y>0 || hasLeadinWallCorrection) {
+      if(Offset.x > 0 || Offset.y>0 || hasLeadInWallCorrection) {
         //(diameter1 != diameter2 && diameter1+wallThickness1*2 != diameter2+wallThickness2*2)) {
 
         translate([0,0,-fudgeFactor])
-        cylinder(startInnerLeadin+fudgeFactor*2, d=diameter1);
+        cylinder(startInnerLeadIn+fudgeFactor*2, d=diameter1);
 
-        translate([0,0,startInnerLeadin])
+        translate([0,0,startInnerLeadIn])
         hull() {
           cylinder(fudgeFactor, d=diameter1);
-          translate([Offset.x,Offset.y,length-startInnerLeadin-endInnerLeadin])
+          translate([Offset.x,Offset.y,length-startInnerLeadIn-endInnerLeadIn])
             cylinder(fudgeFactor, d=diameter2);
         }
-        translate([Offset.x,Offset.y,length-endInnerLeadin-fudgeFactor])
-        cylinder(endInnerLeadin+fudgeFactor*2, d=diameter2);
+        translate([Offset.x,Offset.y,length-endInnerLeadIn-fudgeFactor])
+        cylinder(endInnerLeadIn+fudgeFactor*2, d=diameter2);
       } else {
         // main removal
         cylinder(length, d1=diameter1, d2=diameter2);
       }
-      // bottomtop glitch correction
+      // bottom top glitch correction
       translate([0,0,-fudgeFactor])
         cylinder(fudgeFactor*2, d=diameter1);
 
@@ -194,7 +194,7 @@ module BentPipeHull(
   end2BaseHeight = end2WallThickness;
 
   //echo("BentPipeHull", _edgeOffset = _edgeOffset, lengthInHull = lengthInHull, centerHeight=centerHeight, lengthOutHull=lengthOutHull, outer1PipeRadius=outer1PipeRadius, outer2PipeRadius=outer2PipeRadius, a= (cos(pipeAngle) * outer2PipeRadius*2));
-  multRotationAngle = end2Angle > 0 ? end2Angle : 360/end2Count;
+  multiRotationAngle = end2Angle > 0 ? end2Angle : 360/end2Count;
 
   difference(){
     //Outer shape
@@ -204,7 +204,7 @@ module BentPipeHull(
         for (rotation = [0:end2Count-1])
         {
           //End 2
-          rotate([0,0,rotation*multRotationAngle])
+          rotate([0,0,rotation*multiRotationAngle])
           rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
           translate([-_edgeOffset, 0, lengthInHull])
           cylinder(r=outer2PipeRadius, h=end2WallThickness);
@@ -221,13 +221,13 @@ module BentPipeHull(
         cylinder(r=outer1PipeRadius, h=end1BaseHeight+fudgeFactor);
       }
 
-      //Extentions tubes
+      //Extensions tubes
       for (rotation = [0:end2Count-1])
       {
-        //End 2 extentions
+        //End 2 extensions
         //echo("Outer shape", pipeAngle=pipeAngle, outer1PipeRadius=outer1PipeRadius, outer2PipeRadius=outer2PipeRadius, _edgeOffset=_edgeOffset, lengthInHull=lengthInHull, end2WallThickness=end2WallThickness );
 
-        rotate([0,0,rotation*multRotationAngle])
+        rotate([0,0,rotation*multiRotationAngle])
         rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
         translate([-_edgeOffset, 0, lengthInHull])
         cylinder(r=outer2PipeRadius, h=lengthOutHull+end2WallThickness+fudgeFactor);
@@ -247,7 +247,7 @@ module BentPipeHull(
         for (rotation = [0:end2Count-1])
         {
           //End 2
-          rotate([0,0,rotation*multRotationAngle])
+          rotate([0,0,rotation*multiRotationAngle])
           rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
           translate([-_edgeOffset, 0, -end2BaseHeight+fudgeFactor+lengthInHull])
           cylinder(r=inner2PipeRadius, h=end2WallThickness+fudgeFactor*2);
@@ -264,11 +264,11 @@ module BentPipeHull(
         cylinder(r=inner1PipeRadius, h=end1BaseHeight+fudgeFactor*2);
       }
 
-      //Extention tubes
+      //Extension tubes
       for (rotation = [0:end2Count-1])
       {
-        //End 2 extentions
-        rotate([0,0,rotation*multRotationAngle])
+        //End 2 extensions
+        rotate([0,0,rotation*multiRotationAngle])
         rotate_about_pt(0, -pipeAngle, [-outer1PipeRadius,0,0])
         translate([-_edgeOffset, 0, -end2BaseHeight+fudgeFactor+lengthInHull])
         cylinder(r=inner2PipeRadius, h=lengthOutHull+end2WallThickness*2+fudgeFactor*2);
@@ -394,7 +394,7 @@ module TaperedBentPipe(
     sizeStart = end1InnerPipeDiameter / 2 + end1WallThickness ;
     sizeEnd = end2InnerPipeDiameter / 2 + end2WallThickness ;
 
-    //baseSupportThickness should be between the start and end, but wieghted to the thicker end.
+    //baseSupportThickness should be between the start and end, but weighted to the thicker end.
     supportBaseValue = (max(sizeStart,sizeEnd)*2 + min(sizeStart,sizeEnd))/3;
     baseSupportThickness = supportBaseValue + baseThickness;
     baseSupportWidth =  baseWidth == 0 ? supportBaseValue *1.5 : baseWidth;
@@ -508,13 +508,13 @@ module Stopper(
   markPos = (outer ? diameter+wallThickness : diameter-stopThickness*2)/2;
 
   taperLength1 = (is_list(taper1) ? taper1.y : totalLength * taper1);
-  zoffset1 = wallThickness*taperLength1/stopThickness;
-  length1= (zoffset1 + totalLength);
+  zOffSet1 = wallThickness*taperLength1/stopThickness;
+  length1= (zOffSet1 + totalLength);
   taperWidth1 = is_list(taper1) ? taper1.x : length1 * stopThickness / taperLength1;
 
   taperLength2 = (is_list(taper2) ? taper2.y : totalLength * taper2);
-  zoffset2 = wallThickness * taperLength2 / stopThickness;
-  length2 = (zoffset2 + totalLength);
+  zOffSet2 = wallThickness * taperLength2 / stopThickness;
+  length2 = (zOffSet2 + totalLength);
   taperWidth2 = is_list(taper2) ? taper2.x : length2 * stopThickness / taperLength2;
 
   translate([0,0,zPosition])
@@ -534,32 +534,32 @@ module Stopper(
         if(taperLength1 > 0)
         {
           //taperLength1 = totalLength * taper1;
-          //zoffset1 = wallThickness*taperLength1/stopThickness;
-          //length1= (zoffset1 + totalLength);
+          //zOffSet1 = wallThickness*taperLength1/stopThickness;
+          //length1= (zOffSet1 + totalLength);
           //width1 = length1 * stopThickness / taperLength1;
-          diameterstart1 = _diameter;
-          diameterend1 = outer ? _diameter :_diameter - taperWidth1*2;
+          diameterStart1 = _diameter;
+          diameterEnd1 = outer ? _diameter :_diameter - taperWidth1*2;
           Pipe (
-            diameter1 = diameterstart1,
-            diameter2 = diameterend1,
+            diameter1 = diameterStart1,
+            diameter2 = diameterEnd1,
             length = length1,
             wallThickness1 = 0,
             wallThickness2 = taperWidth1,
-            zPosition = -zoffset1);
+            zPosition = -zOffSet1);
         }
 
         //Top taper
         if(taperLength2 > 0)
         {
           //taperLength2 = totalLength * taper2;
-          //zoffset2 = wallThickness * taperLength2 / stopThickness;
-          //length2 = (zoffset2 + totalLength);
+          //zOffSet2 = wallThickness * taperLength2 / stopThickness;
+          //length2 = (zOffSet2 + totalLength);
           //width2 = length2 * stopThickness / taperLength2;
-          diameterstart2 = outer ? _diameter :_diameter - taperWidth2*2;
-          diameterend2 = _diameter;
+          diameterStart2 = outer ? _diameter :_diameter - taperWidth2*2;
+          diameterEnd2 = _diameter;
           Pipe (
-            diameter1 = diameterstart2,
-            diameter2 = diameterend2,
+            diameter1 = diameterStart2,
+            diameter2 = diameterEnd2,
             length = length2,
             wallThickness1 = taperWidth2,
             wallThickness2 = 0);

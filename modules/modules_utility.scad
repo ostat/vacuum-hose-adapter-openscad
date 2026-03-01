@@ -1,4 +1,5 @@
 include <constants.scad>
+include <module_rounded_text.scad>
 
 // rotate as per a, v, but around point pt
 module rotate_about_pt(z, y, pt) {
@@ -6,71 +7,6 @@ module rotate_about_pt(z, y, pt) {
         rotate([0, y, z]) // CHANGE HERE
             translate(-pt)
                 children();
-}
-
-// takes part of an array
-function getRunningTextWidth(charsMetrics,position=0,end) = //= [for (i = [start:end]) list[i]];
-  assert(is_list(charsMetrics), "charsMetricsmust be a list")
-  assert(is_num(position), str("position must be a number", "provided '", position, "'"))
-  assert(is_num(end), str("end must be a number", "provided '", end, "'"))
-  position < end
-    ? charsMetrics[position].size.y + getRunningTextWidth(charsMetrics, position + 1, end)
-    : charsMetrics[position].size.y;
-
-function subStr(s,length=5) =
-  assert(is_string(s), "s must be a string")
-  assert(is_num(length), "length must be a number")
-  str(chr([for(i=[0 :min(length,len(s))-1])ord(s[i])]));
-
-module RoundText(
-  textvalue = "",
-  font = "Liberation:style=Bold",
-  fontSize = 6.5,
-  radius = 20,
-  textExtrude = 1,
-  forceRound = false,
-  center = true,
-  $fn=64)
-{
-  _radius = forceRound ? radius - textExtrude : radius;
-  charsCount = len(textvalue);
-  charsMetrics = [for(i=[0:1:charsCount-1]) textmetrics(text=str(textvalue[i]),size=fontSize,font=font)];
-
-
-  offsetAngle = center ? textmetrics(text=textvalue,size=fontSize,font=font).size.x/2 : 0;
-
-  // takes part of an array
-  rotate([0,0,-offsetAngle*180/(PI*_radius)])
-  intersection(){
-    union(){
-      for(i=[0:1:charsCount-1]){
-        char = textvalue[i];
-
-        runningMetrix = textmetrics(text=subStr(textvalue, i+1),size=fontSize,font=font);
-        runningLength = runningMetrix.size.x - charsMetrics[i].size.x/2;
-        arcAngle=runningLength*180/(PI*_radius);
-        rotate([0,0,arcAngle])
-          translate( [_radius,0,0])
-            rotate([90,0,90])
-              linear_extrude(textExtrude * (forceRound ? 2:1))
-                text(
-                  textvalue[i],
-                  //valign="center",
-                  halign="center",
-                  size=fontSize,
-                  font=font);
-        }
-    }
-    if(forceRound)
-    {
-      translate([0,0,-fontSize])
-      difference(){
-        cylinder(r=radius+textExtrude,h = fontSize*3,$fn=$fn);
-        translate([0,0,-fudgeFactor])
-        cylinder(r=radius,h = fontSize*3+fudgeFactor*2,$fn=$fn);
-      }
-    }
-  }
 }
 
 //Creates a rounded cube
@@ -153,7 +89,7 @@ module roundedDisk(r,roundedr, half=0){
     translate([r-roundedr,0,0])
     difference(){
       circle(roundedr);
-      //Remove inner half so we dont get error when r<roundedr*2
+      //Remove inner half so we don't get error when r<roundedr*2
       translate([-roundedr*2,-roundedr,0])
       square(roundedr*2);
 

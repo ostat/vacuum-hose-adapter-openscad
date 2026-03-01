@@ -21,7 +21,7 @@ module InternalHoseThread(
     pitch=pitch,
     tooth_angle=tooth_angle,
     tooth_height=tooth_height)
-    cylinder(h=height, r=diameter/2+wallThickness, $fn=32);
+    cylinder(h=height, r=diameter/2+wallThickness);
 }
 
 // create an external thread outside a hose (like a bolt)
@@ -37,7 +37,7 @@ module ExternalHoseThread(
   tooth_height=0,
   tip_min_fract=0.75) {
 
-  fudegeFactor = 0.01;
+  fudgeFactor = 0.01;
 
   translate([0,0,height])
   rotate([0,180,0])
@@ -53,7 +53,7 @@ module ExternalHoseThread(
         tip_min_fract=tip_min_fract,
         referenceThreadOuter= false);
 
-    translate([0,0,-fudegeFactor])
-      cylinder(h=height+fudegeFactor*2, d=diameter, $fn=32);
+    translate([0,0,-fudgeFactor])
+      cylinder(h=height+fudgeFactor*2, d=diameter);
     }
 }

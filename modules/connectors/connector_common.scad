@@ -6,9 +6,10 @@ function lookupKey(dictionary, key, default=undef) = let(results = [
   ? default
   : results[0][1];
 
-function retriveConnectorConfig(connector, default = undef) = lookupKey(connectorSettings,connector,default);
-function retriveConnectorSetting(connector, iSetting, default = -1) = let(
-  config = retriveConnectorConfig(connector),
+function retrieveConnectorConfig(connector, default = undef) = lookupKey(connectorSettings,connector,default);
+
+function retrieveConnectorSetting(connector, iSetting, default = -1) = let(
+  config = retrieveConnectorConfig(connector),
   settingValue = config == undef ? default
     : lookupKey(config, iSetting, default=default)
   )
