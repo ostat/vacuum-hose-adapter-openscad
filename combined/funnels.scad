@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'funnels.scad'. Generated 2026-03-01 21:49
-//Content hash 48AAC2266C0B4F7CB90EE90626DD47E3C7A1A0EB1B5CA62A64C58F7609D3C620
+//Combined version of 'funnels.scad'. Generated 2026-04-18 07:10
+//Content hash 9BB60AFBD887CBB3C5E639C277ABB950FAA1F154C9924325D2B1ED3223B82FE3
 ///////////////////////////////////////
 // funnel
 // version 2026-02-27
@@ -3537,7 +3537,7 @@ function ValidateUserConnectorSettings(userSettings) =
   assert(is_num(userSettings[iMagnetFlangeThickness]) && userSettings[iMagnetFlangeThickness] >= 0, str("magnetFlangeThickness must be a non-negative number:", userSettings[iMagnetFlangeThickness]))
   assert(is_string(userSettings[iMagnetTwistLockSize]), str("magnetTwistLockSize must be a string:", userSettings[iMagnetTwistLockSize]))
   assert(is_string(userSettings[iAlignmentRing]), str("alignmentRing must be a string:", userSettings[iAlignmentRing]))
-  assert(userSettings[iAlignmentRing] == "no" || userSettings[iAlignmentRing] == "inner" || userSettings[iAlignmentRing] == "outer", str("alignmentRing must be 'no', 'inner', or 'outer':", userSettings[iAlignmentRing]))
+  assert(userSettings[iAlignmentRing] == "no" || userSettings[iAlignmentRing] == "protruding" || userSettings[iAlignmentRing] == "recessed", str("alignmentRing must be 'no', 'protruding', or 'recessed':", userSettings[iAlignmentRing]))
   assert(is_num(userSettings[iFlangeWidth]) && userSettings[iFlangeWidth] >= 0, str("flangeWidth must be a non-negative number:", userSettings[iFlangeWidth]))
   assert(is_num(userSettings[iFlangeThickness]) && userSettings[iFlangeThickness] >= 0, str("flangeThickness must be a non-negative number:", userSettings[iFlangeThickness]))
   assert(is_num(userSettings[iFlangeScrewPosition]) && userSettings[iFlangeScrewPosition] >= 0, str("flangeScrewPosition must be a non-negative number:", userSettings[iFlangeScrewPosition]))

@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-03-01 21:49
-//Content hash 16C33374DF1D7563025BFB80A682BD72FD2B6E3E85D18A5CA5DA967583ECB3F4
+//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-04-18 07:10
+//Content hash 4DAF362510C30BCD00608F64CC6DF2FAF7D05604A09D83AB3E3B51A98A8F134B
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -3587,7 +3587,7 @@ function ValidateUserConnectorSettings(userSettings) =
   assert(is_num(userSettings[iMagnetFlangeThickness]) && userSettings[iMagnetFlangeThickness] >= 0, str("magnetFlangeThickness must be a non-negative number:", userSettings[iMagnetFlangeThickness]))
   assert(is_string(userSettings[iMagnetTwistLockSize]), str("magnetTwistLockSize must be a string:", userSettings[iMagnetTwistLockSize]))
   assert(is_string(userSettings[iAlignmentRing]), str("alignmentRing must be a string:", userSettings[iAlignmentRing]))
-  assert(userSettings[iAlignmentRing] == "no" || userSettings[iAlignmentRing] == "inner" || userSettings[iAlignmentRing] == "outer", str("alignmentRing must be 'no', 'inner', or 'outer':", userSettings[iAlignmentRing]))
+  assert(userSettings[iAlignmentRing] == "no" || userSettings[iAlignmentRing] == "protruding" || userSettings[iAlignmentRing] == "recessed", str("alignmentRing must be 'no', 'protruding', or 'recessed':", userSettings[iAlignmentRing]))
   assert(is_num(userSettings[iFlangeWidth]) && userSettings[iFlangeWidth] >= 0, str("flangeWidth must be a non-negative number:", userSettings[iFlangeWidth]))
   assert(is_num(userSettings[iFlangeThickness]) && userSettings[iFlangeThickness] >= 0, str("flangeThickness must be a non-negative number:", userSettings[iFlangeThickness]))
   assert(is_num(userSettings[iFlangeScrewPosition]) && userSettings[iFlangeScrewPosition] >= 0, str("flangeScrewPosition must be a non-negative number:", userSettings[iFlangeScrewPosition]))
