@@ -160,7 +160,7 @@ function UserConnectorSettings(
   barbsCount = 0,
   barbsThickness = 0,
   barbsSymmetrical = false,
-  enableThreads = false,
+  enableThreads = "disabled",
   threadPitch = 0,
   threadToothAngle = 30,
   threadToothHeight = 0,
@@ -264,7 +264,7 @@ function ValidateUserConnectorSettings(userSettings) =
   assert(is_num(userSettings[iBarbsCount]) && userSettings[iBarbsCount] >= 0, str("barbsCount must be a non-negative number:", userSettings[iBarbsCount]))
   assert(is_num(userSettings[iBarbsThickness]) && userSettings[iBarbsThickness] >= 0, str("barbsThickness must be a non-negative number:", userSettings[iBarbsThickness]))
   assert(is_bool(userSettings[iBarbsSymmetrical]), str("barbsSymmetrical must be a boolean:", userSettings[iBarbsSymmetrical]))
-  assert(is_bool(userSettings[iEnableThreads]), str("enableThreads must be a boolean:", userSettings[iEnableThreads]))
+  assert(is_string(userSettings[iEnableThreads]), str("enableThreads must be a string:", userSettings[iEnableThreads]))
   assert(is_num(userSettings[iThreadPitch]) && userSettings[iThreadPitch] >= 0, str("threadPitch must be a positive number:", userSettings[iThreadPitch]))
   assert(is_num(userSettings[iThreadToothAngle]) && userSettings[iThreadToothAngle] >= 0 && userSettings[iThreadToothAngle] <= 90, str("threadToothAngle must be between 0 and 90:", userSettings[iThreadToothAngle]))
   assert(is_num(userSettings[iThreadToothHeight]) && userSettings[iThreadToothHeight] >= 0, str("threadToothHeight must be a non-negative number:", userSettings[iThreadToothHeight]))

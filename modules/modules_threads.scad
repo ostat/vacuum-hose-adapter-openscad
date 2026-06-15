@@ -1,6 +1,33 @@
 include <constants.scad>
 include <thirdparty/threads-scad/threads.scad>
 
+threads_demo = false;
+
+if(threads_demo){
+$fn = 64;
+diameter = 50;
+spacer = diameter*1.5;
+reversed_options = [true, false];
+
+render()
+  for(iReverse = [0:len(reversed_options)-1])
+  union(){
+    translate([0, spacer*iReverse, 0])
+    InternalHoseThread(
+      diameter = diameter,
+      height = 20,
+      reverse_thread = reversed_options[iReverse]
+    );
+
+    translate([spacer, spacer*iReverse, 0])
+    ExternalHoseThread(
+      diameter = diameter,
+      height = 20,
+      reverse_thread = reversed_options[iReverse]
+    );
+  }
+}
+
 // create a internal thread inside a hose (like a nut)
 module InternalHoseThread(
   diameter,
@@ -11,7 +38,9 @@ module InternalHoseThread(
   rotation=[0,0,0],
   pitch=0,
   tooth_angle=30,
-  tooth_height=0) {
+  tooth_height=0,
+  reverse_thread = false) {
+  mirror(reverse_thread ? [0,0,0] :[1,0,0])
   ScrewHole(
     outer_diam=diameter,
     height=height,
@@ -35,10 +64,12 @@ module ExternalHoseThread(
   tolerance=0.4,
   tip_height=0,
   tooth_height=0,
-  tip_min_fract=0.75) {
+  tip_min_fract=0.75,
+  reverse_thread = false) {
 
   fudgeFactor = 0.01;
 
+  mirror(reverse_thread ? [0,0,0] :[1,0,0])
   translate([0,0,height])
   rotate([0,180,0])
     difference(){

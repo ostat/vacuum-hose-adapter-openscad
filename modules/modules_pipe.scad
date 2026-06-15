@@ -18,6 +18,31 @@ Pipe(
     length=50,
     wallThickness = 2,
     Offset = [15,0]);
+    
+translate([0,0,25])
+Stopper(
+    diameter = 100,
+    outer = true,
+    totalLength = 20,
+    taper1 = [10,10],
+    taper2 = [5,5],
+    wallThickness = 10,
+    stopThickness = 20,
+    marker = false);
+
+
+translate([0,0,25])
+Stopper(
+    diameter = 100,
+    outer = true,
+    totalLength = 20,
+    taper1 = 0.33,
+    taper2 = 0.33,
+    wallThickness = 10,
+    stopThickness = 20,
+    marker = false);
+
+
 }
 module Pipe(
     diameter,
@@ -463,29 +488,6 @@ module TaperedBentPipe(
     }
   }
 
-  /*
-translate([0,0,25])
-Stopper(
-    diameter = 100,
-    outer = true,
-    totalLength = 20,
-    taper1 = [10,10],
-    taper2 = [5,5],
-    wallThickness = 10,
-    stopThickness = 20,
-    marker = false);
-
-
-Stopper(
-    diameter = 100,
-    outer = true,
-    totalLength = 20,
-    taper1 = 0.33,
-    taper2 = 0.33,
-    wallThickness = 10,
-    stopThickness = 20,
-    marker = false);
-*/
 //TODO This seems slow, esp when used for barbs
 module Stopper(
     diameter,
@@ -567,14 +569,4 @@ module Stopper(
         }
       }
    }
-
- HelpTxt("Stopper",[
-    "diameter", diameter,
-    "totalLength", totalLength,
-    "taper1", taper1,
-    "taper2", taper2,
-    "wallThickness", wallThickness,
-    "stopThickness", stopThickness,
-    "zPosition", zPosition]
-    ,help);
 }

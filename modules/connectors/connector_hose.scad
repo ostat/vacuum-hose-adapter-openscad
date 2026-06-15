@@ -4,6 +4,59 @@ use <../modules_utility.scad>
 use <../modules_pipe.scad>
 use <../modules_threads.scad>
 
+connector_hose_demo = false;
+
+if(connector_hose_demo){
+$fn = 64;
+diameter = 50;
+spacer = diameter*1.5;
+
+render_options = [
+  ["threads_disabled", "endcap_disabled", "stop_disabled", "barbs_disabled"],
+  ["threads_enabled", "endcap_disabled", "stop_disabled", "barbs_disabled"],
+  ["threads_reversed", "endcap_disabled", "stop_disabled", "barbs_disabled"],
+  ["threads_disabled", "endcap_enabled", "stop_disabled", "barbs_disabled"],
+  ["threads_disabled", "endcap_disabled", "stop_disabled", "barbs_disabled"],
+  ["threads_disabled", "endcap_disabled", "stop_enabled", "barbs_enabled"],
+  ];
+
+connector_measurements = ["outer", "inner"]; 
+ 
+render()
+  for(iRender = [0:len(render_options)-1])
+  for(iConnectorMeasurement = [0:len(connector_measurements)-1])
+  union(){
+    translate([spacer*iConnectorMeasurement, spacer*iRender, 0])
+    HoseConnector(
+        innerStartDiameter = diameter,
+        innerEndDiameter = diameter,
+        connectorMeasurement = connector_measurements[iConnectorMeasurement],
+        length = 40,
+        wallThickness = 2,
+        stopLength = (render_options[iRender][2] == "stop_enabled" ? 5 : 0),
+        stopWidth = 5,
+        stopSymmetrical = false,
+        barbsCount = (render_options[iRender][3] == "barbs_enabled" ? 5 : 0),
+        barbsThickness = 0,
+        barbsSymmetrical = false,
+        endCapDiameter = 5,
+        endCapThickness = (render_options[iRender][1] == "endcap_enabled" ? 5 : 0),
+        endCapGridSize = 0,
+        endCapGridWallThickness = 0,
+        chamferLength = 0,
+        chamferWidth = 0,
+        enableThreads = 
+          render_options[iRender][0] == "threads_enabled" ? "enabled"
+          : render_options[iRender][0] == "threads_reversed" ? "reversed"
+          : "disabled",
+        threadPitch = 0,
+        threadToothAngle = 30,
+        threadToothHeight = 0,
+        help = true
+    );
+  }
+}
+
 module HoseConnector(
     innerStartDiameter,
     innerEndDiameter,
@@ -22,7 +75,7 @@ module HoseConnector(
     endCapGridWallThickness = 0,
     chamferLength = 0,
     chamferWidth = 0,
-    enableThreads=false,
+    enableThreads="disabled",
     threadPitch=0,
     threadToothAngle=30,
     threadToothHeight=0,
@@ -31,7 +84,7 @@ module HoseConnector(
 {
   assert(is_num(innerEndDiameter) && innerEndDiameter > 0, "innerEndDiameter must be a number greater than 0");
   assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");
-
+  
   _barbsThickness = barbsThickness == 0 ? wallThickness/2 : barbsThickness;
   barbLength = length/(barbsCount*2+1);
 
@@ -71,7 +124,7 @@ module HoseConnector(
       }
     }
 
-    if(enableThreads){
+    if(enableThreads != "disabled"){
       if(connectorMeasurement == "outer"){
         ExternalHoseThread(
           diameter = innerStartDiameter+wallThickness,
@@ -79,7 +132,8 @@ module HoseConnector(
           height=length,
           pitch=threadPitch,
           tooth_angle=threadToothAngle,
-          tooth_height=threadToothHeight);
+          tooth_height=threadToothHeight,
+          reverse_thread=(enableThreads == "reversed"));
       } else {
        InternalHoseThread(
         diameter = innerStartDiameter,
@@ -87,7 +141,8 @@ module HoseConnector(
         height=length,
         pitch=threadPitch,
         tooth_angle=threadToothAngle,
-        tooth_height=threadToothHeight);
+        tooth_height=threadToothHeight,
+        reverse_thread=(enableThreads == "reversed"));
       }
     }
 

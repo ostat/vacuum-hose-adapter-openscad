@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-03-01 21:49
-//Content hash 16C33374DF1D7563025BFB80A682BD72FD2B6E3E85D18A5CA5DA967583ECB3F4
+//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-06-15 23:32
+//Content hash B3829A6B589903BAA4E181EF8DE5B50E368EED711292DE8BB889F6336105FFF5
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -2167,6 +2167,31 @@ Pipe(
     length=50,
     wallThickness = 2,
     Offset = [15,0]);
+    
+translate([0,0,25])
+Stopper(
+    diameter = 100,
+    outer = true,
+    totalLength = 20,
+    taper1 = [10,10],
+    taper2 = [5,5],
+    wallThickness = 10,
+    stopThickness = 20,
+    marker = false);
+
+
+translate([0,0,25])
+Stopper(
+    diameter = 100,
+    outer = true,
+    totalLength = 20,
+    taper1 = 0.33,
+    taper2 = 0.33,
+    wallThickness = 10,
+    stopThickness = 20,
+    marker = false);
+
+
 }
 module Pipe(
     diameter,
@@ -2612,29 +2637,6 @@ module TaperedBentPipe(
     }
   }
 
-  /*
-translate([0,0,25])
-Stopper(
-    diameter = 100,
-    outer = true,
-    totalLength = 20,
-    taper1 = [10,10],
-    taper2 = [5,5],
-    wallThickness = 10,
-    stopThickness = 20,
-    marker = false);
-
-
-Stopper(
-    diameter = 100,
-    outer = true,
-    totalLength = 20,
-    taper1 = 0.33,
-    taper2 = 0.33,
-    wallThickness = 10,
-    stopThickness = 20,
-    marker = false);
-*/
 //TODO This seems slow, esp when used for barbs
 module Stopper(
     diameter,
@@ -2716,16 +2718,6 @@ module Stopper(
         }
       }
    }
-
- HelpTxt("Stopper",[
-    "diameter", diameter,
-    "totalLength", totalLength,
-    "taper1", taper1,
-    "taper2", taper2,
-    "wallThickness", wallThickness,
-    "stopThickness", stopThickness,
-    "zPosition", zPosition]
-    ,help);
 }
 //CombinedEnd from path modules_pipe.scad
 //Combined from path shape_circle.scad
@@ -3471,7 +3463,7 @@ function UserConnectorSettings(
   barbsCount = 0,
   barbsThickness = 0,
   barbsSymmetrical = false,
-  enableThreads = false,
+  enableThreads = "disabled",
   threadPitch = 0,
   threadToothAngle = 30,
   threadToothHeight = 0,
@@ -3575,7 +3567,7 @@ function ValidateUserConnectorSettings(userSettings) =
   assert(is_num(userSettings[iBarbsCount]) && userSettings[iBarbsCount] >= 0, str("barbsCount must be a non-negative number:", userSettings[iBarbsCount]))
   assert(is_num(userSettings[iBarbsThickness]) && userSettings[iBarbsThickness] >= 0, str("barbsThickness must be a non-negative number:", userSettings[iBarbsThickness]))
   assert(is_bool(userSettings[iBarbsSymmetrical]), str("barbsSymmetrical must be a boolean:", userSettings[iBarbsSymmetrical]))
-  assert(is_bool(userSettings[iEnableThreads]), str("enableThreads must be a boolean:", userSettings[iEnableThreads]))
+  assert(is_string(userSettings[iEnableThreads]), str("enableThreads must be a string:", userSettings[iEnableThreads]))
   assert(is_num(userSettings[iThreadPitch]) && userSettings[iThreadPitch] >= 0, str("threadPitch must be a positive number:", userSettings[iThreadPitch]))
   assert(is_num(userSettings[iThreadToothAngle]) && userSettings[iThreadToothAngle] >= 0 && userSettings[iThreadToothAngle] <= 90, str("threadToothAngle must be between 0 and 90:", userSettings[iThreadToothAngle]))
   assert(is_num(userSettings[iThreadToothHeight]) && userSettings[iThreadToothHeight] >= 0, str("threadToothHeight must be a non-negative number:", userSettings[iThreadToothHeight]))
@@ -3768,6 +3760,59 @@ function retrieveConnectorSetting(connector, iSetting, default = -1) = let(
 
 
 
+connector_hose_demo = false;
+
+if(connector_hose_demo){
+$fn = 64;
+diameter = 50;
+spacer = diameter*1.5;
+
+render_options = [
+  ["threads_disabled", "endcap_disabled", "stop_disabled", "barbs_disabled"],
+  ["threads_enabled", "endcap_disabled", "stop_disabled", "barbs_disabled"],
+  ["threads_reversed", "endcap_disabled", "stop_disabled", "barbs_disabled"],
+  ["threads_disabled", "endcap_enabled", "stop_disabled", "barbs_disabled"],
+  ["threads_disabled", "endcap_disabled", "stop_disabled", "barbs_disabled"],
+  ["threads_disabled", "endcap_disabled", "stop_enabled", "barbs_enabled"],
+  ];
+
+connector_measurements = ["outer", "inner"]; 
+ 
+render()
+  for(iRender = [0:len(render_options)-1])
+  for(iConnectorMeasurement = [0:len(connector_measurements)-1])
+  union(){
+    translate([spacer*iConnectorMeasurement, spacer*iRender, 0])
+    HoseConnector(
+        innerStartDiameter = diameter,
+        innerEndDiameter = diameter,
+        connectorMeasurement = connector_measurements[iConnectorMeasurement],
+        length = 40,
+        wallThickness = 2,
+        stopLength = (render_options[iRender][2] == "stop_enabled" ? 5 : 0),
+        stopWidth = 5,
+        stopSymmetrical = false,
+        barbsCount = (render_options[iRender][3] == "barbs_enabled" ? 5 : 0),
+        barbsThickness = 0,
+        barbsSymmetrical = false,
+        endCapDiameter = 5,
+        endCapThickness = (render_options[iRender][1] == "endcap_enabled" ? 5 : 0),
+        endCapGridSize = 0,
+        endCapGridWallThickness = 0,
+        chamferLength = 0,
+        chamferWidth = 0,
+        enableThreads = 
+          render_options[iRender][0] == "threads_enabled" ? "enabled"
+          : render_options[iRender][0] == "threads_reversed" ? "reversed"
+          : "disabled",
+        threadPitch = 0,
+        threadToothAngle = 30,
+        threadToothHeight = 0,
+        help = true
+    );
+  }
+}
+
 module HoseConnector(
     innerStartDiameter,
     innerEndDiameter,
@@ -3786,7 +3831,7 @@ module HoseConnector(
     endCapGridWallThickness = 0,
     chamferLength = 0,
     chamferWidth = 0,
-    enableThreads=false,
+    enableThreads="disabled",
     threadPitch=0,
     threadToothAngle=30,
     threadToothHeight=0,
@@ -3795,7 +3840,7 @@ module HoseConnector(
 {
   assert(is_num(innerEndDiameter) && innerEndDiameter > 0, "innerEndDiameter must be a number greater than 0");
   assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");
-
+  
   _barbsThickness = barbsThickness == 0 ? wallThickness/2 : barbsThickness;
   barbLength = length/(barbsCount*2+1);
 
@@ -3835,7 +3880,7 @@ module HoseConnector(
       }
     }
 
-    if(enableThreads){
+    if(enableThreads != "disabled"){
       if(connectorMeasurement == "outer"){
         ExternalHoseThread(
           diameter = innerStartDiameter+wallThickness,
@@ -3843,7 +3888,8 @@ module HoseConnector(
           height=length,
           pitch=threadPitch,
           tooth_angle=threadToothAngle,
-          tooth_height=threadToothHeight);
+          tooth_height=threadToothHeight,
+          reverse_thread=(enableThreads == "reversed"));
       } else {
        InternalHoseThread(
         diameter = innerStartDiameter,
@@ -3851,7 +3897,8 @@ module HoseConnector(
         height=length,
         pitch=threadPitch,
         tooth_angle=threadToothAngle,
-        tooth_height=threadToothHeight);
+        tooth_height=threadToothHeight,
+        reverse_thread=(enableThreads == "reversed"));
       }
     }
 
@@ -3954,6 +4001,33 @@ module HoseConnector(
 
 
 
+threads_demo = false;
+
+if(threads_demo){
+$fn = 64;
+diameter = 50;
+spacer = diameter*1.5;
+reversed_options = [true, false];
+
+render()
+  for(iReverse = [0:len(reversed_options)-1])
+  union(){
+    translate([0, spacer*iReverse, 0])
+    InternalHoseThread(
+      diameter = diameter,
+      height = 20,
+      reverse_thread = reversed_options[iReverse]
+    );
+
+    translate([spacer, spacer*iReverse, 0])
+    ExternalHoseThread(
+      diameter = diameter,
+      height = 20,
+      reverse_thread = reversed_options[iReverse]
+    );
+  }
+}
+
 // create a internal thread inside a hose (like a nut)
 module InternalHoseThread(
   diameter,
@@ -3964,7 +4038,9 @@ module InternalHoseThread(
   rotation=[0,0,0],
   pitch=0,
   tooth_angle=30,
-  tooth_height=0) {
+  tooth_height=0,
+  reverse_thread = false) {
+  mirror(reverse_thread ? [0,0,0] :[1,0,0])
   ScrewHole(
     outer_diam=diameter,
     height=height,
@@ -3988,10 +4064,12 @@ module ExternalHoseThread(
   tolerance=0.4,
   tip_height=0,
   tooth_height=0,
-  tip_min_fract=0.75) {
+  tip_min_fract=0.75,
+  reverse_thread = false) {
 
   fudgeFactor = 0.01;
 
+  mirror(reverse_thread ? [0,0,0] :[1,0,0])
   translate([0,0,height])
   rotate([0,180,0])
     difference(){
@@ -4021,7 +4099,11 @@ module ExternalHoseThread(
 // https://www.thingiverse.com/thing:1686322
 //
 // v2.1
+threads_demeabled = false;
 
+if(threads_demeabled){
+  Demo();
+}
 
 screw_resolution = 0.2;  // in mm
 
@@ -5653,6 +5735,19 @@ module DysonConnector(
 
 
 
+
+Dw735Connector_demo = false;
+if(Dw735Connector_demo){
+  
+  Dw735Connector(
+    innerEndDiameter = dw735InnerDiameter,
+    length = dw735MinLength,
+    wallThickness = 2,
+    connectorCount = 1,
+    $fn = 128
+  ); 
+}
+
 dw735Version = "1.2";
 dw735MinLength = 17;
 dw735Measurement = "inner";
@@ -5667,7 +5762,7 @@ dw735Settings = ["dw735", [
   ]];
 
 module Dw735Connector(
-  innerEndDiameter ,
+  innerEndDiameter,
   length,
   wallThickness,
   connectorCount = 1
@@ -5734,7 +5829,7 @@ module Dw735Connector(
       }
     }
 
-    Pipe (
+    Pipe(
       diameter1 = clearanceDiameter,
       diameter2 = clearanceDiameter+wallThickness*2,
       length = wallThickness,
@@ -5802,19 +5897,24 @@ module Dw735Connector(
 
 
 
-
-
-
-
-
 //osVAC
 //Female documentation https://www.thingiverse.com/thing:4562762
 //Male documentation https://www.thingiverse.com/thing:4562789
 
-/* Hidden */
-clipCount = 3;
+osvac_demo = false;
+if(osvac_demo && $preview){
+  $fn=64;
 
-osvacmVersion = "0.1";
+  translate([0,-35,0])
+  osVacFemaleConnector();
+  translate([0,35,0])
+  osVacMaleConnector();
+}
+
+/* Hidden */
+lugCount = 3;
+
+osvacmVersion = "0.2";
 osvacmMinLength = 30;
 osvacmMeasurement = "inner";
 osvacmOuterDiameter = 37.8;
@@ -5837,7 +5937,7 @@ osvacmSettings = ["osvacm", [
   [iSettingsVersion, osvacmVersion]
   ]];
 
-osvacfVersion = "0.1";
+osvacfVersion = "0.2";
 osvacfMinLength = 34.10;
 osvacfMeasurement = "inner";
 osvacfOuterDiameter = 47.265;
@@ -5870,26 +5970,125 @@ module osVacFemaleConnector(
   innerDiameter = osvacfInnerDiameter,
   length = osvacfMinLength,
   wallThickness = osvacfWallThickness,
-  help,
-  $fn = 64){
-  innerTaperSize = (osvacfInnerWallDiameter-osvacfInnerDiameter)/2;
+  slotCount = lugCount,
+  help){
+   BayonetSlotConnector(
+    innerDiameter = innerDiameter,
+    innerSubWallDiameter = osvacfInnerWallDiameter,
+    length = length,
+    wallThickness = wallThickness,
+    slotCount = slotCount,
+    finalShaftLength = 5,
+    innerShaftLength = 30.5,
+    slotOffset = 3.7,
+    slotAxialLength = 6.35,
+    slotDepth = 2,
+    lockBumpDepth = 1.6,
+    slotWidth = 10.2,
+    //The distance is base on a f32,
+    //The spec defines it as the ARC Length for 35deg on an F32
+    lockAngle = 35,
+    help);
+}
+
+module osVacMaleConnector(
+  innerDiameter = osvacmInnerDiameter,
+  length = osvacmMinLength,
+  wallThickness = osvacmWallThickness,
+  lugCount = lugCount,
+  help
+){
+  BayonetLugConnector(
+    innerDiameter = innerDiameter,
+    length = length,
+    wallThickness = wallThickness,
+    lugCount = lugCount,
+    hoseEndTaper=0.7,
+    outerLugAxialLength = 6.95,
+    outerLugOffset = 3.2,
+    outerLugRadius = 1,//not right
+    outerLugHeight = 2,
+    outerLugWidth = 9.8,
+    outerLugTopTaperz = 5.8,
+    help);
+}
+//CombinedEnd from path connector_osvac.scad
+//Combined from path module_twist_lock_hose.scad
+
+
+
+
+
+
+
+
+
+
+//generic twistlock hose adapter for osVAC and festool
+
+
+TwistLock_demo = false;
+if(TwistLock_demo && $preview){
+  $fn = 64;
+
+  translate([0,-35,0])
+  BayonetLugConnector();
+  translate([0,35,0])
+  BayonetSlotConnector();
+}
+/*
+Mapping from lug → slot:
+
+Lug parameter	Slot equivalent	Note
+outerLugWidth	slotWidth	Usually outerLugWidth + clearance
+lugLength	slotLength	Usually longer to allow entry/twist travel
+outerLugHeight	slotDepth	Must clear lug radial projection
+outerLugOffset	slotOffset	Matching axial position
+lugCount	slotCount	Same count
+lugStartAngle	slotStartAngle	Usually offset by entry angle
+lockAngle	lockAngle	Same mating rotation
+*/
+
+module BayonetSlotConnector(
+  innerDiameter = 38,
+  length = 44,
+  wallThickness = 5,
+  innerSubWallDiameter = 42,
+  finalShaftLength = 5,
+  innerShaftLength = 30.5,
+  slotCount = 3,                // Number of equally spaced slots.
+  slotWidth = 10.2,             // Circumferential size of the slot (Usually outerLugWidth + clearance).
+  slotOffset = 3.7,             // Distance from connector face to the start (or center) of the slot.
+  slotAxialLength = 6.35,       // Axial size of the lug
+  slotDepth = 2,                // Radial depth of the slot (Must clear lug radial projection)
+  lockAngle = 35,               // Axial size of the lug
+  lockBumpDepth = 1.6,          // Depth of lock bump that creates the lock when twisted
+  help){
+  assert(innerDiameter > 0, "innerDiameter must be positive");
+  assert(innerSubWallDiameter > 0, "innerSubWallDiameter must be positive");
+  assert(innerSubWallDiameter > innerDiameter, "innerSubWallDiameter must be bigger than innerDiameter");
+  assert(length > 0, "length must be positive");
+  assert(wallThickness > 0, "wallThickness must be positive");
+  assert(slotCount > 0, "slotCount must be positive");
+  assert(finalShaftLength > 0, "finalShaftLength must be positive");
+  assert(innerShaftLength > 0, "innerShaftLength must be positive");
+  assert(slotAxialLength > 0, "slotAxialLength must be positive");
+  assert(slotDepth > 0, "slotDepth must be positive");
+  assert(lockBumpDepth > 0, "lockBumpDepth must be positive");
+  assert(slotWidth > 0, "slotWidth must be positive");
+  assert(lockAngle > 0, "lockAngle must be positive");
+  assert(lockBumpDepth < slotDepth, "lockBumpDepth must be smaller than slotDepth");
+  innerTaperSize = (innerSubWallDiameter-innerDiameter)/2;
   innerWallDiameter = innerDiameter + innerTaperSize*2;
   outerDiameter = innerDiameter + wallThickness*2;
-  finalShaftLength = 5;
 
-  innerShaftLength = 30.5;
-  cutoutz = 3.7;
-  cutoutHeight = 6.35;
-  cutoutDepthz = innerShaftLength - cutoutz;
-  cutoutDepthx = 2;
-  cutoutBumpDepthx = 1.6;
-  cutoutRadius = innerWallDiameter/2+cutoutDepthx;
-  cutoutWidth = 10.2;
-  //The distence is base on a f32,
-  //The spec defines it as the ARC Length for 35deg on an F32
-  cutoutArcLength = 35/180*PI*(osvacfInnerWallDiameter/2+cutoutDepthx);
-  cutoutArcAngle = (cutoutArcLength*180)/(PI*(innerWallDiameter/2+cutoutDepthx));
-  echo();
+  cutoutDepthz = innerShaftLength - slotOffset;
+  cutoutRadius = innerWallDiameter/2+slotDepth;
+
+
+  cutoutArcLength = lockAngle/180*PI*(innerSubWallDiameter/2+slotDepth);
+  _lockAngle = (cutoutArcLength*180)/(PI*(innerWallDiameter/2+slotDepth));
+  echo(_lockAngle=_lockAngle, cutoutArcLength=cutoutArcLength);
   difference(){
     //Main outer body
     cylinder(length, d=outerDiameter);
@@ -5908,8 +6107,8 @@ module osVacFemaleConnector(
       //Opening relief
       translate([0,0,-fudgeFactor])
         cylinder(
-          cutoutDepthx/2,
-          d1=innerWallDiameter+cutoutDepthx,
+          slotDepth/2,
+          d1=innerWallDiameter+slotDepth,
           d2=innerWallDiameter
          );
 
@@ -5921,36 +6120,37 @@ module osVacFemaleConnector(
      translate([0,0,-fudgeFactor])
      intersection(){
         cylinder(cutoutDepthz+fudgeFactor, r=cutoutRadius);
-        for(i = [0:360/clipCount:360]){
+        union()
+        for(i = [0:360/slotCount:360]){
           rotate([0,0,i])
           union(){
-          translate([0,-cutoutWidth/2,-fudgeFactor])
+          translate([0,-slotWidth/2,-fudgeFactor])
             roundedCube(
-              size=[cutoutRadius,cutoutWidth,cutoutDepthz],
+              size=[cutoutRadius,slotWidth,cutoutDepthz],
               topRadius = 0,
               bottomRadius = 0,
               sideRadius = 2);
 
-           rotate([0,0,cutoutArcAngle])
-           translate([0,-cutoutWidth/2,cutoutDepthz-cutoutHeight-fudgeFactor])
+           rotate([0,0,lockAngle])
+           translate([0,-slotWidth/2,cutoutDepthz-slotAxialLength-fudgeFactor])
             roundedCube(
-              size=[cutoutRadius,cutoutWidth,cutoutHeight],
+              size=[cutoutRadius,slotWidth,slotAxialLength],
               topRadius = 0,
               bottomRadius = 0,
               sideRadius = 2);
 
             //it creates the bump to produce the lock
-            rotate([0,0,cutoutArcAngle/4])
-            translate([0,0,cutoutDepthz-cutoutHeight-fudgeFactor])
+            rotate([0,0,lockAngle/4])
+            translate([0,0,cutoutDepthz-slotAxialLength-fudgeFactor])
               intersection(){
-                translate([0,0,-cutoutHeight])
-                rotate_extrude(angle=cutoutArcAngle/2)
-                  translate([cutoutRadius-(cutoutDepthx*2),0,0])
-                  square([cutoutDepthx+cutoutBumpDepthx,cutoutHeight*2], center=false);
+                translate([0,0,-slotAxialLength])
+                rotate_extrude(angle=lockAngle/2)
+                  translate([cutoutRadius-(slotDepth*2),0,0])
+                  square([slotDepth+lockBumpDepth,slotAxialLength*2], center=false);
 
-              translate([cutoutRadius,0,cutoutHeight-2])
+              translate([cutoutRadius,0,slotAxialLength-2])
               rotate([45,0,0])
-                cube([10,cutoutHeight*2,cutoutHeight*2], center=true);
+                cube([10,slotAxialLength*2,slotAxialLength*2], center=true);
             }
           }
         }
@@ -5958,7 +6158,7 @@ module osVacFemaleConnector(
     }
   }
 
-  HelpTxt("osVacFemaleConnector",[
+  HelpTxt("BayonetSlotConnector",[
     "innerDiameter", innerDiameter,
     "length", length,
     "wallThickness", wallThickness,
@@ -5967,123 +6167,303 @@ module osVacFemaleConnector(
     "outerDiameter", outerDiameter,
     "finalShaftLength", finalShaftLength,
     "innerShaftLength", innerShaftLength,
-    "cutoutHeight", cutoutHeight,
-    "cutoutz", cutoutz,
+    "slotAxialLength", slotAxialLength,
+    "slotCount", slotCount,
+    "slotOffset", slotOffset,
     "cutoutDepthz", cutoutDepthz,
-    "cutoutDepthx", cutoutDepthx,
+    "slotDepth", slotDepth,
     "cutoutArcLength",cutoutArcLength,
-    "cutoutArcAngle",cutoutArcAngle,
-    "cutoutBumpDepthx", cutoutBumpDepthx,
+    "lockAngle",lockAngle,
+    "lockBumpDepth", lockBumpDepth,
     "cutoutRadius", cutoutRadius,
-    "cutoutWidth", cutoutWidth,
-    "osvacfWallThickness", osvacfWallThickness,
-    "osvacfMinLength", osvacfMinLength,
-    "osvacfInnerDiameter", osvacfInnerDiameter
+    "slotWidth", slotWidth
     ],help);
 }
 
-module osVacMaleConnector(
-  innerDiameter = osvacmInnerDiameter,
-  length = osvacmMinLength,
-  wallThickness = osvacmWallThickness,
-  help,
-  $fn = 64
+module BayonetLugConnector(
+  innerDiameter = 50,
+  length = 100,
+  wallThickness = 5,
+  hoseEndTaper=0.7,
+  lugCount = 3,                 // Number of equally spaced lugs.
+  outerLugEnabled = true,
+  outerLugWidth = 9.8,          // Circumferential size of the lug.
+  outerLugHeight = 2,           // Radial projection from the base surface.
+  outerLugAxialLength = 6.95,   // Axial size of the lug
+  outerLugOffset = 3.2,         // Distance from connector face to the start (or center) of the lug.
+  outerLugRadius = 1,           // not right
+  outerLugTopTaperz = 5.8,
+  innerLugEnabled = true,
+  innerLugWidth = 9.8,          // Circumferential size of the lug.
+  innerLugHeight = 2,           // Radial projection from the base surface.
+  innerLugAxialLength = 6.95,   // Axial size of the lug
+  innerLugOffset = 3.2,         // Distance from connector face to the start (or center) of the lug.
+  innerLugRadius = 1,           // not right
+  innerLugTopTaperz = 5.8,
+  help
 ){
+  assert(innerDiameter > 0, "innerDiameter must be positive");
+  assert(length > 0, "length must be positive");
+  assert(wallThickness > 0, "wallThickness must be positive");
+  assert(hoseEndTaper > 0, "hoseEndTaper must be positive");
+  assert(lugCount > 0, "lugCount must be positive");
+  assert(outerLugAxialLength > 0, "outerLugAxialLength must be positive");
+  assert(outerLugOffset > 0, "outerLugOffset must be positive");
+  assert(outerLugRadius > 0, "outerLugRadius must be positive");
+  assert(outerLugHeight > 0, "outerLugHeight must be positive");
+  assert(outerLugWidth > 0, "outerLugWidth must be positive");
+  assert(outerLugTopTaperz > 0, "outerLugTopTaperz must be positive");
+  assert(innerLugAxialLength > 0, "innerLugAxialLength must be positive");
+  assert(innerLugOffset > 0, "innerLugOffset must be positive");
+  assert(innerLugRadius > 0, "innerLugRadius must be positive");
+  assert(innerLugHeight > 0, "innerLugHeight must be positive");
+  assert(innerLugWidth > 0, "innerLugWidth must be positive");
+  assert(innerLugTopTaperz > 0, "innerLugTopTaperz must be positive");
+
   outerDiameter = innerDiameter+wallThickness*2;
+  lugTopTaperHeight = outerLugAxialLength - outerLugTopTaperz;
 
-  hoseEndTaper=0.7;
-  clipHeight = 6.95;
-  clipz = 3.2;
-  clipr = 1;//not right
-  clipThickness = 2;
-  clipWidth = 9.8;
-  clipTopTaperz = 5.8;
-  clipTopTaperHeight = clipHeight - clipTopTaperz;
+  difference()
+  {
+    //outer cylinder
+    cylinder(length, d=outerDiameter);
 
-  union() {
-    difference ()
-    {
-      //outer cylinder
-      union(){
-        cylinder(length, d=outerDiameter);
+    //Inner cylinder to remove
+    translate([0,0,0-fudgeFactor])
+    cylinder(length+fudgeFactor*2, d=innerDiameter);
 
-        translate([0,0,clipz])
-        difference(){
-          intersection(){
-            roundedCylinder(
-              clipHeight,
-              r=outerDiameter/2+clipThickness,
-              roundedr1=clipr,
-              roundedr2=0);
-            for(i = [0:360/clipCount:360]){
-              rotate([0,0,i])
-              translate([outerDiameter/2-clipThickness,-clipWidth/2,-fudgeFactor])
-                hull(){
-                  roundedCube(
-                    size=[clipThickness,clipWidth,clipHeight],
-                    topRadius = 0,
-                    bottomRadius = 1,
-                    sideRadius = 1);
-                  roundedCube(
-                    size=[clipThickness,clipWidth,clipHeight],
-                    topRadius = 0,
-                    bottomRadius = 1,
-                    sideRadius = 2);
-              }
-            }
-          }
+    //remove bottom inner taper
+    Pipe(
+      diameter1 = innerDiameter-fudgeFactor,
+      diameter2 = innerDiameter-fudgeFactor,
+      length = hoseEndTaper+fudgeFactor,
+      wallThickness1 = hoseEndTaper,
+      wallThickness2 = 0,
+      zPosition = -fudgeFactor);
 
-          Pipe(
-            diameter1 = outerDiameter+clipThickness*2+fudgeFactor,
-            diameter2 = outerDiameter-fudgeFactor*2,
-            length = clipTopTaperHeight,
-            wallThickness1 = 0,
-            wallThickness2 = clipThickness+fudgeFactor,
-            zPosition = clipTopTaperz);
-        }
-      }
-
-      //Inner cylinder to remove
-      translate([0,0,0-fudgeFactor])
-      cylinder(length+fudgeFactor*2, d=innerDiameter);
-
-      Pipe(
-        diameter1 = innerDiameter-fudgeFactor,
-        diameter2 = innerDiameter-fudgeFactor,
-        length = hoseEndTaper+fudgeFactor,
-        wallThickness1 = hoseEndTaper,
-        wallThickness2 = 0,
-        zPosition = -fudgeFactor);
-      Pipe(
-        diameter1 = outerDiameter-hoseEndTaper*2,
-        diameter2 = outerDiameter+hoseEndTaper*2,
-        length = hoseEndTaper+hoseEndTaper,
-        wallThickness1 = hoseEndTaper,
-        wallThickness2 = 0,
-        zPosition = -fudgeFactor);
-    }
+    //remove bottom outer taper
+    Pipe(
+      diameter1 = outerDiameter-hoseEndTaper*2,
+      diameter2 = outerDiameter+hoseEndTaper*2,
+      length = hoseEndTaper+hoseEndTaper,
+      wallThickness1 = hoseEndTaper,
+      wallThickness2 = 0,
+      zPosition = -fudgeFactor);
   }
 
-  HelpTxt("osVacMaleConnector",[
+  if(outerLugEnabled)
+    BayonetOuterLugs( //BayonetOuterLugs_old
+      outerDiameter = outerDiameter,
+      lugCount = lugCount,
+      outerLugWidth = outerLugWidth,
+      outerLugHeight = outerLugHeight,
+      outerLugAxialLength = outerLugAxialLength,
+      outerLugOffset = outerLugOffset,
+      outerLugRadius = outerLugRadius,
+      outerLugTopTaperz = outerLugTopTaperz);
+      
+  if(innerLugEnabled)
+    BayonetInnerLugs(
+      innerDiameter = innerDiameter,
+      lugCount = lugCount,
+      innerLugWidth = innerLugWidth,
+      innerLugHeight = innerLugHeight,
+      innerLugAxialLength = innerLugAxialLength,
+      innerLugOffset = innerLugOffset,
+      innerLugRadius = innerLugRadius,
+      innerLugTopTaperz = innerLugTopTaperz);
+
+  HelpTxt("BayonetLugConnector",[
     "innerDiameter", innerDiameter,
     "length", length,
     "wallThickness", wallThickness,
     "outerDiameter", outerDiameter,
     "hoseEndTaper", hoseEndTaper,
-    "clipz", clipz,
-    "clipr", clipr,
-    "clipThickness", clipThickness,
-    "clipWidth", clipWidth,
-    "clipTopTaperHeight", clipTopTaperHeight,
-    "osvacmWallThickness", osvacmWallThickness,
-    "osvacmMinLength", osvacmMinLength,
-    "osvacmInnerDiameter", osvacmInnerDiameter
-    ],help);
+    "outerLugOffset", outerLugOffset,
+    "outerLugRadius", outerLugRadius,
+    "outerLugHeight", outerLugHeight,
+    "outerLugWidth", outerLugWidth,
+    "outerLugEnabled", outerLugEnabled,
+    "innerLugEnabled", innerLugEnabled,
+    "innerLugOffset", innerLugOffset,
+    "innerLugRadius", innerLugRadius,
+    "innerLugHeight", innerLugHeight,
+    "innerLugWidth", innerLugWidth,
+    "lugTopTaperHeight", lugTopTaperHeight
+    ], help);
+}
+
+module BayonetOuterLugs(
+  outerDiameter,
+  lugCount,
+  outerLugWidth,
+  outerLugHeight,
+  outerLugAxialLength,
+  outerLugOffset,
+  outerLugRadius,
+  outerLugTopTaperz
+){
+  lugTopTaperHeight = outerLugAxialLength - outerLugTopTaperz;
+  lugArcRadius = outerDiameter/2 + outerLugHeight/2;
+  lugAngle = outerLugWidth * 180 / (PI * (lugArcRadius*0.9));
+
+  translate([0,0,outerLugOffset])
+  difference(){
+    union()
+    for(i = [0:360/lugCount:360])
+      rotate([0,0,i])
+        BayonetOuterLugArc(
+          outerDiameter = outerDiameter,
+          outerLugHeight = outerLugHeight,
+          outerLugWidth = outerLugWidth,
+          outerLugAxialLength = outerLugAxialLength,
+          outerLugTopTaperz = outerLugTopTaperz,
+          outerLugRadius = outerLugRadius,
+          lugAngle = lugAngle);
+    
+    Pipe(
+      diameter1 = outerDiameter+outerLugHeight*2+fudgeFactor,
+      diameter2 = outerDiameter-fudgeFactor*2,
+      length = lugTopTaperHeight,
+      wallThickness1 = 0,
+      wallThickness2 = outerLugHeight+fudgeFactor,
+      zPosition = outerLugTopTaperz);
+  }
+}
+
+module BayonetOuterLugArc(
+  outerDiameter,
+  outerLugHeight,
+  outerLugWidth,
+  outerLugAxialLength,
+  outerLugTopTaperz,
+  outerLugRadius,
+  lugAngle
+){
+  baseRadius = outerDiameter/2;
+  lugRadius = min(
+    outerLugRadius,
+    outerLugHeight/2-fudgeFactor,
+    outerLugAxialLength/2-fudgeFactor);
+
+  intersection() {
+    translate([outerDiameter/2-outerLugHeight,-outerLugWidth/2,-fudgeFactor])
+    hull(){
+      roundedCube(
+        size=[outerLugHeight,outerLugWidth,outerLugAxialLength],
+        topRadius = 0,
+        bottomRadius = 1,
+        sideRadius = 1);
+      roundedCube(
+        size=[outerLugHeight,outerLugWidth,outerLugAxialLength],
+        topRadius = 0,
+        bottomRadius = 1,
+        sideRadius = 2);
+    }
+     
+    rotate([0,0,-lugAngle/2])
+    rotate_extrude(angle=lugAngle)
+      translate([baseRadius,0])
+      hull(){
+        translate([lugRadius, lugRadius])
+          circle(r=lugRadius);
+        translate([0, lugRadius])
+          circle(r=lugRadius);
+        translate([lugRadius, outerLugAxialLength])
+          circle(r=lugRadius);
+        translate([0, outerLugAxialLength])
+          circle(r=lugRadius);
+      }
+  }
+}
+
+module BayonetInnerLugs(
+  innerDiameter,
+  lugCount,
+  innerLugWidth,
+  innerLugHeight,
+  innerLugAxialLength,
+  innerLugOffset,
+  innerLugRadius,
+  innerLugTopTaperz
+){
+  lugTopTaperHeight = innerLugAxialLength - innerLugTopTaperz;
+  lugArcRadius = innerDiameter/2 + innerLugHeight/2;
+  lugAngle = innerLugWidth * 180 / (PI * (lugArcRadius*0.9));
+
+  translate([0,0,innerLugOffset])
+  difference(){
+    union()
+    for(i = [0:360/lugCount:360])
+      rotate([0,0,i])
+        BayonetInnerLugArc(
+          innerDiameter = innerDiameter,
+          innerLugHeight = innerLugHeight,
+          innerLugWidth = innerLugWidth,
+          innerLugAxialLength = innerLugAxialLength,
+          innerLugTopTaperz = innerLugTopTaperz,
+          innerLugRadius = innerLugRadius,
+          lugAngle = lugAngle);
+    
+    Pipe(
+      diameter1 = innerDiameter+innerLugHeight*2+fudgeFactor,
+      diameter2 = innerDiameter-fudgeFactor*2,
+      length = lugTopTaperHeight,
+      wallThickness1 = 0,
+      wallThickness2 = innerLugHeight+fudgeFactor,
+      zPosition = innerLugTopTaperz);
+  }
+}
+
+module BayonetInnerLugArc(
+  innerDiameter,
+  innerLugHeight,
+  innerLugWidth,
+  innerLugAxialLength,
+  innerLugTopTaperz,
+  innerLugRadius,
+  lugAngle
+){
+  baseRadius = innerDiameter/2;
+  lugRadius = min(
+    innerLugRadius,
+    innerLugHeight/2-fudgeFactor,
+    innerLugAxialLength/2-fudgeFactor);
+
+  intersection() {
+    translate([innerDiameter/2-innerLugHeight,-innerLugWidth/2,-fudgeFactor])
+    hull(){
+      translate([2,0,0])
+      roundedCube(
+        size=[innerLugHeight,innerLugWidth,innerLugAxialLength],
+        topRadius = 0,
+        bottomRadius = 1,
+        sideRadius = 1);
+      roundedCube(
+        size=[innerLugHeight,innerLugWidth,innerLugAxialLength],
+        topRadius = 0,
+        bottomRadius = 1,
+        sideRadius = 2);
+    }
+     
+    rotate([0,0,-lugAngle/2])
+    rotate_extrude(angle=lugAngle)
+      translate([baseRadius,0])
+      hull(){
+        translate([lugRadius, lugRadius])
+          circle(r=lugRadius);
+        translate([0, lugRadius])
+          circle(r=lugRadius);
+        translate([lugRadius, innerLugAxialLength])
+          circle(r=lugRadius);
+        translate([0, innerLugAxialLength])
+          circle(r=lugRadius);
+      }
+  }
 }
 
 
-
-//CombinedEnd from path connector_osvac.scad
+//CombinedEnd from path module_twist_lock_hose.scad
 //Combined from path connector_makita.scad
 
 

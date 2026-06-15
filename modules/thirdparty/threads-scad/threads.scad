@@ -5,7 +5,11 @@
 // https://www.thingiverse.com/thing:1686322
 //
 // v2.1
+threads_demeabled = false;
 
+if(threads_demeabled){
+  Demo();
+}
 
 screw_resolution = 0.2;  // in mm
 

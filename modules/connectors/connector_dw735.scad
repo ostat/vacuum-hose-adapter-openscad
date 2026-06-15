@@ -1,5 +1,17 @@
 include <../constants.scad>
+include <../modules_pipe.scad>
 
+Dw735Connector_demo = false;
+if(Dw735Connector_demo){
+  
+  Dw735Connector(
+    innerEndDiameter = dw735InnerDiameter,
+    length = dw735MinLength,
+    wallThickness = 2,
+    connectorCount = 1,
+    $fn = 128
+  ); 
+}
 
 dw735Version = "1.2";
 dw735MinLength = 17;
@@ -15,7 +27,7 @@ dw735Settings = ["dw735", [
   ]];
 
 module Dw735Connector(
-  innerEndDiameter ,
+  innerEndDiameter,
   length,
   wallThickness,
   connectorCount = 1
@@ -82,7 +94,7 @@ module Dw735Connector(
       }
     }
 
-    Pipe (
+    Pipe(
       diameter1 = clearanceDiameter,
       diameter2 = clearanceDiameter+wallThickness*2,
       length = wallThickness,
