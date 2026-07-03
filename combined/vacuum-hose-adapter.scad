@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-06-15 23:33
-//Content hash E7F539D549568EB8F120FB7FB16E26CA3E6944836CD6138CE8EBC81958405BEF
+//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-07-04 07:36
+//Content hash 116FE8291464F4F66085146F00B202D4AF0984F4D923801561EBF6F05FAD4B35
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -2437,38 +2437,70 @@ module RoundText(
 debug_pipe = false;
 
 if(debug_pipe ){
-Pipe(
-    diameter1=100,
-    diameter2=70,
-    length=50,
-    wallThickness = 2,
-    Offset = [15,0]);
-    
-translate([0,0,25])
-Stopper(
-    diameter = 100,
-    outer = true,
-    totalLength = 20,
-    taper1 = [10,10],
-    taper2 = [5,5],
-    wallThickness = 10,
-    stopThickness = 20,
-    marker = false);
+  translate([0,-150,0])
+  Pipe(
+      diameter1=100,
+      diameter2=70,
+      length=50,
+      wallThickness = 2);
+
+  translate([0,150,0])
+  Pipe(
+      diameter1=100,
+      diameter2=70,
+      length=50,
+      wallThickness = 2,
+      Offset = [15,0]);
 
 
-translate([0,0,25])
-Stopper(
-    diameter = 100,
-    outer = true,
-    totalLength = 20,
-    taper1 = 0.33,
-    taper2 = 0.33,
-    wallThickness = 10,
-    stopThickness = 20,
-    marker = false);
+  translate([0,250,0])
+  Pipe(
+      diameter1=50,
+      diameter2=50,
+      length=50,
+      wallThickness = 2,
+      chamfer1 = [0.5,0.5],
+      chamfer2 = [1,1]);
 
 
+  translate([0,0,75])
+  Stopper(
+      diameter = 100,
+      outer = true,
+      totalLength = 20,
+      taper1 = [10,10],
+      taper2 = [5,5],
+      wallThickness = 10,
+      stopThickness = 20,
+      marker = false);
+
+
+  translate([0,0,150])
+  Stopper(
+      diameter = 100,
+      outer = true,
+      totalLength = 20,
+      taper1 = 0.33,
+      taper2 = 0.33,
+      wallThickness = 10,
+      stopThickness = 20,
+      marker = false);
 }
+
+// Builds a hollow pipe segment with optional taper, offset axis, and end chamfers.
+// Parameters:
+// diameter: Optional single inner diameter override for both ends.
+// diameter1: Inner diameter at the start of the pipe.
+// diameter2: Inner diameter at the end of the pipe.
+// length: Pipe length along Z.
+// wallThickness: Optional single wall thickness override for both ends.
+// wallThickness1: Wall thickness at the start.
+// wallThickness2: Wall thickness at the end.
+// zPosition: Z offset for placing the pipe.
+// Offset: XY offset vector [x, y] applied to the end profile.
+// chamfer: Optional single chamfer value/vector applied to both ends.
+// chamfer1: Start-end chamfer [inner, outer].
+// chamfer2: End-end chamfer [inner, outer].
 module Pipe(
     diameter,
     diameter1,
@@ -2478,12 +2510,20 @@ module Pipe(
     wallThickness1,
     wallThickness2,
     zPosition = 0,
-    Offset = [0,0])
+    Offset = [0,0],
+    chamfer,
+    chamfer1 = [0,0],
+    chamfer2 = [0,0])
 {
   diameter1 = is_undef(diameter) ? diameter1 : diameter;
   diameter2 = is_undef(diameter) ? diameter2 : diameter;
   wallThickness1 = is_undef(wallThickness) ? wallThickness1 : wallThickness;
   wallThickness2 = is_undef(wallThickness) ? wallThickness2 : wallThickness;
+
+  chamfer1 = let(c = is_undef(chamfer) ? chamfer1 : chamfer)
+             is_num(c) ? [c,c] : c;
+  chamfer2 = let(c = is_undef(chamfer) ? chamfer2 : chamfer)
+             is_num(c) ? [c,c] : c;
 
   //todo, add correction to ensure that the thickness of the walls never reduce to less than wallThickness1 and wallThickness2
   //using wallThickness/2 is a sloppy approximation, really need to use trig to would out the correct value
@@ -2551,9 +2591,59 @@ module Pipe(
       translate([Offset.x,Offset.y,length-fudgeFactor])
         cylinder(fudgeFactor*2, d=diameter2);
     }
+
+    echo(chamfer1=chamfer1, chamfer2=chamfer2);
+
+    if(!is_undef(chamfer1) && chamfer1[0] > 0)
+      //remove bottom inner taper
+      Pipe(
+        diameter1 = diameter1-fudgeFactor,
+        diameter2 = diameter1-fudgeFactor,
+        length = chamfer1[0]+fudgeFactor,
+        wallThickness1 = chamfer1[0],
+        wallThickness2 = 0,
+        zPosition = -fudgeFactor);
+
+      //remove bottom outer taper
+      if(!is_undef(chamfer1) && chamfer1[1] > 0)
+        Pipe(
+          diameter1 = diameter1+wallThickness1*2-chamfer1[1]*2+fudgeFactor,
+          diameter2 = diameter1+wallThickness1*2+fudgeFactor,
+          length = chamfer1[1],
+          wallThickness1 = chamfer1[1],
+          wallThickness2 = 0,
+          zPosition = -fudgeFactor);
+
+    if(!is_undef(chamfer2) && chamfer2[0] > 0)
+      //remove top inner taper
+      translate([Offset.x,Offset.y,length-chamfer2[0]+fudgeFactor])
+      Pipe(
+        diameter1 = diameter2-fudgeFactor,
+        diameter2 = diameter2-fudgeFactor,
+        length = chamfer2[0]+fudgeFactor,
+        wallThickness1 = 0,
+        wallThickness2 = chamfer2[0],
+        zPosition = -fudgeFactor);
+
+      //remove bottom outer taper
+      if(!is_undef(chamfer2) && chamfer2[1] > 0)
+        translate([Offset.x,Offset.y,length-chamfer2[1]+fudgeFactor*2])
+        Pipe(
+          diameter1 = diameter2+wallThickness2*2+fudgeFactor,
+          diameter2 = diameter2+wallThickness2*2-chamfer2[1]*2+fudgeFactor,
+          length = chamfer2[1],
+          wallThickness1 = 0,
+          wallThickness2 = chamfer2[1],
+          zPosition = -fudgeFactor);
   }
 }
 
+// Convenience wrapper for a constant-diameter, constant-wall pipe section.
+// Parameters:
+// diameter: Inner diameter at both ends.
+// length: Pipe length along Z.
+// wallThickness: Uniform wall thickness.
+// zPosition: Z offset for placing the pipe.
 module StraightPipe(
   diameter,
   length,
@@ -2569,6 +2659,13 @@ module StraightPipe(
         zPosition = zPosition);
 }
 
+// Creates a straight inner diameter with wall thickness transitioning along the length.
+// Parameters:
+// diameter: Inner diameter at both ends.
+// length: Pipe length along Z.
+// wallThickness1: Wall thickness at the start.
+// wallThickness2: Wall thickness at the end.
+// zPosition: Z offset for placing the pipe.
 module HalfConePipe(diameter, length, wallThickness1, wallThickness2, zPosition)
 {
     Pipe (
@@ -2580,6 +2677,13 @@ module HalfConePipe(diameter, length, wallThickness1, wallThickness2, zPosition)
         zPosition = zPosition);
 }
 
+// Generates a tapered ring around a center diameter by subtracting inner from outer cones.
+// Parameters:
+// centerDiameter: Mean diameter used to build outer and inner tapers.
+// length: Ring length along Z.
+// wallThickness1: Radial wall thickness at the start.
+// wallThickness2: Radial wall thickness at the end.
+// zPosition: Z offset for placing the ring.
 module ConeRing(centerDiameter, length, wallThickness1, wallThickness2, zPosition)
 {
     difference ()
@@ -2600,6 +2704,24 @@ module ConeRing(centerDiameter, length, wallThickness1, wallThickness2, zPositio
     }
 }
 
+// Creates a multi-end bent junction body by hulling outer/inner pipe endpoints.
+// Parameters:
+// inner1PipeRadius: Inner radius of the primary (end1) port.
+// inner2PipeRadius: Inner radius of repeated side (end2) ports.
+// inner3PipeRadius: Inner radius of optional center (end3) port.
+// end1WallThickness: Wall thickness at the primary port.
+// end2WallThickness: Wall thickness at side ports.
+// end3WallThickness: Wall thickness at optional center port.
+// pipeAngle: Tilt angle for side ports.
+// zPosition: Reserved Z placement parameter.
+// end2Count: Number of repeated side ports.
+// end2Angle: Per-port rotation angle; defaults to 360/end2Count.
+// lengthInHull: Length included in the hull blend region.
+// lengthOutHull: Extra length added beyond hull on side ports.
+// lengthOutHullCenter: Extra length for the optional center port.
+// edgeOffset: Lateral offset of side ports from the primary centerline.
+// addCenter: Enables/disables the optional center port.
+// centerHeight: Z position of the optional center port.
 module BentPipeHull(
     inner1PipeRadius,
     inner2PipeRadius,
@@ -2741,6 +2863,20 @@ module BentPipeHull(
   }
 }
 
+// Creates a constant-diameter elbow with optional printable support base.
+// Parameters:
+// bendRadius: Centerline bend radius.
+// innerPipeDiameter: Inner diameter of the elbow.
+// wallThickness: Uniform wall thickness.
+// pipeAngle: Sweep angle of the elbow.
+// zPosition: Z offset for placing the elbow.
+// baseType: Support base style: "none", "rectangle", or "oval".
+// baseWidth: Optional base width override.
+// baseLength: Optional base length override.
+// baseThickness: Extra base thickness added under the pipe.
+// baseAngle: Rotation angle for the base; defaults to half pipeAngle.
+// end2Count: Number of repeated elbows around 360 degrees.
+// end2Angle: Reserved branch spacing parameter.
 module BentPipe(
     bendRadius,
     innerPipeDiameter,
@@ -2820,6 +2956,21 @@ module BentPipe(
   }
 }
 
+// Creates a bent pipe that transitions between different end diameters and wall thicknesses.
+// Parameters:
+// bendRadius: Centerline bend radius.
+// end1InnerPipeDiameter: Inner diameter at the start of the bend.
+// end2InnerPipeDiameter: Inner diameter at the end of the bend.
+// end1WallThickness: Wall thickness at the start.
+// end2WallThickness: Wall thickness at the end.
+// pipeAngle: Sweep angle of the bend.
+// zPosition: Z offset for placing the part.
+// baseType: Support base style: "none", "rectangle", or "oval".
+// baseWidth: Optional base width override.
+// baseLength: Optional base length override.
+// baseThickness: Extra base thickness added under the pipe.
+// baseAngle: Rotation angle for the base; defaults to half pipeAngle.
+// end2Count: Number of repeated bends around 360 degrees.
 module TaperedBentPipe(
     bendRadius,
     end1InnerPipeDiameter,
@@ -2913,7 +3064,19 @@ module TaperedBentPipe(
     }
   }
 
-//TODO This seems slow, esp when used for barbs
+// TODO This seems slow, especially when used for barbs.
+// Creates a retention stopper ring with optional top/bottom tapers and marker.
+// Parameters:
+// diameter: Inner diameter if outer=true, otherwise the outer target reference.
+// outer: True for external stopper geometry, false for internal-fit geometry.
+// totalLength: Overall axial stopper length.
+// taper1: Bottom taper as ratio (0..1) or [width, length].
+// taper2: Top taper as ratio (0..1) or [width, length].
+// wallThickness: Base wall thickness under the stopper feature.
+// stopThickness: Radial thickness of the stopper lip.
+// zPosition: Z offset for placing the stopper.
+// marker: Adds a spherical orientation marker when true.
+// help: Reserved/unused placeholder parameter.
 module Stopper(
     diameter,
     outer = true,
