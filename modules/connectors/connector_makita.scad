@@ -74,7 +74,7 @@ module MakitaMaleConnector(
     cylinder(d=lowerInnerLipDiameter, h=lowerInnerLipLength);
 
     //subtract the ring lock
-    Pipe (
+    pipe(
       diameter = makitaRingClipRadius,
       length = makitaRingClipHeight,
       wallThickness = makitaWallThickness,

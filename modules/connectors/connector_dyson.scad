@@ -54,7 +54,7 @@ module DysonConnector(
       union() {
         difference() {
         //Main pipe
-        Pipe (
+        pipe(
           diameter1 = innerEndDiameter,
           diameter2 = innerEndDiameter,
           length = length,

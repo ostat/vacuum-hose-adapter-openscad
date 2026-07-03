@@ -76,7 +76,7 @@ module CamlockConnector(
       circle(camlockRingClipRadius);
   }
 
-  /*Pipe (
+  /*pipe(
     diameter1 = innerDiameter,
     diameter2 = innerEndDiameter,
     length = length - camlockHeight,

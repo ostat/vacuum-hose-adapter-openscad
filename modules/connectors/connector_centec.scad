@@ -64,7 +64,7 @@ module CenTecMaleConnector($fn = 64){
 
   union(){
   difference(){
-    Pipe(
+    pipe(
       diameter = connectorInnerRadius*2,
       length = connectorLength,
       wallThickness=wallThickness);
@@ -74,12 +74,12 @@ module CenTecMaleConnector($fn = 64){
       innerEndDiameter = connectorInnerRadius*2,
       length = connectorLength,
       wallThickness = wallThickness);*/
-    Pipe(
+    pipe(
       diameter = startLipDiameter,
       length = startLipLength,
       wallThickness=startLipWidthDepth,
       zPosition = -fudgeFactor);
-    Pipe(
+    pipe(
       diameter = clickDiameter,
       length = clickLength,
       wallThickness=clickWallThicknessDepth,

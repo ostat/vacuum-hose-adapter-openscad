@@ -3,14 +3,14 @@ include <../modules_pipe.scad>
 
 Dw735Connector_demo = false;
 if(Dw735Connector_demo){
-  
+
   Dw735Connector(
     innerEndDiameter = dw735InnerDiameter,
     length = dw735MinLength,
     wallThickness = 2,
     connectorCount = 1,
     $fn = 128
-  ); 
+  );
 }
 
 dw735Version = "1.2";
@@ -56,14 +56,14 @@ module Dw735Connector(
   difference(){
     union(){
       //Main body
-      StraightPipe (
+      pipe (
         diameter = innerEndDiameter,
         length = length,
         wallThickness = wallThickness);
 
       // Slot support
       intersection(){
-        StraightPipe (
+        pipe (
           diameter = innerEndDiameter+wallThickness*2,
           length = length,
           wallThickness = fixedPinLength - 1.5);
@@ -94,7 +94,7 @@ module Dw735Connector(
       }
     }
 
-    Pipe(
+    pipe(
       diameter1 = clearanceDiameter,
       diameter2 = clearanceDiameter+wallThickness*2,
       length = wallThickness,
@@ -102,7 +102,7 @@ module Dw735Connector(
       wallThickness2 = 0,
       zPosition = clearanceHeight-fudgeFactor);
 
-     StraightPipe (
+     pipe (
         diameter = clearanceDiameter,
         length = clearanceHeight+fudgeFactor,
         wallThickness = wallThickness,
@@ -121,7 +121,7 @@ module Dw735Connector(
 
     // slot cutout
     intersection(){
-      StraightPipe (
+      pipe (
         diameter = innerEndDiameter-fudgeFactor,
         length = length+fudgeFactor*2,
         wallThickness = fixedPinLength,

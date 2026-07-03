@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'funnels.scad'. Generated 2026-07-04 07:36
-//Content hash 78D12CC336FC83A67162FF80F2F384691C3EB320D5D8CFB0541E021FAAC0D67F
+//Combined version of 'funnels.scad'. Generated 2026-07-04 08:43
+//Content hash 9ED4943A0464407BC31A91970679467BFF0B0F80EAC1BD70D44C10C244879105
 ///////////////////////////////////////
 // funnel
 // version 2026-02-27
@@ -614,7 +614,7 @@ module transition(
         transDiameter = min(connector1InnerEndDiameter,  connector2InnerStartDiameter);
         transThickness = abs(connector1InnerEndDiameter - connector2InnerStartDiameter)/2 + max(connector1WallThickness,connector2WallThickness);
         color(transitionColor[0], transitionColor[1])
-        StraightPipe(
+        pipe(
             diameter = transDiameter,
             length = length,
             wallThickness = transThickness);
@@ -689,7 +689,7 @@ module transition(
           translate([-bendRadius, 0, 0])
             rotate([0, -angle, 0])
             translate([bendRadius, 0, 0])
-              Pipe(
+              pipe_with_offset(
                 diameter1 = connector1InnerEndDiameter,
                 diameter2 = connector2InnerStartDiameter,
                 length = length,
@@ -703,7 +703,7 @@ module transition(
         //Tapered section position to the end of the bent pipe
         //color("SpringGreen")
         color(transitionColor[0], transitionColor[1])
-        Pipe(
+        pipe_with_offset(
           diameter1 = connector1InnerEndDiameter,
           diameter2 = connector2InnerStartDiameter,
           length = length,
@@ -2110,16 +2110,62 @@ module RoundText(
 
 debug_pipe = false;
 
-if(debug_pipe ){
+if(debug_pipe){
+
+  difference(){
+    radius = 25;
+    height = 10;
+    thickness = 10;
+
+    union(){
+      pipe(
+          diameter1 = 100,
+          diameter2 = 40,
+          length = 20,
+          wallThickness = 2);
+      translate([0,0,30])
+      pipe(
+          diameter1 = 40,
+          diameter2 = 100,
+          length = 20,
+          wallThickness = 2);
+      translate([0,0,60])
+      pipe(
+          diameter1 = 20,
+          diameter2 = 100,
+          length = 10,
+          wallThickness = 2);
+      translate([100,0,0])
+      pipe(
+          diameter1 = radius*2,
+          diameter2 = radius*2-thickness*2,
+          length = height+fudgeFactor*2,
+          wallThickness1 = fudgeFactor,
+          wallThickness2 = thickness+fudgeFactor);
+
+      translate([100,0,25])
+      pipe(
+          diameter1 = 28.5,
+          diameter2 = 30.1,
+          length =0.8,
+          wallThickness1 = 2.8,
+          wallThickness2 = 2);
+    }
+
+    translate([-200,0,-10])
+    cube([400,100,100]);
+  }
+
+
   translate([0,-150,0])
-  Pipe(
+  pipe_demo_helper(
       diameter1=100,
       diameter2=70,
       length=50,
       wallThickness = 2);
 
   translate([0,150,0])
-  Pipe(
+  pipe_demo_helper(
       diameter1=100,
       diameter2=70,
       length=50,
@@ -2127,15 +2173,29 @@ if(debug_pipe ){
       Offset = [15,0]);
 
 
-  translate([0,250,0])
-  Pipe(
-      diameter1=50,
-      diameter2=50,
+  wallthicknessess = [10, 1];
+  for(iwallthickness = [0,len(wallthicknessess)-1])
+  translate([iwallthickness*75,250,0])
+  pipe_demo_helper(
+      diameter=25,
       length=50,
-      wallThickness = 2,
+      wallThickness1 = 10,
+      wallThickness2 = wallthicknessess[iwallthickness],
       chamfer1 = [0.5,0.5],
       chamfer2 = [1,1]);
 
+  centerSmallerWalls = [true, false];
+  for(icenterSmallerWall = [0,len(centerSmallerWalls)-1])
+  //translate([icenterSmallerWall*75,350,0])
+  translate([0,350,0])
+  pipe_demo_helper(
+      diameter=25,
+      length=50,
+      wallThickness1 = 10,
+      wallThickness2 = 1,
+      chamfer1 = [0.5,0.5],
+      chamfer2 = [1,1],
+      centerSmallerWall = centerSmallerWalls[icenterSmallerWall]);
 
   translate([0,0,75])
   Stopper(
@@ -2148,7 +2208,6 @@ if(debug_pipe ){
       stopThickness = 20,
       marker = false);
 
-
   translate([0,0,150])
   Stopper(
       diameter = 100,
@@ -2159,6 +2218,52 @@ if(debug_pipe ){
       wallThickness = 10,
       stopThickness = 20,
       marker = false);
+}
+
+module pipe_demo_helper(
+    diameter,
+    diameter1,
+    diameter2,
+    length,
+    wallThickness,
+    wallThickness1,
+    wallThickness2,
+    zPosition = 0,
+    Offset = [0,0],
+    chamfer,
+    chamfer1 = [0,0],
+    chamfer2 = [0,0],
+    centerSmallerWall = false)
+{
+ pipe(
+    diameter = diameter,
+    diameter1 = diameter1,
+    diameter2 = diameter2,
+    length = length,
+    wallThickness = wallThickness,
+    wallThickness1 = wallThickness1,
+    wallThickness2 = wallThickness2,
+    zPosition = zPosition,
+    chamfer = chamfer,
+    chamfer1 = chamfer1,
+    chamfer2 = chamfer2,
+    centerSmallerWall = centerSmallerWall);
+
+ translate([0,-50,0])
+ pipe_with_offset(
+    diameter = diameter,
+    diameter1 = diameter1,
+    diameter2 = diameter2,
+    length = length,
+    wallThickness = wallThickness,
+    wallThickness1 = wallThickness1,
+    wallThickness2 = wallThickness2,
+    zPosition = zPosition,
+    Offset = Offset,
+    chamfer = chamfer,
+    chamfer1 = chamfer1,
+    chamfer2 = chamfer2,
+    centerSmallerWall = centerSmallerWall);
 }
 
 // Builds a hollow pipe segment with optional taper, offset axis, and end chamfers.
@@ -2175,7 +2280,8 @@ if(debug_pipe ){
 // chamfer: Optional single chamfer value/vector applied to both ends.
 // chamfer1: Start-end chamfer [inner, outer].
 // chamfer2: End-end chamfer [inner, outer].
-module Pipe(
+// centerSmallerWall: When true, increases the thinner-wall end inner diameter by half wall delta.
+module pipe_with_offset(
     diameter,
     diameter1,
     diameter2,
@@ -2187,17 +2293,50 @@ module Pipe(
     Offset = [0,0],
     chamfer,
     chamfer1 = [0,0],
-    chamfer2 = [0,0])
+    chamfer2 = [0,0],
+    centerSmallerWall = false)
 {
-  diameter1 = is_undef(diameter) ? diameter1 : diameter;
-  diameter2 = is_undef(diameter) ? diameter2 : diameter;
   wallThickness1 = is_undef(wallThickness) ? wallThickness1 : wallThickness;
   wallThickness2 = is_undef(wallThickness) ? wallThickness2 : wallThickness;
+
+  wallThicknessDelta = abs(wallThickness1 - wallThickness2) / 2;
+
+
+  diameter1 = let (diam = is_undef(diameter) ? diameter1 : diameter)
+              centerSmallerWall && wallThickness1 < wallThickness2 ? diam + wallThicknessDelta : diam;
+
+  diameter2 = let (diam = is_undef(diameter) ? diameter2 : diameter)
+              centerSmallerWall && wallThickness2 < wallThickness1 ? diam + wallThicknessDelta : diam;
 
   chamfer1 = let(c = is_undef(chamfer) ? chamfer1 : chamfer)
              is_num(c) ? [c,c] : c;
   chamfer2 = let(c = is_undef(chamfer) ? chamfer2 : chamfer)
              is_num(c) ? [c,c] : c;
+
+  innerChamferStart = !is_undef(chamfer1) ? max(0, chamfer1[0]) : 0;
+  outerChamferStart = !is_undef(chamfer1) ? max(0, chamfer1[1]) : 0;
+  innerChamferEnd = !is_undef(chamfer2) ? max(0, chamfer2[0]) : 0;
+  outerChamferEnd = !is_undef(chamfer2) ? max(0, chamfer2[1]) : 0;
+
+  // Keep chamfers valid on tapered/thin ends: inner + outer cannot exceed local wall.
+  startChamferBudget = max(0, wallThickness1 - fudgeFactor);
+  endChamferBudget = max(0, wallThickness2 - fudgeFactor);
+
+  startChamferSum = innerChamferStart + outerChamferStart;
+  endChamferSum = innerChamferEnd + outerChamferEnd;
+
+  startChamferScale = startChamferSum > 0 && startChamferSum > startChamferBudget ? startChamferBudget / startChamferSum : 1;
+  endChamferScale = endChamferSum > 0 && endChamferSum > endChamferBudget ? endChamferBudget / endChamferSum : 1;
+
+  innerChamferStartEff = innerChamferStart * startChamferScale;
+  outerChamferStartEff = outerChamferStart * startChamferScale;
+  innerChamferEndEff = innerChamferEnd * endChamferScale;
+  outerChamferEndEff = outerChamferEnd * endChamferScale;
+
+  outerDiameter1 = diameter1 + wallThickness1*2;
+  outerDiameter2 = diameter2 + wallThickness2*2;
+  // When OD reduces toward end2, enlarge the end chamfer cut to match taper slope.
+  outerEndTaperComp = outerChamferEndEff * max(0, outerDiameter1 - outerDiameter2) / max(length, fudgeFactor);
 
   //todo, add correction to ensure that the thickness of the walls never reduce to less than wallThickness1 and wallThickness2
   //using wallThickness/2 is a sloppy approximation, really need to use trig to would out the correct value
@@ -2268,69 +2407,140 @@ module Pipe(
 
     echo(chamfer1=chamfer1, chamfer2=chamfer2);
 
-    if(!is_undef(chamfer1) && chamfer1[0] > 0)
+    if(innerChamferStartEff > 0)
       //remove bottom inner taper
-      Pipe(
+      pipe(
         diameter1 = diameter1-fudgeFactor,
         diameter2 = diameter1-fudgeFactor,
-        length = chamfer1[0]+fudgeFactor,
-        wallThickness1 = chamfer1[0],
+        length = innerChamferStartEff+fudgeFactor,
+        wallThickness1 = innerChamferStartEff,
         wallThickness2 = 0,
         zPosition = -fudgeFactor);
 
       //remove bottom outer taper
-      if(!is_undef(chamfer1) && chamfer1[1] > 0)
-        Pipe(
-          diameter1 = diameter1+wallThickness1*2-chamfer1[1]*2+fudgeFactor,
+      if(outerChamferStartEff > 0)
+        pipe(
+          diameter1 = diameter1+wallThickness1*2-outerChamferStartEff*2+fudgeFactor,
           diameter2 = diameter1+wallThickness1*2+fudgeFactor,
-          length = chamfer1[1],
-          wallThickness1 = chamfer1[1],
+          length = outerChamferStartEff,
+          wallThickness1 = outerChamferStartEff,
           wallThickness2 = 0,
           zPosition = -fudgeFactor);
 
-    if(!is_undef(chamfer2) && chamfer2[0] > 0)
+    if(innerChamferEndEff > 0)
       //remove top inner taper
-      translate([Offset.x,Offset.y,length-chamfer2[0]+fudgeFactor])
-      Pipe(
+      translate([Offset.x,Offset.y,length-innerChamferEndEff+fudgeFactor])
+      pipe(
         diameter1 = diameter2-fudgeFactor,
         diameter2 = diameter2-fudgeFactor,
-        length = chamfer2[0]+fudgeFactor,
+        length = innerChamferEndEff+fudgeFactor,
         wallThickness1 = 0,
-        wallThickness2 = chamfer2[0],
+        wallThickness2 = innerChamferEndEff,
         zPosition = -fudgeFactor);
 
       //remove bottom outer taper
-      if(!is_undef(chamfer2) && chamfer2[1] > 0)
-        translate([Offset.x,Offset.y,length-chamfer2[1]+fudgeFactor*2])
-        Pipe(
-          diameter1 = diameter2+wallThickness2*2+fudgeFactor,
-          diameter2 = diameter2+wallThickness2*2-chamfer2[1]*2+fudgeFactor,
-          length = chamfer2[1],
+      if(outerChamferEndEff > 0)
+        translate([Offset.x,Offset.y,length-outerChamferEndEff+fudgeFactor])
+        pipe(
+          diameter1 = outerDiameter2 + outerEndTaperComp + fudgeFactor,
+          diameter2 = diameter2+wallThickness2*2-outerChamferEndEff*2+fudgeFactor,
+          length = outerChamferEndEff+fudgeFactor,
           wallThickness1 = 0,
-          wallThickness2 = chamfer2[1],
+          wallThickness2 = outerChamferEndEff,
           zPosition = -fudgeFactor);
   }
 }
 
-// Convenience wrapper for a constant-diameter, constant-wall pipe section.
+// Basic revolve-based pipe without endpoint XY offset support.
 // Parameters:
-// diameter: Inner diameter at both ends.
+// diameter: Optional single inner diameter override for both ends.
+// diameter1: Inner diameter at the start of the pipe.
+// diameter2: Inner diameter at the end of the pipe.
 // length: Pipe length along Z.
-// wallThickness: Uniform wall thickness.
+// wallThickness: Optional single wall thickness override for both ends.
+// wallThickness1: Wall thickness at the start.
+// wallThickness2: Wall thickness at the end.
 // zPosition: Z offset for placing the pipe.
-module StraightPipe(
-  diameter,
-  length,
-  wallThickness,
-  zPosition = 0)
+// chamfer: Optional single chamfer value/vector applied to both ends.
+// chamfer1: Start-end chamfer [inner, outer].
+// chamfer2: End-end chamfer [inner, outer].
+// centerSmallerWall: When true, increases the thinner-wall end inner diameter by half wall delta.
+module pipe(
+    diameter,
+    diameter1,
+    diameter2,
+    length,
+    wallThickness,
+    wallThickness1,
+    wallThickness2,
+    zPosition = 0,
+    chamfer,
+    chamfer1 = [0,0],
+    chamfer2 = [0,0],
+    centerSmallerWall = false)
 {
-    Pipe (
-        diameter1 = diameter,
-        diameter2 = diameter,
-        length = length,
-        wallThickness1 = wallThickness,
-        wallThickness2 = wallThickness,
-        zPosition = zPosition);
+  wallThickness1 = is_undef(wallThickness) ? wallThickness1 : wallThickness;
+  wallThickness2 = is_undef(wallThickness) ? wallThickness2 : wallThickness;
+
+  wallThicknessDelta = abs(wallThickness1 - wallThickness2) / 2;
+
+  diameter1 = let (diam = is_undef(diameter) ? diameter1 : diameter)
+              centerSmallerWall && wallThickness1 < wallThickness2 ? diam + wallThicknessDelta : diam;
+
+  diameter2 = let (diam = is_undef(diameter) ? diameter2 : diameter)
+              centerSmallerWall && wallThickness2 < wallThickness1 ? diam + wallThicknessDelta : diam;
+
+  chamfer1 = let(c = is_undef(chamfer) ? chamfer1 : chamfer)
+             is_num(c) ? [c,c] : c;
+  chamfer2 = let(c = is_undef(chamfer) ? chamfer2 : chamfer)
+             is_num(c) ? [c,c] : c;
+
+  innerRadius1 = diameter1 / 2;
+  innerRadius2 = diameter2 / 2;
+  outerRadius1 = innerRadius1 + wallThickness1;
+  outerRadius2 = innerRadius2 + wallThickness2;
+
+  innerChamferStart = !is_undef(chamfer1) ? max(0, chamfer1[0]) : 0;
+  outerChamferStart = !is_undef(chamfer1) ? max(0, chamfer1[1]) : 0;
+  innerChamferEnd = !is_undef(chamfer2) ? max(0, chamfer2[0]) : 0;
+  outerChamferEnd = !is_undef(chamfer2) ? max(0, chamfer2[1]) : 0;
+
+  // Keep chamfers valid on tapered/thin ends: inner + outer cannot exceed local wall.
+  startChamferBudget = max(0, wallThickness1 - fudgeFactor);
+  endChamferBudget = max(0, wallThickness2 - fudgeFactor);
+
+  startChamferSum = innerChamferStart + outerChamferStart;
+  endChamferSum = innerChamferEnd + outerChamferEnd;
+
+  startChamferScale = startChamferSum > 0 && startChamferSum > startChamferBudget ? startChamferBudget / startChamferSum : 1;
+  endChamferScale = endChamferSum > 0 && endChamferSum > endChamferBudget ? endChamferBudget / endChamferSum : 1;
+
+  innerChamferStartEff = innerChamferStart * startChamferScale;
+  outerChamferStartEff = outerChamferStart * startChamferScale;
+  innerChamferEndEff = innerChamferEnd * endChamferScale;
+  outerChamferEndEff = outerChamferEnd * endChamferScale;
+
+  startInnerZ = min(length, innerChamferStartEff);
+  startOuterZ = min(length, outerChamferStartEff);
+  endInnerZ = max(0, length - min(length, innerChamferEndEff));
+  endOuterZ = max(0, length - min(length, outerChamferEndEff));
+
+  assert(length > 0, "length must be greater than 0");
+  assert(innerRadius1 > 0 && innerRadius2 > 0, "Inner diameters must be greater than 0");
+  assert(wallThickness1 >= 0 && wallThickness2 >= 0, str("Wall thicknesses must be greater than 0 wallThickness1:", wallThickness1, " wallThickness2:", wallThickness2));
+
+  translate([0,0,zPosition])
+  rotate_extrude(convexity = 10)
+    polygon(points = [
+      [max(fudgeFactor, outerRadius1 - outerChamferStartEff), 0],    // 1) Outer start edge at z=0 (after optional start outer chamfer).
+      [outerRadius1, startOuterZ],                                // 2) Outer start wall at chamfer end.
+      [outerRadius2, endOuterZ],                                  // 3) Outer end wall just before end chamfer.
+      [max(fudgeFactor, outerRadius2 - outerChamferEndEff), length], // 4) Outer end edge at z=length (after optional end outer chamfer).
+      [innerRadius2 + innerChamferEndEff, length],                   // 5) Inner end edge at z=length (after optional end inner chamfer).
+      [innerRadius2, endInnerZ],                                  // 6) Inner end wall just before end chamfer.
+      [innerRadius1, startInnerZ],                                // 7) Inner start wall at chamfer end.
+      [innerRadius1 + innerChamferStartEff, 0]                       // 8) Inner start edge at z=0 (after optional start inner chamfer).
+    ]);
 }
 
 // Creates a straight inner diameter with wall thickness transitioning along the length.
@@ -2342,7 +2552,7 @@ module StraightPipe(
 // zPosition: Z offset for placing the pipe.
 module HalfConePipe(diameter, length, wallThickness1, wallThickness2, zPosition)
 {
-    Pipe (
+    pipe(
         diameter1 = diameter,
         diameter2 = diameter,
         length = length,
@@ -2789,7 +2999,7 @@ module Stopper(
     intersection()
     {
       flat = totalLength - taperLength1 - taperLength2;
-      StraightPipe (
+      pipe (
         diameter = outer ? diameter : diameter-stopThickness*2,
         length = totalLength,
         wallThickness = wallThickness + stopThickness);
@@ -2803,7 +3013,7 @@ module Stopper(
           //width1 = length1 * stopThickness / taperLength1;
           diameterStart1 = _diameter;
           diameterEnd1 = outer ? _diameter :_diameter - taperWidth1*2;
-          Pipe (
+          pipe(
             diameter1 = diameterStart1,
             diameter2 = diameterEnd1,
             length = length1,
@@ -2821,7 +3031,7 @@ module Stopper(
           //width2 = length2 * stopThickness / taperLength2;
           diameterStart2 = outer ? _diameter :_diameter - taperWidth2*2;
           diameterEnd2 = _diameter;
-          Pipe (
+          pipe(
             diameter1 = diameterStart2,
             diameter2 = diameterEnd2,
             length = length2,
@@ -3889,8 +4099,8 @@ render_options = [
   ["threads_disabled", "endcap_disabled", "stop_enabled", "barbs_enabled"],
   ];
 
-connector_measurements = ["outer", "inner"]; 
- 
+connector_measurements = ["outer", "inner"];
+
 render()
   for(iRender = [0:len(render_options)-1])
   for(iConnectorMeasurement = [0:len(connector_measurements)-1])
@@ -3914,7 +4124,7 @@ render()
         endCapGridWallThickness = 0,
         chamferLength = 0,
         chamferWidth = 0,
-        enableThreads = 
+        enableThreads =
           render_options[iRender][0] == "threads_enabled" ? "enabled"
           : render_options[iRender][0] == "threads_reversed" ? "reversed"
           : "disabled",
@@ -3953,7 +4163,7 @@ module HoseConnector(
 {
   assert(is_num(innerEndDiameter) && innerEndDiameter > 0, "innerEndDiameter must be a number greater than 0");
   assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");
-  
+
   _barbsThickness = barbsThickness == 0 ? wallThickness/2 : barbsThickness;
   barbLength = length/(barbsCount*2+1);
 
@@ -3979,7 +4189,7 @@ module HoseConnector(
       }
       if(chamferLength >0)
       {
-        Pipe (
+        pipe(
           diameter1 = connectorMeasurement == "outer" ?
             innerStartDiameter + wallThickness*2 - chamferWidth*2 :
             innerStartDiameter - chamferWidth*2,
@@ -4047,7 +4257,7 @@ module HoseConnector(
           gridsize = ceil(innerEndDiameter*1.4/gridspacing);
           innergridDiameter = endCapDiameter > 0 ? endCapDiameter+wallThickness*2 : 0;
 
-          StraightPipe(
+          pipe(
             diameter=innergridDiameter,
             length=endCapThickness+fudgeFactor*2,
             wallThickness = (innerEndDiameter-(innergridDiameter))/2,
@@ -4892,7 +5102,7 @@ module FlangeConnector(
   {
     //flange
     union() {
-      Pipe (
+      pipe(
         diameter1 = innerStartDiameter,
         diameter2 = innerEndDiameter,
         length = length,
@@ -5032,7 +5242,7 @@ module MagneticConnector(
     {
         //flange
         union() {
-            Pipe (
+            pipe(
                 diameter1 = innerStartDiameter,
                 diameter2 = innerEndDiameter,
                 length = length,
@@ -5210,7 +5420,7 @@ module AlignmentRing(
                 wallThickness2 = ringMinWidth,
                 zPosition = 0);
             //Add a StraightPipe between the two to block clipping without impacting the angle of the cones.
-            StraightPipe (
+            pipe (
                 diameter = centerDiameter - ringMaxWidth + fudgeFactor,
                 length = fudgeFactor,
                 wallThickness = ringMaxWidth- fudgeFactor,
@@ -5463,7 +5673,7 @@ module CamlockConnector(
       circle(camlockRingClipRadius);
   }
 
-  /*Pipe (
+  /*pipe(
     diameter1 = innerDiameter,
     diameter2 = innerEndDiameter,
     length = length - camlockHeight,
@@ -5544,7 +5754,7 @@ module CenTecMaleConnector($fn = 64){
 
   union(){
   difference(){
-    Pipe(
+    pipe(
       diameter = connectorInnerRadius*2,
       length = connectorLength,
       wallThickness=wallThickness);
@@ -5554,12 +5764,12 @@ module CenTecMaleConnector($fn = 64){
       innerEndDiameter = connectorInnerRadius*2,
       length = connectorLength,
       wallThickness = wallThickness);*/
-    Pipe(
+    pipe(
       diameter = startLipDiameter,
       length = startLipLength,
       wallThickness=startLipWidthDepth,
       zPosition = -fudgeFactor);
-    Pipe(
+    pipe(
       diameter = clickDiameter,
       length = clickLength,
       wallThickness=clickWallThicknessDepth,
@@ -5776,7 +5986,7 @@ module DysonConnector(
       union() {
         difference() {
         //Main pipe
-        Pipe (
+        pipe(
           diameter1 = innerEndDiameter,
           diameter2 = innerEndDiameter,
           length = length,
@@ -5851,14 +6061,14 @@ module DysonConnector(
 
 Dw735Connector_demo = false;
 if(Dw735Connector_demo){
-  
+
   Dw735Connector(
     innerEndDiameter = dw735InnerDiameter,
     length = dw735MinLength,
     wallThickness = 2,
     connectorCount = 1,
     $fn = 128
-  ); 
+  );
 }
 
 dw735Version = "1.2";
@@ -5904,14 +6114,14 @@ module Dw735Connector(
   difference(){
     union(){
       //Main body
-      StraightPipe (
+      pipe (
         diameter = innerEndDiameter,
         length = length,
         wallThickness = wallThickness);
 
       // Slot support
       intersection(){
-        StraightPipe (
+        pipe (
           diameter = innerEndDiameter+wallThickness*2,
           length = length,
           wallThickness = fixedPinLength - 1.5);
@@ -5942,7 +6152,7 @@ module Dw735Connector(
       }
     }
 
-    Pipe(
+    pipe(
       diameter1 = clearanceDiameter,
       diameter2 = clearanceDiameter+wallThickness*2,
       length = wallThickness,
@@ -5950,7 +6160,7 @@ module Dw735Connector(
       wallThickness2 = 0,
       zPosition = clearanceHeight-fudgeFactor);
 
-     StraightPipe (
+     pipe (
         diameter = clearanceDiameter,
         length = clearanceHeight+fudgeFactor,
         wallThickness = wallThickness,
@@ -5969,7 +6179,7 @@ module Dw735Connector(
 
     // slot cutout
     intersection(){
-      StraightPipe (
+      pipe (
         diameter = innerEndDiameter-fudgeFactor,
         length = length+fudgeFactor*2,
         wallThickness = fixedPinLength,
@@ -6018,6 +6228,20 @@ module Dw735Connector(
 //osVAC
 //Female documentation https://www.thingiverse.com/thing:4562762
 //Male documentation https://www.thingiverse.com/thing:4562789
+
+osvacCleantec_debug = false;
+
+if(osvacCleantec_debug && $preview){
+  $fn = 64;
+  //Test female connector
+  translate([0,-35,0])
+  osVacFemaleConnector(innerDiameter = 50, help=true);
+
+  //Test male connector
+  translate([0,35,0])
+  osVacMaleConnector(innerDiameter = 50, help=true);
+}
+
 
 /* Hidden */
 clipCount = 3;
@@ -6241,7 +6465,7 @@ module osVacMaleConnector(
             }
           }
 
-          Pipe(
+          pipe(
             diameter1 = outerDiameter+clipThickness*2+fudgeFactor,
             diameter2 = outerDiameter-fudgeFactor*2,
             length = clipTopTaperHeight,
@@ -6255,14 +6479,14 @@ module osVacMaleConnector(
       translate([0,0,0-fudgeFactor])
       cylinder(length+fudgeFactor*2, d=innerDiameter);
 
-      Pipe(
+      pipe(
         diameter1 = innerDiameter-fudgeFactor,
         diameter2 = innerDiameter-fudgeFactor,
         length = hoseEndTaper+fudgeFactor,
         wallThickness1 = hoseEndTaper,
         wallThickness2 = 0,
         zPosition = -fudgeFactor);
-      Pipe(
+      pipe(
         diameter1 = outerDiameter-hoseEndTaper*2,
         diameter2 = outerDiameter+hoseEndTaper*2,
         length = hoseEndTaper+hoseEndTaper,
@@ -6373,7 +6597,7 @@ module MakitaMaleConnector(
     cylinder(d=lowerInnerLipDiameter, h=lowerInnerLipLength);
 
     //subtract the ring lock
-    Pipe (
+    pipe(
       diameter = makitaRingClipRadius,
       length = makitaRingClipHeight,
       wallThickness = makitaWallThickness,

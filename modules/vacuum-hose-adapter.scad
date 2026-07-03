@@ -562,7 +562,7 @@ module transition(
         transDiameter = min(connector1InnerEndDiameter,  connector2InnerStartDiameter);
         transThickness = abs(connector1InnerEndDiameter - connector2InnerStartDiameter)/2 + max(connector1WallThickness,connector2WallThickness);
         color(transitionColor[0], transitionColor[1])
-        StraightPipe(
+        pipe(
             diameter = transDiameter,
             length = length,
             wallThickness = transThickness);
@@ -637,7 +637,7 @@ module transition(
           translate([-bendRadius, 0, 0])
             rotate([0, -angle, 0])
             translate([bendRadius, 0, 0])
-              Pipe(
+              pipe_with_offset(
                 diameter1 = connector1InnerEndDiameter,
                 diameter2 = connector2InnerStartDiameter,
                 length = length,
@@ -651,7 +651,7 @@ module transition(
         //Tapered section position to the end of the bent pipe
         //color("SpringGreen")
         color(transitionColor[0], transitionColor[1])
-        Pipe(
+        pipe_with_offset(
           diameter1 = connector1InnerEndDiameter,
           diameter2 = connector2InnerStartDiameter,
           length = length,

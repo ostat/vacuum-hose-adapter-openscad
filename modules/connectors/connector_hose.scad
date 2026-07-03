@@ -20,8 +20,8 @@ render_options = [
   ["threads_disabled", "endcap_disabled", "stop_enabled", "barbs_enabled"],
   ];
 
-connector_measurements = ["outer", "inner"]; 
- 
+connector_measurements = ["outer", "inner"];
+
 render()
   for(iRender = [0:len(render_options)-1])
   for(iConnectorMeasurement = [0:len(connector_measurements)-1])
@@ -45,7 +45,7 @@ render()
         endCapGridWallThickness = 0,
         chamferLength = 0,
         chamferWidth = 0,
-        enableThreads = 
+        enableThreads =
           render_options[iRender][0] == "threads_enabled" ? "enabled"
           : render_options[iRender][0] == "threads_reversed" ? "reversed"
           : "disabled",
@@ -84,7 +84,7 @@ module HoseConnector(
 {
   assert(is_num(innerEndDiameter) && innerEndDiameter > 0, "innerEndDiameter must be a number greater than 0");
   assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");
-  
+
   _barbsThickness = barbsThickness == 0 ? wallThickness/2 : barbsThickness;
   barbLength = length/(barbsCount*2+1);
 
@@ -110,7 +110,7 @@ module HoseConnector(
       }
       if(chamferLength >0)
       {
-        Pipe (
+        pipe(
           diameter1 = connectorMeasurement == "outer" ?
             innerStartDiameter + wallThickness*2 - chamferWidth*2 :
             innerStartDiameter - chamferWidth*2,
@@ -178,7 +178,7 @@ module HoseConnector(
           gridsize = ceil(innerEndDiameter*1.4/gridspacing);
           innergridDiameter = endCapDiameter > 0 ? endCapDiameter+wallThickness*2 : 0;
 
-          StraightPipe(
+          pipe(
             diameter=innergridDiameter,
             length=endCapThickness+fudgeFactor*2,
             wallThickness = (innerEndDiameter-(innergridDiameter))/2,

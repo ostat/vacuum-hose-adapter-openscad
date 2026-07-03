@@ -34,7 +34,7 @@ module FlangeConnector(
   {
     //flange
     union() {
-      Pipe (
+      pipe(
         diameter1 = innerStartDiameter,
         diameter2 = innerEndDiameter,
         length = length,

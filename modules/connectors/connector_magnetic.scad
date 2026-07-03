@@ -61,7 +61,7 @@ module MagneticConnector(
     {
         //flange
         union() {
-            Pipe (
+            pipe(
                 diameter1 = innerStartDiameter,
                 diameter2 = innerEndDiameter,
                 length = length,
@@ -239,7 +239,7 @@ module AlignmentRing(
                 wallThickness2 = ringMinWidth,
                 zPosition = 0);
             //Add a StraightPipe between the two to block clipping without impacting the angle of the cones.
-            StraightPipe (
+            pipe (
                 diameter = centerDiameter - ringMaxWidth + fudgeFactor,
                 length = fudgeFactor,
                 wallThickness = ringMaxWidth- fudgeFactor,
