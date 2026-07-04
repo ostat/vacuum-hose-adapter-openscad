@@ -58,17 +58,17 @@ if(debug_pipe){
   }
 
 
-  translate([0,-150,0])
+  translate([0,150,0])
   pipe_demo_helper(
-      diameter1=100,
-      diameter2=70,
+      diameter1=50,
+      diameter2=25,
       length=50,
       wallThickness = 2);
 
-  translate([0,150,0])
+  translate([75,150, 0])
   pipe_demo_helper(
-      diameter1=100,
-      diameter2=70,
+      diameter1=50,
+      diameter2=25,
       length=50,
       wallThickness = 2,
       Offset = [15,0]);

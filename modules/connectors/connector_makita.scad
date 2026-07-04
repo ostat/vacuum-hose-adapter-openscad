@@ -18,18 +18,20 @@ makitaMaleSettings = ["makita_male", [
   [iSettingsVersion, makitaVersion]
   ]];
 
- /*
- makitaConnector(
-  innerEndDiameter = makitaOuterDiameter,
-  length = makitaMinLength,
-  wallThickness = 2);
- */
+connector_makita_demo = false;
 
-//MakitaMaleConnector();
+if(connector_makita_demo){
+  MakitaMaleConnector(
+    help=true, $fn=128);
+}
 
 module MakitaMaleConnector(
-  help,
+  help = false,
   $fn = 64){
+
+  assert(is_bool(help), "help must be a boolean");
+  assert(is_num($fn) && $fn >= 3 && floor($fn) == $fn, "$fn must be an integer >= 3");
+
   outerDiameter = makitaOuterDiameter;
   innerDiameter =  outerDiameter - makitaWallThickness*2;
 
@@ -43,6 +45,24 @@ module MakitaMaleConnector(
   makitaChamferLength = 4.5;
   endStopDiameter = 51;
   endStopLength = 4;
+
+  assert(is_num(makitaMinLength) && makitaMinLength > 0, "makitaMinLength must be a number greater than 0");
+  assert(is_num(makitaWallThickness) && makitaWallThickness > 0, "makitaWallThickness must be a number greater than 0");
+  assert(is_num(outerDiameter) && outerDiameter > 0, "outerDiameter must be a number greater than 0");
+  assert(is_num(innerDiameter) && innerDiameter > 0, "innerDiameter must be a number greater than 0");
+  assert(makitaWallThickness * 2 < outerDiameter, "makitaWallThickness is too large for outerDiameter");
+
+  assert(is_num(makitaRingClipRadius) && makitaRingClipRadius > 0, "makitaRingClipRadius must be a number greater than 0");
+  assert(is_num(makitaRingClipHeight) && makitaRingClipHeight > 0, "makitaRingClipHeight must be a number greater than 0");
+  assert(is_num(makitaRingClipPosition) && makitaRingClipPosition >= 0, "makitaRingClipPosition must be a number greater than or equal to 0");
+  assert(makitaRingClipPosition + makitaRingClipHeight <= makitaMinLength + fudgeFactor, "ring clip must fit within connector length");
+
+  assert(is_num(lowerInnerLipDiameter) && lowerInnerLipDiameter > 0, "lowerInnerLipDiameter must be a number greater than 0");
+  assert(is_num(lowerInnerLipLength) && lowerInnerLipLength > 0, "lowerInnerLipLength must be a number greater than 0");
+  assert(is_num(makitaChamfer) && makitaChamfer >= 0, "makitaChamfer must be a number greater than or equal to 0");
+  assert(is_num(makitaChamferLength) && makitaChamferLength >= 0, "makitaChamferLength must be a number greater than or equal to 0");
+  assert(is_num(endStopDiameter) && endStopDiameter >= outerDiameter, "endStopDiameter must be a number greater than or equal to outerDiameter");
+  assert(is_num(endStopLength) && endStopLength > 0 && endStopLength <= makitaMinLength, "endStopLength must be > 0 and <= makitaMinLength");
 
  echo("makitaConnector", innerDiameter = innerDiameter, outerDiameter=outerDiameter, makitaMinLength=makitaMinLength, makitaWallThickness = makitaWallThickness);
 

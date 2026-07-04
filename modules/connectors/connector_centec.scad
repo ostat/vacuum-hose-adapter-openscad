@@ -2,6 +2,18 @@ include <../constants.scad>
 include <../modules_utility.scad>
 include <connector_hose.scad>
 
+connector_centec_demo = false;
+
+if(connector_centec_demo && $preview){
+  $fn = 64;
+
+  //Test female
+  CenTecFemaleConnector();
+  //Test male
+  translate([60,0,0])
+  CenTecMaleConnector();
+}
+
 cenTecFemaleVersion = "0.1";
 cenTecFemaleBodyLength =  25;
 cenTecFemaleWallThickness = 3;
@@ -36,12 +48,16 @@ centecMaleSettings = ["centec_male", [
   [iSettingsVersion, cenTecMaleVersion]
   ]];
 
-//Test female
-//CenTecFemaleConnector();
-//Test male
-//CenTecMaleConnector();
 
 module CenTecMaleConnector($fn = 64){
+  assert(is_num($fn) && $fn >= 3 && floor($fn) == $fn, str("$fn must be an integer greater than or equal to 3. Provided:", $fn));
+  assert(is_num(cenTecMaleMinLength) && cenTecMaleMinLength > 0, str("cenTecMaleMinLength must be a number greater than 0. Provided:", cenTecMaleMinLength));
+  assert(is_num(cenTecMaleBodyLength) && cenTecMaleBodyLength > 0, str("cenTecMaleBodyLength must be a number greater than 0. Provided:", cenTecMaleBodyLength));
+  assert(is_num(cenTecMaleInnerDiameter) && cenTecMaleInnerDiameter > 0, str("cenTecMaleInnerDiameter must be a number greater than 0. Provided:", cenTecMaleInnerDiameter));
+  assert(is_num(cenTecMaleOuterDiameter) && cenTecMaleOuterDiameter > cenTecMaleInnerDiameter, str("cenTecMaleOuterDiameter must be greater than cenTecMaleInnerDiameter. outer=", cenTecMaleOuterDiameter, " inner=", cenTecMaleInnerDiameter));
+  assert(is_num(cenTecMaleWallThickness) && cenTecMaleWallThickness > 0, str("cenTecMaleWallThickness must be a number greater than 0. Provided:", cenTecMaleWallThickness));
+  assert(cenTecMaleWallThickness * 2 < cenTecMaleOuterDiameter, str("cenTecMaleWallThickness is too large for cenTecMaleOuterDiameter. wallThickness=", cenTecMaleWallThickness, " outerDiameter=", cenTecMaleOuterDiameter));
+
   connectorLength = cenTecMaleMinLength;
   connectorInnerRadius= cenTecMaleInnerDiameter/2;
   connectorOuterRadius= cenTecMaleOuterDiameter/2;
@@ -100,6 +116,13 @@ module CenTecMaleConnector($fn = 64){
 
 module CenTecFemaleConnector($fn = 64){
 
+  assert(is_num($fn) && $fn >= 3 && floor($fn) == $fn, str("$fn must be an integer greater than or equal to 3. Provided:", $fn));
+  assert(is_num(cenTecFemaleBodyLength) && cenTecFemaleBodyLength > 0, str("cenTecFemaleBodyLength must be a number greater than 0. Provided:", cenTecFemaleBodyLength));
+  assert(is_num(cenTecFemaleMinLength) && cenTecFemaleMinLength > cenTecFemaleBodyLength, str("cenTecFemaleMinLength must be greater than cenTecFemaleBodyLength. minLength=", cenTecFemaleMinLength, " bodyLength=", cenTecFemaleBodyLength));
+  assert(is_num(cenTecFemaleWallThickness) && cenTecFemaleWallThickness > 0, str("cenTecFemaleWallThickness must be a number greater than 0. Provided:", cenTecFemaleWallThickness));
+  assert(is_num(cenTecFemaleInnerDiameter) && cenTecFemaleInnerDiameter > 0, str("cenTecFemaleInnerDiameter must be a number greater than 0. Provided:", cenTecFemaleInnerDiameter));
+  assert(is_num(cenTecFemaleOuterDiameter) && cenTecFemaleOuterDiameter > cenTecFemaleInnerDiameter, str("cenTecFemaleOuterDiameter must be greater than cenTecFemaleInnerDiameter. outer=", cenTecFemaleOuterDiameter, " inner=", cenTecFemaleInnerDiameter));
+
   pinHoleWidth = 9.5;
   pinHoleHeight = 6;
   pinHoleRadius = 3;
@@ -116,6 +139,15 @@ module CenTecFemaleConnector($fn = 64){
   slideTaper=1;
 
   _pinHoleRadius = min(pinHoleRadius, pinHoleHeight/2);
+
+  assert(is_num(pinHoleWidth) && pinHoleWidth > 0, str("pinHoleWidth must be a number greater than 0. Provided:", pinHoleWidth));
+  assert(is_num(pinHoleHeight) && pinHoleHeight > 0, str("pinHoleHeight must be a number greater than 0. Provided:", pinHoleHeight));
+  assert(is_num(pinHoleRadius) && pinHoleRadius > 0, str("pinHoleRadius must be a number greater than 0. Provided:", pinHoleRadius));
+  assert(is_num(pinHoleOffset) && pinHoleOffset >= 0, str("pinHoleOffset must be a number greater than or equal to 0. Provided:", pinHoleOffset));
+  assert(is_num(pinSlideIndent) && pinSlideIndent > 0, str("pinSlideIndent must be a number greater than 0. Provided:", pinSlideIndent));
+  assert(is_num(slideTaper) && slideTaper >= 0, str("slideTaper must be a number greater than or equal to 0. Provided:", slideTaper));
+  assert(is_num(_pinHoleRadius) && _pinHoleRadius > 0, str("_pinHoleRadius must be a number greater than 0. Provided:", _pinHoleRadius));
+  assert(_pinHoleRadius <= pinHoleHeight/2, str("_pinHoleRadius must be less than or equal to half pinHoleHeight. pinHoleRadius=", _pinHoleRadius, " pinHoleHeight=", pinHoleHeight));
 
 
   echo("CenTecConnector", _pinHoleRadius=_pinHoleRadius, pinHoleHeight=pinHoleHeight);
@@ -210,10 +242,20 @@ module centecRoundedCube(
   r2,
   taper=0,
   center=false,
-  fn = 64)
+  $fn = 64)
 {
+  assert(is_num(x) && x > 0, str("x must be a number greater than 0. Provided:", x));
+  assert(is_num(y) && y > 0, str("y must be a number greater than 0. Provided:", y));
+  assert(is_num(h) && h > 0, str("h must be a number greater than 0. Provided:", h));
+  assert(is_bool(center), str("center must be a boolean. Provided:", center));
+  assert(is_undef(r) || (is_num(r) && r >= 0), str("r must be undefined or a number greater than or equal to 0. Provided:", r));
+  assert(is_undef(r1) || (is_num(r1) && r1 >= 0), str("r1 must be undefined or a number greater than or equal to 0. Provided:", r1));
+  assert(is_undef(r2) || (is_num(r2) && r2 >= 0), str("r2 must be undefined or a number greater than or equal to 0. Provided:", r2));
+
   r1 = is_num(r1) ? r1 : r;
   r2 = is_num(r2) ? r2 : r;
+  //assert(r1 <= min(x, y)/2, str("r1 must be less than or equal to half of the smaller dimension. r1=", r1, " limit=", min(x, y)/2));
+  //assert(r2 <= min(x, y)/2, str("r2 must be less than or equal to half of the smaller dimension. r2=", r2, " limit=", min(x, y)/2));
 
   positions=[
      [r1            ,r1            ,0]
@@ -229,7 +271,7 @@ module centecRoundedCube(
       //translate(positions[x])
       //  circle(cornerRadius, $fn=fn);
       translate(positions[x])
-        cylinder(r1=r1, r2=r2, h=h,$fn=fn);
+        cylinder(r1=r1, r2=r2, h=h);
     }
   }
 }

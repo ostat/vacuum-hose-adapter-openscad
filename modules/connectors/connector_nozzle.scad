@@ -2,6 +2,68 @@ include <../constants.scad>
 
 nozzleVersion = "1.0";
 
+connector_nozzle_demo = false;
+
+if(connector_nozzle_demo && $preview){
+
+  translate([0,-100,0])
+  difference(){
+    union(){
+      Nozzle(
+        innerStartDiameter = 100,
+        length = 10,
+        wallThickness = 2,
+        nozzleShape = "square",
+        nozzleSize = [10,10,2],
+        nozzleTipWallThickness = 1,
+        nozzleRadius = 2);
+
+      translate([0,0,20])
+      Nozzle(
+        innerStartDiameter = 10,
+        length = 10,
+        wallThickness = 2,
+        nozzleShape = "square",
+        nozzleSize = [100,10,2],
+        nozzleTipWallThickness = 1,
+        nozzleRadius = 2);
+    }
+
+    translate([-100,0,-10])
+    cube([200,100,100]);
+  }
+
+  $fn = 64;
+  diameter = 50;
+  spacer = diameter * 2;
+
+  render_options = [
+    ["square", [40, 20, 20], 2, [0, 0], 0, 0],
+    ["square", [60, 35, 30], 1.2, [8, 4], 80, 25],
+    ["circle", [20, 20, 30], 1.2, [0, 0], 0, 0],
+    ["circle", [30, 30, 45], 2, [5, 0], 60, 20],
+    ["square", [80, 24, 18], 1.5, [0, 6], 40, 15],
+    ["square", [25, 60, 35], 2, [6, 0], 55, 30],
+    ["circle", [40, 40, 60], 0.8, [10, 2], 70, 35],
+    ["circle", [55, 55, 25], 2.5, [8, 4], 20, 10]
+  ];
+
+  for(iRender = [0:len(render_options)-1])
+    translate([spacer * (iRender % 2), spacer * floor(iRender / 2), 0])
+      Nozzle(
+        innerStartDiameter = diameter,
+        length = 20,
+        wallThickness = 2,
+        nozzleShape = render_options[iRender][0],
+        nozzleSize = render_options[iRender][1],
+        nozzleTipWallThickness = render_options[iRender][2],
+        nozzleRadius = render_options[iRender][3].x,
+        nozzleOffset = render_options[iRender][3],
+        nozzleChamferPercentage = render_options[iRender][4],
+        nozzleChamferAngle = render_options[iRender][5],
+        help = true);
+}
+
 nozzleSettings = ["nozzle", [
   [iSettingsTaper, 0],
   [iSettingsVersion, nozzleVersion]
@@ -21,9 +83,21 @@ module Nozzle(
   help
 )
 {
-  assert(is_list(nozzleSize) && len(nozzleSize) == 3, "nozzleSize must be a list of length 2");
+  assert(is_num(innerStartDiameter) && innerStartDiameter > 0, str("innerStartDiameter must be a number greater than 0. Provided:", innerStartDiameter));
+  assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
+  assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
+  assert(is_string(nozzleShape) && (nozzleShape == "square" || nozzleShape == "circle"), str("nozzleShape only supports square and circle. Provided:'", nozzleShape ,"'"));
+  assert(is_list(nozzleSize) && len(nozzleSize) == 3, str("nozzleSize must be a list of length 3. Provided:", nozzleSize));
+  //assert(is_num(nozzleSize.x) && is_num(nozzleSize.y) && is_num(nozzleSize.z) && nozzleSize.x > 0 && nozzleSize.y > 0 && nozzleSize.z >= 0, str("nozzleSize values must be numeric and nozzleSize.x/nozzleSize.y must be greater than 0. Provided:", nozzleSize));
+  assert(is_num(nozzleTipWallThickness) && nozzleTipWallThickness >= 0, str("nozzleTipWallThickness must be a number greater than or equal to 0. Provided:", nozzleTipWallThickness));
+  assert(is_num(nozzleRadius) && nozzleRadius >= 0, str("nozzleRadius must be a number greater than or equal to 0. Provided:", nozzleRadius));
+  assert(is_list(nozzleOffset) && len(nozzleOffset) == 2, str("nozzleOffset must be a list of length 2. Provided:", nozzleOffset));
+  assert(is_num(nozzleOffset.x) && is_num(nozzleOffset.y), str("nozzleOffset values must be numeric. Provided:", nozzleOffset));
+  assert(is_num(nozzleChamferPercentage) && nozzleChamferPercentage >= 0 && nozzleChamferPercentage <= 100,
+    str("nozzleChamferPercentage must be between 0 and 100. Provided:", nozzleChamferPercentage));
+  assert(is_num(nozzleChamferAngle) && nozzleChamferAngle >= 0 && nozzleChamferAngle <= 90,
+    str("nozzleChamferAngle must be between 0 and 90 degrees. Provided:", nozzleChamferAngle));
 
-  assert(nozzleShape == "square" || nozzleShape == "circle", str("nozzleShape only supports square and circle. Provided:'", nozzleShape ,"'"));
   innerRadius = innerStartDiameter/2;
   _nozzleRadius = nozzleShape == "circle" && nozzleRadius == 0 ? nozzleSize.x/2
     : nozzleShape == "square" ? min(nozzleSize.x/2, nozzleSize.y/2, nozzleRadius)

@@ -3,14 +3,21 @@ include <../modules_pipe.scad>
 
 Dw735Connector_demo = false;
 if(Dw735Connector_demo){
-
+  $fn = 128;
+  
   Dw735Connector(
     innerEndDiameter = dw735InnerDiameter,
     length = dw735MinLength,
     wallThickness = 2,
-    connectorCount = 1,
-    $fn = 128
-  );
+    connectorCount = 1);
+  
+  //this seems broken
+  translate([100,0,0])
+  Dw735Connector(
+    innerEndDiameter = dw735InnerDiameter,
+    length = dw735MinLength,
+    wallThickness = 2,
+    connectorCount = 5);    
 }
 
 dw735Version = "1.2";
@@ -32,6 +39,11 @@ module Dw735Connector(
   wallThickness,
   connectorCount = 1
 ){
+  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, str("innerEndDiameter must be a number greater than 0. Provided:", innerEndDiameter));
+  assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
+  assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
+  assert(is_num(connectorCount) && connectorCount >= 1 && floor(connectorCount) == connectorCount, str("connectorCount must be an integer greater than or equal to 1. Provided:", connectorCount));
+
   // Spring pin hole center distance
   springHoleOffset = 7.875;
   // Spring pin hole
@@ -50,6 +62,16 @@ module Dw735Connector(
   _connectorCount = max(1,connectorCount);
 
   slotAngle = (slotLength-slotDiameter)/(2*PI*(innerEndDiameter/2+wallThickness))*360;
+
+  assert(is_num(dw735MinLength) && dw735MinLength > 0, str("dw735MinLength must be a number greater than 0. Provided:", dw735MinLength));
+  assert(is_num(dw735InnerDiameter) && dw735InnerDiameter > 0, str("dw735InnerDiameter must be a number greater than 0. Provided:", dw735InnerDiameter));
+  assert(clearanceDiameter > innerEndDiameter, str("clearanceDiameter must be greater than innerEndDiameter. clearanceDiameter=", clearanceDiameter, " innerEndDiameter=", innerEndDiameter));
+  assert(slotLength > slotDiameter, str("slotLength must be greater than slotDiameter. slotLength=", slotLength, " slotDiameter=", slotDiameter));
+  assert(springHoleDiameter > 0, str("springHoleDiameter must be greater than 0. Provided:", springHoleDiameter));
+  assert(fixedPinLength > 0, str("fixedPinLength must be greater than 0. Provided:", fixedPinLength));
+  assert(maxSupportThickness > 0, str("maxSupportThickness must be greater than 0. Provided:", maxSupportThickness));
+  assert(clearanceHeight > 0, str("clearanceHeight must be greater than 0. Provided:", clearanceHeight));
+  assert(slotAngle >= 0, str("slotAngle must be greater than or equal to 0. Provided:", slotAngle));
 
   echo("Dw735Connector", innerEndDiameter=innerEndDiameter, length = length, wallThickness = wallThickness);
   rotate([0,0,-90])

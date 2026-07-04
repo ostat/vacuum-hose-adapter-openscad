@@ -1,6 +1,44 @@
 include <../constants.scad>
 include <../modules_utility.scad>
+include <../modules_pipe.scad>
 
+connector_magnetic_demo = false;
+
+if(connector_magnetic_demo && $preview){
+    $fn = 64;
+    diameter = 50;
+    spacer = diameter * 1.8;
+
+    render_options = [
+        ["no", "0", 8],
+        ["protruding", "0", 8],
+        ["recessed", "0", 8],
+        ["no", "4", 8],
+        ["no", "4cnc", 8],
+        ["no", "0", 12]
+    ];
+
+    for(iRender = [0:len(render_options)-1])
+        translate([spacer * (iRender % 3), spacer * floor(iRender / 3), 0])
+        MagneticConnector(
+            innerStartDiameter = diameter,
+            innerEndDiameter = diameter,
+            length = 20,
+            wallThickness = 2,
+            magnetDiameter = 10.5,
+            magnetThickness = 4,
+            magnetBorder = 2,
+            magnetZOffset = 0,
+            flangeThickness = 7.5,
+            magnetCount = render_options[iRender][2],
+            alignmentRing = render_options[iRender][0],
+            alignmentDepth = 2,
+            alignmentUpperWidth = 3,
+            alignmentLowerWidth = 1,
+            alignmentSideClearance = 0.25,
+            alignmentDepthClearance = 0.75,
+            twistLockSize = render_options[iRender][1]);
+}
 
 module MagneticConnector(
     innerStartDiameter,
@@ -22,6 +60,32 @@ module MagneticConnector(
     twistLockSize,
 )
 {
+    assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");
+    assert(is_num(innerEndDiameter) && innerEndDiameter > 0, "innerEndDiameter must be a number greater than 0");
+    assert(is_num(length) && length > 0, "length must be a number greater than 0");
+    assert(is_num(wallThickness) && wallThickness > 0, "wallThickness must be a number greater than 0");
+    assert(is_num(magnetDiameter) && magnetDiameter > 0, "magnetDiameter must be a number greater than 0");
+    assert(is_num(magnetThickness) && magnetThickness > 0, "magnetThickness must be a number greater than 0");
+    assert(is_num(magnetBorder) && magnetBorder >= 0, "magnetBorder must be a number greater than or equal to 0");
+    assert(is_num(magnetZOffset) && magnetZOffset >= 0, "magnetZOffset must be a number greater than or equal to 0");
+    assert(is_num(flangeThickness) && flangeThickness > 0, "flangeThickness must be a number greater than 0");
+    assert(is_num(magnetCount) && magnetCount > 0 && floor(magnetCount) == magnetCount, "magnetCount must be a positive integer");
+    assert(is_num(alignmentDepth) && alignmentDepth >= 0, "alignmentDepth must be a number greater than or equal to 0");
+    assert(is_num(alignmentUpperWidth) && alignmentUpperWidth >= 0, "alignmentUpperWidth must be a number greater than or equal to 0");
+    assert(is_num(alignmentLowerWidth) && alignmentLowerWidth >= 0, "alignmentLowerWidth must be a number greater than or equal to 0");
+    assert(is_num(alignmentSideClearance) && alignmentSideClearance >= 0, "alignmentSideClearance must be a number greater than or equal to 0");
+    assert(is_num(alignmentDepthClearance) && alignmentDepthClearance >= 0, "alignmentDepthClearance must be a number greater than or equal to 0");
+    assert(is_string(alignmentRing) && (alignmentRing == "no" || alignmentRing == "protruding" || alignmentRing == "recessed"),
+        "alignmentRing must be one of 'no', 'protruding', or 'recessed'");
+    assert(is_string(twistLockSize) && (twistLockSize == "0" || twistLockSize == "3" || twistLockSize == "3cnc" || twistLockSize == "4" || twistLockSize == "4cnc" || twistLockSize == "5" || twistLockSize == "5cnc"),
+        "twistLockSize must be one of '0', '3', '3cnc', '4', '4cnc', '5', or '5cnc'");
+
+    assert(magnetZOffset + magnetThickness <= flangeThickness + fudgeFactor, "magnetZOffset + magnetThickness must be less than or equal to flangeThickness");
+    assert(alignmentDepthClearance <= alignmentDepth, "alignmentDepthClearance must be less than or equal to alignmentDepth");
+    assert(alignmentRing == "no" || (alignmentUpperWidth > alignmentSideClearance && alignmentLowerWidth > alignmentSideClearance),
+        "alignmentUpperWidth and alignmentLowerWidth must be greater than alignmentSideClearance when alignment ring is enabled");
+
+
   //These sizes need to be tested.
   //head, outer thread for slot, thread hole size
   lockingSize =

@@ -8,43 +8,46 @@ connector_hose_demo = false;
 
 if(connector_hose_demo){
 $fn = 64;
-diameter = 50;
-spacer = diameter*1.5;
+spacer = 100;
 
 render_options = [
-  ["threads_disabled", "endcap_disabled", "stop_disabled", "barbs_disabled"],
-  ["threads_enabled", "endcap_disabled", "stop_disabled", "barbs_disabled"],
-  ["threads_reversed", "endcap_disabled", "stop_disabled", "barbs_disabled"],
-  ["threads_disabled", "endcap_enabled", "stop_disabled", "barbs_disabled"],
-  ["threads_disabled", "endcap_disabled", "stop_disabled", "barbs_disabled"],
-  ["threads_disabled", "endcap_disabled", "stop_enabled", "barbs_enabled"],
+  ["threads_disabled", "endcap_disabled", "stop_disabled", "barbs_disabled", "outer", 50, 40, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+  ["threads_enabled", "endcap_disabled", "stop_disabled", "barbs_disabled", "outer", 50, 40, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+  ["threads_reversed", "endcap_disabled", "stop_disabled", "barbs_disabled", "inner", 50, 40, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+  ["threads_disabled", "endcap_enabled", "stop_disabled", "barbs_disabled", "outer", 50, 40, 2, 0, 0, 5, 3, 0.8, 0, 0.25, 0.5],
+  ["threads_disabled", "endcap_disabled", "stop_enabled", "barbs_disabled", "outer", 50, 40, 2, 5, 5, 0, 0, 0, 0, 0, 0],
+  ["threads_disabled", "endcap_disabled", "stop_disabled", "barbs_enabled", "outer", 50, 40, 2, 0, 0, 0, 5, 0, 0, 0, 0],
+  ["threads_enabled", "endcap_enabled", "stop_enabled", "barbs_enabled", "outer", 50, 40, 2, 5, 5, 5, 5, 1.2, 0, 1, 0.75],
+  ["threads_reversed", "endcap_enabled", "stop_enabled", "barbs_disabled", "inner", 38, 55, 2.5, 5, 5, 5, 4, 0.6, 0, 0.75, 0.25],
+  ["threads_enabled", "endcap_disabled", "stop_enabled", "barbs_enabled", "inner", 60, 35, 3, 6, 6, 0, 4, 0, 0, 0, 0],
+  ["threads_disabled", "endcap_enabled", "stop_disabled", "barbs_disabled", "inner", 32, 25, 1.5, 0, 0, 4, 0, 0, 0, 0, 0],
+  ["threads_enabled", "endcap_disabled", "stop_disabled", "barbs_enabled", "outer", 75, 60, 3, 0, 0, 0, 6, 0, 0, 0, 0],
+  ["threads_reversed", "endcap_disabled", "stop_enabled", "barbs_enabled", "inner", 100, 50, 4, 8, 7, 0, 8, 0, 0, 0, 0],
+  ["threads_disabled", "endcap_enabled", "stop_disabled", "barbs_disabled", "outer", 40, 45, 2, 0, 0, 3, 2, 0.4, 0, 0.5, 0.25],
   ];
-
-connector_measurements = ["outer", "inner"];
 
 render()
   for(iRender = [0:len(render_options)-1])
-  for(iConnectorMeasurement = [0:len(connector_measurements)-1])
   union(){
-    translate([spacer*iConnectorMeasurement, spacer*iRender, 0])
+    translate([spacer*(iRender % 3), spacer*floor(iRender / 3), 0])
     HoseConnector(
-        innerStartDiameter = diameter,
-        innerEndDiameter = diameter,
-        connectorMeasurement = connector_measurements[iConnectorMeasurement],
-        length = 40,
-        wallThickness = 2,
-        stopLength = (render_options[iRender][2] == "stop_enabled" ? 5 : 0),
-        stopWidth = 5,
+      innerStartDiameter = render_options[iRender][5],
+      innerEndDiameter = render_options[iRender][5],
+      connectorMeasurement = render_options[iRender][4],
+      length = render_options[iRender][6],
+      wallThickness = render_options[iRender][7],
+      stopLength = render_options[iRender][2] == "stop_enabled" ? render_options[iRender][8] : 0,
+      stopWidth = render_options[iRender][2] == "stop_enabled" ? render_options[iRender][9] : 0,
         stopSymmetrical = false,
-        barbsCount = (render_options[iRender][3] == "barbs_enabled" ? 5 : 0),
+      barbsCount = (render_options[iRender][3] == "barbs_enabled" ? render_options[iRender][11] : 0),
         barbsThickness = 0,
         barbsSymmetrical = false,
-        endCapDiameter = 5,
-        endCapThickness = (render_options[iRender][1] == "endcap_enabled" ? 5 : 0),
-        endCapGridSize = 0,
-        endCapGridWallThickness = 0,
-        chamferLength = 0,
-        chamferWidth = 0,
+      endCapDiameter = render_options[iRender][1] == "endcap_enabled" ? render_options[iRender][5] * 0.1 : 0,
+      endCapThickness = (render_options[iRender][1] == "endcap_enabled" ? render_options[iRender][10] : 0),
+        endCapGridSize = render_options[iRender][12],
+        endCapGridWallThickness = render_options[iRender][13],
+        chamferLength = render_options[iRender][14],
+        chamferWidth = render_options[iRender][15],
         enableThreads =
           render_options[iRender][0] == "threads_enabled" ? "enabled"
           : render_options[iRender][0] == "threads_reversed" ? "reversed"
@@ -84,6 +87,31 @@ module HoseConnector(
 {
   assert(is_num(innerEndDiameter) && innerEndDiameter > 0, "innerEndDiameter must be a number greater than 0");
   assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");
+  assert(is_string(connectorMeasurement) && (connectorMeasurement == "outer" || connectorMeasurement == "inner"),
+    "connectorMeasurement must be 'outer' or 'inner'");
+  assert(is_num(length) && length > 0, "length must be a number greater than 0");
+  assert(is_num(wallThickness) && wallThickness > 0, "wallThickness must be a number greater than 0");
+  assert(is_num(stopLength) && stopLength >= 0, "stopLength must be a number greater than or equal to 0");
+  assert(is_num(stopWidth) && stopWidth >= 0, "stopWidth must be a number greater than or equal to 0");
+  assert(is_bool(stopSymmetrical), "stopSymmetrical must be a boolean");
+  assert(is_num(barbsCount) && barbsCount >= 0 && floor(barbsCount) == barbsCount, "barbsCount must be a non-negative integer");
+  assert(is_num(barbsThickness) && barbsThickness >= 0, "barbsThickness must be a number greater than or equal to 0");
+  assert(is_bool(barbsSymmetrical), "barbsSymmetrical must be a boolean");
+  assert(is_num(endCapDiameter) && endCapDiameter >= 0, "endCapDiameter must be a number greater than or equal to 0");
+  assert(is_num(endCapThickness) && endCapThickness >= 0, "endCapThickness must be a number greater than or equal to 0");
+  assert(is_num(endCapGridSize) && endCapGridSize >= 0, "endCapGridSize must be a number greater than or equal to 0");
+  assert(is_num(endCapGridWallThickness) && endCapGridWallThickness >= 0, "endCapGridWallThickness must be a number greater than or equal to 0");
+  assert(is_num(chamferLength) && chamferLength >= 0, "chamferLength must be a number greater than or equal to 0");
+  assert(is_num(chamferWidth) && chamferWidth >= 0, "chamferWidth must be a number greater than or equal to 0");
+  assert(is_string(enableThreads) && (enableThreads == "disabled" || enableThreads == "enabled" || enableThreads == "reversed"),
+    "enableThreads must be 'disabled', 'enabled', or 'reversed'");
+  assert(is_num(threadPitch) && threadPitch >= 0, "threadPitch must be a number greater than or equal to 0");
+  assert(is_num(threadToothAngle) && threadToothAngle >= 0 && threadToothAngle <= 90, "threadToothAngle must be between 0 and 90");
+  assert(is_num(threadToothHeight) && threadToothHeight >= 0, "threadToothHeight must be a number greater than or equal to 0");
+
+  assert(stopLength == 0 || stopWidth > 0, "stopWidth must be greater than 0 when stopLength is enabled");
+  assert(barbsCount == 0 || wallThickness > 0, "wallThickness must be greater than 0 when barbs are enabled");
+  assert(endCapGridSize == 0 || endCapThickness > 0, "endCapThickness must be greater than 0 when endCapGridSize is enabled");
 
   _barbsThickness = barbsThickness == 0 ? wallThickness/2 : barbsThickness;
   barbLength = length/(barbsCount*2+1);

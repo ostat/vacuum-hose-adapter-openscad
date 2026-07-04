@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-07-04 08:43
-//Content hash 3553095377914ABC7B128CC68294815BE848B762797568432102C9A5934C6EAA
+//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-07-04 17:23
+//Content hash 7974405518FA35A954F7F9AD88B71E9931D06447633DD849F49DCCA3DD946AD9
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -2165,6 +2165,122 @@ joinArray(helpText)
 else HelpTxt("Help",["titel",titel,"string",string,"help",help],help=1);
 }
 }
+
+module HexGrid(e=[11,4],es=5,center=true,name,help){
+
+  es=is_list(es)?es:[es*sin(60),es];
+  e=is_list(e)?e:[e,e,1];
+  $d=es.y;
+  $r=$d/2;
+  icenter=abs(b(center,bool=false));
+  //shifting for center and pattern change
+  yCor=(is_undef(useVersion)||useVersion>23.300)&&icenter?-es.y/4:0;
+  shift=[0,e.y>round(e.y)?-es.y/2:e.y<round(e.y)?0:yCor]+sign(b(center,bool=false))*(
+     icenter==2?[es.x/2,0]
+    :icenter==3?[es.x/3,0]
+    :icenter==4?[es.x,0]
+    :icenter==5?[es.x*2/3,0]
+    :icenter==6?[es.x*1/6,0]
+    :icenter==7?[es.x/(2/3),0]
+    :[0,0]);
+
+    Grid(e=e,es=es,center=center,name=name)
+      translate([shift.x,shift.y+( // shift for center and pattern
+        $idx[0]%2?is_list(es)?es[1]/2:es/2:
+                  0)
+      ]){
+// calculating $pos for post processing
+    $pos=$pos+[shift.x,shift.y+($idx[0]%2?is_list(es)?es[1]/2
+                                                      :es/2
+                                          :0),0];
+// pattern change by omiting elementst
+    if(e.y%1){
+      if(e.y<round(e.y)?$idx.y<round(e.y)-1||($idx.x+1)%2
+                       :$idx.y>0||($idx.x)%2)children();
+      }
+    else children();
+    }
+
+    MO(!$children);
+// info of Grid will be used additional for changed pattern this:
+  if(e.y%1)InfoTxt("HexGrid",["elements",round(e.x)*round(e.y)*(e.z?e.z:1)
+    - (e.y<round(e.y)?floor(round(e.x)/2):ceil(round(e.x)/2))
+    ],name);
+
+
+  HelpTxt("HexGrid",[
+    "e",e
+    ,"es",es
+    ,"center",center
+    ,"name",name]
+    ,help);
+}
+
+/** \name Grid \page Modifier
+Grid() children(); creates a grid of children
+\param e elements [x,y]
+\param es element spacing [x,y]
+\param s total space ↦ es
+\param center true/false
+*/
+// multiply children in a given matrix (e= number es =distance)
+
+module Grid(e=[2,2,1],es=10,s,center=true,name,help){
+
+     name=is_undef(name)?is_undef($info)?false:
+                                                   $info:
+                                   name;
+
+    function n0(e)=is_undef(e)?1:max(round(e),0);
+    function n0s(e)=max(e-1,1);// e-1 must not be 0
+    center=is_list(center)?v3(center):[center,center,center];
+    e=is_list(e)?is_num(e[2])?[max(round(e[0]),0),max(round(e[1]),0),n0(e[2])]:
+                    [round(e.x),round(e.y),1]: // z = 1
+        es[2]?[n0(e),n0(e),n0(e)]:
+        [n0(e),n0(e),1];
+
+    es=is_undef(s)?is_list(es)?is_num(es[2])?es:
+                                concat(es,[0]):
+                    is_undef(es)?[0:0:0]:
+                        [es,es,es]:
+       is_list(s)?is_num(s[2])?[s[0]/n0s(e[0]),s[1]/n0s(e[1]),s[2]/n0s(e[2])]:
+                    [s[0]/n0s(e[0]),s[1]/n0s(e[1]),0]:
+        [s/n0s(e[0]),s/n0s(e[1]),s/n0s(e[2])];
+
+   MO(!$children);
+   InfoTxt("Grid",[str("Gridsize(",e,")"),str(e[0]*e[1]*e[2]," elements= ",(e[0]-1)*es[0],"×",(e[1]-1)*es[1],"×",(e[2]-1)*es[2],"mm \n element spacing= ",es," mm",
+
+    center.x?str("\n\tX ",-(e[0]-1)*es[0]/2," ⇔ ",(e[0]-1)*es[0]/2," mm"):"",
+    center.y?str("\n\tY ",-(e[1]-1)*es[1]/2," ⇔ ",(e[1]-1)*es[1]/2," mm"):"",
+    center.z?str("\n\tZ ",-(e[2]-1)*es[2]/2," ⇔ ",(e[2]-1)*es[2]/2," mm"):"")
+    ],name);
+
+
+
+    HelpTxt("Grid",[
+    "e",e
+    ,"es",es
+    ,"s",[(e[0]-1)*es[0],(e[1]-1)*es[1],(e[2]-1)*es[2]]
+    ,"center",center
+    ,"name",name]
+    ,help);
+
+    centerPos=[
+   center.x?((1-e[0])*es[0])/2:0,
+   center.y?((1-e[1])*es[1])/2:0,
+   center.z?((1-e[2])*es[2])/2:0];
+
+   if(e.x&&e.y&&e.z) for(x=[0:e[0]-1],y=[0:e[1]-1],z=[0:e[2]-1]){
+       $idx=[x,y,z];
+       $idx2=[e.y*e.x*z+e.y*y+x,e.y*e.x*z+e.x*x+y];
+       $pos=[x*es.x,y*es.y,z*es.z]+centerPos;
+       $info=norm($idx)?false:name;
+       $tab=is_undef($tab)?1:b($tab,false)+1;
+       $es=es;
+      // $helpM=norm($idx)?false:$helpM;
+       translate([x*es[0],y*es[1],z*es[2]]+centerPos)children();
+   }
+}
 //CombinedEnd from path ub.scad
 //Combined from path constants.scad
 
@@ -2483,17 +2599,17 @@ if(debug_pipe){
   }
 
 
-  translate([0,-150,0])
+  translate([0,150,0])
   pipe_demo_helper(
-      diameter1=100,
-      diameter2=70,
+      diameter1=50,
+      diameter2=25,
       length=50,
       wallThickness = 2);
 
-  translate([0,150,0])
+  translate([75,150, 0])
   pipe_demo_helper(
-      diameter1=100,
-      diameter2=70,
+      diameter1=50,
+      diameter2=25,
       length=50,
       wallThickness = 2,
       Offset = [15,0]);
@@ -4413,43 +4529,46 @@ connector_hose_demo = false;
 
 if(connector_hose_demo){
 $fn = 64;
-diameter = 50;
-spacer = diameter*1.5;
+spacer = 100;
 
 render_options = [
-  ["threads_disabled", "endcap_disabled", "stop_disabled", "barbs_disabled"],
-  ["threads_enabled", "endcap_disabled", "stop_disabled", "barbs_disabled"],
-  ["threads_reversed", "endcap_disabled", "stop_disabled", "barbs_disabled"],
-  ["threads_disabled", "endcap_enabled", "stop_disabled", "barbs_disabled"],
-  ["threads_disabled", "endcap_disabled", "stop_disabled", "barbs_disabled"],
-  ["threads_disabled", "endcap_disabled", "stop_enabled", "barbs_enabled"],
+  ["threads_disabled", "endcap_disabled", "stop_disabled", "barbs_disabled", "outer", 50, 40, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+  ["threads_enabled", "endcap_disabled", "stop_disabled", "barbs_disabled", "outer", 50, 40, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+  ["threads_reversed", "endcap_disabled", "stop_disabled", "barbs_disabled", "inner", 50, 40, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+  ["threads_disabled", "endcap_enabled", "stop_disabled", "barbs_disabled", "outer", 50, 40, 2, 0, 0, 5, 3, 0.8, 0, 0.25, 0.5],
+  ["threads_disabled", "endcap_disabled", "stop_enabled", "barbs_disabled", "outer", 50, 40, 2, 5, 5, 0, 0, 0, 0, 0, 0],
+  ["threads_disabled", "endcap_disabled", "stop_disabled", "barbs_enabled", "outer", 50, 40, 2, 0, 0, 0, 5, 0, 0, 0, 0],
+  ["threads_enabled", "endcap_enabled", "stop_enabled", "barbs_enabled", "outer", 50, 40, 2, 5, 5, 5, 5, 1.2, 0, 1, 0.75],
+  ["threads_reversed", "endcap_enabled", "stop_enabled", "barbs_disabled", "inner", 38, 55, 2.5, 5, 5, 5, 4, 0.6, 0, 0.75, 0.25],
+  ["threads_enabled", "endcap_disabled", "stop_enabled", "barbs_enabled", "inner", 60, 35, 3, 6, 6, 0, 4, 0, 0, 0, 0],
+  ["threads_disabled", "endcap_enabled", "stop_disabled", "barbs_disabled", "inner", 32, 25, 1.5, 0, 0, 4, 0, 0, 0, 0, 0],
+  ["threads_enabled", "endcap_disabled", "stop_disabled", "barbs_enabled", "outer", 75, 60, 3, 0, 0, 0, 6, 0, 0, 0, 0],
+  ["threads_reversed", "endcap_disabled", "stop_enabled", "barbs_enabled", "inner", 100, 50, 4, 8, 7, 0, 8, 0, 0, 0, 0],
+  ["threads_disabled", "endcap_enabled", "stop_disabled", "barbs_disabled", "outer", 40, 45, 2, 0, 0, 3, 2, 0.4, 0, 0.5, 0.25],
   ];
-
-connector_measurements = ["outer", "inner"];
 
 render()
   for(iRender = [0:len(render_options)-1])
-  for(iConnectorMeasurement = [0:len(connector_measurements)-1])
   union(){
-    translate([spacer*iConnectorMeasurement, spacer*iRender, 0])
+    translate([spacer*(iRender % 3), spacer*floor(iRender / 3), 0])
     HoseConnector(
-        innerStartDiameter = diameter,
-        innerEndDiameter = diameter,
-        connectorMeasurement = connector_measurements[iConnectorMeasurement],
-        length = 40,
-        wallThickness = 2,
-        stopLength = (render_options[iRender][2] == "stop_enabled" ? 5 : 0),
-        stopWidth = 5,
+      innerStartDiameter = render_options[iRender][5],
+      innerEndDiameter = render_options[iRender][5],
+      connectorMeasurement = render_options[iRender][4],
+      length = render_options[iRender][6],
+      wallThickness = render_options[iRender][7],
+      stopLength = render_options[iRender][2] == "stop_enabled" ? render_options[iRender][8] : 0,
+      stopWidth = render_options[iRender][2] == "stop_enabled" ? render_options[iRender][9] : 0,
         stopSymmetrical = false,
-        barbsCount = (render_options[iRender][3] == "barbs_enabled" ? 5 : 0),
+      barbsCount = (render_options[iRender][3] == "barbs_enabled" ? render_options[iRender][11] : 0),
         barbsThickness = 0,
         barbsSymmetrical = false,
-        endCapDiameter = 5,
-        endCapThickness = (render_options[iRender][1] == "endcap_enabled" ? 5 : 0),
-        endCapGridSize = 0,
-        endCapGridWallThickness = 0,
-        chamferLength = 0,
-        chamferWidth = 0,
+      endCapDiameter = render_options[iRender][1] == "endcap_enabled" ? render_options[iRender][5] * 0.1 : 0,
+      endCapThickness = (render_options[iRender][1] == "endcap_enabled" ? render_options[iRender][10] : 0),
+        endCapGridSize = render_options[iRender][12],
+        endCapGridWallThickness = render_options[iRender][13],
+        chamferLength = render_options[iRender][14],
+        chamferWidth = render_options[iRender][15],
         enableThreads =
           render_options[iRender][0] == "threads_enabled" ? "enabled"
           : render_options[iRender][0] == "threads_reversed" ? "reversed"
@@ -4489,6 +4608,31 @@ module HoseConnector(
 {
   assert(is_num(innerEndDiameter) && innerEndDiameter > 0, "innerEndDiameter must be a number greater than 0");
   assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");
+  assert(is_string(connectorMeasurement) && (connectorMeasurement == "outer" || connectorMeasurement == "inner"),
+    "connectorMeasurement must be 'outer' or 'inner'");
+  assert(is_num(length) && length > 0, "length must be a number greater than 0");
+  assert(is_num(wallThickness) && wallThickness > 0, "wallThickness must be a number greater than 0");
+  assert(is_num(stopLength) && stopLength >= 0, "stopLength must be a number greater than or equal to 0");
+  assert(is_num(stopWidth) && stopWidth >= 0, "stopWidth must be a number greater than or equal to 0");
+  assert(is_bool(stopSymmetrical), "stopSymmetrical must be a boolean");
+  assert(is_num(barbsCount) && barbsCount >= 0 && floor(barbsCount) == barbsCount, "barbsCount must be a non-negative integer");
+  assert(is_num(barbsThickness) && barbsThickness >= 0, "barbsThickness must be a number greater than or equal to 0");
+  assert(is_bool(barbsSymmetrical), "barbsSymmetrical must be a boolean");
+  assert(is_num(endCapDiameter) && endCapDiameter >= 0, "endCapDiameter must be a number greater than or equal to 0");
+  assert(is_num(endCapThickness) && endCapThickness >= 0, "endCapThickness must be a number greater than or equal to 0");
+  assert(is_num(endCapGridSize) && endCapGridSize >= 0, "endCapGridSize must be a number greater than or equal to 0");
+  assert(is_num(endCapGridWallThickness) && endCapGridWallThickness >= 0, "endCapGridWallThickness must be a number greater than or equal to 0");
+  assert(is_num(chamferLength) && chamferLength >= 0, "chamferLength must be a number greater than or equal to 0");
+  assert(is_num(chamferWidth) && chamferWidth >= 0, "chamferWidth must be a number greater than or equal to 0");
+  assert(is_string(enableThreads) && (enableThreads == "disabled" || enableThreads == "enabled" || enableThreads == "reversed"),
+    "enableThreads must be 'disabled', 'enabled', or 'reversed'");
+  assert(is_num(threadPitch) && threadPitch >= 0, "threadPitch must be a number greater than or equal to 0");
+  assert(is_num(threadToothAngle) && threadToothAngle >= 0 && threadToothAngle <= 90, "threadToothAngle must be between 0 and 90");
+  assert(is_num(threadToothHeight) && threadToothHeight >= 0, "threadToothHeight must be a number greater than or equal to 0");
+
+  assert(stopLength == 0 || stopWidth > 0, "stopWidth must be greater than 0 when stopLength is enabled");
+  assert(barbsCount == 0 || wallThickness > 0, "wallThickness must be greater than 0 when barbs are enabled");
+  assert(endCapGridSize == 0 || endCapThickness > 0, "endCapThickness must be greater than 0 when endCapGridSize is enabled");
 
   _barbsThickness = barbsThickness == 0 ? wallThickness/2 : barbsThickness;
   barbLength = length/(barbsCount*2+1);
@@ -5394,6 +5538,39 @@ module Demo() {
 
 
 
+
+
+
+
+connector_flange_demo = false;
+
+if(connector_flange_demo && $preview){
+  $fn = 64;
+  spacer = 100;
+
+  render_options = [
+    [40, 32, 40, 2, 6, 8, 20, 2, 4, 5],
+    [40, 32, 45, 2.5, 8, 10, 18, 1.5, 4, 6],
+    [50, 36, 48, 3, 10, 12, 24, 2, 5, 6],
+    [50, 42, 55, 3, 12, 14, 30, 3, 6, 8]
+  ];
+
+  for(iRender = [0:len(render_options)-1])
+    translate([spacer * (iRender % 2), spacer * floor(iRender / 2), 0])
+      FlangeConnector(
+        innerStartDiameter = render_options[iRender][0],
+        innerEndDiameter = render_options[iRender][1],
+        length = render_options[iRender][2],
+        wallThickness = render_options[iRender][3],
+        flangeThickness = render_options[iRender][4],
+        flangeWidth = render_options[iRender][5],
+        screwPosition = render_options[iRender][6],
+        screwBorder = render_options[iRender][7],
+        screwCount = render_options[iRender][8],
+        screwDiameter = render_options[iRender][9],
+        help = true);
+}
+
 module FlangeConnector(
     innerStartDiameter,
     innerEndDiameter,
@@ -5408,10 +5585,17 @@ module FlangeConnector(
     help
 )
 {
-  assert(is_num(flangeThickness), "flangeThickness should be a number");
-  assert(is_num(screwBorder), "screwBorder should be a number");
-  assert(is_num(screwCount), "screwCount should be a number");
-  assert(is_num(screwDiameter), "screwDiameter should be a number");
+  assert(is_num(innerStartDiameter) && innerStartDiameter > 0, str("innerStartDiameter must be a number greater than 0. Provided:", innerStartDiameter));
+  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, str("innerEndDiameter must be a number greater than 0. Provided:", innerEndDiameter));
+  assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
+  assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
+  assert(is_num(flangeThickness) && flangeThickness > 0, str("flangeThickness must be a number greater than 0. Provided:", flangeThickness));
+  assert(is_num(flangeWidth) && flangeWidth > 0, str("flangeWidth must be a number greater than 0. Provided:", flangeWidth));
+  assert(is_num(screwPosition) && screwPosition >= 0, str("screwPosition must be a number greater than or equal to 0. Provided:", screwPosition));
+  assert(is_num(screwBorder) && screwBorder >= 0, str("screwBorder must be a number greater than or equal to 0. Provided:", screwBorder));
+  assert(is_num(screwCount) && screwCount >= 1 && floor(screwCount) == screwCount, str("screwCount must be an integer greater than or equal to 1. Provided:", screwCount));
+  assert(is_num(screwDiameter) && screwDiameter > 0, str("screwDiameter must be a number greater than 0. Provided:", screwDiameter));
+  assert(is_bool(help), str("help must be a boolean. Provided:", help));
 
   //The fillet around the edge
   fillet = flangeThickness;
@@ -5420,6 +5604,12 @@ module FlangeConnector(
   screwPositionRadius = screwPosition != 0
     ? innerStartDiameter/2 + screwDiameter/2 + screwPosition/2
     : (innerStartDiameter/2 + fillet + (flangeWidth/2-fillet)/2);
+
+  assert(innerEndDiameter <= innerStartDiameter, str("innerEndDiameter should not exceed innerStartDiameter for this flange form. innerEndDiameter=", innerEndDiameter, " innerStartDiameter=", innerStartDiameter));
+  assert(flangeOuterDiameter > innerStartDiameter, str("flangeOuterDiameter must be greater than innerStartDiameter. flangeOuterDiameter=", flangeOuterDiameter, " innerStartDiameter=", innerStartDiameter));
+  assert(border >= 0, str("border must be greater than or equal to 0. Provided:", border));
+  assert(screwPositionRadius > 0, str("screwPositionRadius must be greater than 0. Provided:", screwPositionRadius));
+//  assert(screwPositionRadius + screwDiameter/2 <= flangeOuterDiameter/2 + screwDiameter, str("screwPositionRadius is too large for flangeOuterDiameter. screwPositionRadius=", screwPositionRadius, " flangeOuterDiameter=", flangeOuterDiameter));
 
   echo("FlangeConnector", screwCount=screwCount, screwDiameter=screwDiameter, screwPosition=screwPosition, border=border);
   echo("FlangeConnector", screwPositionRadius=screwPositionRadius, fillet=fillet, flangeOuterDiameter=flangeOuterDiameter, innerStartDiameter=innerStartDiameter, flangeWidth=flangeWidth);
@@ -5509,6 +5699,45 @@ module FlangeConnector(
 
 
 
+
+connector_magnetic_demo = false;
+
+if(connector_magnetic_demo && $preview){
+    $fn = 64;
+    diameter = 50;
+    spacer = diameter * 1.8;
+
+    render_options = [
+        ["no", "0", 8],
+        ["protruding", "0", 8],
+        ["recessed", "0", 8],
+        ["no", "4", 8],
+        ["no", "4cnc", 8],
+        ["no", "0", 12]
+    ];
+
+    for(iRender = [0:len(render_options)-1])
+        translate([spacer * (iRender % 3), spacer * floor(iRender / 3), 0])
+        MagneticConnector(
+            innerStartDiameter = diameter,
+            innerEndDiameter = diameter,
+            length = 20,
+            wallThickness = 2,
+            magnetDiameter = 10.5,
+            magnetThickness = 4,
+            magnetBorder = 2,
+            magnetZOffset = 0,
+            flangeThickness = 7.5,
+            magnetCount = render_options[iRender][2],
+            alignmentRing = render_options[iRender][0],
+            alignmentDepth = 2,
+            alignmentUpperWidth = 3,
+            alignmentLowerWidth = 1,
+            alignmentSideClearance = 0.25,
+            alignmentDepthClearance = 0.75,
+            twistLockSize = render_options[iRender][1]);
+}
+
 module MagneticConnector(
     innerStartDiameter,
     innerEndDiameter,
@@ -5529,6 +5758,32 @@ module MagneticConnector(
     twistLockSize,
 )
 {
+    assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");
+    assert(is_num(innerEndDiameter) && innerEndDiameter > 0, "innerEndDiameter must be a number greater than 0");
+    assert(is_num(length) && length > 0, "length must be a number greater than 0");
+    assert(is_num(wallThickness) && wallThickness > 0, "wallThickness must be a number greater than 0");
+    assert(is_num(magnetDiameter) && magnetDiameter > 0, "magnetDiameter must be a number greater than 0");
+    assert(is_num(magnetThickness) && magnetThickness > 0, "magnetThickness must be a number greater than 0");
+    assert(is_num(magnetBorder) && magnetBorder >= 0, "magnetBorder must be a number greater than or equal to 0");
+    assert(is_num(magnetZOffset) && magnetZOffset >= 0, "magnetZOffset must be a number greater than or equal to 0");
+    assert(is_num(flangeThickness) && flangeThickness > 0, "flangeThickness must be a number greater than 0");
+    assert(is_num(magnetCount) && magnetCount > 0 && floor(magnetCount) == magnetCount, "magnetCount must be a positive integer");
+    assert(is_num(alignmentDepth) && alignmentDepth >= 0, "alignmentDepth must be a number greater than or equal to 0");
+    assert(is_num(alignmentUpperWidth) && alignmentUpperWidth >= 0, "alignmentUpperWidth must be a number greater than or equal to 0");
+    assert(is_num(alignmentLowerWidth) && alignmentLowerWidth >= 0, "alignmentLowerWidth must be a number greater than or equal to 0");
+    assert(is_num(alignmentSideClearance) && alignmentSideClearance >= 0, "alignmentSideClearance must be a number greater than or equal to 0");
+    assert(is_num(alignmentDepthClearance) && alignmentDepthClearance >= 0, "alignmentDepthClearance must be a number greater than or equal to 0");
+    assert(is_string(alignmentRing) && (alignmentRing == "no" || alignmentRing == "protruding" || alignmentRing == "recessed"),
+        "alignmentRing must be one of 'no', 'protruding', or 'recessed'");
+    assert(is_string(twistLockSize) && (twistLockSize == "0" || twistLockSize == "3" || twistLockSize == "3cnc" || twistLockSize == "4" || twistLockSize == "4cnc" || twistLockSize == "5" || twistLockSize == "5cnc"),
+        "twistLockSize must be one of '0', '3', '3cnc', '4', '4cnc', '5', or '5cnc'");
+
+    assert(magnetZOffset + magnetThickness <= flangeThickness + fudgeFactor, "magnetZOffset + magnetThickness must be less than or equal to flangeThickness");
+    assert(alignmentDepthClearance <= alignmentDepth, "alignmentDepthClearance must be less than or equal to alignmentDepth");
+    assert(alignmentRing == "no" || (alignmentUpperWidth > alignmentSideClearance && alignmentLowerWidth > alignmentSideClearance),
+        "alignmentUpperWidth and alignmentLowerWidth must be greater than alignmentSideClearance when alignment ring is enabled");
+
+
   //These sizes need to be tested.
   //head, outer thread for slot, thread hole size
   lockingSize =
@@ -5776,6 +6031,68 @@ module AlignmentRing(
 
 nozzleVersion = "1.0";
 
+connector_nozzle_demo = false;
+
+if(connector_nozzle_demo && $preview){
+
+  translate([0,-100,0])
+  difference(){
+    union(){
+      Nozzle(
+        innerStartDiameter = 100,
+        length = 10,
+        wallThickness = 2,
+        nozzleShape = "square",
+        nozzleSize = [10,10,2],
+        nozzleTipWallThickness = 1,
+        nozzleRadius = 2);
+
+      translate([0,0,20])
+      Nozzle(
+        innerStartDiameter = 10,
+        length = 10,
+        wallThickness = 2,
+        nozzleShape = "square",
+        nozzleSize = [100,10,2],
+        nozzleTipWallThickness = 1,
+        nozzleRadius = 2);
+    }
+
+    translate([-100,0,-10])
+    cube([200,100,100]);
+  }
+
+  $fn = 64;
+  diameter = 50;
+  spacer = diameter * 2;
+
+  render_options = [
+    ["square", [40, 20, 20], 2, [0, 0], 0, 0],
+    ["square", [60, 35, 30], 1.2, [8, 4], 80, 25],
+    ["circle", [20, 20, 30], 1.2, [0, 0], 0, 0],
+    ["circle", [30, 30, 45], 2, [5, 0], 60, 20],
+    ["square", [80, 24, 18], 1.5, [0, 6], 40, 15],
+    ["square", [25, 60, 35], 2, [6, 0], 55, 30],
+    ["circle", [40, 40, 60], 0.8, [10, 2], 70, 35],
+    ["circle", [55, 55, 25], 2.5, [8, 4], 20, 10]
+  ];
+
+  for(iRender = [0:len(render_options)-1])
+    translate([spacer * (iRender % 2), spacer * floor(iRender / 2), 0])
+      Nozzle(
+        innerStartDiameter = diameter,
+        length = 20,
+        wallThickness = 2,
+        nozzleShape = render_options[iRender][0],
+        nozzleSize = render_options[iRender][1],
+        nozzleTipWallThickness = render_options[iRender][2],
+        nozzleRadius = render_options[iRender][3].x,
+        nozzleOffset = render_options[iRender][3],
+        nozzleChamferPercentage = render_options[iRender][4],
+        nozzleChamferAngle = render_options[iRender][5],
+        help = true);
+}
+
 nozzleSettings = ["nozzle", [
   [iSettingsTaper, 0],
   [iSettingsVersion, nozzleVersion]
@@ -5795,9 +6112,21 @@ module Nozzle(
   help
 )
 {
-  assert(is_list(nozzleSize) && len(nozzleSize) == 3, "nozzleSize must be a list of length 2");
+  assert(is_num(innerStartDiameter) && innerStartDiameter > 0, str("innerStartDiameter must be a number greater than 0. Provided:", innerStartDiameter));
+  assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
+  assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
+  assert(is_string(nozzleShape) && (nozzleShape == "square" || nozzleShape == "circle"), str("nozzleShape only supports square and circle. Provided:'", nozzleShape ,"'"));
+  assert(is_list(nozzleSize) && len(nozzleSize) == 3, str("nozzleSize must be a list of length 3. Provided:", nozzleSize));
+  //assert(is_num(nozzleSize.x) && is_num(nozzleSize.y) && is_num(nozzleSize.z) && nozzleSize.x > 0 && nozzleSize.y > 0 && nozzleSize.z >= 0, str("nozzleSize values must be numeric and nozzleSize.x/nozzleSize.y must be greater than 0. Provided:", nozzleSize));
+  assert(is_num(nozzleTipWallThickness) && nozzleTipWallThickness >= 0, str("nozzleTipWallThickness must be a number greater than or equal to 0. Provided:", nozzleTipWallThickness));
+  assert(is_num(nozzleRadius) && nozzleRadius >= 0, str("nozzleRadius must be a number greater than or equal to 0. Provided:", nozzleRadius));
+  assert(is_list(nozzleOffset) && len(nozzleOffset) == 2, str("nozzleOffset must be a list of length 2. Provided:", nozzleOffset));
+  assert(is_num(nozzleOffset.x) && is_num(nozzleOffset.y), str("nozzleOffset values must be numeric. Provided:", nozzleOffset));
+  assert(is_num(nozzleChamferPercentage) && nozzleChamferPercentage >= 0 && nozzleChamferPercentage <= 100,
+    str("nozzleChamferPercentage must be between 0 and 100. Provided:", nozzleChamferPercentage));
+  assert(is_num(nozzleChamferAngle) && nozzleChamferAngle >= 0 && nozzleChamferAngle <= 90,
+    str("nozzleChamferAngle must be between 0 and 90 degrees. Provided:", nozzleChamferAngle));
 
-  assert(nozzleShape == "square" || nozzleShape == "circle", str("nozzleShape only supports square and circle. Provided:'", nozzleShape ,"'"));
   innerRadius = innerStartDiameter/2;
   _nozzleRadius = nozzleShape == "circle" && nozzleRadius == 0 ? nozzleSize.x/2
     : nozzleShape == "square" ? min(nozzleSize.x/2, nozzleSize.y/2, nozzleRadius)
@@ -5923,10 +6252,14 @@ module Nozzle(
 
 
 
+
+
 camlockVersion = "1.0";
 camlockMinLength = 35+3;
 camlockMeasurement = "outer";
 camlockOuterDiameter = 24.25*2;
+
+connector_camlock_demo = false;
 
 camlockSettings = ["camlock", [
   [iSettingsLength, camlockMinLength],
@@ -5936,17 +6269,34 @@ camlockSettings = ["camlock", [
   [iSettingsVersion, camlockVersion]
   ]];
 
- /*
- CamlockConnector(
-  innerEndDiameter = camlockOuterDiameter,
-  length = camlockMinLength,
-  wallThickness = 2);
- */
+if(connector_camlock_demo && $preview){
+  $fn = 64;
+  spacer = camlockOuterDiameter * 1.4;
+
+  render_options = [
+    [2],
+    [4]
+  ];
+
+  for(iRender = [0:len(render_options)-1])
+    translate([spacer * iRender, 0, 0])
+      CamlockConnector(
+        innerEndDiameter = camlockOuterDiameter,
+        length = camlockMinLength,
+        wallThickness = render_options[iRender][0],
+        $fn = 128);
+}
+
 
 module CamlockConnector(
   innerEndDiameter,
   length,
   wallThickness){
+
+  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, "innerEndDiameter must be a number greater than 0");
+  assert(is_num(length) && length > 0, "length must be a number greater than 0");
+  assert(is_num(wallThickness) && wallThickness > 0, "wallThickness must be a number greater than 0");
+  assert(length >= camlockMinLength, "length must be at least camlockMinLength");
 
   innerDiameter =  20*2;
   //camlockOuterDiameter = 48.5;
@@ -5961,6 +6311,20 @@ module CamlockConnector(
   camlockChamfer = 1.6;
   camlockChamferLength = 1.6;
 
+  assert(is_num(innerDiameter) && innerDiameter > 0, "innerDiameter must be a number greater than 0");
+  assert(is_num(outerDiameter) && outerDiameter > innerDiameter, "outerDiameter must be greater than innerDiameter");
+  assert(is_num(camlockHeight) && camlockHeight > 0 && camlockHeight <= camlockMinLength, "camlockHeight must be positive and no greater than camlockMinLength");
+  assert(is_num(camlockStopLength) && camlockStopLength >= 0, "camlockStopLength must be a number greater than or equal to 0");
+  assert(is_num(camlockStopWidth) && camlockStopWidth > 0, "camlockStopWidth must be a number greater than 0");
+  assert(is_num(camlockWallThickness) && camlockWallThickness > 0, "camlockWallThickness must be a number greater than 0");
+  assert(is_num(camlockRingClipRadius) && camlockRingClipRadius > 0, "camlockRingClipRadius must be a number greater than 0");
+  assert(is_num(camlockRingClipHeight) && camlockRingClipHeight > 0, "camlockRingClipHeight must be a number greater than 0");
+  assert(is_num(camlockRingClipPosition) && camlockRingClipPosition > outerDiameter / 2, "camlockRingClipPosition must be outside the outer radius");
+  assert(is_num(camlockChamfer) && camlockChamfer > 0, "camlockChamfer must be a number greater than 0");
+  assert(is_num(camlockChamferLength) && camlockChamferLength > 0, "camlockChamferLength must be a number greater than 0");
+  assert(camlockRingClipHeight + wallThickness / 2 <= camlockMinLength + fudgeFactor, "ring clip cutout must fit within the camlock length");
+  assert(camlockChamferLength <= camlockHeight, "camlockChamferLength must be less than or equal to camlockHeight");
+
  echo("CamlockConnector", innerDiameter = innerDiameter, outerDiameter=outerDiameter, camlockHeight=camlockHeight, length = length, camlockWallThickness = camlockWallThickness);
 
   difference(){
@@ -5972,7 +6336,7 @@ module CamlockConnector(
       wallThickness = camlockWallThickness,
       stopLength = camlockStopLength,
       stopWidth = camlockStopWidth,
-      stopSymmetrical = 0,
+      stopSymmetrical = false,
       chamferLength = camlockChamferLength,
       chamferWidth= camlockChamfer
     );
@@ -5987,7 +6351,7 @@ module CamlockConnector(
       wallThickness = camlockWallThickness,
       stopLength = 0,
       stopWidth = 0,
-      stopSymmetrical = 0,
+      stopSymmetrical = false,
       chamferLength = camlockWallThickness,
       chamferWidth= camlockWallThickness
     );
@@ -6017,6 +6381,18 @@ module CamlockConnector(
 
 
 
+
+connector_centec_demo = false;
+
+if(connector_centec_demo && $preview){
+  $fn = 64;
+
+  //Test female
+  CenTecFemaleConnector();
+  //Test male
+  translate([60,0,0])
+  CenTecMaleConnector();
+}
 
 cenTecFemaleVersion = "0.1";
 cenTecFemaleBodyLength =  25;
@@ -6052,12 +6428,16 @@ centecMaleSettings = ["centec_male", [
   [iSettingsVersion, cenTecMaleVersion]
   ]];
 
-//Test female
-//CenTecFemaleConnector();
-//Test male
-//CenTecMaleConnector();
 
 module CenTecMaleConnector($fn = 64){
+  assert(is_num($fn) && $fn >= 3 && floor($fn) == $fn, str("$fn must be an integer greater than or equal to 3. Provided:", $fn));
+  assert(is_num(cenTecMaleMinLength) && cenTecMaleMinLength > 0, str("cenTecMaleMinLength must be a number greater than 0. Provided:", cenTecMaleMinLength));
+  assert(is_num(cenTecMaleBodyLength) && cenTecMaleBodyLength > 0, str("cenTecMaleBodyLength must be a number greater than 0. Provided:", cenTecMaleBodyLength));
+  assert(is_num(cenTecMaleInnerDiameter) && cenTecMaleInnerDiameter > 0, str("cenTecMaleInnerDiameter must be a number greater than 0. Provided:", cenTecMaleInnerDiameter));
+  assert(is_num(cenTecMaleOuterDiameter) && cenTecMaleOuterDiameter > cenTecMaleInnerDiameter, str("cenTecMaleOuterDiameter must be greater than cenTecMaleInnerDiameter. outer=", cenTecMaleOuterDiameter, " inner=", cenTecMaleInnerDiameter));
+  assert(is_num(cenTecMaleWallThickness) && cenTecMaleWallThickness > 0, str("cenTecMaleWallThickness must be a number greater than 0. Provided:", cenTecMaleWallThickness));
+  assert(cenTecMaleWallThickness * 2 < cenTecMaleOuterDiameter, str("cenTecMaleWallThickness is too large for cenTecMaleOuterDiameter. wallThickness=", cenTecMaleWallThickness, " outerDiameter=", cenTecMaleOuterDiameter));
+
   connectorLength = cenTecMaleMinLength;
   connectorInnerRadius= cenTecMaleInnerDiameter/2;
   connectorOuterRadius= cenTecMaleOuterDiameter/2;
@@ -6116,6 +6496,13 @@ module CenTecMaleConnector($fn = 64){
 
 module CenTecFemaleConnector($fn = 64){
 
+  assert(is_num($fn) && $fn >= 3 && floor($fn) == $fn, str("$fn must be an integer greater than or equal to 3. Provided:", $fn));
+  assert(is_num(cenTecFemaleBodyLength) && cenTecFemaleBodyLength > 0, str("cenTecFemaleBodyLength must be a number greater than 0. Provided:", cenTecFemaleBodyLength));
+  assert(is_num(cenTecFemaleMinLength) && cenTecFemaleMinLength > cenTecFemaleBodyLength, str("cenTecFemaleMinLength must be greater than cenTecFemaleBodyLength. minLength=", cenTecFemaleMinLength, " bodyLength=", cenTecFemaleBodyLength));
+  assert(is_num(cenTecFemaleWallThickness) && cenTecFemaleWallThickness > 0, str("cenTecFemaleWallThickness must be a number greater than 0. Provided:", cenTecFemaleWallThickness));
+  assert(is_num(cenTecFemaleInnerDiameter) && cenTecFemaleInnerDiameter > 0, str("cenTecFemaleInnerDiameter must be a number greater than 0. Provided:", cenTecFemaleInnerDiameter));
+  assert(is_num(cenTecFemaleOuterDiameter) && cenTecFemaleOuterDiameter > cenTecFemaleInnerDiameter, str("cenTecFemaleOuterDiameter must be greater than cenTecFemaleInnerDiameter. outer=", cenTecFemaleOuterDiameter, " inner=", cenTecFemaleInnerDiameter));
+
   pinHoleWidth = 9.5;
   pinHoleHeight = 6;
   pinHoleRadius = 3;
@@ -6132,6 +6519,15 @@ module CenTecFemaleConnector($fn = 64){
   slideTaper=1;
 
   _pinHoleRadius = min(pinHoleRadius, pinHoleHeight/2);
+
+  assert(is_num(pinHoleWidth) && pinHoleWidth > 0, str("pinHoleWidth must be a number greater than 0. Provided:", pinHoleWidth));
+  assert(is_num(pinHoleHeight) && pinHoleHeight > 0, str("pinHoleHeight must be a number greater than 0. Provided:", pinHoleHeight));
+  assert(is_num(pinHoleRadius) && pinHoleRadius > 0, str("pinHoleRadius must be a number greater than 0. Provided:", pinHoleRadius));
+  assert(is_num(pinHoleOffset) && pinHoleOffset >= 0, str("pinHoleOffset must be a number greater than or equal to 0. Provided:", pinHoleOffset));
+  assert(is_num(pinSlideIndent) && pinSlideIndent > 0, str("pinSlideIndent must be a number greater than 0. Provided:", pinSlideIndent));
+  assert(is_num(slideTaper) && slideTaper >= 0, str("slideTaper must be a number greater than or equal to 0. Provided:", slideTaper));
+  assert(is_num(_pinHoleRadius) && _pinHoleRadius > 0, str("_pinHoleRadius must be a number greater than 0. Provided:", _pinHoleRadius));
+  assert(_pinHoleRadius <= pinHoleHeight/2, str("_pinHoleRadius must be less than or equal to half pinHoleHeight. pinHoleRadius=", _pinHoleRadius, " pinHoleHeight=", pinHoleHeight));
 
 
   echo("CenTecConnector", _pinHoleRadius=_pinHoleRadius, pinHoleHeight=pinHoleHeight);
@@ -6226,10 +6622,20 @@ module centecRoundedCube(
   r2,
   taper=0,
   center=false,
-  fn = 64)
+  $fn = 64)
 {
+  assert(is_num(x) && x > 0, str("x must be a number greater than 0. Provided:", x));
+  assert(is_num(y) && y > 0, str("y must be a number greater than 0. Provided:", y));
+  assert(is_num(h) && h > 0, str("h must be a number greater than 0. Provided:", h));
+  assert(is_bool(center), str("center must be a boolean. Provided:", center));
+  assert(is_undef(r) || (is_num(r) && r >= 0), str("r must be undefined or a number greater than or equal to 0. Provided:", r));
+  assert(is_undef(r1) || (is_num(r1) && r1 >= 0), str("r1 must be undefined or a number greater than or equal to 0. Provided:", r1));
+  assert(is_undef(r2) || (is_num(r2) && r2 >= 0), str("r2 must be undefined or a number greater than or equal to 0. Provided:", r2));
+
   r1 = is_num(r1) ? r1 : r;
   r2 = is_num(r2) ? r2 : r;
+  //assert(r1 <= min(x, y)/2, str("r1 must be less than or equal to half of the smaller dimension. r1=", r1, " limit=", min(x, y)/2));
+  //assert(r2 <= min(x, y)/2, str("r2 must be less than or equal to half of the smaller dimension. r2=", r2, " limit=", min(x, y)/2));
 
   positions=[
      [r1            ,r1            ,0]
@@ -6245,7 +6651,7 @@ module centecRoundedCube(
       //translate(positions[x])
       //  circle(cornerRadius, $fn=fn);
       translate(positions[x])
-        cylinder(r1=r1, r2=r2, h=h,$fn=fn);
+        cylinder(r1=r1, r2=r2, h=h);
     }
   }
 }
@@ -6259,6 +6665,28 @@ module centecRoundedCube(
 
 
 
+
+connector_dyson_demo = false;
+
+if(connector_dyson_demo && $preview){
+  $fn = 64;
+  spacer = dysonOuterDiameter * 1.5;
+
+  render_options = [
+    [dysonInnerDiameter, dysonMinLength, dysonWallThickenss, true],
+    [dysonInnerDiameter, dysonMinLength + 8, dysonWallThickenss, false],
+    [dysonInnerDiameter + 2, dysonMinLength, dysonWallThickenss + 0.5, true],
+    [dysonInnerDiameter - 1, dysonMinLength + 12, dysonWallThickenss, false]
+  ];
+
+  for(iRender = [0:len(render_options)-1])
+    translate([spacer * (iRender % 2), spacer * floor(iRender / 2), 0])
+      DysonConnector(
+        innerEndDiameter = render_options[iRender][0],
+        length = render_options[iRender][1],
+        wallThickness = render_options[iRender][2],
+        IncludeOrientationClip = render_options[iRender][3]);
+}
 
 /* Hidden */
 dysonVersion = "1.2";
@@ -6286,6 +6714,12 @@ module DysonConnector(
   IncludeOrientationClip = true,
   $fn = 64
 ){
+  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, str("innerEndDiameter must be a number greater than 0. Provided:", innerEndDiameter));
+  assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
+  assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
+  assert(is_bool(IncludeOrientationClip), str("IncludeOrientationClip must be a boolean. Provided:", IncludeOrientationClip));
+  assert(is_num($fn) && $fn >= 3 && floor($fn) == $fn, str("$fn must be an integer greater than or equal to 3. Provided:", $fn));
+
   heightStartShaft = 10;
   heightCutout= 4.45;
   heightCutoutTapper = 2.75;
@@ -6307,17 +6741,29 @@ module DysonConnector(
   innerRadius = innerDiameter/2;
   outerRadius = outerDiameter/2;
 
-  union() {
-    difference() {
-      union() {
-        difference() {
+  assert(is_num(dysonMinLength) && dysonMinLength > 0, str("dysonMinLength must be a number greater than 0. Provided:", dysonMinLength));
+  assert(is_num(dysonInnerDiameter) && dysonInnerDiameter > 0, str("dysonInnerDiameter must be a number greater than 0. Provided:", dysonInnerDiameter));
+  assert(is_num(dysonOuterDiameter) && dysonOuterDiameter > dysonInnerDiameter, str("dysonOuterDiameter must be greater than dysonInnerDiameter. outer=", dysonOuterDiameter, " inner=", dysonInnerDiameter));
+  assert(is_num(dysonWallThickenss) && dysonWallThickenss > 0, str("dysonWallThickenss must be a number greater than 0. Provided:", dysonWallThickenss));
+  assert(innerEndDiameter <= dysonOuterDiameter, str("innerEndDiameter must be less than or equal to dysonOuterDiameter. innerEndDiameter=", innerEndDiameter, " outerDiameter=", dysonOuterDiameter));
+  assert(length >= dysonMinLength, str("length must be at least dysonMinLength. length=", length, " minLength=", dysonMinLength));
+  assert(wallThickness <= innerEndDiameter/2, str("wallThickness must be less than or equal to half innerEndDiameter. wallThickness=", wallThickness, " innerEndDiameter=", innerEndDiameter));
+  assert(heightStartShaft > 0 && heightCutout > 0 && heightCutoutTapper > 0 && orientationClipHeight > 0, "Dyson core dimensions must be positive");
+  assert(heightMainShaft > 0 && height > 0, str("derived heights must be positive. heightMainShaft=", heightMainShaft, " height=", height));
+  assert(orientationClipLength > orientationClipCenter, str("orientationClipLength must be greater than orientationClipCenter. length=", orientationClipLength, " center=", orientationClipCenter));
+  assert(orentationClipwallThickness > 0, str("orentationClipwallThickness must be greater than 0. Provided:", orentationClipwallThickness));
+  assert(orientationClipWidth > 0 && orientationClipLength > 0, str("orientation clip dimensions must be positive. width=", orientationClipWidth, " length=", orientationClipLength));
+
+    union() {
+      difference() {
         //Main pipe
         pipe(
           diameter1 = innerEndDiameter,
           diameter2 = innerEndDiameter,
           length = length,
           wallThickness1 = wallThickness,
-          wallThickness2 = wallThickness);
+          wallThickness2 = wallThickness,
+          chamfer1 = [0.3,0.3]);
 
         //retaining ring
         Stopper(
@@ -6329,52 +6775,46 @@ module DysonConnector(
             wallThickness = 0,
             stopThickness = 1.5,
             zPosition = heightStartShaft);
-        }
+      }
 
-        // orientation clip
-        if(IncludeOrientationClip == true){
-          translate([0,0,orientationClipHeight])
-          difference() {
-            Stopper(
-              diameter = outerDiameter,
-              outer = true,
-              totalLength = orientationClipLength,
-              taper1 = 0.2,
-              taper2 = 0.2,
-              wallThickness = 0,
-              stopThickness = orentationClipwallThickness);
+      // orientation clip
+      if(IncludeOrientationClip == true){
+        translate([0,0,orientationClipHeight])
+        difference() {
+          Stopper(
+            diameter = outerDiameter,
+            outer = true,
+            totalLength = orientationClipLength,
+            taper1 = 0.2,
+            taper2 = 0.2,
+            wallThickness = 0,
+            stopThickness = orentationClipwallThickness);
 
-            clipCount = 4;
-            for(i=[0:1:clipCount-1])
-            {
-              rotate([0,0,i*360/clipCount])
-              difference() {
-                //Circle cutout for clip
-                translate([0,-outerRadius+4,-23/2+6.5]) rotate([90,0,0])
-                  union(){
-                    baseclipheight = orentationClipwallThickness*1.7;
-                  cylinder(r=23/2, h=baseclipheight);
-                  translate([0,0,baseclipheight-fudgeFactor])
-                  cylinder(r1=23/2, r2=25/2, h=orentationClipwallThickness);
-                  }
-                //Verticle clip lock
-               translate([0,-outerRadius,orientationClipWidth/2]) rotate([90,0,0])
-                 hull() {
-                    cylinder(d1=orientationClipWidth, d2=orientationClipWidth-0.5, h=orentationClipwallThickness);
-                  translate([0,orientationClipLength-orientationClipWidth,0])
-                    cylinder(d1=orientationClipWidth, d2=orientationClipWidth-0.5, h=orentationClipwallThickness);
+          clipCount = 4;
+          for(i=[0:1:clipCount-1])
+          {
+            rotate([0,0,i*360/clipCount])
+            difference() {
+              //Circle cutout for clip
+              translate([0,-outerRadius+4,-23/2+6.5]) rotate([90,0,0])
+                union(){
+                  baseclipheight = orentationClipwallThickness*1.7;
+                cylinder(r=23/2, h=baseclipheight);
+                translate([0,0,baseclipheight-fudgeFactor])
+                cylinder(r1=23/2, r2=25/2, h=orentationClipwallThickness);
                 }
+              //Verticle clip lock
+             translate([0,-outerRadius,orientationClipWidth/2]) rotate([90,0,0])
+               hull() {
+                  cylinder(d1=orientationClipWidth, d2=orientationClipWidth-0.5, h=orentationClipwallThickness);
+                translate([0,orientationClipLength-orientationClipWidth,0])
+                  cylinder(d1=orientationClipWidth, d2=orientationClipWidth-0.5, h=orentationClipwallThickness);
               }
             }
           }
         }
       }
-
-      //remove center
-      translate([0,0,-fudgeFactor])
-        cylinder(r=innerRadius, h=height+fudgeFactor*2);
     }
-  }
 }
 //CombinedEnd from path connector_dyson.scad
 //Combined from path connector_dw735.scad
@@ -6387,14 +6827,21 @@ module DysonConnector(
 
 Dw735Connector_demo = false;
 if(Dw735Connector_demo){
-
+  $fn = 128;
+  
   Dw735Connector(
     innerEndDiameter = dw735InnerDiameter,
     length = dw735MinLength,
     wallThickness = 2,
-    connectorCount = 1,
-    $fn = 128
-  );
+    connectorCount = 1);
+  
+  //this seems broken
+  translate([100,0,0])
+  Dw735Connector(
+    innerEndDiameter = dw735InnerDiameter,
+    length = dw735MinLength,
+    wallThickness = 2,
+    connectorCount = 5);    
 }
 
 dw735Version = "1.2";
@@ -6416,6 +6863,11 @@ module Dw735Connector(
   wallThickness,
   connectorCount = 1
 ){
+  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, str("innerEndDiameter must be a number greater than 0. Provided:", innerEndDiameter));
+  assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
+  assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
+  assert(is_num(connectorCount) && connectorCount >= 1 && floor(connectorCount) == connectorCount, str("connectorCount must be an integer greater than or equal to 1. Provided:", connectorCount));
+
   // Spring pin hole center distance
   springHoleOffset = 7.875;
   // Spring pin hole
@@ -6434,6 +6886,16 @@ module Dw735Connector(
   _connectorCount = max(1,connectorCount);
 
   slotAngle = (slotLength-slotDiameter)/(2*PI*(innerEndDiameter/2+wallThickness))*360;
+
+  assert(is_num(dw735MinLength) && dw735MinLength > 0, str("dw735MinLength must be a number greater than 0. Provided:", dw735MinLength));
+  assert(is_num(dw735InnerDiameter) && dw735InnerDiameter > 0, str("dw735InnerDiameter must be a number greater than 0. Provided:", dw735InnerDiameter));
+  assert(clearanceDiameter > innerEndDiameter, str("clearanceDiameter must be greater than innerEndDiameter. clearanceDiameter=", clearanceDiameter, " innerEndDiameter=", innerEndDiameter));
+  assert(slotLength > slotDiameter, str("slotLength must be greater than slotDiameter. slotLength=", slotLength, " slotDiameter=", slotDiameter));
+  assert(springHoleDiameter > 0, str("springHoleDiameter must be greater than 0. Provided:", springHoleDiameter));
+  assert(fixedPinLength > 0, str("fixedPinLength must be greater than 0. Provided:", fixedPinLength));
+  assert(maxSupportThickness > 0, str("maxSupportThickness must be greater than 0. Provided:", maxSupportThickness));
+  assert(clearanceHeight > 0, str("clearanceHeight must be greater than 0. Provided:", clearanceHeight));
+  assert(slotAngle >= 0, str("slotAngle must be greater than or equal to 0. Provided:", slotAngle));
 
   echo("Dw735Connector", innerEndDiameter=innerEndDiameter, length = length, wallThickness = wallThickness);
   rotate([0,0,-90])
@@ -6867,18 +7329,20 @@ makitaMaleSettings = ["makita_male", [
   [iSettingsVersion, makitaVersion]
   ]];
 
- /*
- makitaConnector(
-  innerEndDiameter = makitaOuterDiameter,
-  length = makitaMinLength,
-  wallThickness = 2);
- */
+connector_makita_demo = false;
 
-//MakitaMaleConnector();
+if(connector_makita_demo){
+  MakitaMaleConnector(
+    help=true, $fn=128);
+}
 
 module MakitaMaleConnector(
-  help,
+  help = false,
   $fn = 64){
+
+  assert(is_bool(help), "help must be a boolean");
+  assert(is_num($fn) && $fn >= 3 && floor($fn) == $fn, "$fn must be an integer >= 3");
+
   outerDiameter = makitaOuterDiameter;
   innerDiameter =  outerDiameter - makitaWallThickness*2;
 
@@ -6892,6 +7356,24 @@ module MakitaMaleConnector(
   makitaChamferLength = 4.5;
   endStopDiameter = 51;
   endStopLength = 4;
+
+  assert(is_num(makitaMinLength) && makitaMinLength > 0, "makitaMinLength must be a number greater than 0");
+  assert(is_num(makitaWallThickness) && makitaWallThickness > 0, "makitaWallThickness must be a number greater than 0");
+  assert(is_num(outerDiameter) && outerDiameter > 0, "outerDiameter must be a number greater than 0");
+  assert(is_num(innerDiameter) && innerDiameter > 0, "innerDiameter must be a number greater than 0");
+  assert(makitaWallThickness * 2 < outerDiameter, "makitaWallThickness is too large for outerDiameter");
+
+  assert(is_num(makitaRingClipRadius) && makitaRingClipRadius > 0, "makitaRingClipRadius must be a number greater than 0");
+  assert(is_num(makitaRingClipHeight) && makitaRingClipHeight > 0, "makitaRingClipHeight must be a number greater than 0");
+  assert(is_num(makitaRingClipPosition) && makitaRingClipPosition >= 0, "makitaRingClipPosition must be a number greater than or equal to 0");
+  assert(makitaRingClipPosition + makitaRingClipHeight <= makitaMinLength + fudgeFactor, "ring clip must fit within connector length");
+
+  assert(is_num(lowerInnerLipDiameter) && lowerInnerLipDiameter > 0, "lowerInnerLipDiameter must be a number greater than 0");
+  assert(is_num(lowerInnerLipLength) && lowerInnerLipLength > 0, "lowerInnerLipLength must be a number greater than 0");
+  assert(is_num(makitaChamfer) && makitaChamfer >= 0, "makitaChamfer must be a number greater than or equal to 0");
+  assert(is_num(makitaChamferLength) && makitaChamferLength >= 0, "makitaChamferLength must be a number greater than or equal to 0");
+  assert(is_num(endStopDiameter) && endStopDiameter >= outerDiameter, "endStopDiameter must be a number greater than or equal to outerDiameter");
+  assert(is_num(endStopLength) && endStopLength > 0 && endStopLength <= makitaMinLength, "endStopLength must be > 0 and <= makitaMinLength");
 
  echo("makitaConnector", innerDiameter = innerDiameter, outerDiameter=outerDiameter, makitaMinLength=makitaMinLength, makitaWallThickness = makitaWallThickness);
 
