@@ -80,7 +80,7 @@ module ExternalHoseThread(
         tip_height=tip_height == 0 ? ThreadPitch(diameter) : tip_height,
         pitch=pitch,
         tooth_angle=tooth_angle,
-        tooth_height=tooth_height,
+        tooth_height=min(tooth_height, pitch==0 ? ThreadPitch(diameter+wallThickness*2) : pitch),
         tip_min_fract=tip_min_fract,
         referenceThreadOuter= false);
 
