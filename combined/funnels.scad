@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'funnels.scad'. Generated 2026-06-15 23:33
-//Content hash 1B5CC900438863C2AF039CE1FC34A4CA28B078F9ABF206611F74C965911C545F
+//Combined version of 'funnels.scad'. Generated 2026-07-16 23:17
+//Content hash 4DF369533A620061BB5DC974893C0A5461959434918487380A5B22063BE8C882
 ///////////////////////////////////////
 // funnel
 // version 2026-02-27
@@ -4030,7 +4030,7 @@ module ExternalHoseThread(
         tip_height=tip_height == 0 ? ThreadPitch(diameter) : tip_height,
         pitch=pitch,
         tooth_angle=tooth_angle,
-        tooth_height=tooth_height,
+        tooth_height=min(tooth_height, pitch==0 ? ThreadPitch(diameter+wallThickness*2) : pitch),
         tip_min_fract=tip_min_fract,
         referenceThreadOuter= false);
 

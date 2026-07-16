@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-07-16 23:15
-//Content hash F142C0F0F32F5FDDBF3E244744F5A19CEA5BF72AA9142A03489D4336C68B8444
+//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-07-16 23:17
+//Content hash 224A03C7E117A23CDCE32BA0CCFBAB53A5452A39A51BCD199AB46D2C2571BA70
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -4356,7 +4356,7 @@ module ExternalHoseThread(
         tip_height=tip_height == 0 ? ThreadPitch(diameter) : tip_height,
         pitch=pitch,
         tooth_angle=tooth_angle,
-        tooth_height=tooth_height,
+        tooth_height=min(tooth_height, pitch==0 ? ThreadPitch(diameter+wallThickness*2) : pitch),
         tip_min_fract=tip_min_fract,
         referenceThreadOuter= false);
 
