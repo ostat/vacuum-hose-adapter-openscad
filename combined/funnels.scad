@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'funnels.scad'. Generated 2026-07-17 09:43
-//Content hash 226B2B780225366A0D93C7CA90BCB8E441226E74538A5CACF76AF01605CA89CB
+//Combined version of 'funnels.scad'. Generated 2026-07-16 23:44
+//Content hash 4E14DEE79B6E2F0A56EC518C82FF6DAC236BAD43F105E963A431E17E94D8EF95
 ///////////////////////////////////////
 // funnel
 // version 2026-02-27
@@ -7216,20 +7216,6 @@ module Dw735Connector(
 //Female documentation https://www.thingiverse.com/thing:4562762
 //Male documentation https://www.thingiverse.com/thing:4562789
 
-osvacCleantec_debug = false;
-
-if(osvacCleantec_debug && $preview){
-  $fn = 64;
-  //Test female connector
-  translate([0,-35,0])
-  osVacFemaleConnector(innerDiameter = 50, help=true);
-
-  //Test male connector
-  translate([0,35,0])
-  osVacMaleConnector(innerDiameter = 50, help=true);
-}
-
-
 /* Hidden */
 clipCount = 3;
 
@@ -7452,7 +7438,7 @@ module osVacMaleConnector(
             }
           }
 
-          pipe(
+          Pipe(
             diameter1 = outerDiameter+clipThickness*2+fudgeFactor,
             diameter2 = outerDiameter-fudgeFactor*2,
             length = clipTopTaperHeight,
@@ -7466,14 +7452,14 @@ module osVacMaleConnector(
       translate([0,0,0-fudgeFactor])
       cylinder(length+fudgeFactor*2, d=innerDiameter);
 
-      pipe(
+      Pipe(
         diameter1 = innerDiameter-fudgeFactor,
         diameter2 = innerDiameter-fudgeFactor,
         length = hoseEndTaper+fudgeFactor,
         wallThickness1 = hoseEndTaper,
         wallThickness2 = 0,
         zPosition = -fudgeFactor);
-      pipe(
+      Pipe(
         diameter1 = outerDiameter-hoseEndTaper*2,
         diameter2 = outerDiameter+hoseEndTaper*2,
         length = hoseEndTaper+hoseEndTaper,
