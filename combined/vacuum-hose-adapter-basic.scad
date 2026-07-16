@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-07-04 17:23
-//Content hash E154AAF095A78E609298F1B7164A1CA69DD02065EB29DCDA8679113FE56C8115
+//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-07-17 09:35
+//Content hash 01C522AF915EDF39C3842F7012A8CC2EB402BD2252FE3ACEFA6D1384722ED524
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -1888,122 +1888,6 @@ joinArray(helpText)
 ,"help=",help,"\n);\n"));
 else HelpTxt("Help",["titel",titel,"string",string,"help",help],help=1);
 }
-}
-
-module HexGrid(e=[11,4],es=5,center=true,name,help){
-
-  es=is_list(es)?es:[es*sin(60),es];
-  e=is_list(e)?e:[e,e,1];
-  $d=es.y;
-  $r=$d/2;
-  icenter=abs(b(center,bool=false));
-  //shifting for center and pattern change
-  yCor=(is_undef(useVersion)||useVersion>23.300)&&icenter?-es.y/4:0;
-  shift=[0,e.y>round(e.y)?-es.y/2:e.y<round(e.y)?0:yCor]+sign(b(center,bool=false))*(
-     icenter==2?[es.x/2,0]
-    :icenter==3?[es.x/3,0]
-    :icenter==4?[es.x,0]
-    :icenter==5?[es.x*2/3,0]
-    :icenter==6?[es.x*1/6,0]
-    :icenter==7?[es.x/(2/3),0]
-    :[0,0]);
-
-    Grid(e=e,es=es,center=center,name=name)
-      translate([shift.x,shift.y+( // shift for center and pattern
-        $idx[0]%2?is_list(es)?es[1]/2:es/2:
-                  0)
-      ]){
-// calculating $pos for post processing
-    $pos=$pos+[shift.x,shift.y+($idx[0]%2?is_list(es)?es[1]/2
-                                                      :es/2
-                                          :0),0];
-// pattern change by omiting elementst
-    if(e.y%1){
-      if(e.y<round(e.y)?$idx.y<round(e.y)-1||($idx.x+1)%2
-                       :$idx.y>0||($idx.x)%2)children();
-      }
-    else children();
-    }
-
-    MO(!$children);
-// info of Grid will be used additional for changed pattern this:
-  if(e.y%1)InfoTxt("HexGrid",["elements",round(e.x)*round(e.y)*(e.z?e.z:1)
-    - (e.y<round(e.y)?floor(round(e.x)/2):ceil(round(e.x)/2))
-    ],name);
-
-
-  HelpTxt("HexGrid",[
-    "e",e
-    ,"es",es
-    ,"center",center
-    ,"name",name]
-    ,help);
-}
-
-/** \name Grid \page Modifier
-Grid() children(); creates a grid of children
-\param e elements [x,y]
-\param es element spacing [x,y]
-\param s total space ↦ es
-\param center true/false
-*/
-// multiply children in a given matrix (e= number es =distance)
-
-module Grid(e=[2,2,1],es=10,s,center=true,name,help){
-
-     name=is_undef(name)?is_undef($info)?false:
-                                                   $info:
-                                   name;
-
-    function n0(e)=is_undef(e)?1:max(round(e),0);
-    function n0s(e)=max(e-1,1);// e-1 must not be 0
-    center=is_list(center)?v3(center):[center,center,center];
-    e=is_list(e)?is_num(e[2])?[max(round(e[0]),0),max(round(e[1]),0),n0(e[2])]:
-                    [round(e.x),round(e.y),1]: // z = 1
-        es[2]?[n0(e),n0(e),n0(e)]:
-        [n0(e),n0(e),1];
-
-    es=is_undef(s)?is_list(es)?is_num(es[2])?es:
-                                concat(es,[0]):
-                    is_undef(es)?[0:0:0]:
-                        [es,es,es]:
-       is_list(s)?is_num(s[2])?[s[0]/n0s(e[0]),s[1]/n0s(e[1]),s[2]/n0s(e[2])]:
-                    [s[0]/n0s(e[0]),s[1]/n0s(e[1]),0]:
-        [s/n0s(e[0]),s/n0s(e[1]),s/n0s(e[2])];
-
-   MO(!$children);
-   InfoTxt("Grid",[str("Gridsize(",e,")"),str(e[0]*e[1]*e[2]," elements= ",(e[0]-1)*es[0],"×",(e[1]-1)*es[1],"×",(e[2]-1)*es[2],"mm \n element spacing= ",es," mm",
-
-    center.x?str("\n\tX ",-(e[0]-1)*es[0]/2," ⇔ ",(e[0]-1)*es[0]/2," mm"):"",
-    center.y?str("\n\tY ",-(e[1]-1)*es[1]/2," ⇔ ",(e[1]-1)*es[1]/2," mm"):"",
-    center.z?str("\n\tZ ",-(e[2]-1)*es[2]/2," ⇔ ",(e[2]-1)*es[2]/2," mm"):"")
-    ],name);
-
-
-
-    HelpTxt("Grid",[
-    "e",e
-    ,"es",es
-    ,"s",[(e[0]-1)*es[0],(e[1]-1)*es[1],(e[2]-1)*es[2]]
-    ,"center",center
-    ,"name",name]
-    ,help);
-
-    centerPos=[
-   center.x?((1-e[0])*es[0])/2:0,
-   center.y?((1-e[1])*es[1])/2:0,
-   center.z?((1-e[2])*es[2])/2:0];
-
-   if(e.x&&e.y&&e.z) for(x=[0:e[0]-1],y=[0:e[1]-1],z=[0:e[2]-1]){
-       $idx=[x,y,z];
-       $idx2=[e.y*e.x*z+e.y*y+x,e.y*e.x*z+e.x*x+y];
-       $pos=[x*es.x,y*es.y,z*es.z]+centerPos;
-       $info=norm($idx)?false:name;
-       $tab=is_undef($tab)?1:b($tab,false)+1;
-       $es=es;
-      // $helpM=norm($idx)?false:$helpM;
-       translate([x*es[0],y*es[1],z*es[2]]+centerPos)children();
-   }
 }
 //CombinedEnd from path ub.scad
 //Combined from path constants.scad
@@ -4597,7 +4481,7 @@ module ExternalHoseThread(
         tip_height=tip_height == 0 ? ThreadPitch(diameter) : tip_height,
         pitch=pitch,
         tooth_angle=tooth_angle,
-        tooth_height=tooth_height,
+        tooth_height=min(tooth_height, pitch==0 ? ThreadPitch(diameter+wallThickness*2) : pitch),
         tip_min_fract=tip_min_fract,
         referenceThreadOuter= false);
 
@@ -6741,20 +6625,6 @@ module Dw735Connector(
 //Female documentation https://www.thingiverse.com/thing:4562762
 //Male documentation https://www.thingiverse.com/thing:4562789
 
-osvacCleantec_debug = false;
-
-if(osvacCleantec_debug && $preview){
-  $fn = 64;
-  //Test female connector
-  translate([0,-35,0])
-  osVacFemaleConnector(innerDiameter = 50, help=true);
-
-  //Test male connector
-  translate([0,35,0])
-  osVacMaleConnector(innerDiameter = 50, help=true);
-}
-
-
 /* Hidden */
 clipCount = 3;
 
@@ -6977,7 +6847,7 @@ module osVacMaleConnector(
             }
           }
 
-          pipe(
+          Pipe(
             diameter1 = outerDiameter+clipThickness*2+fudgeFactor,
             diameter2 = outerDiameter-fudgeFactor*2,
             length = clipTopTaperHeight,
@@ -6991,14 +6861,14 @@ module osVacMaleConnector(
       translate([0,0,0-fudgeFactor])
       cylinder(length+fudgeFactor*2, d=innerDiameter);
 
-      pipe(
+      Pipe(
         diameter1 = innerDiameter-fudgeFactor,
         diameter2 = innerDiameter-fudgeFactor,
         length = hoseEndTaper+fudgeFactor,
         wallThickness1 = hoseEndTaper,
         wallThickness2 = 0,
         zPosition = -fudgeFactor);
-      pipe(
+      Pipe(
         diameter1 = outerDiameter-hoseEndTaper*2,
         diameter2 = outerDiameter+hoseEndTaper*2,
         length = hoseEndTaper+hoseEndTaper,
