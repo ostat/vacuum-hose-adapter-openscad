@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-06-15 23:33
-//Content hash E7F539D549568EB8F120FB7FB16E26CA3E6944836CD6138CE8EBC81958405BEF
+//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-07-16 23:15
+//Content hash F142C0F0F32F5FDDBF3E244744F5A19CEA5BF72AA9142A03489D4336C68B8444
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -52,7 +52,7 @@ End1_Hose_EndCap_GridSize = 0;  //0.1
 //Thickness of the walls in the end cap
 End1_Hose_EndCap_GridWallThickness = 0;  //0.1
 // Enable threads Thread side matches Measurement side. Beta feature does not work with taper.
-End1_Hose_Enable_Threads = "disabled"; //["disabled", "enabled", "reversed"]
+End1_Hose_Enable_Threads = "disabled"; //[disabled: disabled, enabled: enabled (left-hand), reversed: standard (right-hand)]
 // Thread Pitch
 End1_Hose_Threads_Pitch = 0;
 // Thread Tooth Angle
@@ -179,7 +179,7 @@ End2_Hose_EndCap_GridSize = 0;  //0.1
 //Thickness of the walls in the end cap
 End2_Hose_EndCap_GridWallThickness = 0;  //0.1
 // Enable threads Thread side matches Measurement side. Beta feature does not work with taper.
-End2_Hose_Enable_Threads = "disabled"; //["disabled", "enabled", "reversed"]
+End2_Hose_Enable_Threads = "disabled"; //[disabled: disabled, enabled: enabled (left-hand), reversed: standard (right-hand)]
 // Thread Pitch
 End2_Hose_Threads_Pitch = 0;
 // Thread Tooth Angle
@@ -277,7 +277,7 @@ End3_Hose_EndCap_GridSize = 0;  //0.1
 //Thickness of the walls in the end cap
 End3_Hose_EndCap_GridWallThickness = 0;  //0.1
 // Enable threads Thread side matches Measurement side. Beta feature does not work with taper.
-End3_Hose_Enable_Threads = "disabled"; //["disabled", "enabled", "reversed"]
+End3_Hose_Enable_Threads = "disabled"; //[disabled: disabled, enabled: enabled (left-hand), reversed: standard (right-hand)]
 // Thread Pitch
 End3_Hose_Threads_Pitch = 0;
 // Thread Tooth Angle
