@@ -60,18 +60,18 @@ if(debug_pipe){
 
   translate([0,150,0])
   pipe_demo_helper(
-      diameter1=50,
-      diameter2=25,
+      diameter1=40,
+      diameter2=20,
       length=50,
       wallThickness = 2);
 
   translate([75,150, 0])
   pipe_demo_helper(
-      diameter1=50,
-      diameter2=25,
+      diameter1=40,
+      diameter2=20,
       length=50,
       wallThickness = 2,
-      Offset = [15,0]);
+      Offset = [5,0]);
 
 
   wallthicknessess = [10, 1];
