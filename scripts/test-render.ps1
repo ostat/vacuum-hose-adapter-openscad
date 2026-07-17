@@ -52,31 +52,31 @@ function Start-ProcessWithOutputs
        StandardOutput= New-Object -TypeName System.Text.StringBuilder
        StandardError = New-Object -TypeName System.Text.StringBuilder}
 
-    $pinfo = New-object System.Diagnostics.ProcessStartInfo 
+    $pinfo = New-object System.Diagnostics.ProcessStartInfo
     $pinfo.FileName = $commandPath
-    $pinfo.CreateNoWindow = $true 
-    $pinfo.UseShellExecute = $false 
-    $pinfo.RedirectStandardOutput = $true 
-    $pinfo.RedirectStandardError = $true 
+    $pinfo.CreateNoWindow = $true
+    $pinfo.UseShellExecute = $false
+    $pinfo.RedirectStandardOutput = $true
+    $pinfo.RedirectStandardError = $true
     $pinfo.Arguments = $ArgumentList
 
-    $Process = New-Object System.Diagnostics.Process 
-    $Process.StartInfo = $pinfo 
+    $Process = New-Object System.Diagnostics.Process
+    $Process.StartInfo = $pinfo
 
-    $ProcessOutputEventAction = { 
+    $ProcessOutputEventAction = {
         if (![string]::IsNullOrEmpty($EventArgs.Data)){
             $Event.MessageData.StandardOutput.AppendLine($EventArgs.Data)
         }
     }
 
-    $ProcessErrorEventAction = { 
+    $ProcessErrorEventAction = {
         if (![string]::IsNullOrEmpty($EventArgs.Data)){
             $Event.MessageData.StandardError.AppendLine($EventArgs.Data)
         }
     }
 
-    $OutputDataReceivedEvent = Register-ObjectEvent -SourceIdentifier $StandardOutputSourceIdentifier -InputObject $Process -EventName "OutputDataReceived" -Action $ProcessOutputEventAction -messagedata $messagedata 
-    $ErrorDataReceivedEvent = Register-ObjectEvent -SourceIdentifier $StandardErrorSourceIdentifier -InputObject $Process -EventName "ErrorDataReceived" -Action $ProcessErrorEventAction -messagedata $messagedata 
+    $OutputDataReceivedEvent = Register-ObjectEvent -SourceIdentifier $StandardOutputSourceIdentifier -InputObject $Process -EventName "OutputDataReceived" -Action $ProcessOutputEventAction -messagedata $messagedata
+    $ErrorDataReceivedEvent = Register-ObjectEvent -SourceIdentifier $StandardErrorSourceIdentifier -InputObject $Process -EventName "ErrorDataReceived" -Action $ProcessErrorEventAction -messagedata $messagedata
 
     $executionTime = Measure-Command {
         $Process.Start() | Out-Null
@@ -84,23 +84,62 @@ function Start-ProcessWithOutputs
         $Process.BeginOutputReadLine()
         $Process.WaitForExit()
     }
-    
-    Start-Sleep -Milliseconds 200 
+
+    Start-Sleep -Milliseconds 200
 
     Unregister-Event -SourceIdentifier $StandardOutputSourceIdentifier
     Unregister-Event -SourceIdentifier $StandardErrorSourceIdentifier
 
     return [pscustomobject]@{
         commandTitle = $commandTitle
-        ExitCode = $Process.ExitCode; 
-        stdout = $messagedata.StandardOutput.ToString(); 
-        stderr = $messagedata.StandardError.ToString(); 
+        ExitCode = $Process.ExitCode;
+        stdout = $messagedata.StandardOutput.ToString();
+        stderr = $messagedata.StandardError.ToString();
         ExitTime = $Process.ExitTime;
         StartTime = $Process.StartTime;
         executionTime = $executionTime
     }
 }
+function Test-OpenSCAD(
+        $TargetFile,
+        [bool]$saveResults = $false,
+        $cmdArgsInput = '',
+        $saveAppend = '')
+{
+    $scadScriptPath = $TargetFile.FullName
 
+    Write-Host "`r`nTesting '$($scadScriptPath)' input_args:'$($cmdArgsInput)'"
+
+    $cmdArgs = ''
+    if($saveResults) {
+        $cmdArgs += " -o `"$(Join-Path $outputScriptFolderPath $TargetFile.BaseName)$($saveAppend).stl`""
+    }
+    else {
+        $cmdArgs += " -o NUL"
+    }
+
+    $cmdArgs += $cmdArgsInput
+    $cmdArgs += " --export-format binstl"
+    $cmdArgs += " --enable textmetrics"
+    $cmdArgs += " --backend Manifold"
+
+    $cmdArgs += " $($scadScriptPath)"
+    Write-Host  $cmdArgs
+    $executionResult = (Start-ProcessWithOutputs -commandPath $script:OpenScadPath -ArgumentList $cmdArgs)
+
+    write-host "openscad executionTime: $($executionResult.executionTime)"
+
+    # Check for warnings/errors
+    if ($executionResult.stderr -match '(?im)^(warning|error):' -or $executionResult.ExitCode -ne 0) {
+        Write-Warning "OpenSCAD warnings/errors in $($TargetFile.Name)"
+        write-warning "stderr: $($executionResult.stderr)"
+        return $false
+    } else {
+        write-Host "ExitCode: $($executionResult.ExitCode)" -ForegroundColor Green
+        #write-Host "stderr: $($executionResult.stderr)"
+        return $true
+    }
+}
 $ErrorActionPreference = "Stop"
 
 $failed = $false
@@ -115,35 +154,23 @@ $ScadScriptFolders |ForEach-Object {
     }
 
     Get-ChildItem -LiteralPath $ScadScriptFolder -Filter *.scad | ForEach-Object {
-    $scadScriptPath = $_.FullName
+    $TargetFile = $_
+    if($TargetFile.BaseName -ieq 'vacuum-hose-adapter'){
 
-    Write-Host "`r`nTesting $($_.FullName)"
-    
-    $cmdArgs = ""
-    $cmdArgs += " --export-format binstl"
-    $cmdArgs += " --enable textmetrics"
-    $cmdArgs += " --backend Manifold"
-
-    if($saveResults) {
-        $cmdArgs += " -o `"$(Join-Path $outputScriptFolderPath $_.BaseName).stl`""
-    }
-    else {
-        $cmdArgs += " -o NUL"
-    }
-    $cmdArgs += " $($scadScriptPath)"
-
-    $executionResult = (Start-ProcessWithOutputs -commandPath $script:OpenScadPath -ArgumentList $cmdArgs)
-
-    write-host "openscad executionTime: $($executionResult.executionTime)"
-
-    # Check for warnings/errors
-    if ($executionResult.stderr -match '(?im)^(warning|error):' -or $executionResult.ExitCode -ne 0) {
-        Write-Warning "OpenSCAD warnings/errors in $($_.Name)"
-        write-warning "stderr: $($executionResult.stderr)"
-        $failed = $true
+        $styles = @('mag', 'flange', 'hose', 'dyson', 'camlock', 'dw735', 'centec_female', 'centec_male', 'osvacm32', 'osvacm', 'osvacf32', 'osvacf', 'makita_male')
+        $styles | ForEach-Object {
+            $style = $_
+            $input_args  = " -D `"End1_Style=`"`"$($style)`"`"`""
+            $success = Test-OpenSCAD -TargetFile $TargetFile -saveResults $saveResults -cmdArgsInput $input_args -SaveAppend $style
+            if(!$success){
+                $failed = $true
+            }
+        }
     } else {
-        write-Host "ExitCode: $($executionResult.ExitCode)"
-        #write-Host "stderr: $($executionResult.stderr)"
+        $success = Test-OpenSCAD -TargetFile $TargetFile -saveResults $saveResults
+        if(!$success){
+            $failed = $true
+        }
     }
 }}
 
