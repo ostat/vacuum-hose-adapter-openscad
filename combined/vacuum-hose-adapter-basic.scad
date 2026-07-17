@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-07-17 18:55
-//Content hash 930EE7683F83F995CF45AD5910174A33A68393877B8F346344C10E7999BBDBE8
+//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-07-17 10:18
+//Content hash 85399FA9D297F0E9A17671126FE158986624307F859C6428F71B8737E87F3BF7
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -7262,20 +7262,6 @@ module Dw735Connector(
 //Female documentation https://www.thingiverse.com/thing:4562762
 //Male documentation https://www.thingiverse.com/thing:4562789
 
-osvacCleantec_debug = false;
-
-if(osvacCleantec_debug && $preview){
-  $fn = 64;
-  //Test female connector
-  translate([0,-35,0])
-  osVacFemaleConnector(innerDiameter = 50, help=true);
-
-  //Test male connector
-  translate([0,35,0])
-  osVacMaleConnector(innerDiameter = 50, help=true);
-}
-
-
 /* Hidden */
 clipCount = 3;
 
@@ -7390,7 +7376,7 @@ module osVacFemaleConnector(
           rotate([0,0,i])
           union(){
           translate([0,-cutoutWidth/2,-fudgeFactor])
-            rounded_cube(
+            roundedCube(
               size=[cutoutRadius,cutoutWidth,cutoutDepthz],
               topRadius = 0,
               bottomRadius = 0,
@@ -7398,7 +7384,7 @@ module osVacFemaleConnector(
 
            rotate([0,0,cutoutArcAngle])
            translate([0,-cutoutWidth/2,cutoutDepthz-cutoutHeight-fudgeFactor])
-            rounded_cube(
+            roundedCube(
               size=[cutoutRadius,cutoutWidth,cutoutHeight],
               topRadius = 0,
               bottomRadius = 0,
@@ -7484,12 +7470,12 @@ module osVacMaleConnector(
               rotate([0,0,i])
               translate([outerDiameter/2-clipThickness,-clipWidth/2,-fudgeFactor])
                 hull(){
-                  rounded_cube(
+                  roundedCube(
                     size=[clipThickness,clipWidth,clipHeight],
                     topRadius = 0,
                     bottomRadius = 1,
                     sideRadius = 1);
-                  rounded_cube(
+                  roundedCube(
                     size=[clipThickness,clipWidth,clipHeight],
                     topRadius = 0,
                     bottomRadius = 1,
@@ -7498,7 +7484,7 @@ module osVacMaleConnector(
             }
           }
 
-          pipe(
+          Pipe(
             diameter1 = outerDiameter+clipThickness*2+fudgeFactor,
             diameter2 = outerDiameter-fudgeFactor*2,
             length = clipTopTaperHeight,
@@ -7512,14 +7498,14 @@ module osVacMaleConnector(
       translate([0,0,0-fudgeFactor])
       cylinder(length+fudgeFactor*2, d=innerDiameter);
 
-      pipe(
+      Pipe(
         diameter1 = innerDiameter-fudgeFactor,
         diameter2 = innerDiameter-fudgeFactor,
         length = hoseEndTaper+fudgeFactor,
         wallThickness1 = hoseEndTaper,
         wallThickness2 = 0,
         zPosition = -fudgeFactor);
-      pipe(
+      Pipe(
         diameter1 = outerDiameter-hoseEndTaper*2,
         diameter2 = outerDiameter+hoseEndTaper*2,
         length = hoseEndTaper+hoseEndTaper,
