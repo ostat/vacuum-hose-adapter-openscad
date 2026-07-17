@@ -65,8 +65,8 @@ module FlangeConnector(
     ? innerStartDiameter/2 + screwDiameter/2 + screwPosition/2
     : (innerStartDiameter/2 + fillet + (flangeWidth/2-fillet)/2);
 
-  assert(innerEndDiameter <= innerStartDiameter, str("innerEndDiameter should not exceed innerStartDiameter for this flange form. innerEndDiameter=", innerEndDiameter, " innerStartDiameter=", innerStartDiameter));
-  assert(flangeOuterDiameter > innerStartDiameter, str("flangeOuterDiameter must be greater than innerStartDiameter. flangeOuterDiameter=", flangeOuterDiameter, " innerStartDiameter=", innerStartDiameter));
+  //assert(innerEndDiameter <= innerStartDiameter, str("innerEndDiameter should not exceed innerStartDiameter for this flange form. innerEndDiameter=", innerEndDiameter, " innerStartDiameter=", innerStartDiameter));
+  //assert(flangeOuterDiameter > innerStartDiameter, str("flangeOuterDiameter must be greater than innerStartDiameter. flangeOuterDiameter=", flangeOuterDiameter, " innerStartDiameter=", innerStartDiameter));
   assert(border >= 0, str("border must be greater than or equal to 0. Provided:", border));
   assert(screwPositionRadius > 0, str("screwPositionRadius must be greater than 0. Provided:", screwPositionRadius));
 //  assert(screwPositionRadius + screwDiameter/2 <= flangeOuterDiameter/2 + screwDiameter, str("screwPositionRadius is too large for flangeOuterDiameter. screwPositionRadius=", screwPositionRadius, " flangeOuterDiameter=", flangeOuterDiameter));

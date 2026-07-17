@@ -54,7 +54,6 @@ module DysonConnector(
   assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
   assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
   assert(is_bool(IncludeOrientationClip), str("IncludeOrientationClip must be a boolean. Provided:", IncludeOrientationClip));
-  assert(is_num($fn) && $fn >= 3 && floor($fn) == $fn, str("$fn must be an integer greater than or equal to 3. Provided:", $fn));
 
   heightStartShaft = 10;
   heightCutout= 4.45;

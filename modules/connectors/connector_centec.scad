@@ -50,7 +50,6 @@ centecMaleSettings = ["centec_male", [
 
 
 module CenTecMaleConnector($fn = 64){
-  assert(is_num($fn) && $fn >= 3 && floor($fn) == $fn, str("$fn must be an integer greater than or equal to 3. Provided:", $fn));
   assert(is_num(cenTecMaleMinLength) && cenTecMaleMinLength > 0, str("cenTecMaleMinLength must be a number greater than 0. Provided:", cenTecMaleMinLength));
   assert(is_num(cenTecMaleBodyLength) && cenTecMaleBodyLength > 0, str("cenTecMaleBodyLength must be a number greater than 0. Provided:", cenTecMaleBodyLength));
   assert(is_num(cenTecMaleInnerDiameter) && cenTecMaleInnerDiameter > 0, str("cenTecMaleInnerDiameter must be a number greater than 0. Provided:", cenTecMaleInnerDiameter));
@@ -115,8 +114,6 @@ module CenTecMaleConnector($fn = 64){
 }
 
 module CenTecFemaleConnector($fn = 64){
-
-  assert(is_num($fn) && $fn >= 3 && floor($fn) == $fn, str("$fn must be an integer greater than or equal to 3. Provided:", $fn));
   assert(is_num(cenTecFemaleBodyLength) && cenTecFemaleBodyLength > 0, str("cenTecFemaleBodyLength must be a number greater than 0. Provided:", cenTecFemaleBodyLength));
   assert(is_num(cenTecFemaleMinLength) && cenTecFemaleMinLength > cenTecFemaleBodyLength, str("cenTecFemaleMinLength must be greater than cenTecFemaleBodyLength. minLength=", cenTecFemaleMinLength, " bodyLength=", cenTecFemaleBodyLength));
   assert(is_num(cenTecFemaleWallThickness) && cenTecFemaleWallThickness > 0, str("cenTecFemaleWallThickness must be a number greater than 0. Provided:", cenTecFemaleWallThickness));

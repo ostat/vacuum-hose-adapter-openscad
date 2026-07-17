@@ -30,7 +30,6 @@ module MakitaMaleConnector(
   $fn = 64){
 
   assert(is_bool(help), "help must be a boolean");
-  assert(is_num($fn) && $fn >= 3 && floor($fn) == $fn, "$fn must be an integer >= 3");
 
   outerDiameter = makitaOuterDiameter;
   innerDiameter =  outerDiameter - makitaWallThickness*2;

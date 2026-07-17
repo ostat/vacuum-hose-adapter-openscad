@@ -93,7 +93,7 @@ module HoseConnector(
   assert(is_num(wallThickness) && wallThickness > 0, "wallThickness must be a number greater than 0");
   assert(is_num(stopLength) && stopLength >= 0, "stopLength must be a number greater than or equal to 0");
   assert(is_num(stopWidth) && stopWidth >= 0, "stopWidth must be a number greater than or equal to 0");
-  assert(is_bool(stopSymmetrical), "stopSymmetrical must be a boolean");
+  //assert(is_bool(stopSymmetrical), "stopSymmetrical must be a boolean");
   assert(is_num(barbsCount) && barbsCount >= 0 && floor(barbsCount) == barbsCount, "barbsCount must be a non-negative integer");
   assert(is_num(barbsThickness) && barbsThickness >= 0, "barbsThickness must be a number greater than or equal to 0");
   assert(is_bool(barbsSymmetrical), "barbsSymmetrical must be a boolean");

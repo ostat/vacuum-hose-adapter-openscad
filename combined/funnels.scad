@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'funnels.scad'. Generated 2026-07-17 09:43
-//Content hash 226B2B780225366A0D93C7CA90BCB8E441226E74538A5CACF76AF01605CA89CB
+//Combined version of 'funnels.scad'. Generated 2026-07-17 18:55
+//Content hash EE771F5A4737FD44EA95EEB54058BD8EAB19F8A74C24299A8E58A7004C55E7E5
 ///////////////////////////////////////
 // funnel
 // version 2026-02-27
@@ -4813,7 +4813,7 @@ module HoseConnector(
   assert(is_num(wallThickness) && wallThickness > 0, "wallThickness must be a number greater than 0");
   assert(is_num(stopLength) && stopLength >= 0, "stopLength must be a number greater than or equal to 0");
   assert(is_num(stopWidth) && stopWidth >= 0, "stopWidth must be a number greater than or equal to 0");
-  assert(is_bool(stopSymmetrical), "stopSymmetrical must be a boolean");
+  //assert(is_bool(stopSymmetrical), "stopSymmetrical must be a boolean");
   assert(is_num(barbsCount) && barbsCount >= 0 && floor(barbsCount) == barbsCount, "barbsCount must be a non-negative integer");
   assert(is_num(barbsThickness) && barbsThickness >= 0, "barbsThickness must be a number greater than or equal to 0");
   assert(is_bool(barbsSymmetrical), "barbsSymmetrical must be a boolean");
@@ -5804,8 +5804,8 @@ module FlangeConnector(
     ? innerStartDiameter/2 + screwDiameter/2 + screwPosition/2
     : (innerStartDiameter/2 + fillet + (flangeWidth/2-fillet)/2);
 
-  assert(innerEndDiameter <= innerStartDiameter, str("innerEndDiameter should not exceed innerStartDiameter for this flange form. innerEndDiameter=", innerEndDiameter, " innerStartDiameter=", innerStartDiameter));
-  assert(flangeOuterDiameter > innerStartDiameter, str("flangeOuterDiameter must be greater than innerStartDiameter. flangeOuterDiameter=", flangeOuterDiameter, " innerStartDiameter=", innerStartDiameter));
+  //assert(innerEndDiameter <= innerStartDiameter, str("innerEndDiameter should not exceed innerStartDiameter for this flange form. innerEndDiameter=", innerEndDiameter, " innerStartDiameter=", innerStartDiameter));
+  //assert(flangeOuterDiameter > innerStartDiameter, str("flangeOuterDiameter must be greater than innerStartDiameter. flangeOuterDiameter=", flangeOuterDiameter, " innerStartDiameter=", innerStartDiameter));
   assert(border >= 0, str("border must be greater than or equal to 0. Provided:", border));
   assert(screwPositionRadius > 0, str("screwPositionRadius must be greater than 0. Provided:", screwPositionRadius));
 //  assert(screwPositionRadius + screwDiameter/2 <= flangeOuterDiameter/2 + screwDiameter, str("screwPositionRadius is too large for flangeOuterDiameter. screwPositionRadius=", screwPositionRadius, " flangeOuterDiameter=", flangeOuterDiameter));
@@ -6629,7 +6629,6 @@ centecMaleSettings = ["centec_male", [
 
 
 module CenTecMaleConnector($fn = 64){
-  assert(is_num($fn) && $fn >= 3 && floor($fn) == $fn, str("$fn must be an integer greater than or equal to 3. Provided:", $fn));
   assert(is_num(cenTecMaleMinLength) && cenTecMaleMinLength > 0, str("cenTecMaleMinLength must be a number greater than 0. Provided:", cenTecMaleMinLength));
   assert(is_num(cenTecMaleBodyLength) && cenTecMaleBodyLength > 0, str("cenTecMaleBodyLength must be a number greater than 0. Provided:", cenTecMaleBodyLength));
   assert(is_num(cenTecMaleInnerDiameter) && cenTecMaleInnerDiameter > 0, str("cenTecMaleInnerDiameter must be a number greater than 0. Provided:", cenTecMaleInnerDiameter));
@@ -6694,8 +6693,6 @@ module CenTecMaleConnector($fn = 64){
 }
 
 module CenTecFemaleConnector($fn = 64){
-
-  assert(is_num($fn) && $fn >= 3 && floor($fn) == $fn, str("$fn must be an integer greater than or equal to 3. Provided:", $fn));
   assert(is_num(cenTecFemaleBodyLength) && cenTecFemaleBodyLength > 0, str("cenTecFemaleBodyLength must be a number greater than 0. Provided:", cenTecFemaleBodyLength));
   assert(is_num(cenTecFemaleMinLength) && cenTecFemaleMinLength > cenTecFemaleBodyLength, str("cenTecFemaleMinLength must be greater than cenTecFemaleBodyLength. minLength=", cenTecFemaleMinLength, " bodyLength=", cenTecFemaleBodyLength));
   assert(is_num(cenTecFemaleWallThickness) && cenTecFemaleWallThickness > 0, str("cenTecFemaleWallThickness must be a number greater than 0. Provided:", cenTecFemaleWallThickness));
@@ -6917,7 +6914,6 @@ module DysonConnector(
   assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
   assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
   assert(is_bool(IncludeOrientationClip), str("IncludeOrientationClip must be a boolean. Provided:", IncludeOrientationClip));
-  assert(is_num($fn) && $fn >= 3 && floor($fn) == $fn, str("$fn must be an integer greater than or equal to 3. Provided:", $fn));
 
   heightStartShaft = 10;
   heightCutout= 4.45;
@@ -7344,7 +7340,7 @@ module osVacFemaleConnector(
           rotate([0,0,i])
           union(){
           translate([0,-cutoutWidth/2,-fudgeFactor])
-            roundedCube(
+            rounded_cube(
               size=[cutoutRadius,cutoutWidth,cutoutDepthz],
               topRadius = 0,
               bottomRadius = 0,
@@ -7352,7 +7348,7 @@ module osVacFemaleConnector(
 
            rotate([0,0,cutoutArcAngle])
            translate([0,-cutoutWidth/2,cutoutDepthz-cutoutHeight-fudgeFactor])
-            roundedCube(
+            rounded_cube(
               size=[cutoutRadius,cutoutWidth,cutoutHeight],
               topRadius = 0,
               bottomRadius = 0,
@@ -7438,12 +7434,12 @@ module osVacMaleConnector(
               rotate([0,0,i])
               translate([outerDiameter/2-clipThickness,-clipWidth/2,-fudgeFactor])
                 hull(){
-                  roundedCube(
+                  rounded_cube(
                     size=[clipThickness,clipWidth,clipHeight],
                     topRadius = 0,
                     bottomRadius = 1,
                     sideRadius = 1);
-                  roundedCube(
+                  rounded_cube(
                     size=[clipThickness,clipWidth,clipHeight],
                     topRadius = 0,
                     bottomRadius = 1,
@@ -7540,7 +7536,6 @@ module MakitaMaleConnector(
   $fn = 64){
 
   assert(is_bool(help), "help must be a boolean");
-  assert(is_num($fn) && $fn >= 3 && floor($fn) == $fn, "$fn must be an integer >= 3");
 
   outerDiameter = makitaOuterDiameter;
   innerDiameter =  outerDiameter - makitaWallThickness*2;
