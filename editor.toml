@@ -119,6 +119,7 @@ collapsed = true
 
 [[model]]
 file = "vacuum-hose-adapter-basic.scad"
+preview-style = "colors"
 template = ["section-connector-1",
     "section-connector-1---hose-connector",
     "section-transition",
@@ -130,6 +131,7 @@ template = ["section-connector-1",
 
 [[model]]
 file = "vacuum-hose-adapter.scad"
+preview-style = "colors"
 template = [
     "section-connector-1",
     "section-connector-1---hose-connector",
@@ -157,3 +159,4 @@ template = [
 
 [[model]]
 file = "funnels.scad"
+preview-style = "colors"

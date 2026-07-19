@@ -201,13 +201,13 @@ module CenTecFemaleConnector($fn = 64){
       translate([0,connectorInnerEndRadius+wallThickness/2,slideLength/2-pinHoleHeight/2])
       rotate([90,0,0])
       cube([pinHoleWidth,slideLength+pinHoleHeight, wallThickness*2], center = true);
-      /*roundedCube(
+      centecRoundedCube(
         x=pinHoleWidth,
         y=slideLength+pinHoleHeight,//max(pinHoleWidth,pinHoleHeight),
         h=wallThickness*2,
         r1=0.1,
         r2=1,
-        center = true);*/
+        center = true);
 
       translate([0,0,slideLength+slideTaper])
       mirror([0,0,1])

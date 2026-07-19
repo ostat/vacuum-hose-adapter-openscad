@@ -355,12 +355,12 @@ module pipe_with_offset(
 // Basic revolve-based pipe without endpoint XY offset support.
 // Parameters:
 // diameter: Optional single inner diameter override for both ends.
-// diameter1: Inner diameter at the start of the pipe.
-// diameter2: Inner diameter at the end of the pipe.
+// diameter1: Inner diameter at the start of the pipe, where z = 0.
+// diameter2: Inner diameter at the end of the pipe, where z = length.
 // length: Pipe length along Z.
 // wallThickness: Optional single wall thickness override for both ends.
-// wallThickness1: Wall thickness at the start.
-// wallThickness2: Wall thickness at the end.
+// wallThickness1: Wall thickness at the start, where z = 0.
+// wallThickness2: Wall thickness at the end, where z = length.
 // zPosition: Z offset for placing the pipe.
 // chamfer: Optional single chamfer value/vector applied to both ends.
 // chamfer1: Start-end chamfer [inner, outer].

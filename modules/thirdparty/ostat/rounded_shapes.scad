@@ -314,7 +314,7 @@ module rounded_cube(
   supReduction_x_offset = [auto_support_reduction(supportReduction_x[0], bottomRadius), auto_support_reduction(supportReduction_x[1], topRadius)];
   supReduction_y_offset = [auto_support_reduction(supportReduction_y[0], bottomRadius), auto_support_reduction(supportReduction_y[1], topRadius)];
 
-  echo("rounded_cube", supReduction_x=supReduction_x, supReduction_y=supReduction_y, supReduction_z=supReduction_z, supReduction_x_offset=supReduction_x_offset, supReduction_y_offset=supReduction_y_offset);
+  //echo("rounded_cube", supReduction_x=supReduction_x, supReduction_y=supReduction_y, supReduction_z=supReduction_z, supReduction_x_offset=supReduction_x_offset, supReduction_y_offset=supReduction_y_offset);
   
   positions=[
      [[sideRadius                         ,sideRadius]                        ,[0,0],[0,0,180]]
