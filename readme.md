@@ -11,6 +11,16 @@ to connect it to. Besides fitting the dimensions, it is also possible to design
 the adapters with a tapered shape that ensures a secure and snug fit, preventing
 any air leaks that might reduce the suction power of your vacuum.
 
+# Availability
+Official availability
+ - Online: https://hose-adapter.ostat.com/vacuum-hose-adapter
+ - Printables: https://www.printables.com/model/316283-vacuum-nozzles-for-all-common-hose-sizes
+ - MakerWorld: https://makerworld.com/en/models/481868-parametric-vacuum-hose-connector#profileId-396315
+
+# Documentation
+Official documentation
+- https://docs.ostat.com/docs/openscad/hose-adapter
+
 ## Connection types
 
 Three different types of connections are possible to maximize the number of
