@@ -3,7 +3,7 @@ name = "Ostat hose and pipe adapter"
 uri = "https://github.com/ostat/vacuum-hose-adapter-openscad"
 export-filename-prefix = "hose"
 mode = "multi"
-head-extra = '<script defer src="https://um.ostat.com/script.js" data-website-id="vacuum-hose-adapter-openscad"></script>'
+head-extra = '<script defer src="https://um.ostat.com/script.js" data-website-id="f938fec1-6763-48b2-8e33-df75a6337f57"></script>'
 
 [openscad]
 enable-features = ["textmetrics"]
