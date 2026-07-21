@@ -3,7 +3,7 @@ name = "Ostat hose and pipe adapter"
 uri = "https://github.com/ostat/vacuum-hose-adapter-openscad"
 export-filename-prefix = "hose"
 mode = "multi"
-head-extra = ''
+head-extra = '<script defer src="https://um.ostat.com/script.js" data-website-id="vacuum-hose-adapter-openscad"></script>'
 
 [openscad]
 enable-features = ["textmetrics"]
@@ -119,6 +119,8 @@ collapsed = true
 
 [[model]]
 file = "vacuum-hose-adapter-basic.scad"
+umami-track-render = ["End1_Style", "End2_Style", "End3_Style", "Transition_Style", "Transition_HullCenter"]
+umami-track-export = ["End1_Style", "End2_Style", "End3_Style", "Transition_Style", "Transition_HullCenter"]
 preview-style = "colors"
 template = ["section-connector-1",
     "section-connector-1---hose-connector",
@@ -131,6 +133,8 @@ template = ["section-connector-1",
 
 [[model]]
 file = "vacuum-hose-adapter.scad"
+umami-track-render = ["End1_Style", "End2_Style", "End3_Style", "Transition_Style", "Transition_HullCenter"]
+umami-track-export = ["End1_Style", "End2_Style", "End3_Style", "Transition_Style", "Transition_HullCenter"]
 preview-style = "colors"
 template = [
     "section-connector-1",
