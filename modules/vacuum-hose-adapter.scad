@@ -229,6 +229,17 @@ module adapter(
             help = help,
             $fn = $fn);
         }
+        else if(con[iStyle] == "bosch_sander")
+        {
+          translate([0, 0, con[iLength]+con[iStopLength]])
+          mirror ([0,0,1])
+          BoschSanderConnector(
+            innerEndDiameter = con[iInnerEndDiameter],
+            length = con[iLength],
+            wallThickness = con[iWallThickness],
+            help = help,
+            $fn = $fn);
+        }
         else if(con[iStyle] == "osvacm" || con[iStyle] == "osvacm32")
         {
           translate([0, 0, con[iLength]+con[iStopLength]])
