@@ -240,6 +240,18 @@ module adapter(
             help = help,
             $fn = $fn);
         }
+        else if(con[iStyle] == "rigid_nxt" || con[iStyle] == "nxt")
+        {
+          translate([0, 0, con[iLength]+con[iStopLength]])
+          mirror ([0,0,1])
+          RigidNXTConnector(
+            outerStartDiameter = con[iOuterStartDiameter],
+            outerEndDiameter = con[iOuterEndDiameter],
+            length = con[iLength],
+            wallThickness = con[iWallThickness],
+            help = help,
+            $fn = $fn);
+        }
         else if(con[iStyle] == "osvacm" || con[iStyle] == "osvacm32")
         {
           translate([0, 0, con[iLength]+con[iStopLength]])
