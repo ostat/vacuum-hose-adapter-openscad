@@ -15,7 +15,7 @@ include <modules/vacuum-hose-adapter.scad>
 //Wall thickness
 End1_Wall_Thickness = 2; //0.01
 //The style of the end
-End1_Style="hose"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector]
+End1_Style="hose"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, festoolcleanteclug: Festool Cleantec Lug]
 // Is the measurement the adapter's outside or inside diameter?
 End1_Measurement = "outer"; //[inner, outer]
 // End 1 diameter of the adapter (mm, inch)

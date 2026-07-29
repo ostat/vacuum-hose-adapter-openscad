@@ -12,7 +12,7 @@ $SetFilePath = $true
 
 $VerbosePreference = 'SilentlyContinue'
 
-$Script:VacuumHoseSizes = 
+$Script:VacuumHoseSizes =
 @(
     @{System = 'imperial';   Name = '1in';            Diameter = 1       },
     @{System = 'imperial';   Name = '1.25in';         Diameter = 1.25    },
@@ -59,7 +59,7 @@ $Script:VacuumHosesExternal = $Script:VacuumHoseSizes | ForEach-Object {
         Style='hose'; Measurement='outer'; Diameter=$hoseSize; Length=40;
         Taper=3; StopThickness=4; StopLength=8;
     };
-} 
+}
 $Script:VacuumHosesInternal = $Script:VacuumHoseSizes | ForEach-Object {
     $hose = $_
     if($hose['System'] -ieq 'imperial')
@@ -78,7 +78,7 @@ $Script:VacuumHosesInternal = $Script:VacuumHoseSizes | ForEach-Object {
         Style='hose'; Measurement='inner'; Diameter=$hoseSize; Length=40;
         Taper=-2;
     };
-} 
+}
 $Script:VacuumHosesInternalShort = $Script:VacuumHoseSizes | ForEach-Object {
     $hose = $_
     if($hose['System'] -ieq 'imperial')
@@ -97,9 +97,9 @@ $Script:VacuumHosesInternalShort = $Script:VacuumHoseSizes | ForEach-Object {
         Style='hose'; Measurement='inner'; Diameter=$hoseSize; Length=20;
         Taper=-2;
     };
-} 
+}
 
-$Script:PvcHoseSizes = 
+$Script:PvcHoseSizes =
 @(
     @{System = 'metic';     Name = '4mm';     ExternalDiameter = 4;       WallThickness = 0.75;    },
     @{System = 'imperial';  Name = '5_32in';  ExternalDiameter = 5/32;    WallThickness = 1/32;    },
@@ -161,35 +161,35 @@ $Script:PvcHoses = $Script:PvcHoseSizes | ForEach-Object {
         Type='PvcHose';
         MeasurementSystem = $hose['System'];
         Scenario = "$($hoseSize)$($hoseUnit)";
-        Style='hose'; Measurement='outer'; Diameter=$hoseSize; 
+        Style='hose'; Measurement='outer'; Diameter=$hoseSize;
         Wall_Thickness = $hoseWall;
         Length=20;
         Barbs_Count=3; Barbs_Thickness=0; Barbs_Symmetrical=1; Stop_Symmetrical=1;
     };
-} 
+}
 
 
 $Script:MagneticAdapters = @(
     @{
         Scenario = 'magneticadapter_50mm'
         Style='mag'; Measurement='inner'; Diameter=50; Wall_Thickness=2; Length=15;
-        Magnets_Count=8; Magnet_Diameter=10.5; Magnet_Thickness=4; Magnet_Border=3; Magnet_Flange_Thickness=7.5; Ring='recessed'; 
+        Magnets_Count=8; Magnet_Diameter=10.5; Magnet_Thickness=4; Magnet_Border=3; Magnet_Flange_Thickness=7.5; Ring='recessed';
     },
     @{
         Scenario = 'magneticadapter_75mm'
         Style='mag'; Measurement='inner'; Diameter=75; Wall_Thickness=2; Length=15;
-        Magnets_Count=12; Magnet_Diameter=10.5; Magnet_Thickness=4; Magnet_Border=3; Magnet_Flange_Thickness=7.5; Ring='recessed'; 
+        Magnets_Count=12; Magnet_Diameter=10.5; Magnet_Thickness=4; Magnet_Border=3; Magnet_Flange_Thickness=7.5; Ring='recessed';
     },
     @{
         Scenario = 'magneticadapter_100mm'
         Style='mag'; Measurement='inner'; Diameter=100; Wall_Thickness=2; Length=15;
-        Magnets_Count=12; Magnet_Diameter=10.5; Magnet_Thickness=4; Magnet_Border=3; Magnet_Flange_Thickness=7.5; Ring='recessed'; 
+        Magnets_Count=12; Magnet_Diameter=10.5; Magnet_Thickness=4; Magnet_Border=3; Magnet_Flange_Thickness=7.5; Ring='recessed';
     });
 
 # For nozzles
 # Diameter should be what the transition will target.
 # Length should be min length from start of end  to start of nozzle.
-$Script:Nozzels = 
+$Script:Nozzels =
 @(
 @{
     Scenario = 'nozzle_square_short'; Type='nozzle'
@@ -239,7 +239,7 @@ $Script:Nozzels =
 };
 )
 
-$Script:CustomAdapters = 
+$Script:CustomAdapters =
 @(,
     @{
         Folder = (Join-Path $script:SourceFolder 'generated\hoseadapter\');
@@ -278,7 +278,7 @@ $Script:CustomAdapters =
                  };
         };
         End2 = @{
-            Style='hose'; Length=20; Measurement='outer'; Wall_Thickness=2; Diameter=0; 
+            Style='hose'; Length=20; Measurement='outer'; Wall_Thickness=2; Diameter=0;
         };
     },
     @{
@@ -311,7 +311,7 @@ $Script:CustomAdapters =
         transitionStyles = "hull";#("hull","taper+bend", "bend+taper", "organicbend")
         End1 = $Script:PvcHoses | Where-Object {$_.MeasurementSystem -eq 'metic'}
         End2 = $Script:PvcHoses | Where-Object {$_.MeasurementSystem -eq 'metic'}
-    },    
+    },
     @{
         Folder = (Join-Path $script:SourceFolder 'generated\funnel\');
         Enabled = $true
@@ -400,11 +400,11 @@ $Script:CustomAdapters =
              } + @{
                 Scenario = 'cap_with_hole'
                 Style='hose'; Measurement='inner'; Diameter=100; Wall_Thickness=2; Length=3;
-                Hose_EndCap_Thickness=3; Hose_EndCap_Diameter=5; 
+                Hose_EndCap_Thickness=3; Hose_EndCap_Diameter=5;
              } + @{
                 Scenario = 'cap_with_hook'
                 Style='flange'; Measurement='inner'; Diameter=100; Wall_Thickness=2; Length=3;
-                Flange_Width=30; Flange_Thickness=3; Flange_Screw_Position = 55; Flange_Screw_Border=5; Flange_Screw_Count=1; Flange_Screw_Diameter=10;  
+                Flange_Width=30; Flange_Thickness=3; Flange_Screw_Position = 55; Flange_Screw_Border=5; Flange_Screw_Count=1; Flange_Screw_Diameter=10;
              }
     },
     @{
@@ -418,9 +418,9 @@ $Script:CustomAdapters =
         End1 = @{
             Style='dw735'; Measurement='inner'; Diameter=71; Wall_Thickness=3; Length=17; #values only used to calculate transition
         }
-        End2 = $Script:MagneticAdapters + $Script:VacuumHosesExternal + $Script:VacuumHosesInternal 
+        End2 = $Script:MagneticAdapters + $Script:VacuumHosesExternal + $Script:VacuumHosesInternal
 
-    } 
+    }
     #,@{
     #     targetFolder = (Join-Path $script:SourceFolder 'generated\dyson\custom');
     #     scenario = 'dyson3'
@@ -431,7 +431,7 @@ $Script:CustomAdapters =
     #     Taper=2; StopThickness=0; StopLength=0;
     #     Magnets_Count=0; Magnet_Diameter=0; Magnet_Thickness=0; Magnet_Border=0;
     #     Flange_Thickness=5; Screw_Count=6; Screw_Diameter=5; Flange_Outer_Diameter=0;
-    #     
+    #
     #     Transition_Style='organicbend'; Transition_Length=10; Transition_Bend_Radius=10; Transition_Angle=0;
     #
     #     Style='hose'; Measurement='outer'; Diameter=50; Length=20;
@@ -453,7 +453,7 @@ Function IIF{
 Param(
     [Parameter(ValueFromPipeline)]
     [bool]$If,
-    $Right, 
+    $Right,
     $Wrong)
     if ($If) { return $Right } else { return $Wrong }
 }
@@ -462,7 +462,7 @@ Function DefaultIfNull{
 [CmdletBinding()]
 Param(
     [Parameter(ValueFromPipeline)]
-    $value, 
+    $value,
     $default)
     if ($value -eq $null) { return $default } else { return $value }
 }
@@ -471,24 +471,40 @@ Function AppendIf{
 [CmdletBinding()]
 Param(
     [Parameter(ValueFromPipeline)]
-    [string]$string = '', 
-    [string]$value, 
+    [string]$string = '',
+    [string]$value,
     [string]$seperater = '_')
 
     if([string]::IsNullOrEmpty($string)){
         return $value
     }
-    if (![string]::IsNullOrEmpty($value)) { 
+    if (![string]::IsNullOrEmpty($value)) {
         return "$string$seperater$value"
     }
     return $string
 }
 
 Function AddArgs($cmdArgs, $value, $argValue) {
-    if (![string]::IsNullOrEmpty($value)) { 
+    if (![string]::IsNullOrEmpty($value)) {
         $cmdArgs += $argValue
     }
     return $cmdArgs
+}
+
+Function OpenSCAD-AddArgs($ArgName, $ArgValue) {
+    Write-Verbose "ArgName: $($ArgName) ArgValue: $($ArgValue)"
+
+    if ($ArgValue -eq $null) {
+        return ''
+    } elseif ($ArgValue -is [string]) {
+        if (![string]::IsNullOrEmpty($ArgValue)) {
+            return " -D `"$($ArgName)=`"`"$($ArgValue)`"`"`""
+        }
+    } elseif ($ArgValue -is [int] -or $ArgValue -is [double] -or $ArgValue -is [decimal] -or $ArgValue -is [long]) {
+        return " -D `"$($ArgName)=$($argValue)`""
+    } else {
+        throw "unsupported type $($ArgValue.GetType().FullName)"
+    }
 }
 
 $Script:CustomAdapters | Sort-Object { Get-Random } | Where-Object {$_.Enabled} | ForEach-Object {
@@ -500,27 +516,27 @@ $_adapter.End1 | Sort-Object { Get-Random } | ForEach-Object {
 $_adapter.End2 | Sort-Object { Get-Random } | ForEach-Object {
     $_end2 = $_
     Write-Verbose "End2 $($_end2.Scenario)"
-$_adapter.transitionStyles | ForEach-Object { 
+$_adapter.transitionStyles | ForEach-Object {
     $_transitionStyle = $_
     Write-Verbose "transitionStyle $($_transitionStyle) | Adapter $($_adapter.Scenario)"
-$_adapter.transitionAngles | ForEach-Object { 
+$_adapter.transitionAngles | ForEach-Object {
     $_transitionAngle = [decimal]$_
     Write-Verbose "transitionAngle $($_transitionAngle) | transitionStyle $($_transitionStyle) | Adapter $($_adapter.Scenario)"
-$_end1.Diameter | Sort-Object { Get-Random } | ForEach-Object { 
+$_end1.Diameter | Sort-Object { Get-Random } | ForEach-Object {
     $_end1Diameter = [decimal]$_
     Write-Verbose "End1_Diameter $($_end1.Diameter) | transitionAngle $($_transitionAngle) | transitionStyle $($_transitionStyle) | Adapter $($_adapter.Scenario)"
-$_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object { 
+$_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
     $_end2Diameter = [decimal]$_
 
     Write-Verbose "Adapter $($_adapter.Scenario) $($_adapter.Folder )"
-    $folder                           = $_adapter.Folder 
+    $folder                           = $_adapter.Folder
     $alignment_DrawAlignmentRing      = $_adapter.Draw_Alignment_Ring
     $alignment_Depth                  = $_adapter.Alignment_Depth
     $alignment_UpperWidth             = $_adapter.Alignment_Upper_Width
     $alignment_LowerWidth             = $_adapter.Alignment_Lower_Width
     $alignment_SideClearance          = $_adapter.Alignment_Side_Clearance
     $alignment_DepthClearance         = $_adapter.Alignment_Depth_Clearance
-                                        
+
     $end1_Style                       = $_end1.Style
     $end1_WallThickness               = $_end1.Wall_Thickness
     $end1_Measurement                 = $_end1.Measurement
@@ -535,20 +551,20 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
     $end1_BarbsSymmetrical            = $_end1.Barbs_Symmetrical
     $end1_HoseEndCapDiameter          = $_end1.Hose_EndCap_Diameter
     $end1_HoseEndCapThickness         = $_end1.Hose_EndCap_Thickness
-                                    
+
     $end1_MagnetsCount                = $_end1.Magnets_Count
     $end1_MagnetDiameter              = $_end1.Magnet_Diameter
     $end1_MagnetThickness             = $_end1.Magnet_Thickness
     $end1_MagnetBorder                = $_end1.Magnet_Border
     $end1_MagnetFlangeThickness       = $_end1.Magnet_Flange_Thickness
     $end1_Ring                        = $_end1.Ring
-    
+
     $end1_FlangeWidth                 = $_end1.Flange_Width
     $end1_FlangeThickness             = $_end1.Flange_Thickness
     $end1_FlangeScrewPosition         = $_end1.Flange_Screw_Position
     $end1_FlangeScrewBorder           = $_end1.Flange_Screw_Border
     $end1_FlangeScrewCount            = $_end1.Flange_Screw_Count
-    $end1_FlangeScrewDiameter         = $_end1.Flange_Screw_Diameter                                        
+    $end1_FlangeScrewDiameter         = $_end1.Flange_Screw_Diameter
 
     $adapter_TransitionStyle          = $_transitionStyle
     $adapter_TransitionLength         = $_adapter.TransitionLength
@@ -562,7 +578,7 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
     $adapter_TransitionBaseLength     = $_adapter.Transition_Base_Length
     $adapter_TransitionBaseAngle      = $_adapter.Transition_Base_Angle
     $adapter_TransitionEnd2Count      = $_adapter.Transition_End2_Count
-                                            
+
     $end2_Style                       = $_end2.Style
     $end2_WallThickness               = $_end2.Wall_Thickness
     $end2_Measurement                 = $_end2.Measurement
@@ -577,7 +593,7 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
     $end2_BarbsSymmetrical            = $_end2.Barbs_Symmetrical
     $end2_HoseEndCapDiameter          = $_end2.Hose_EndCap_Diameter
     $end2_HoseEndCapThickness         = $_end2.Hose_EndCap_Thickness
-    
+
     $end2_MagnetsCount                = $_end2.Magnets_Count
     $end2_MagnetDiameter              = $_end2.Magnet_Diameter
     $end2_MagnetThickness             = $_end2.Magnet_Thickness
@@ -585,14 +601,14 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
     $end2_MagnetFlangeThickness       = $_end2.Magnet_Flange_Thickness
     $end2_Ring                        = $_end2.Ring
 
-    
+
     $end2_FlangeWidth                 = $_end2.Flange_Width
     $end2_FlangeThickness             = $_end2.Flange_Thickness
     $end2_FlangeScrewPosition         = $_end2.Flange_Screw_Position
     $end2_FlangeScrewBorder           = $_end2.Flange_Screw_Border
     $end2_FlangeScrewCount            = $_end2.Flange_Screw_Count
-    $end2_FlangeScrewDiameter         = $_end2.Flange_Screw_Diameter  
-                                            
+    $end2_FlangeScrewDiameter         = $_end2.Flange_Screw_Diameter
+
     $end2_NozzleShape                 = $_end2.Nozzle_Shape
     $end2_NozzleSquareWidth           = $_end2.Nozzle_Square_Width
     $end2_NozzleSquareDepth           = $_end2.Nozzle_Square_Depth
@@ -603,13 +619,13 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
     $end2_NozzleYOffset               = $_end2.Nozzle_yOffset
     $end2_NozzleChamferPercentage     = $_end2.Nozzle_Chamfer_Percentage
     $end2_NozzleChamferAngle          = $_end2.Nozzle_Chamfer_Angle
-    
+
     Write-Verbose "$($_adapter.Scenario)  End2_Diameter $($end2_Diameter) | End1_Diameter $($end1_Diameter) | transitionAngle $($adapter_TransitionAngle) | transitionStyle $($adapter_TransitionStyle) | Adapter $($_adapter.Scenario)"
 
     # organicbend at 0deg should be tapered
     $adapter_TransitionStyle = (IIF -If ($adapter_TransitionStyle -ieq 'organicbend' -and $adapter_TransitionAngle -eq 0) -Right 'bend+taper' -Wrong $adapter_TransitionStyle)
     Write-Verbose "transitionStyle $($adapter_TransitionStyle) | transitionAngle $($adapter_TransitionAngle)"
-    
+
     $modelDescription = (($adapter_TransitionAngle -eq 0) | IIf `
             -Right '' `
             -Wrong "$($adapter_TransitionAngle)deg_$($adapter_TransitionStyle)")
@@ -637,7 +653,7 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
             return
         }
         $modelDescription = (($adapter_TransitionAngle -eq 0) | IIf -Right 'straight' -Wrong $modelDescription)
-       
+
         $addend1_Stop = ($end1_Diameter -gt $end2_Diameter -and $end1_Measurement -ieq 'outer')
         $addend2_Stop = ($end2_Diameter -gt $end1_Diameter -and $end2_Measurement -ieq 'outer')
         $end1_StopThickness = ($addend1_Stop | IIF -Right 4 -Wrong 0)
@@ -719,7 +735,7 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
         $end2_Length = IIF ($adapter_TransitionStyle -ieq 'organicbend') `
             -Right $end2_Length `
             -Wrong ([math]::Max([math]::Max($adapter_TransitionLength, $end2_Length), [math]::Abs($end1_Diameter - $end2_Diameter)))
-            
+
         $adapter_TransitionLength = IIF ($adapter_TransitionStyle -ieq 'organicbend') `
             -Right (DefaultIfNull $adapter_TransitionLength 1) `
             -Wrong 1
@@ -731,7 +747,7 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
             -Right ([Math]::Min(($end1_Diameter  + $end1_Taper/2), $end2_Diameter)) `
             -Wrong ($end1_Diameter + $end1_Taper/2)
 
-        
+
         Write-Verbose "hose_nozzle - transitionAngle:$($adapter_TransitionAngle) TransitionLength:$($adapter_TransitionLength) End1_Length:$($end1_Length) End2_Length:$($end2_Length) end1_Diameter:$end1_Diameter end2_Diameter:$end2_Diameter End2_Nozzle_Length$($end2_NozzleLength)"
         $folder = Join-Path $folder "$($_end1.Scenario)"
         write-Verbose "hose_nozle $folder"
@@ -757,7 +773,7 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
 
         $modelDescription = "$($end1_Diameter)mm_to_$($end2_Diameter)mm"
         $folder = Join-Path $folder "$($_end2.Type)\$($end1_Diameter)mm"
-    }    
+    }
 
     if($_adapter.Scenario -eq 'magneticadapter'){
         if($adapter_TransitionAngle -gt 0 -and ($_end2.Scenario -eq 'cap' -or $_end2.Scenario -eq 'cap_with_hole' -or $_end2.Scenario -eq 'cap_with_hook'))
@@ -770,7 +786,7 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
            $adapter_TransitionStyle = (($_end2.Scenario -eq 'cap_with_hook') | IIf -Right 'flat' -Wrong 'none')
            $adapter_Transitionlength = $end2_length*-1
            $end2_Diameter = $end1_Diameter
-           $end1_length = $end1_MagnetFlangeThickness 
+           $end1_length = $end1_MagnetFlangeThickness
            $modelDescription = 'cap'
         }
         else{
@@ -782,7 +798,7 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
         $folder = Join-Path $_adapter.Folder "$($end1_Diameter)mm\$($modelDescription)"
         write-Verbose "magneticadapter $folder"
     }
-    
+
     if($_adapter.Scenario -eq 'camlock' -or $_adapter.Scenario -eq 'dyson'  -or $_adapter.Scenario -eq 'centec'){
         $modelDescription = (($adapter_TransitionAngle -eq 0) | IIf -Right 'straight' -Wrong $modelDescription)
         $scenario = (AppendIf -value $_end1.Scenario | AppendIf -value $_end2.Scenario)
@@ -799,11 +815,11 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
         if($_end2.Type -eq 'nozzle'){
             $folder = (Join-Path $folder "nozzles\$($_end2.Scenario)");
 
-            #for nozles, the transition length is in end2 to give a more dynamic transition. 
+            #for nozles, the transition length is in end2 to give a more dynamic transition.
             $end2_Length = IIF ($adapter_TransitionStyle -ieq 'organicbend') `
                 -Right $end2_Length `
                 -Wrong ([math]::Max([math]::Max($adapter_TransitionLength, $end2_Length), [math]::Abs($end1_Diameter - $end2_Diameter)))
-            
+
             $adapter_TransitionLength = IIF ($adapter_TransitionStyle -ieq 'organicbend') `
                 -Right (DefaultIfNull $adapter_TransitionLength 0) `
                 -Wrong 2
@@ -826,7 +842,7 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
         $modelDescription = (($adapter_TransitionAngle -eq 0) | IIf -Right 'straight' -Wrong $modelDescription)
         $dW735MinLength = 17
         $flangeWidth = (($_end2.Style -ieq 'mag') | IIF -Right 20 -Wrong 0)
-      
+
         $minLengths = [array] `
             (($adapter_TransitionAngle -gt 45 -and $adapter_TransitionStyle -ieq 'bend+taper') | IIf -Right ([math]::Max(($flangeWidth + ($end2_Diameter-$end1_Diameter)/2), 0))  -Wrong 0), `
             (($adapter_TransitionAngle -gt 45 -and $adapter_TransitionStyle -ieq 'taper+bend') | IIf -Right ([math]::Max(($flangeWidth - $adapter_TransitionLength), 0))  -Wrong 0), `
@@ -843,7 +859,7 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
             $folder = Join-Path $folder "Magnetic\$($modelDescription)"
         }
         write-host "end1_Length - '$($end1_Length)' - $($_adapter.Scenario) - $($_end2.Type) - $folder"
-            
+
         write-Verbose "$($_adapter.Scenario) - $($_end2.Type) - $folder"
     }
 
@@ -860,12 +876,12 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
     $filename = ($filename | AppendIf -value $modelDescription)
 
     CreateFolderIfNeeded $folder
-   
+
     $target = Join-Path $folder "$($filename).stl"
     if((Test-Path $target) -and !$Script:ForceRegeneration)
     {
         Write-Host "Skipping exising file $($filename)" -ForegroundColor Green
-        return 
+        return
     }
 
     Write-Host "Generating $($_adapter.Scenario) adapter $($target)"
@@ -877,101 +893,101 @@ $_end2.Diameter | Sort-Object { Get-Random } | ForEach-Object {
         $cmdArgs = "-o `"$($target)`""
     }
 
-    $cmdArgs = AddArgs $cmdArgs $adapter_DrawAlignmentRing        " -D `"Draw_Alignment_Ring=`"`"$($adapter_DrawAlignmentRing)`"`"`""
-    $cmdArgs = AddArgs $cmdArgs $adapter_AlignmentDepth           " -D `"Alignment_Depth=$($adapter_AlignmentDepth)`""
-    $cmdArgs = AddArgs $cmdArgs $adapter_AlignmentUpperWidth      " -D `"Alignment_Upper_Width=$($adapter_AlignmentUpperWidth)`""
-    $cmdArgs = AddArgs $cmdArgs $adapter_AlignmentLowerWidth      " -D `"Alignment_Lower_Width=$($adapter_AlignmentLowerWidth)`""
-    $cmdArgs = AddArgs $cmdArgs $adapter_AlignmentSideClearance   " -D `"Alignment_Side_Clearance=$($adapter_AlignmentSideClearance)`""
-    $cmdArgs = AddArgs $cmdArgs $adapter_AlignmentDepthClearance   " -D `"Alignment_Depth_Clearance=$($adapter_AlignmentDepthClearance)`""
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Draw_Alignment_Ring' -ArgValue $adapter_DrawAlignmentRing
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Alignment_Depth' -ArgValue $adapter_AlignmentDepth
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Alignment_Upper_Width' -ArgValue $adapter_AlignmentUpperWidth
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Alignment_Lower_Width' -ArgValue $adapter_AlignmentLowerWidth
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Alignment_Side_Clearance' -ArgValue $adapter_AlignmentSideClearance
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Alignment_Depth_Clearance' -ArgValue $adapter_AlignmentDepthClearance
 
     #End1 settings
-    $cmdArgs = AddArgs $cmdArgs $end1_Style                       " -D `"End1_Style=`"`"$($end1_Style)`"`"`""
-    $cmdArgs = AddArgs $cmdArgs $end1_WallThickness               " -D `"End1_Wall_Thickness=$($end1_WallThickness)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_Measurement                 " -D `"End1_Measurement=`"`"$($end1_Measurement)`"`"`""
-    $cmdArgs = AddArgs $cmdArgs $end1_Diameter                    " -D `"End1_Diameter=$($end1_Diameter)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_Length                      " -D `"End1_Length=$($end1_Length)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_Taper                       " -D `"End1_Taper=$($end1_Taper)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_StopThickness               " -D `"End1_StopThickness=$($end1_StopThickness)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_StopLength                  " -D `"End1_StopLength=$($end1_StopLength)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_StopSymmetrical             " -D `"End1_Stop_Symmetrical=$($end1_StopSymmetrical)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_BarbsCount                  " -D `"End1_Barbs_Count=$($end1_BarbsCount)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_BarbsThickness              " -D `"End1_Barbs_Thickness=$($end1_BarbsThickness)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_BarbsSymmetrical            " -D `"End1_Barbs_Symmetrical=$($end1_BarbsSymmetrical)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_HoseEndCapDiameter          " -D `"End1_Hose_EndCap_Diameter=$($end1_HoseEndCapDiameter)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_HoseEndCapThickness         " -D `"End1_Hose_EndCap_Thickness=$($end1_HoseEndCapThickness)`""
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Style' -ArgValue $end1_Style
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Wall_Thickness' -ArgValue $end1_WallThickness
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Measurement' -ArgValue $end1_Measurement
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Diameter' -ArgValue $end1_Diameter
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Length' -ArgValue $end1_Length
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Taper' -ArgValue $end1_Taper
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_StopThickness' -ArgValue $end1_StopThickness
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_StopLength' -ArgValue $end1_StopLength
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Stop_Symmetrical' -ArgValue $end1_StopSymmetrical
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Barbs_Count' -ArgValue $end1_BarbsCount
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Barbs_Thickness' -ArgValue $end1_BarbsThickness
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Barbs_Symmetrical' -ArgValue $end1_BarbsSymmetrical
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Hose_EndCap_Diameter' -ArgValue $end1_HoseEndCapDiameter
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Hose_EndCap_Thickness' -ArgValue $end1_HoseEndCapThickness
 
-    $cmdArgs = AddArgs $cmdArgs $end1_MagnetsCount                " -D `"End1_Magnets_Count=$($end1_MagnetsCount)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_MagnetDiameter              " -D `"End1_Magnet_Diameter=$($end1_MagnetDiameter)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_MagnetThickness             " -D `"End1_Magnet_Thickness=$($end1_MagnetThickness)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_MagnetBorder                " -D `"End1_Magnet_Border=$($end1_MagnetBorder)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_MagnetFlangeThickness       " -D `"End1_Magnet_Flange_Thickness=$($end1_MagnetFlangeThickness)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_Ring                        " -D `"End1_Ring=`"`"$($end1_Ring)`"`"`""
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Magnets_Count' -ArgValue $end1_MagnetsCount
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Magnet_Diameter' -ArgValue $end1_MagnetDiameter
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Magnet_Thickness' -ArgValue $end1_MagnetThickness
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Magnet_Border' -ArgValue $end1_MagnetBorder
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Magnet_Flange_Thickness' -ArgValue $end1_MagnetFlangeThickness
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Ring' -ArgValue $end1_Ring
 
-    $cmdArgs = AddArgs $cmdArgs $end1_FlangeWidth                 " -D `"End1_Flange_Width=$($end1_FlangeWidth)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_FlangeThickness             " -D `"End1_Flange_Thickness=$($end1_FlangeThickness)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_FlangeScrewPosition         " -D `"End1_Flange_Screw_Position=$($end1_FlangeScrewPosition)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_FlangeScrewBorder           " -D `"End1_Flange_Screw_Border=$($end1_FlangeScrewBorder)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_FlangeScrewCount            " -D `"End1_Flange_Screw_Count=$($end1_FlangeScrewCount)`""
-    $cmdArgs = AddArgs $cmdArgs $end1_FlangeScrewDiameter         " -D `"End1_Flange_Screw_Diameter=$($end1_FlangeScrewDiameter)`""
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Flange_Width' -ArgValue $end1_FlangeWidth
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Flange_Thickness' -ArgValue $end1_FlangeThickness
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Flange_Screw_Position' -ArgValue $end1_FlangeScrewPosition
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Flange_Screw_Border' -ArgValue $end1_FlangeScrewBorder
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Flange_Screw_Count' -ArgValue $end1_FlangeScrewCount
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End1_Flange_Screw_Diameter' -ArgValue $end1_FlangeScrewDiameter
 
     #Transition settings
-    $cmdArgs = AddArgs $cmdArgs $adapter_TransitionStyle          " -D `"Transition_Style=`"`"$($adapter_TransitionStyle)`"`"`""
-    $cmdArgs = AddArgs $cmdArgs $adapter_TransitionLength         " -D `"Transition_Length=$($adapter_TransitionLength)`""
-    $cmdArgs = AddArgs $cmdArgs $adapter_TransitionBendRadius     " -D `"Transition_Bend_Radius=$($adapter_TransitionBendRadius)`""
-    $cmdArgs = AddArgs $cmdArgs $adapter_transitionAngle          " -D `"Transition_Angle=$($adapter_transitionAngle)`""
-    $cmdArgs = AddArgs $cmdArgs $adapter_TransitionXOffset        " -D `"Transition_xOffset=$($adapter_TransitionXOffset)`""
-    $cmdArgs = AddArgs $cmdArgs $adapter_TransitionYOffset        " -D `"Transition_yOffset=$($adapter_TransitionYOffset)`""
-    $cmdArgs = AddArgs $cmdArgs $adapter_TransitionBaseType       " -D `"Transition_Base_Type=`"`"$($adapter_TransitionBaseType)`"`"`""
-    $cmdArgs = AddArgs $cmdArgs $adapter_TransitionBaseThickness  " -D `"Transition_Base_Thickness=$($adapter_TransitionBaseThickness)`""
-    $cmdArgs = AddArgs $cmdArgs $adapter_TransitionBaseWidth      " -D `"Transition_Base_Width=$($adapter_TransitionBaseWidth)`""
-    $cmdArgs = AddArgs $cmdArgs $adapter_TransitionBaseLength     " -D `"Transition_Base_Length=$($adapter_TransitionBaseLength)`""
-    $cmdArgs = AddArgs $cmdArgs $adapter_TransitionBaseAngle      " -D `"Transition_Base_Angle=$($adapter_TransitionBaseAngle)`""
-    $cmdArgs = AddArgs $cmdArgs $adapter_TransitionEnd2Count      " -D `"Transition_End2_Count=$($adapter_TransitionEnd2Count)`""
-    
-    #End2 settings
-    $cmdArgs = AddArgs $cmdArgs $end2_Style                       " -D `"End2_Style=`"`"$($end2_Style)`"`"`""
-    $cmdArgs = AddArgs $cmdArgs $end2_WallThickness               " -D `"End2_Wall_Thickness=$($end2_WallThickness)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_Measurement                 " -D `"End2_Measurement=`"`"$($end2_Measurement)`"`"`""
-    $cmdArgs = AddArgs $cmdArgs $end2_Diameter                    " -D `"End2_Diameter=$($end2_Diameter)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_Length                      " -D `"End2_Length=$($end2_Length)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_Taper                       " -D `"End2_Taper=$($end2_Taper)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_StopThickness               " -D `"End2_StopThickness=$($end2_StopThickness)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_StopLength                  " -D `"End2_StopLength=$($end2_StopLength)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_StopSymmetrical             " -D `"End2_Stop_Symmetrical=$($end2_StopSymmetrical)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_BarbsCount                  " -D `"End2_Barbs_Count=$($end2_BarbsCount)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_BarbsThickness              " -D `"End2_Barbs_Thickness=$($end2_BarbsThickness)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_BarbsSymmetrical            " -D `"End2_Barbs_Symmetrical=$($end2_BarbsSymmetrical)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_HoseEndCapDiameter          " -D `"End2_Hose_EndCap_Diameter=$($end2_HoseEndCapDiameter)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_HoseEndCapThickness         " -D `"End2_Hose_EndCap_Thickness=$($end2_HoseEndCapThickness)`""
-   
-    $cmdArgs = AddArgs $cmdArgs $end2_MagnetsCount                " -D `"End2_Magnets_Count=$($end2_MagnetsCount)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_MagnetDiameter              " -D `"End2_Magnet_Diameter=$($end2_MagnetDiameter)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_MagnetThickness             " -D `"End2_Magnet_Thickness=$($end2_MagnetThickness)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_MagnetBorder                " -D `"End2_Magnet_Border=$($end2_MagnetBorder)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_MagnetFlangeThickness       " -D `"End2_Magnet_Flange_Thickness=$($end2_MagnetFlangeThickness)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_Ring                        " -D `"End2_Ring=`"`"$($end2_Ring)`"`"`""
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Transition_Style' -ArgValue $adapter_TransitionStyle
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Transition_Length' -ArgValue $adapter_TransitionLength
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Transition_Bend_Radius' -ArgValue $adapter_TransitionBendRadius
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Transition_Angle' -ArgValue $adapter_transitionAngle
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Transition_xOffset' -ArgValue $adapter_TransitionXOffset
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Transition_yOffset' -ArgValue $adapter_TransitionYOffset
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Transition_Base_Type' -ArgValue $adapter_TransitionBaseType
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Transition_Base_Thickness' -ArgValue $adapter_TransitionBaseThickness
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Transition_Base_Width' -ArgValue $adapter_TransitionBaseWidth
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Transition_Base_Length' -ArgValue $adapter_TransitionBaseLength
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Transition_Base_Angle' -ArgValue $adapter_TransitionBaseAngle
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'Transition_End2_Count' -ArgValue $adapter_TransitionEnd2Count
 
-    $cmdArgs = AddArgs $cmdArgs $end2_FlangeWidth                 " -D `"End2_Flange_Width=$($end2_FlangeWidth)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_FlangeThickness             " -D `"End2_Flange_Thickness=$($end2_FlangeThickness)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_FlangeScrewPosition         " -D `"End2_Flange_Screw_Position=$($end2_FlangeScrewPosition)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_FlangeScrewBorder           " -D `"End2_Flange_Screw_Border=$($end2_FlangeScrewBorder)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_FlangeScrewCount            " -D `"End2_Flange_Screw_Count=$($end2_FlangeScrewCount)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_FlangeScrewDiameter         " -D `"End2_Flange_Screw_Diameter=$($end2_FlangeScrewDiameter)`""
-                                                                  
-    $cmdArgs = AddArgs $cmdArgs $end2_NozzleShape                 " -D `"End2_Nozzle_Shape=`"`"$($end2_NozzleShape)`"`"`""
-    $cmdArgs = AddArgs $cmdArgs $end2_NozzleSquareWidth           " -D `"End2_Nozzle_Square_Width=$($end2_NozzleSquareWidth)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_NozzleSquareDepth           " -D `"End2_Nozzle_Square_Depth=$($end2_NozzleSquareDepth)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_NozzleTipWallThickness      " -D `"End2_Nozzle_Tip_Wall_Thickness=$($end2_NozzleTipWallThickness)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_NozzleRadius                " -D `"End2_Nozzle_Radius=$($end2_NozzleRadius)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_NozzleLength                " -D `"End2_Nozzle_Length=$($end2_NozzleLength)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_NozzleXOffset               " -D `"End2_Nozzle_xOffset=$($end2_NozzleXOffset)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_NozzleYOffset               " -D `"End2_Nozzle_yOffset=$($end2_NozzleYOffset)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_NozzleChamferPercentage     " -D `"End2_Nozzle_Chamfer_Percentage=$($end2_NozzleChamferPercentage)`""
-    $cmdArgs = AddArgs $cmdArgs $end2_NozzleChamferAngle          " -D `"End2_Nozzle_Chamfer_Angle=$($end2_NozzleChamferAngle)`""
- 
+    #End2 settings
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Style' -ArgValue $end2_Style
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Wall_Thickness' -ArgValue $end2_WallThickness
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Measurement' -ArgValue $end2_Measurement
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Diameter' -ArgValue $end2_Diameter
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Length' -ArgValue $end2_Length
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Taper' -ArgValue $end2_Taper
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_StopThickness' -ArgValue $end2_StopThickness
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_StopLength' -ArgValue $end2_StopLength
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Stop_Symmetrical' -ArgValue $end2_StopSymmetrical
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Barbs_Count' -ArgValue $end2_BarbsCount
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Barbs_Thickness' -ArgValue $end2_BarbsThickness
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Barbs_Symmetrical' -ArgValue $end2_BarbsSymmetrical
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Hose_EndCap_Diameter' -ArgValue $end2_HoseEndCapDiameter
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Hose_EndCap_Thickness' -ArgValue $end2_HoseEndCapThickness
+
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Magnets_Count' -ArgValue $end2_MagnetsCount
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Magnet_Diameter' -ArgValue $end2_MagnetDiameter
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Magnet_Thickness' -ArgValue $end2_MagnetThickness
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Magnet_Border' -ArgValue $end2_MagnetBorder
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Magnet_Flange_Thickness' -ArgValue $end2_MagnetFlangeThickness
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Ring' -ArgValue $end2_Ring
+
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Flange_Width' -ArgValue $end2_FlangeWidth
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Flange_Thickness' -ArgValue $end2_FlangeThickness
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Flange_Screw_Position' -ArgValue $end2_FlangeScrewPosition
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Flange_Screw_Border' -ArgValue $end2_FlangeScrewBorder
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Flange_Screw_Count' -ArgValue $end2_FlangeScrewCount
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Flange_Screw_Diameter' -ArgValue $end2_FlangeScrewDiameter
+
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Nozzle_Shape' -ArgValue $end2_NozzleShape
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Nozzle_Square_Width' -ArgValue $end2_NozzleSquareWidth
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Nozzle_Square_Depth' -ArgValue $end2_NozzleSquareDepth
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Nozzle_Tip_Wall_Thickness' -ArgValue $end2_NozzleTipWallThickness
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Nozzle_Radius' -ArgValue $end2_NozzleRadius
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Nozzle_Length' -ArgValue $end2_NozzleLength
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Nozzle_xOffset' -ArgValue $end2_NozzleXOffset
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Nozzle_yOffset' -ArgValue $end2_NozzleYOffset
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Nozzle_Chamfer_Percentage' -ArgValue $end2_NozzleChamferPercentage
+    $cmdArgs += OpenSCAD-AddArgs -ArgName 'End2_Nozzle_Chamfer_Angle' -ArgValue $end2_NozzleChamferAngle
+
     $cmdArgs += " $($script:ScadScriptPath)"
     Write-Host  $cmdArgs
     $executionTime =  $cmdArgs | Measure-Command { Start-Process $script:ScadExePath -ArgumentList $_ -wait }
-    
-    Write-host "done $executionTime" 
+
+    Write-host "done $executionTime"
 }}}}}}}
