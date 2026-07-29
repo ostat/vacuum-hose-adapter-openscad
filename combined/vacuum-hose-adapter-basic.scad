@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-07-29 20:48
-//Content hash 9F78BC5B23E94EFFA44F7C2DA302D15F0EB7D98E3938A2EDA398818A0D492E00
+//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-07-29 11:13
+//Content hash 5DC7E8D4192EBC87C42AC0042A7071DFEED44469612EB4AF0064D2E1DBC327D6
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -5091,17 +5091,32 @@ module InternalHoseThread(
   tooth_angle=30,
   tooth_height=0,
   reverse_thread = false) {
+
+  // Same bore sizing as ScrewHole.
+  cut_diam = 1.01*diameter + 1.25*tolerance;
+  _pitch = (pitch==0) ? ThreadPitch(cut_diam) : pitch;
+  _tooth_height = (tooth_height==0) ? _pitch : min(tooth_height, _pitch);
+
+  // ScrewHole's cut profile is flat at the root radius, which truncates the
+  // material teeth flat when tooth_height < pitch. Cutting with a full-height
+  // (pointy) thread enlarged by 'shift', clipped back to the intended major
+  // radius, keeps the teeth pointy at the requested height and flank angle.
+  shift = (_pitch - _tooth_height) / (2*tan(tooth_angle));
+  extra_height = 0.001 * height;
+
   mirror(reverse_thread ? [0,0,0] :[1,0,0])
-  ScrewHole(
-    outer_diam=diameter,
-    height=height,
-    tolerance=tolerance,
-    position=position,
-    rotation=rotation,
-    pitch=pitch,
-    tooth_angle=tooth_angle,
-    tooth_height=tooth_height)
+  difference() {
     cylinder(h=height, r=diameter/2+wallThickness);
+    translate(position)
+      rotate(rotation)
+      translate([0, 0, -extra_height/2])
+      intersection() {
+        ScrewThread(cut_diam + 2*shift, height + extra_height,
+          pitch=_pitch, tooth_angle=tooth_angle, tolerance=tolerance);
+        // ScrewThread's crest radius for cut_diam, shrinkage correction included.
+        cylinder(h=height + extra_height, r=(cut_diam + 0.25*tolerance)/2);
+      }
+  }
 }
 
 // create an external thread outside a hose (like a bolt)
