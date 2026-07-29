@@ -16,6 +16,7 @@ include <connector_dw735.scad>
 include <connector_festool.scad>
 include <connector_makita.scad>
 include <connector_osvac.scad>
+include <connector_kobalt.scad>
 
 // order matters needs to come after the connectors
 include <connector_common_post.scad>
