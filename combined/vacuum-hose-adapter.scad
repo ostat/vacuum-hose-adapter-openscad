@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-07-29 11:20
-//Content hash AB21228443D59C7F81D1D3CA0E066F124A9D4B0416C398A05609BB7EB98B02CE
+//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-07-29 11:42
+//Content hash 9795846C5BF7FA99784B1FA71998DA8A809C5322663CE04C8AEAFD7822CF7BB1
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -145,7 +145,7 @@ Transition_Base_Angle=0;
 /* [Connector 2] */
 //Wall thickness
 End2_Wall_Thickness = 2; //0.01
-End2_Style="hose"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, none: None]
+End2_Style="hose"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, festoolcleanteclug: Festool Cleantec Lug, none: None]
 // Is the measurement the adapter's outside or inside diameter?
 End2_Measurement = "outer"; //[inner, outer]
 // End 2 diameter of the adapter (mm, inch)
@@ -243,7 +243,7 @@ End2_Extension_Text_Size = 0;
 /* [Connector 3] */
 //Wall thickness
 End3_Wall_Thickness = 2; //0.01
-End3_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, none: None]
+End3_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, festoolcleanteclug: Festool Cleantec Lug, none: None]
 // Is the measurement the adapter's outside or inside diameter?
 End3_Measurement = "outer"; //[inner, outer]
 // End 3 diameter of the adapter (mm, inch)
@@ -8943,32 +8943,27 @@ module BoschSanderConnector(
   echo("BoschSanderConnector", innerEndDiameter=innerEndDiameter, length=length, wallThickness=wallThickness, grooveCount=boschSanderGrooveCount);
 
   difference(){
-    HoseConnector(
-      connectorMeasurement = "inner",
-      innerStartDiameter = innerEndDiameter,
-      innerEndDiameter = innerEndDiameter,
-      length = length,
-      wallThickness = wallThickness,
-      help = help);
+  
+    union(){
+      pipe(
+        diameter = boschSanderRingClearanceDiameter,
+        length = length,
+        wallThickness = wallThickness-(boschSanderRingClearanceDiameter-innerEndDiameter)/2,
+        chamfer1 = [boschSanderRingClearanceChamfer,0],
+        chamfer2 = [0,0]);
+      
+      translate([0,0,boschSanderRingClearanceDepth + fudgeFactor])
+      pipe(
+        diameter = innerEndDiameter,
+        length = length-boschSanderRingClearanceDepth + fudgeFactor,
+        wallThickness = wallThickness,
+        chamfer1 = [(boschSanderRingClearanceDiameter - innerEndDiameter)/2 + fudgeFactor,0],
+        chamfer2 = [0,0]);
+    }
 
     for(i = [0:boschSanderGrooveCount-1])
       rotate([0,0,i*360/boschSanderGrooveCount])
         boschSanderLockingGroove(boreRadius);
-
-    // Rubber-ring clearance pocket at the mouth, with a lead-in chamfer.
-    translate([0, 0, -fudgeFactor])
-      cylinder(h = boschSanderRingClearanceDepth + fudgeFactor,
-               d = boschSanderRingClearanceDiameter);
-    translate([0, 0, -fudgeFactor])
-      cylinder(h = boschSanderRingClearanceChamfer + fudgeFactor,
-               d1 = boschSanderRingClearanceDiameter + boschSanderRingClearanceChamfer*2,
-               d2 = boschSanderRingClearanceDiameter);
-    // 45 deg taper where the pocket meets the bore, so the step is self-supporting
-    // when printed mouth-down (height = radial change = 45 deg overhang).
-    translate([0, 0, boschSanderRingClearanceDepth - fudgeFactor])
-      cylinder(h = (boschSanderRingClearanceDiameter - innerEndDiameter)/2 + fudgeFactor,
-               d1 = boschSanderRingClearanceDiameter,
-               d2 = innerEndDiameter);
   }
 
   HelpTxt("BoschSanderConnector",[
