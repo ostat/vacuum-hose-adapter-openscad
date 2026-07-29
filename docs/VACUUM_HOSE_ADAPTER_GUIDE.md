@@ -104,6 +104,7 @@ HoseAdapter(
 | `"dyson"` | Dyson cordless tool latching attachment |
 | `"camlock"` | Camlock quick disconnect fitting |
 | `"dw735"` | DeWalt DW735 planer dust port adapter |
+| `"kobalt"` | Kobalt saw dust outlet female socket with recessed ring channels |
 | `"nozzle"` | Crevice tool, wide nozzle, or utility vacuum nozzle |
 | `"none"` | Open or flat end |
 
