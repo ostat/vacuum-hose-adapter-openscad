@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'funnels.scad'. Generated 2026-07-29 11:42
-//Content hash A0D69F18BB0197DA2C371D044A1D1696941F5B28093C524F99531102485118F4
+//Combined version of 'funnels.scad'. Generated 2026-07-30 09:26
+//Content hash 4560F0EC4FE36A91E90D65CD43AAB5E2924818BD5EF3BE7A35081D76D452EFBB
 ///////////////////////////////////////
 // funnel
 // version 2026-02-27
@@ -591,6 +591,10 @@ module transitionExtension(
 module transition(
   style,
   length,
+  bendTaperLengthBefore,
+  bendTaperLengthAfter,
+  bendPipeDiameter,
+  bendPipeWallThickness,
   connector1InnerEndDiameter,
   connector2InnerStartDiameter,
   connector3InnerStartDiameter,
@@ -654,8 +658,7 @@ module transition(
           baseWidth = baseWidth,
           baseLength = baseLength,
           baseAngle = baseAngle,
-          end2Count = connector2Count,
-          end2Angle = connector2Angle);
+          end2Count = connector2Count);
       }
       else if(style == "hull")
       {
@@ -680,15 +683,31 @@ module transition(
       }
       else if(style == "bend+taper")
       {
-        //Tapered transition
-        //the bent pipe section, diameter matches connector 1.
+        // General bend and taper transition. A taper is added on either side
+        // of the bend only when the selected bend pipe differs from that end.
+        taperBeforeBend = bendPipeDiameter != connector1InnerEndDiameter;
+        taperAfterBend = bendPipeDiameter != connector2InnerStartDiameter;
+
+        if(taperBeforeBend)
+        {
+          color(transitionColor[0], transitionColor[1])
+          pipe_with_offset(
+            diameter1 = connector1InnerEndDiameter,
+            diameter2 = bendPipeDiameter,
+            length = bendTaperLengthBefore,
+            wallThickness1 = connector1WallThickness,
+            wallThickness2 = bendPipeWallThickness,
+            Offset = [0,0]);
+        }
+
         if(angle > 0)
         {
+          translate([0, 0, bendTaperLengthBefore])
           color(transitionColor[0], transitionColor[1])
           BentPipe(
             bendRadius = bendRadius,
-            innerPipeDiameter = connector1InnerEndDiameter,
-            wallThickness = connector1WallThickness,
+            innerPipeDiameter = bendPipeDiameter,
+            wallThickness = bendPipeWallThickness,
             pipeAngle = angle,
             baseType = baseType,
             baseThickness = baseThickness,
@@ -699,22 +718,25 @@ module transition(
             end2Angle = connector2Angle);
         }
 
-        //Tapered section position to the end of the bent pipe
-        for (rotation = [0:connector2Count-1])
+        if(taperAfterBend)
         {
-          //color("SpringGreen")
-          color(transitionColor[0], transitionColor[1])
-          rotate([0, 0, rotation*multiConnectorAngle])
-          translate([-bendRadius, 0, 0])
-            rotate([0, -angle, 0])
-            translate([bendRadius, 0, 0])
+          // Tapered section positioned at the outlet of each bent pipe.
+          for (rotation = [0:connector2Count-1])
+          {
+            color(transitionColor[0], transitionColor[1])
+            rotate([0, 0, rotation*multiConnectorAngle])
+            translate([0, 0, bendTaperLengthBefore])
+              translate([-bendRadius, 0, 0])
+              rotate([0, -angle, 0])
+              translate([bendRadius, 0, 0])
               pipe_with_offset(
-                diameter1 = connector1InnerEndDiameter,
+                diameter1 = bendPipeDiameter,
                 diameter2 = connector2InnerStartDiameter,
-                length = length,
-                wallThickness1 = connector1WallThickness,
+                length = bendTaperLengthAfter,
+                wallThickness1 = bendPipeWallThickness,
                 wallThickness2 = connector2WallThickness,
                 Offset = Offset);
+          }
         }
       }
       else if(style == "taper+bend")
@@ -804,6 +826,8 @@ module HoseAdapter(
   transitionStyle = "bend+taper",
   transitionLength = 10,
   transitionBendRadius = 0,
+  transitionBendPipeDiameter = "larger",
+  transitionCustomBendPipeDiameter = 40,
   transitionAngle = 0,
   transitionOffset = [0,0],
   transitionBaseType = "none",
@@ -892,6 +916,48 @@ module HoseAdapter(
           abs(end1[iInnerEndDiameter] - end2[iInnerEndDiameter])/2)+(end1[iWallThickness]/2+end2[iWallThickness]/2)
       : transitionLength;
 
+      bendPipeDiameter = transitionBendPipeDiameter == "custom"
+        ? transitionCustomBendPipeDiameter
+        : transitionBendPipeDiameter == "smaller"
+          ? min(end1[iInnerEndDiameter], end2[iInnerEndDiameter])
+          : max(end1[iInnerEndDiameter], end2[iInnerEndDiameter]);
+      assert(
+        transitionBendPipeDiameter != "custom" || transitionCustomBendPipeDiameter > 0,
+        "Transition custom bend pipe diameter must be greater than zero");
+
+      // Preserve the wall of a matching end. For an in-between custom bore,
+      // interpolate the wall; outside that range, use the nearest end's wall.
+      bendPipeWallThickness = end1[iInnerEndDiameter] == end2[iInnerEndDiameter]
+        ? max(end1[iWallThickness], end2[iWallThickness])
+        : let(
+            blend = max(0, min(1,
+              (bendPipeDiameter - end1[iInnerEndDiameter]) /
+              (end2[iInnerEndDiameter] - end1[iInnerEndDiameter]))))
+          end1[iWallThickness] +
+            blend * (end2[iWallThickness] - end1[iWallThickness]);
+
+      bendPipeOuterDiameter = bendPipeDiameter + bendPipeWallThickness*2;
+      bendDiameterChangeBefore = abs(bendPipeDiameter - end1[iInnerEndDiameter]);
+      bendDiameterChangeAfter = abs(end2[iInnerEndDiameter] - bendPipeDiameter);
+      bendTotalDiameterChange = bendDiameterChangeBefore + bendDiameterChangeAfter;
+
+      // With automatic length, size each taper independently so the steepest
+      // of its inner or outer surfaces is approximately 45 degrees.
+      bendTaperLengthBefore = transitionLength == 0
+        ? max(
+            bendDiameterChangeBefore/2,
+            abs(bendPipeOuterDiameter - end1[iOuterEndDiameter])/2)
+        : bendTotalDiameterChange == 0
+          ? 0
+          : transitionLength * bendDiameterChangeBefore / bendTotalDiameterChange;
+      bendTaperLengthAfter = transitionLength == 0
+        ? max(
+            bendDiameterChangeAfter/2,
+            abs(end2[iOuterEndDiameter] - bendPipeOuterDiameter)/2)
+        : bendTotalDiameterChange == 0
+          ? 0
+          : transitionLength * bendDiameterChangeAfter / bendTotalDiameterChange;
+
       //Calculate the bend radius
       //organicbend, the '0' value must be max of connector 1 or 2 diameter, plus the wall thickness * 2 otherwise it will clip, then add provided radius.
       //transition the '0' value must be end 1 diameter/2 + wall thickenss *2 to prevent clipping, then addd provided radius.
@@ -918,9 +984,10 @@ module HoseAdapter(
          let(organic_bend_radius = transitionEnd2Count > 1
                 ? -(taperedAverageDiameter/2)/(cos(transitionAngle)-1)-taperedAverageDiameter/2 + transitionBendRadius
                 : taperedAverageDiameter + transitionBendRadius,
+             bendPipeOuterDiameter = bendPipeDiameter + bendPipeWallThickness*2,
              bend_taper_radius = transitionEnd2Count > 1
-                ? -(end1OuterEndDiameter/2)/(cos(transitionAngle)-1)-end1OuterEndDiameter/2 + transitionBendRadius
-                : end1OuterEndDiameter/2 + transitionBendRadius,
+                ? -(bendPipeOuterDiameter/2)/(cos(transitionAngle)-1)-bendPipeOuterDiameter/2 + transitionBendRadius
+                : bendPipeOuterDiameter/2 + transitionBendRadius,
              taper_bend_radius = transitionEnd2Count > 1
                 ? -(end2OuterEndDiameter/2)/(cos(transitionAngle)-1)-end2OuterEndDiameter/2 + transitionBendRadius
                 : end2OuterEndDiameter/2 + transitionBendRadius,
@@ -989,6 +1056,10 @@ module HoseAdapter(
         transition(
           style = _transitionStyle,
           length = _transitionLength,
+          bendTaperLengthBefore = bendTaperLengthBefore,
+          bendTaperLengthAfter = bendTaperLengthAfter,
+          bendPipeDiameter = bendPipeDiameter,
+          bendPipeWallThickness = bendPipeWallThickness,
           connector1InnerEndDiameter = end1[iInnerEndDiameter],
           connector2InnerStartDiameter = end2[iInnerEndDiameter],
           connector3InnerStartDiameter = getConnector3Setting(transitionHullCenter, end1, end2, end3)[iInnerEndDiameter],
@@ -1019,6 +1090,10 @@ module HoseAdapter(
         // Create the end connector
         if(end2[iLength] > 0)
         {
+          taperBeforeBend = _transitionStyle == "bend+taper"
+            && bendPipeDiameter != end1[iInnerEndDiameter];
+          taperAfterBend = _transitionStyle == "bend+taper"
+            && bendPipeDiameter != end2[iInnerEndDiameter];
           postRotation = [
             ((_transitionStyle == "taper+bend") ? transitionOffset.x
               : _transitionStyle == "hull" ? -end1[iOuterEndDiameter]/2
@@ -1043,9 +1118,46 @@ module HoseAdapter(
           {
             if(sliceDebug == false || rotation ==0)
             rotate([0, 0, rotation*multiConnectorAngle])
-            translate(postRotation)
-            rotate([0, -_transitionAngle, 0])
-            translate(preRotation)
+            if(_transitionStyle == "bend+taper")
+              translate([0, 0, endConnector1 + end1[iExtensionLength]])
+              translate([0, 0, bendTaperLengthBefore])
+              translate([-bendRadius, 0, 0])
+              rotate([0, -_transitionAngle, 0])
+              translate([
+                bendRadius + (taperAfterBend ? transitionOffset.x : 0),
+                taperAfterBend ? transitionOffset.y : 0,
+                bendTaperLengthAfter])
+              union(){
+                translate([0, 0, end2[iExtensionLength]])
+                mirror([0,0,1])
+                mirror([0,1,0])
+                transitionExtension(
+                  connector = 2,
+                  innerDiameter = end2[iInnerStartDiameter],
+                  wallThickness = end2[iWallThickness],
+                  length = end2[iExtensionLength],
+                  gridSize = end2[iExtensionGridSize],
+                  gridWallThickness = end2[iExtensionGridWallThickness],
+                  txt = end2[iExtensionText],
+                  txtSize=end2[iExtensionTextSize],
+                  transitionColor = getColor(extensionColor, DefaultTransitionColor),
+                  debug = sliceDebug,
+                  showCaliper = showCaliper,
+                  help = help);
+
+                translate([0, 0, end2[iExtensionLength]])
+                adapter(
+                  con = end2,
+                  connectorPos=2,
+                  transitionAngle =_transitionAngle,
+                  debug = sliceDebug,
+                  showCaliper = rotation == 0 ? showCaliper : false,
+                  help = help);
+              }
+            else
+              translate(postRotation)
+              rotate([0, -_transitionAngle, 0])
+              translate(preRotation)
             union(){
               translate([0, 0, end2[iExtensionLength]])
               mirror([0,0,1])

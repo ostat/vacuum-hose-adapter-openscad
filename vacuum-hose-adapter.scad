@@ -102,13 +102,17 @@ End1_Extension_Text_Size = 0;
 
 /* [Transition] */
 // tapered for hose connections, flat for attaching to a device
-Transition_Style = "bend+taper"; //[flat, taper+bend: Taper then bend, bend+taper: Bend then taper, organicbend: Tapered bend, hull: Hull for multiple end count, none: no transition]
+Transition_Style = "bend+taper"; //[flat, bend+taper: Bend and taper, organicbend: Tapered bend, hull: Hull for multiple end count, none: no transition]
 //Length of the transition between the two ends
 Transition_Length = 0;  //1
-// Radius of transition bend (mm)
-Transition_Bend_Radius = 0;  //1
 //Angle of bend through the transition section.
 Transition_Angle = 0;  //1
+// Radius of transition bend (mm)
+Transition_Bend_Radius = 0;  //1
+// Select the bend pipe's inside diameter from the two ends, or enter a custom value
+Transition_Bend_Pipe_Diameter = "larger"; //[larger, smaller, custom]
+// Inside diameter of the bend pipe when custom is selected
+Transition_Custom_Bend_Pipe_Diameter = 40; //0.1
 // offset for the connector, not supported on taperedbend.
 Transition_Offset = [0,0]; // 0.1
 
@@ -524,6 +528,8 @@ HoseAdapter(
   transitionStyle = Transition_Style,
   transitionLength = Transition_Length,
   transitionBendRadius = Transition_Bend_Radius,
+  transitionBendPipeDiameter = Transition_Bend_Pipe_Diameter,
+  transitionCustomBendPipeDiameter = Transition_Custom_Bend_Pipe_Diameter,
   transitionAngle = Transition_Angle,
   transitionOffset = Transition_Offset,
   transitionBaseType = Transition_Base_Type,
