@@ -10,4 +10,6 @@ connectorSettings =[
   osvacfSettings,
   osvacf32Settings,
   makitaMaleSettings,
-  boschSanderSettings];
+  boschSanderSettings,
+  festoolCleantecLugSettings
+  ];

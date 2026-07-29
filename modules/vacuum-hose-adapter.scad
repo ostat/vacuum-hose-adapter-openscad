@@ -260,6 +260,14 @@ module adapter(
             help = help,
             $fn = $fn);
         }
+        else if(con[iStyle] == "festoolcleanteclug")
+        {
+          translate([0, 0, con[iLength]+con[iStopLength]])
+          mirror ([0,0,1])
+          FestoolCleantecLugConnector(
+            help = help,
+            $fn = $fn);
+        }
         else if(con[iStyle] == "nozzle")
         {
           Nozzle(
