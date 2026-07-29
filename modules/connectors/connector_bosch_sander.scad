@@ -104,32 +104,27 @@ module BoschSanderConnector(
   echo("BoschSanderConnector", innerEndDiameter=innerEndDiameter, length=length, wallThickness=wallThickness, grooveCount=boschSanderGrooveCount);
 
   difference(){
-    HoseConnector(
-      connectorMeasurement = "inner",
-      innerStartDiameter = innerEndDiameter,
-      innerEndDiameter = innerEndDiameter,
-      length = length,
-      wallThickness = wallThickness,
-      help = help);
+  
+    union(){
+      pipe(
+        diameter = boschSanderRingClearanceDiameter,
+        length = length,
+        wallThickness = wallThickness-(boschSanderRingClearanceDiameter-innerEndDiameter)/2,
+        chamfer1 = [boschSanderRingClearanceChamfer,0],
+        chamfer2 = [0,0]);
+      
+      translate([0,0,boschSanderRingClearanceDepth + fudgeFactor])
+      pipe(
+        diameter = innerEndDiameter,
+        length = length-boschSanderRingClearanceDepth + fudgeFactor,
+        wallThickness = wallThickness,
+        chamfer1 = [(boschSanderRingClearanceDiameter - innerEndDiameter)/2 + fudgeFactor,0],
+        chamfer2 = [0,0]);
+    }
 
     for(i = [0:boschSanderGrooveCount-1])
       rotate([0,0,i*360/boschSanderGrooveCount])
         boschSanderLockingGroove(boreRadius);
-
-    // Rubber-ring clearance pocket at the mouth, with a lead-in chamfer.
-    translate([0, 0, -fudgeFactor])
-      cylinder(h = boschSanderRingClearanceDepth + fudgeFactor,
-               d = boschSanderRingClearanceDiameter);
-    translate([0, 0, -fudgeFactor])
-      cylinder(h = boschSanderRingClearanceChamfer + fudgeFactor,
-               d1 = boschSanderRingClearanceDiameter + boschSanderRingClearanceChamfer*2,
-               d2 = boschSanderRingClearanceDiameter);
-    // 45 deg taper where the pocket meets the bore, so the step is self-supporting
-    // when printed mouth-down (height = radial change = 45 deg overhang).
-    translate([0, 0, boschSanderRingClearanceDepth - fudgeFactor])
-      cylinder(h = (boschSanderRingClearanceDiameter - innerEndDiameter)/2 + fudgeFactor,
-               d1 = boschSanderRingClearanceDiameter,
-               d2 = innerEndDiameter);
   }
 
   HelpTxt("BoschSanderConnector",[
