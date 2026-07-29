@@ -105,6 +105,7 @@ HoseAdapter(
 | `"camlock"` | Camlock quick disconnect fitting |
 | `"dw735"` | DeWalt DW735 planer dust port adapter |
 | `"kobalt"` | Kobalt saw dust outlet female socket with recessed ring channels |
+| `"rigid_nxt"` | Rigid NXT shop vac hose connector with locking ridges |
 | `"nozzle"` | Crevice tool, wide nozzle, or utility vacuum nozzle |
 | `"none"` | Open or flat end |
 
