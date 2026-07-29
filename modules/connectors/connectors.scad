@@ -11,6 +11,7 @@ include <connector_dyson.scad>
 include <connector_dw735.scad>
 include <connector_osvac.scad>
 include <connector_makita.scad>
+include <connector_bosch_sander.scad>
 include <connector_festool.scad>
 
 include <connector_common_post.scad>

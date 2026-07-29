@@ -157,7 +157,8 @@ $ScadScriptFolders |ForEach-Object {
     $TargetFile = $_
     if($TargetFile.BaseName -ieq 'vacuum-hose-adapter'){
 
-        $styles = @('mag', 'flange', 'hose', 'dyson', 'camlock', 'dw735', 'centec_female', 'centec_male', 'osvacm32', 'osvacm', 'osvacf32', 'osvacf', 'makita_male', 'festoolcleanteclug')
+        $styles = @('mag', 'flange', 'hose', 'dyson', 'camlock', 'dw735', 'centec_female', 'centec_male', 'osvacm32', 'osvacm', 'osvacf32', 'osvacf', 'makita_male', 'bosch_sander', 'festoolcleanteclug')
+
         $styles | ForEach-Object {
             $style = $_
             $input_args  = " -D `"End1_Style=`"`"$($style)`"`"`""
