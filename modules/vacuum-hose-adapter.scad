@@ -129,6 +129,7 @@ module adapter(
               alignmentSideClearance = con[iAlignmentSideClearance],
               alignmentDepthClearance = con[iAlignmentDepthClearance],
               twistLockSize = con[iMagnetTwistLockSize],
+              roundover = con[iMagnetFlangeRoundover],
               $fn = $fn);
         }
         else if(con[iStyle] == "flange")

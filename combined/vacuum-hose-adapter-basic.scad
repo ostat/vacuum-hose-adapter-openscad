@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-07-30 09:26
-//Content hash EC4AAF9B872497F79C7FB787894FB4BD50287EC297DE5EFF1E43A0312A90B5DE
+//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-07-31 08:58
+//Content hash B641E9B6D14ECBB0099C9D32B47701080BBC5EFD58996D973BFC045CEEB66B8E
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -235,6 +235,7 @@ module adapter(
               alignmentSideClearance = con[iAlignmentSideClearance],
               alignmentDepthClearance = con[iAlignmentDepthClearance],
               twistLockSize = con[iMagnetTwistLockSize],
+              roundover = con[iMagnetFlangeRoundover],
               $fn = $fn);
         }
         else if(con[iStyle] == "flange")
@@ -4481,7 +4482,8 @@ iMagnetThickness=iMagnetDiameter+1;
 iMagnetBorder=iMagnetThickness+1;
 iMagnetZOffset=iMagnetBorder+1;
 iMagnetFlangeThickness=iMagnetZOffset+1;
-iMagnetTwistLockSize=iMagnetFlangeThickness+1;
+iMagnetFlangeRoundover=iMagnetFlangeThickness+1;
+iMagnetTwistLockSize=iMagnetFlangeRoundover+1;
 iFlangeWidth=iMagnetTwistLockSize+1;
 iFlangeThickness=iFlangeWidth+1;
 iFlangeScrewPosition=iFlangeThickness+1;
@@ -4545,6 +4547,7 @@ module echoConnector(name, end, help){
     "iMagnetBorder", end[iMagnetBorder],
     "iMagnetZOffset", end[iMagnetZOffset],
     "iMagnetFlangeThickness", end[iMagnetFlangeThickness],
+    "iMagnetFlangeRoundover", end[iMagnetFlangeRoundover],
     "iMagnetTwistLockSize", end[iMagnetTwistLockSize],
     "iAlignmentRing", end[iAlignmentRing],
     "iAlignmentDepth", end[iAlignmentDepth],
@@ -4624,6 +4627,7 @@ function UserConnectorSettings(
   magnetBorder = 2,
   magnetZOffset = 0,
   magnetFlangeThickness = 6,
+  magnetFlangeRoundover = true,
   magnetTwistLockSize = "0",
   alignmentRing = "no",
   flangeWidth = 20,
@@ -4674,6 +4678,7 @@ function UserConnectorSettings(
     magnetBorder,
     magnetZOffset,
     magnetFlangeThickness,
+    magnetFlangeRoundover,
     magnetTwistLockSize,
     flangeWidth,
     flangeThickness,
@@ -4728,6 +4733,7 @@ function ValidateUserConnectorSettings(userSettings) =
   assert(is_num(userSettings[iMagnetBorder]) && userSettings[iMagnetBorder] >= 0, str("magnetBorder must be a non-negative number:", userSettings[iMagnetBorder]))
   assert(is_num(userSettings[iMagnetZOffset]), str("magnetZOffset must be a number:", userSettings[iMagnetZOffset]))
   assert(is_num(userSettings[iMagnetFlangeThickness]) && userSettings[iMagnetFlangeThickness] >= 0, str("magnetFlangeThickness must be a non-negative number:", userSettings[iMagnetFlangeThickness]))
+  assert(is_bool(userSettings[iMagnetFlangeRoundover]), str("magnetFlangeRoundover must be a boolean:", userSettings[iMagnetFlangeRoundover]))
   assert(is_string(userSettings[iMagnetTwistLockSize]), str("magnetTwistLockSize must be a string:", userSettings[iMagnetTwistLockSize]))
   assert(is_string(userSettings[iAlignmentRing]), str("alignmentRing must be a string:", userSettings[iAlignmentRing]))
   assert(userSettings[iAlignmentRing] == "no" || userSettings[iAlignmentRing] == "protruding" || userSettings[iAlignmentRing] == "recessed", str("alignmentRing must be 'no', 'protruding', or 'recessed':", userSettings[iAlignmentRing]))
@@ -4785,6 +4791,8 @@ function getConnectorSettings(
     wallThickness = userSettings[iWallThickness],
     stopThickness = userSettings[iStopThickness],
     stopLength = userSettings[iStopLength],
+    flangeThickness = userSettings[iFlangeThickness],
+    magnetFlangeThickness = userSettings[iMagnetFlangeThickness],
 
     _diameter = measurement_to_mm(diameter),
     _length = measurement_to_mm(length),
@@ -4797,7 +4805,9 @@ function getConnectorSettings(
       (style == "nozzle" && d == 0) ? con1OuterEndDiameter : d,
     conWallThickness = let(w = retrieveConnectorSetting(style, iSettingsWallThickness, wallThickness))
       (style == "nozzle" && w == 0) ? con1WallThickness : w,
-    conLength = retrieveConnectorSetting(style, iSettingsLength, _length),
+    conLength = let( l = retrieveConnectorSetting(style, iSettingsLength, _length))
+      (style == "mag") ? max(l, magnetFlangeThickness)
+      : (style == "flange") ? max(l, flangeThickness) : l,
     conTaper = let(t = (style == "nozzle") ? 0 : retrieveConnectorSetting(style, iSettingsTaper, taper)) conMeasurement == "inner" ? t*-1 : t,
     conInnerDiameter = conMeasurement == "inner" ? conDiameter : conDiameter - conWallThickness * 2,
     conInnerStartDiameter = conInnerDiameter - conTaper / 2,
@@ -4838,6 +4848,7 @@ function getConnectorSettings(
         userSettings[iMagnetBorder],
         userSettings[iMagnetZOffset],
         userSettings[iMagnetFlangeThickness],
+        userSettings[iMagnetFlangeRoundover],
         userSettings[iMagnetTwistLockSize],
         userSettings[iFlangeWidth],
         userSettings[iFlangeThickness],
@@ -5991,7 +6002,7 @@ module FlangeConnector(
   assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
   assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
   assert(is_num(flangeThickness) && flangeThickness > 0, str("flangeThickness must be a number greater than 0. Provided:", flangeThickness));
-  assert(is_num(flangeWidth) && flangeWidth > 0, str("flangeWidth must be a number greater than 0. Provided:", flangeWidth));
+  assert(is_num(flangeWidth) && flangeWidth >= 0, str("flangeWidth must be a number greater than or equal to 0. Provided:", flangeWidth));
   assert(is_num(screwPosition) && screwPosition >= 0, str("screwPosition must be a number greater than or equal to 0. Provided:", screwPosition));
   assert(is_num(screwBorder) && screwBorder >= 0, str("screwBorder must be a number greater than or equal to 0. Provided:", screwBorder));
   assert(is_num(screwCount) && screwCount >= 1 && floor(screwCount) == screwCount, str("screwCount must be an integer greater than or equal to 1. Provided:", screwCount));
@@ -6071,7 +6082,9 @@ module FlangeConnector(
         cylinder (
             d1 = innerStartDiameter,
             d2 = innerEndDiameter,
-            h = length + 2 * fudgeFactor*2);
+            // Keep the bore open when the flange is thicker than the
+            // connector body.
+            h = max(length, flangeThickness) + 2 * fudgeFactor*2);
   }
 
   HelpTxt("FlangeConnector",[
@@ -6108,13 +6121,21 @@ if(connector_magnetic_demo && $preview){
     diameter = 50;
     spacer = diameter * 1.8;
 
+    imagnetic_demo_length = 0;
+    imagnetic_demo_magnetDiameter = 1;
+    imagnetic_demo_alignmentRing = 2;
+    imagnetic_demo_twistLockSize = 3;
+    imagnetic_demo_magnetCount = 4;
+    
     render_options = [
-        ["no", "0", 8],
-        ["protruding", "0", 8],
-        ["recessed", "0", 8],
-        ["no", "4", 8],
-        ["no", "4cnc", 8],
-        ["no", "0", 12]
+        [7.5, 8, "no", "0", 8],
+        [8, 8, "no", "0", 8],
+        [20, 10.5, "no", "0", 8],
+        [20, 10.5, "protruding", "0", 8],
+        [20, 10.5, "recessed", "0", 8],
+        [20, 10.5, "no", "4", 8],
+        [20, 10.5, "no", "4cnc", 8],
+        [20, 10.5, "no", "0", 12]
     ];
 
     for(iRender = [0:len(render_options)-1])
@@ -6122,21 +6143,21 @@ if(connector_magnetic_demo && $preview){
         MagneticConnector(
             innerStartDiameter = diameter,
             innerEndDiameter = diameter,
-            length = 20,
+            length = render_options[iRender][imagnetic_demo_length],
             wallThickness = 2,
-            magnetDiameter = 10.5,
+            magnetDiameter = render_options[iRender][imagnetic_demo_magnetDiameter],
             magnetThickness = 4,
             magnetBorder = 2,
             magnetZOffset = 0,
             flangeThickness = 7.5,
-            magnetCount = render_options[iRender][2],
-            alignmentRing = render_options[iRender][0],
+            magnetCount = render_options[iRender][imagnetic_demo_magnetCount],
+            alignmentRing = render_options[iRender][imagnetic_demo_alignmentRing],
             alignmentDepth = 2,
             alignmentUpperWidth = 3,
             alignmentLowerWidth = 1,
             alignmentSideClearance = 0.25,
             alignmentDepthClearance = 0.75,
-            twistLockSize = render_options[iRender][1]);
+            twistLockSize = render_options[iRender][imagnetic_demo_twistLockSize]);
 }
 
 module MagneticConnector(
@@ -6157,6 +6178,7 @@ module MagneticConnector(
     alignmentSideClearance,
     alignmentDepthClearance,
     twistLockSize,
+    roundover = true,
 )
 {
     assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");
@@ -6178,6 +6200,7 @@ module MagneticConnector(
         "alignmentRing must be one of 'no', 'protruding', or 'recessed'");
     assert(is_string(twistLockSize) && (twistLockSize == "0" || twistLockSize == "3" || twistLockSize == "3cnc" || twistLockSize == "4" || twistLockSize == "4cnc" || twistLockSize == "5" || twistLockSize == "5cnc"),
         "twistLockSize must be one of '0', '3', '3cnc', '4', '4cnc', '5', or '5cnc'");
+    assert(is_bool(roundover), "roundover must be a boolean");
 
     assert(magnetZOffset + magnetThickness <= flangeThickness + fudgeFactor, "magnetZOffset + magnetThickness must be less than or equal to flangeThickness");
     assert(alignmentDepthClearance <= alignmentDepth, "alignmentDepthClearance must be less than or equal to alignmentDepth");
@@ -6219,7 +6242,10 @@ module MagneticConnector(
 
 
   echo("MagneticConnector_locking", magnetDivisionAngle=magnetDivisionAngle, magnetCir=magnetCir, magnetDivisionCir=magnetDivisionCir, minLockSpace = lockingSystemSize, endAngleoffset=endAngleoffset, endAngleoffset=endAngleoffset);
-  fillet = flangeThickness;
+  roundoverSize = !roundover || lockingSize != [0,0,0] ? 0
+    : max(flangeThickness-magnetThickness-magnetZOffset,0);
+
+  fillet = flangeThickness - roundoverSize;
     difference ()
     {
         //flange
@@ -6233,17 +6259,15 @@ module MagneticConnector(
 
             // flange aound the magnets
             hull () {
-                roundover = lockingSize !=[0,0,0] ? 0
-                  : max(flangeThickness-magnetThickness-magnetZOffset,0);
-                  echo(roundover=roundover);
+
                 for (i = [0: magnetCount-1]) {
                     rotate ([0, 0, i * magnetDivisionAngle])
                     translate ([magnetPosition, 0, 0])
-                    if(roundover > 0){
+                    if(roundoverSize > 0){
                       roundedCylinder(
                         h = flangeThickness,
                         r = (magnetDiameter + magnetBorder)/2,
-                        roundedr2=roundover);
+                        roundedr2=roundoverSize);
                     }else {
                       cylinder (d = magnetDiameter + magnetBorder * 2, flangeThickness);
                     }
@@ -6354,7 +6378,10 @@ module MagneticConnector(
             cylinder (
                 d1 = innerStartDiameter,
                 d2 = innerEndDiameter,
-                h = length + 2 * fudgeFactor);
+                // The magnetic flange may be thicker than the requested
+                // connector length. Cut through whichever extends furthest so
+                // a short connector cannot leave a cap across the airflow.
+                h = max(length, flangeThickness) + 2 * fudgeFactor);
 
         if(alignmentRing == "recessed")
         {

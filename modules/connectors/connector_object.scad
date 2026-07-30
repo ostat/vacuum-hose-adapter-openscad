@@ -27,7 +27,8 @@ iMagnetThickness=iMagnetDiameter+1;
 iMagnetBorder=iMagnetThickness+1;
 iMagnetZOffset=iMagnetBorder+1;
 iMagnetFlangeThickness=iMagnetZOffset+1;
-iMagnetTwistLockSize=iMagnetFlangeThickness+1;
+iMagnetFlangeRoundover=iMagnetFlangeThickness+1;
+iMagnetTwistLockSize=iMagnetFlangeRoundover+1;
 iFlangeWidth=iMagnetTwistLockSize+1;
 iFlangeThickness=iFlangeWidth+1;
 iFlangeScrewPosition=iFlangeThickness+1;
@@ -91,6 +92,7 @@ module echoConnector(name, end, help){
     "iMagnetBorder", end[iMagnetBorder],
     "iMagnetZOffset", end[iMagnetZOffset],
     "iMagnetFlangeThickness", end[iMagnetFlangeThickness],
+    "iMagnetFlangeRoundover", end[iMagnetFlangeRoundover],
     "iMagnetTwistLockSize", end[iMagnetTwistLockSize],
     "iAlignmentRing", end[iAlignmentRing],
     "iAlignmentDepth", end[iAlignmentDepth],
@@ -170,6 +172,7 @@ function UserConnectorSettings(
   magnetBorder = 2,
   magnetZOffset = 0,
   magnetFlangeThickness = 6,
+  magnetFlangeRoundover = true,
   magnetTwistLockSize = "0",
   alignmentRing = "no",
   flangeWidth = 20,
@@ -220,6 +223,7 @@ function UserConnectorSettings(
     magnetBorder,
     magnetZOffset,
     magnetFlangeThickness,
+    magnetFlangeRoundover,
     magnetTwistLockSize,
     flangeWidth,
     flangeThickness,
@@ -274,6 +278,7 @@ function ValidateUserConnectorSettings(userSettings) =
   assert(is_num(userSettings[iMagnetBorder]) && userSettings[iMagnetBorder] >= 0, str("magnetBorder must be a non-negative number:", userSettings[iMagnetBorder]))
   assert(is_num(userSettings[iMagnetZOffset]), str("magnetZOffset must be a number:", userSettings[iMagnetZOffset]))
   assert(is_num(userSettings[iMagnetFlangeThickness]) && userSettings[iMagnetFlangeThickness] >= 0, str("magnetFlangeThickness must be a non-negative number:", userSettings[iMagnetFlangeThickness]))
+  assert(is_bool(userSettings[iMagnetFlangeRoundover]), str("magnetFlangeRoundover must be a boolean:", userSettings[iMagnetFlangeRoundover]))
   assert(is_string(userSettings[iMagnetTwistLockSize]), str("magnetTwistLockSize must be a string:", userSettings[iMagnetTwistLockSize]))
   assert(is_string(userSettings[iAlignmentRing]), str("alignmentRing must be a string:", userSettings[iAlignmentRing]))
   assert(userSettings[iAlignmentRing] == "no" || userSettings[iAlignmentRing] == "protruding" || userSettings[iAlignmentRing] == "recessed", str("alignmentRing must be 'no', 'protruding', or 'recessed':", userSettings[iAlignmentRing]))
@@ -331,6 +336,8 @@ function getConnectorSettings(
     wallThickness = userSettings[iWallThickness],
     stopThickness = userSettings[iStopThickness],
     stopLength = userSettings[iStopLength],
+    flangeThickness = userSettings[iFlangeThickness],
+    magnetFlangeThickness = userSettings[iMagnetFlangeThickness],
 
     _diameter = measurement_to_mm(diameter),
     _length = measurement_to_mm(length),
@@ -343,7 +350,9 @@ function getConnectorSettings(
       (style == "nozzle" && d == 0) ? con1OuterEndDiameter : d,
     conWallThickness = let(w = retrieveConnectorSetting(style, iSettingsWallThickness, wallThickness))
       (style == "nozzle" && w == 0) ? con1WallThickness : w,
-    conLength = retrieveConnectorSetting(style, iSettingsLength, _length),
+    conLength = let( l = retrieveConnectorSetting(style, iSettingsLength, _length))
+      (style == "mag") ? max(l, magnetFlangeThickness)
+      : (style == "flange") ? max(l, flangeThickness) : l,
     conTaper = let(t = (style == "nozzle") ? 0 : retrieveConnectorSetting(style, iSettingsTaper, taper)) conMeasurement == "inner" ? t*-1 : t,
     conInnerDiameter = conMeasurement == "inner" ? conDiameter : conDiameter - conWallThickness * 2,
     conInnerStartDiameter = conInnerDiameter - conTaper / 2,
@@ -384,6 +393,7 @@ function getConnectorSettings(
         userSettings[iMagnetBorder],
         userSettings[iMagnetZOffset],
         userSettings[iMagnetFlangeThickness],
+        userSettings[iMagnetFlangeRoundover],
         userSettings[iMagnetTwistLockSize],
         userSettings[iFlangeWidth],
         userSettings[iFlangeThickness],

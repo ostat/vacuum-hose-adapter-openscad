@@ -84,6 +84,8 @@ End1_Magnet_Border = 2;  //0.1
 End1_Magnet_ZOffset = 0;  //0.1
 // Thickness of the magnet flange (mm)
 End1_Magnet_Flange_Thickness = 6;  //0.1
+// Round over the outside edge of the magnetic flange
+End1_Magnet_Flange_Roundover = true;
 // Include a flange alignment ring
 End1_Ring = "no"; //[no: No alignment ring, protruding: protruding ring, recessed: Recessed ring]
 // Magnetic ring Twist lock bolt size (draft setting)
@@ -215,6 +217,8 @@ End2_Magnet_Border = 2;  //0.1
 End2_Magnet_ZOffset = 0;  //0.1
 //Inner diameter of the Magnet flange
 End2_Magnet_Flange_Thickness = 10;  //0.1
+// Round over the outside edge of the magnetic flange
+End2_Magnet_Flange_Roundover = true;
 //Include a flange alignment ring
 End2_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recessed: Recessed ring]
 //Magnetic ring twist lock bolt size (draft setting)
@@ -313,6 +317,8 @@ End3_Magnet_Border = 2;  //0.1
 End3_Magnet_ZOffset = 0;  //0.1
 // Inner diameter of the Magnet flange
 End3_Magnet_Flange_Thickness = 10;  //0.1
+// Round over the outside edge of the magnetic flange
+End3_Magnet_Flange_Roundover = true;
 // Include a flange alignment ring
 End3_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recessed: Recessed ring]
 // Magnetic ring twist lock bolt size (draft setting)
@@ -411,6 +417,7 @@ HoseAdapter(
     magnetBorder=End1_Magnet_Border,
     magnetZOffset=End1_Magnet_ZOffset,
     magnetFlangeThickness=End1_Magnet_Flange_Thickness,
+    magnetFlangeRoundover=End1_Magnet_Flange_Roundover,
     magnetTwistLockSize=End1_Magnet_Twist_Lock_Size,
     alignmentRing=End1_Ring,
     flangeWidth=End1_Flange_Width,
@@ -454,6 +461,7 @@ HoseAdapter(
     magnetBorder=End2_Magnet_Border,
     magnetZOffset=End2_Magnet_ZOffset,
     magnetFlangeThickness=End2_Magnet_Flange_Thickness,
+    magnetFlangeRoundover=End2_Magnet_Flange_Roundover,
     magnetTwistLockSize=End2_Magnet_Twist_Lock_Size,
     alignmentRing=End2_Ring,
     flangeWidth=End2_Flange_Width,
@@ -504,6 +512,7 @@ HoseAdapter(
     magnetBorder=End3_Magnet_Border,
     magnetZOffset=End3_Magnet_ZOffset,
     magnetFlangeThickness=End3_Magnet_Flange_Thickness,
+    magnetFlangeRoundover=End3_Magnet_Flange_Roundover,
     magnetTwistLockSize=End3_Magnet_Twist_Lock_Size,
     alignmentRing=End3_Ring,
     flangeWidth=End3_Flange_Width,
