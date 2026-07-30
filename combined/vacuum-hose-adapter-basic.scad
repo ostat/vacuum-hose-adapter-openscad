@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-07-31 08:58
-//Content hash B641E9B6D14ECBB0099C9D32B47701080BBC5EFD58996D973BFC045CEEB66B8E
+//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-07-30 22:58
+//Content hash EA6E9564E981E03BA41CFA93C593C7B20C8B6A0664D3F87061CAADD6D2A3C7DC
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -6002,7 +6002,7 @@ module FlangeConnector(
   assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
   assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
   assert(is_num(flangeThickness) && flangeThickness > 0, str("flangeThickness must be a number greater than 0. Provided:", flangeThickness));
-  assert(is_num(flangeWidth) && flangeWidth >= 0, str("flangeWidth must be a number greater than or equal to 0. Provided:", flangeWidth));
+  assert(is_num(flangeWidth) && flangeWidth > 0, str("flangeWidth must be a number greater than 0. Provided:", flangeWidth));
   assert(is_num(screwPosition) && screwPosition >= 0, str("screwPosition must be a number greater than or equal to 0. Provided:", screwPosition));
   assert(is_num(screwBorder) && screwBorder >= 0, str("screwBorder must be a number greater than or equal to 0. Provided:", screwBorder));
   assert(is_num(screwCount) && screwCount >= 1 && floor(screwCount) == screwCount, str("screwCount must be an integer greater than or equal to 1. Provided:", screwCount));
@@ -6082,9 +6082,7 @@ module FlangeConnector(
         cylinder (
             d1 = innerStartDiameter,
             d2 = innerEndDiameter,
-            // Keep the bore open when the flange is thicker than the
-            // connector body.
-            h = max(length, flangeThickness) + 2 * fudgeFactor*2);
+            h = length + 2 * fudgeFactor*2);
   }
 
   HelpTxt("FlangeConnector",[
@@ -6378,10 +6376,7 @@ module MagneticConnector(
             cylinder (
                 d1 = innerStartDiameter,
                 d2 = innerEndDiameter,
-                // The magnetic flange may be thicker than the requested
-                // connector length. Cut through whichever extends furthest so
-                // a short connector cannot leave a cap across the airflow.
-                h = max(length, flangeThickness) + 2 * fudgeFactor);
+                h = length + 2 * fudgeFactor);
 
         if(alignmentRing == "recessed")
         {
