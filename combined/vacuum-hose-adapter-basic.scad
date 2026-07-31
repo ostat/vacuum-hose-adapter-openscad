@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-07-31 08:58
-//Content hash B641E9B6D14ECBB0099C9D32B47701080BBC5EFD58996D973BFC045CEEB66B8E
+//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-07-31 19:50
+//Content hash 6F9276E428A903DBA49D04D2183BC44F17EDC0DF40491C9062080C33BF3DFDCE
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -4601,6 +4601,7 @@ function measurement_to_mm(input) =
 function UserConnectorSettings(
   connector,
   style="hose",
+  specialisedStyle="",
   wallThickness=2,
   measurement = "outer",
   diameter = [100,0],
@@ -4651,7 +4652,7 @@ function UserConnectorSettings(
   ) =
   let(result = [
     connector,
-    style,
+    specialisedStyle != "" && specialisedStyle != "disabled" ? specialisedStyle : style,
     wallThickness,
     measurement,
     diameter,
@@ -6002,7 +6003,7 @@ module FlangeConnector(
   assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
   assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
   assert(is_num(flangeThickness) && flangeThickness > 0, str("flangeThickness must be a number greater than 0. Provided:", flangeThickness));
-  assert(is_num(flangeWidth) && flangeWidth >= 0, str("flangeWidth must be a number greater than or equal to 0. Provided:", flangeWidth));
+  assert(is_num(flangeWidth) && flangeWidth > 0, str("flangeWidth must be a number greater than 0. Provided:", flangeWidth));
   assert(is_num(screwPosition) && screwPosition >= 0, str("screwPosition must be a number greater than or equal to 0. Provided:", screwPosition));
   assert(is_num(screwBorder) && screwBorder >= 0, str("screwBorder must be a number greater than or equal to 0. Provided:", screwBorder));
   assert(is_num(screwCount) && screwCount >= 1 && floor(screwCount) == screwCount, str("screwCount must be an integer greater than or equal to 1. Provided:", screwCount));
@@ -6082,9 +6083,7 @@ module FlangeConnector(
         cylinder (
             d1 = innerStartDiameter,
             d2 = innerEndDiameter,
-            // Keep the bore open when the flange is thicker than the
-            // connector body.
-            h = max(length, flangeThickness) + 2 * fudgeFactor*2);
+            h = length + 2 * fudgeFactor*2);
   }
 
   HelpTxt("FlangeConnector",[
@@ -6378,10 +6377,7 @@ module MagneticConnector(
             cylinder (
                 d1 = innerStartDiameter,
                 d2 = innerEndDiameter,
-                // The magnetic flange may be thicker than the requested
-                // connector length. Cut through whichever extends furthest so
-                // a short connector cannot leave a cap across the airflow.
-                h = max(length, flangeThickness) + 2 * fudgeFactor);
+                h = length + 2 * fudgeFactor);
 
         if(alignmentRing == "recessed")
         {
@@ -8745,6 +8741,7 @@ boschSanderRingClearanceChamfer = 1;      // 45 lead-in so it slides easily over
 // Length is left unregistered, so End_Length passes through from the Customizer and can be
 // grown from boschSanderMinLength upward (checked in the module below).
 boschSanderSettings = ["bosch_sander", [
+  [iSettingsLength, boschSanderDefaultLength],
   [iSettingsMeasurement, boschSanderMeasurement],
   [iSettingsDiameter, boschSanderInnerDiameter],
   [iSettingsWallThickness, boschSanderWallThickness],
@@ -8819,10 +8816,10 @@ module BoschSanderConnector(
         chamfer1 = [boschSanderRingClearanceChamfer,0],
         chamfer2 = [0,0]);
       
-      translate([0,0,boschSanderRingClearanceDepth + fudgeFactor])
+      translate([0,0,boschSanderRingClearanceDepth])
       pipe(
         diameter = innerEndDiameter,
-        length = length-boschSanderRingClearanceDepth + fudgeFactor,
+        length = length-boschSanderRingClearanceDepth,
         wallThickness = wallThickness,
         chamfer1 = [(boschSanderRingClearanceDiameter - innerEndDiameter)/2 + fudgeFactor,0],
         chamfer2 = [0,0]);

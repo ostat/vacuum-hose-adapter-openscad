@@ -39,6 +39,7 @@ boschSanderRingClearanceChamfer = 1;      // 45 lead-in so it slides easily over
 // Length is left unregistered, so End_Length passes through from the Customizer and can be
 // grown from boschSanderMinLength upward (checked in the module below).
 boschSanderSettings = ["bosch_sander", [
+  [iSettingsLength, boschSanderDefaultLength],
   [iSettingsMeasurement, boschSanderMeasurement],
   [iSettingsDiameter, boschSanderInnerDiameter],
   [iSettingsWallThickness, boschSanderWallThickness],
@@ -113,10 +114,10 @@ module BoschSanderConnector(
         chamfer1 = [boschSanderRingClearanceChamfer,0],
         chamfer2 = [0,0]);
       
-      translate([0,0,boschSanderRingClearanceDepth + fudgeFactor])
+      translate([0,0,boschSanderRingClearanceDepth])
       pipe(
         diameter = innerEndDiameter,
-        length = length-boschSanderRingClearanceDepth + fudgeFactor,
+        length = length-boschSanderRingClearanceDepth,
         wallThickness = wallThickness,
         chamfer1 = [(boschSanderRingClearanceDiameter - innerEndDiameter)/2 + fudgeFactor,0],
         chamfer2 = [0,0]);

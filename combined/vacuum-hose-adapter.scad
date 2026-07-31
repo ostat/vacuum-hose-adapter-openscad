@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-07-31 08:58
-//Content hash 2C625BCC7A2A5AFDBD09E9C2529C00C04491CC9306E32FDDF0927F1BBC821080
+//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-07-31 19:50
+//Content hash 7BFF3CF2C8D84965BBEAB7E38087EDA78C5F57EBE6B29CF0DA8A74500E6F5FA4
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -18,7 +18,9 @@
 //Wall thickness
 End1_Wall_Thickness = 2; //0.01
 //The style of the end
-End1_Style="hose"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, festoolcleanteclug: Festool Cleantec Lug]
+End1_Adjustable_Style="hose"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, osvacm: osVAC Male, osvacf: osVAC Female]
+// A specialised connector overrides the adjustable connector when selected
+End1_Specialised_Style="disabled"; // [disabled: Disabled, dyson: Dyson connector, camlock: CAMLOCK connector, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32: osVAC M32, osvacf32: osVAC F32, makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, festoolcleanteclug: Festool Cleantec Lug]
 // Is the measurement the adapter's outside or inside diameter?
 End1_Measurement = "outer"; //[inner, outer]
 // End 1 diameter of the adapter (mm, inch)
@@ -151,7 +153,9 @@ Transition_Base_Angle=0;
 /* [Connector 2] */
 //Wall thickness
 End2_Wall_Thickness = 2; //0.01
-End2_Style="hose"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, festoolcleanteclug: Festool Cleantec Lug, none: None]
+End2_Adjustable_Style="hose"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachment, none: None]
+// A specialised connector overrides the adjustable connector when selected
+End2_Specialised_Style="disabled"; // [disabled: Disabled, dyson: Dyson connector, camlock: CAMLOCK connector, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32: osVAC M32, osvacm: osVAC Male, osvacf32: osVAC F32, osvacf: osVAC Female, makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, festoolcleanteclug: Festool Cleantec Lug]
 // Is the measurement the adapter's outside or inside diameter?
 End2_Measurement = "outer"; //[inner, outer]
 // End 2 diameter of the adapter (mm, inch)
@@ -251,7 +255,9 @@ End2_Extension_Text_Size = 0;
 /* [Connector 3] */
 //Wall thickness
 End3_Wall_Thickness = 2; //0.01
-End3_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, festoolcleanteclug: Festool Cleantec Lug, none: None]
+End3_Adjustable_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachment, none: None]
+// A specialised connector overrides the adjustable connector when selected
+End3_Specialised_Style="disabled"; // [disabled: Disabled, dyson: Dyson connector, camlock: CAMLOCK connector, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32: osVAC M32, osvacm: osVAC Male, osvacf32: osVAC F32, osvacf: osVAC Female, makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, festoolcleanteclug: Festool Cleantec Lug]
 // Is the measurement the adapter's outside or inside diameter?
 End3_Measurement = "outer"; //[inner, outer]
 // End 3 diameter of the adapter (mm, inch)
@@ -4883,6 +4889,7 @@ function measurement_to_mm(input) =
 function UserConnectorSettings(
   connector,
   style="hose",
+  specialisedStyle="",
   wallThickness=2,
   measurement = "outer",
   diameter = [100,0],
@@ -4933,7 +4940,7 @@ function UserConnectorSettings(
   ) =
   let(result = [
     connector,
-    style,
+    specialisedStyle != "" && specialisedStyle != "disabled" ? specialisedStyle : style,
     wallThickness,
     measurement,
     diameter,
@@ -6284,7 +6291,7 @@ module FlangeConnector(
   assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
   assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
   assert(is_num(flangeThickness) && flangeThickness > 0, str("flangeThickness must be a number greater than 0. Provided:", flangeThickness));
-  assert(is_num(flangeWidth) && flangeWidth >= 0, str("flangeWidth must be a number greater than or equal to 0. Provided:", flangeWidth));
+  assert(is_num(flangeWidth) && flangeWidth > 0, str("flangeWidth must be a number greater than 0. Provided:", flangeWidth));
   assert(is_num(screwPosition) && screwPosition >= 0, str("screwPosition must be a number greater than or equal to 0. Provided:", screwPosition));
   assert(is_num(screwBorder) && screwBorder >= 0, str("screwBorder must be a number greater than or equal to 0. Provided:", screwBorder));
   assert(is_num(screwCount) && screwCount >= 1 && floor(screwCount) == screwCount, str("screwCount must be an integer greater than or equal to 1. Provided:", screwCount));
@@ -6364,9 +6371,7 @@ module FlangeConnector(
         cylinder (
             d1 = innerStartDiameter,
             d2 = innerEndDiameter,
-            // Keep the bore open when the flange is thicker than the
-            // connector body.
-            h = max(length, flangeThickness) + 2 * fudgeFactor*2);
+            h = length + 2 * fudgeFactor*2);
   }
 
   HelpTxt("FlangeConnector",[
@@ -6660,10 +6665,7 @@ module MagneticConnector(
             cylinder (
                 d1 = innerStartDiameter,
                 d2 = innerEndDiameter,
-                // The magnetic flange may be thicker than the requested
-                // connector length. Cut through whichever extends furthest so
-                // a short connector cannot leave a cap across the airflow.
-                h = max(length, flangeThickness) + 2 * fudgeFactor);
+                h = length + 2 * fudgeFactor);
 
         if(alignmentRing == "recessed")
         {
@@ -9027,6 +9029,7 @@ boschSanderRingClearanceChamfer = 1;      // 45 lead-in so it slides easily over
 // Length is left unregistered, so End_Length passes through from the Customizer and can be
 // grown from boschSanderMinLength upward (checked in the module below).
 boschSanderSettings = ["bosch_sander", [
+  [iSettingsLength, boschSanderDefaultLength],
   [iSettingsMeasurement, boschSanderMeasurement],
   [iSettingsDiameter, boschSanderInnerDiameter],
   [iSettingsWallThickness, boschSanderWallThickness],
@@ -9101,10 +9104,10 @@ module BoschSanderConnector(
         chamfer1 = [boschSanderRingClearanceChamfer,0],
         chamfer2 = [0,0]);
       
-      translate([0,0,boschSanderRingClearanceDepth + fudgeFactor])
+      translate([0,0,boschSanderRingClearanceDepth])
       pipe(
         diameter = innerEndDiameter,
-        length = length-boschSanderRingClearanceDepth + fudgeFactor,
+        length = length-boschSanderRingClearanceDepth,
         wallThickness = wallThickness,
         chamfer1 = [(boschSanderRingClearanceDiameter - innerEndDiameter)/2 + fudgeFactor,0],
         chamfer2 = [0,0]);
@@ -9293,6 +9296,9 @@ connectorSettings =[
   ];
 //CombinedEnd from path connector_common_post.scad
 
+function resolveConnectorStyle(adjustableStyle, specialisedStyle) =
+  specialisedStyle == "disabled" ? adjustableStyle : specialisedStyle;
+
 //Some online generators do not like direct setting of fa,fs,fn
 $fa = fa;
 $fs = fs;
@@ -9302,7 +9308,7 @@ $fn = fn;
 HoseAdapter(
   connector1 = UserConnectorSettings(
     connector=1,
-    style=End1_Style,
+    style=resolveConnectorStyle(End1_Adjustable_Style, End1_Specialised_Style),
     wallThickness=End1_Wall_Thickness,
     measurement=End1_Measurement,
     diameter=End1_Diameter,
@@ -9346,7 +9352,7 @@ HoseAdapter(
 
   connector2 = UserConnectorSettings(
     connector=2,
-    style=End2_Style,
+    style=resolveConnectorStyle(End2_Adjustable_Style, End2_Specialised_Style),
     wallThickness=End2_Wall_Thickness,
     measurement=End2_Measurement,
     diameter=End2_Diameter,
@@ -9397,7 +9403,7 @@ HoseAdapter(
 
   connector3 = UserConnectorSettings(
     connector=3,
-    style=End3_Style,
+    style=resolveConnectorStyle(End3_Adjustable_Style, End3_Specialised_Style),
     wallThickness=End3_Wall_Thickness,
     measurement=End3_Measurement,
     diameter=End3_Diameter,
