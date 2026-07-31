@@ -20,22 +20,20 @@ if(festoolCleantec_debug){
 lugCount = 3;
 
 festoolCleantecLug_Version = "0.1";
-festoolCleantecLug_MinLength = 26;
+festoolCleantecLug_MinLength = 31; //measured 26 + 5 for flange
 festoolCleantecLug_Measurement = "outer";
 festoolCleantecLug_OuterDiameter = 40; // 39.6 measured
 festoolCleantecLug_OuterDiameter_tip = 39.4; // 39.5 measured
 festoolCleantecLug_InnerDiameter = 36; // measured
 festoolCleantecLug_WallThickness_tip_measurement = 1.3; // 1.5 measured
 festoolCleantecLug_WallThickness_base_measurement = 2.6; // measured
-
-
 festoolCleantecLug_flange_stop = 5; // 44.81measured
 festoolCleantecLug_Doublelug_measurement = 4.8; // measured
 festoolCleantecLug_outer_clip_size = [12.5,9.0]; // width, height.  measured
 festoolCleantecLug_outer_clip_tapers = [1,0,1,0]; // width, height.  measured
 
 festoolCleantecLugSettings = ["festoolcleanteclug", [
-  [iSettingsLength, festoolCleantecLug_MinLength+festoolCleantecLug_flange_stop],
+  [iSettingsLength, festoolCleantecLug_MinLength],
   [iSettingsMeasurement, festoolCleantecLug_Measurement],
   [iSettingsDiameter, festoolCleantecLug_OuterDiameter+festoolCleantecLug_flange_stop],
   [iSettingsWallThickness, festoolCleantecLug_WallThickness_base_measurement+festoolCleantecLug_flange_stop/2],
@@ -97,25 +95,27 @@ module FestoolCleantecLugConnector(
   innerLugAxialLength = 6.5;  //measured
   innerLugHeight = 1.5;       //estimated
   innerLugWidth = 11;         //measured
-  
+
+  stopper_size = festoolCleantecLug_flange_stop;  
+  con_length = length - stopper_size;
   
   echo("FestoolCleantecLugConnector", festoolCleantecLug_OuterDiameter=festoolCleantecLug_OuterDiameter, innerDiameter=innerDiameter, festoolCleantecLug_WallThickness_base_measurement=festoolCleantecLug_WallThickness_base_measurement);
   union(){
-    stopper_size = festoolCleantecLug_flange_stop;
+
   Stopper(
     diameter = innerDiameter,
     outer = true,
-    totalLength = stopper_size,
+    totalLength = stopper_size+fudgeFactor,
     taper1 = 0.5,
     taper2 = 0,
     wallThickness = stopper_size/2,
     stopThickness = stopper_size/2,
-    zPosition = length-fudgeFactor,
+    zPosition = con_length-fudgeFactor,
     help = help);
   BayonetLugConnector(
     innerDiameter1 = festoolCleantecLug_OuterDiameter_tip-festoolCleantecLug_WallThickness_tip_measurement*2,
     innerDiameter2 = innerDiameter,
-    length = length,
+    length = con_length,
     wallThickness1 = festoolCleantecLug_WallThickness_tip_measurement,
     wallThickness2 = wallThickness,
     lugCount = lugCount,

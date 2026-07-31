@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-07-31 20:09
-//Content hash CE7E320F07647A2C38ED98457B79EBD4C78D1567868CB2F772D212515F20EF75
+//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-07-31 20:38
+//Content hash 341CD1503B7BC1C6FE305C5A0123D549E9E5586C9989969151F608DDB664B9B0
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -4733,7 +4733,11 @@ function reverse(lt) = [for(i = len(lt) - 1; i > -1; i = i - 1) lt[i]];
 
 
 
+// generic connectors
 
+// specialised connectors
+
+// order matters needs to come after the connectors
 //CombinedEnd from path connectors.scad
 //Combined from path connector_object.scad
 
@@ -5195,6 +5199,164 @@ function retrieveConnectorSetting(connector, iSetting, default = -1) = let(
     ? default
     : settingValue;
 //CombinedEnd from path connector_common.scad
+//Combined from path connector_flange.scad
+
+
+
+
+
+
+
+
+
+connector_flange_demo = false;
+
+if(connector_flange_demo && $preview){
+  $fn = 64;
+  spacer = 100;
+
+  render_options = [
+    [40, 32, 40, 2, 6, 8, 20, 2, 4, 5],
+    [40, 32, 45, 2.5, 8, 10, 18, 1.5, 4, 6],
+    [50, 36, 48, 3, 10, 12, 24, 2, 5, 6],
+    [50, 42, 55, 3, 12, 14, 30, 3, 6, 8]
+  ];
+
+  for(iRender = [0:len(render_options)-1])
+    translate([spacer * (iRender % 2), spacer * floor(iRender / 2), 0])
+      FlangeConnector(
+        innerStartDiameter = render_options[iRender][0],
+        innerEndDiameter = render_options[iRender][1],
+        length = render_options[iRender][2],
+        wallThickness = render_options[iRender][3],
+        flangeThickness = render_options[iRender][4],
+        flangeWidth = render_options[iRender][5],
+        screwPosition = render_options[iRender][6],
+        screwBorder = render_options[iRender][7],
+        screwCount = render_options[iRender][8],
+        screwDiameter = render_options[iRender][9],
+        help = true);
+}
+
+module FlangeConnector(
+    innerStartDiameter,
+    innerEndDiameter,
+    length,
+    wallThickness,
+    flangeThickness,
+    flangeWidth,
+    screwPosition,
+    screwBorder,
+    screwCount,
+    screwDiameter,
+    help
+)
+{
+  assert(is_num(innerStartDiameter) && innerStartDiameter > 0, str("innerStartDiameter must be a number greater than 0. Provided:", innerStartDiameter));
+  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, str("innerEndDiameter must be a number greater than 0. Provided:", innerEndDiameter));
+  assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
+  assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
+  assert(is_num(flangeThickness) && flangeThickness > 0, str("flangeThickness must be a number greater than 0. Provided:", flangeThickness));
+  assert(is_num(flangeWidth) && flangeWidth > 0, str("flangeWidth must be a number greater than 0. Provided:", flangeWidth));
+  assert(is_num(screwPosition) && screwPosition >= 0, str("screwPosition must be a number greater than or equal to 0. Provided:", screwPosition));
+  assert(is_num(screwBorder) && screwBorder >= 0, str("screwBorder must be a number greater than or equal to 0. Provided:", screwBorder));
+  assert(is_num(screwCount) && screwCount >= 1 && floor(screwCount) == screwCount, str("screwCount must be an integer greater than or equal to 1. Provided:", screwCount));
+  assert(is_num(screwDiameter) && screwDiameter > 0, str("screwDiameter must be a number greater than 0. Provided:", screwDiameter));
+  assert(is_bool(help), str("help must be a boolean. Provided:", help));
+
+  //The fillet around the edge
+  fillet = flangeThickness;
+  border = screwBorder == 0 ? flangeWidth/4 : screwBorder;
+  flangeOuterDiameter = innerStartDiameter + flangeWidth;
+  screwPositionRadius = screwPosition != 0
+    ? innerStartDiameter/2 + screwDiameter/2 + screwPosition/2
+    : (innerStartDiameter/2 + fillet + (flangeWidth/2-fillet)/2);
+
+  //assert(innerEndDiameter <= innerStartDiameter, str("innerEndDiameter should not exceed innerStartDiameter for this flange form. innerEndDiameter=", innerEndDiameter, " innerStartDiameter=", innerStartDiameter));
+  //assert(flangeOuterDiameter > innerStartDiameter, str("flangeOuterDiameter must be greater than innerStartDiameter. flangeOuterDiameter=", flangeOuterDiameter, " innerStartDiameter=", innerStartDiameter));
+  assert(border >= 0, str("border must be greater than or equal to 0. Provided:", border));
+  assert(screwPositionRadius > 0, str("screwPositionRadius must be greater than 0. Provided:", screwPositionRadius));
+//  assert(screwPositionRadius + screwDiameter/2 <= flangeOuterDiameter/2 + screwDiameter, str("screwPositionRadius is too large for flangeOuterDiameter. screwPositionRadius=", screwPositionRadius, " flangeOuterDiameter=", flangeOuterDiameter));
+
+  echo("FlangeConnector", screwCount=screwCount, screwDiameter=screwDiameter, screwPosition=screwPosition, border=border);
+  echo("FlangeConnector", screwPositionRadius=screwPositionRadius, fillet=fillet, flangeOuterDiameter=flangeOuterDiameter, innerStartDiameter=innerStartDiameter, flangeWidth=flangeWidth);
+
+  difference ()
+  {
+    //flange
+    union() {
+      pipe(
+        diameter1 = innerStartDiameter,
+        diameter2 = innerEndDiameter,
+        length = length,
+        wallThickness1 = wallThickness,
+        wallThickness2 = wallThickness);
+
+      // flange aound the screws
+      hull () {
+        cylinder (d = flangeOuterDiameter, flangeThickness);
+
+        for (i = [0: screwCount-1]) {
+            // The rotation should try to avoid the screw being under the bent hose.
+            rotate ([fudgeFactor, 0, 180/screwCount * (i * 2 - 1 + screwCount)])
+            translate ([screwPositionRadius, 0, 0])
+            cylinder (d = screwDiameter + border*2, h = flangeThickness);
+        }
+      }
+
+      // taper
+      intersection()
+      {
+        HalfConePipe (
+            diameter = innerEndDiameter,
+            length = fillet,
+            wallThickness1 = fillet - fudgeFactor,
+            wallThickness2 = 0,
+            zPosition= flangeThickness - fudgeFactor);
+
+        translate([0, 0, 0])
+        {
+            // limit fillet to length
+            cylinder(
+                d=innerEndDiameter*2,
+                h=length);
+        }
+      }
+    }
+
+    //Screw cut out
+    for (i = [0: screwCount-1]) {
+        // The rotation should try to avoid the screw being under the bent hose.
+        rotate ([fudgeFactor, 0, 180/screwCount * (i * 2 - 1 + screwCount)])
+        translate ([screwPositionRadius, 0, - fudgeFactor*2])
+        cylinder (d = screwDiameter, h = flangeThickness + length + fudgeFactor*4);
+    }
+
+    //Flange inner
+    translate([0, 0, -fudgeFactor])
+        cylinder (
+            d1 = innerStartDiameter,
+            d2 = innerEndDiameter,
+            h = length + 2 * fudgeFactor*2);
+  }
+
+  HelpTxt("FlangeConnector",[
+    "innerStartDiameter", innerStartDiameter,
+    "innerEndDiameter", innerEndDiameter,
+    "length", length,
+    "wallThickness", wallThickness,
+    "flangeThickness", flangeThickness,
+    "flangeWidth", flangeWidth,
+    "screwPosition", screwPosition,
+    "screwBorder", screwBorder,
+    "screwCount", screwCount,
+    "screwDiameter", screwDiameter,
+    "border", border,
+    "flangeOuterDiameter", flangeOuterDiameter,
+    "screwPositionRadius", screwPositionRadius
+    ],help);
+}
+//CombinedEnd from path connector_flange.scad
 //Combined from path connector_hose.scad
 
 
@@ -6230,164 +6392,6 @@ module Demo() {
 //MetricBoltSet(6, 8, 10);
 
 //CombinedEnd from path threads.scad
-//Combined from path connector_flange.scad
-
-
-
-
-
-
-
-
-
-connector_flange_demo = false;
-
-if(connector_flange_demo && $preview){
-  $fn = 64;
-  spacer = 100;
-
-  render_options = [
-    [40, 32, 40, 2, 6, 8, 20, 2, 4, 5],
-    [40, 32, 45, 2.5, 8, 10, 18, 1.5, 4, 6],
-    [50, 36, 48, 3, 10, 12, 24, 2, 5, 6],
-    [50, 42, 55, 3, 12, 14, 30, 3, 6, 8]
-  ];
-
-  for(iRender = [0:len(render_options)-1])
-    translate([spacer * (iRender % 2), spacer * floor(iRender / 2), 0])
-      FlangeConnector(
-        innerStartDiameter = render_options[iRender][0],
-        innerEndDiameter = render_options[iRender][1],
-        length = render_options[iRender][2],
-        wallThickness = render_options[iRender][3],
-        flangeThickness = render_options[iRender][4],
-        flangeWidth = render_options[iRender][5],
-        screwPosition = render_options[iRender][6],
-        screwBorder = render_options[iRender][7],
-        screwCount = render_options[iRender][8],
-        screwDiameter = render_options[iRender][9],
-        help = true);
-}
-
-module FlangeConnector(
-    innerStartDiameter,
-    innerEndDiameter,
-    length,
-    wallThickness,
-    flangeThickness,
-    flangeWidth,
-    screwPosition,
-    screwBorder,
-    screwCount,
-    screwDiameter,
-    help
-)
-{
-  assert(is_num(innerStartDiameter) && innerStartDiameter > 0, str("innerStartDiameter must be a number greater than 0. Provided:", innerStartDiameter));
-  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, str("innerEndDiameter must be a number greater than 0. Provided:", innerEndDiameter));
-  assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
-  assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
-  assert(is_num(flangeThickness) && flangeThickness > 0, str("flangeThickness must be a number greater than 0. Provided:", flangeThickness));
-  assert(is_num(flangeWidth) && flangeWidth > 0, str("flangeWidth must be a number greater than 0. Provided:", flangeWidth));
-  assert(is_num(screwPosition) && screwPosition >= 0, str("screwPosition must be a number greater than or equal to 0. Provided:", screwPosition));
-  assert(is_num(screwBorder) && screwBorder >= 0, str("screwBorder must be a number greater than or equal to 0. Provided:", screwBorder));
-  assert(is_num(screwCount) && screwCount >= 1 && floor(screwCount) == screwCount, str("screwCount must be an integer greater than or equal to 1. Provided:", screwCount));
-  assert(is_num(screwDiameter) && screwDiameter > 0, str("screwDiameter must be a number greater than 0. Provided:", screwDiameter));
-  assert(is_bool(help), str("help must be a boolean. Provided:", help));
-
-  //The fillet around the edge
-  fillet = flangeThickness;
-  border = screwBorder == 0 ? flangeWidth/4 : screwBorder;
-  flangeOuterDiameter = innerStartDiameter + flangeWidth;
-  screwPositionRadius = screwPosition != 0
-    ? innerStartDiameter/2 + screwDiameter/2 + screwPosition/2
-    : (innerStartDiameter/2 + fillet + (flangeWidth/2-fillet)/2);
-
-  //assert(innerEndDiameter <= innerStartDiameter, str("innerEndDiameter should not exceed innerStartDiameter for this flange form. innerEndDiameter=", innerEndDiameter, " innerStartDiameter=", innerStartDiameter));
-  //assert(flangeOuterDiameter > innerStartDiameter, str("flangeOuterDiameter must be greater than innerStartDiameter. flangeOuterDiameter=", flangeOuterDiameter, " innerStartDiameter=", innerStartDiameter));
-  assert(border >= 0, str("border must be greater than or equal to 0. Provided:", border));
-  assert(screwPositionRadius > 0, str("screwPositionRadius must be greater than 0. Provided:", screwPositionRadius));
-//  assert(screwPositionRadius + screwDiameter/2 <= flangeOuterDiameter/2 + screwDiameter, str("screwPositionRadius is too large for flangeOuterDiameter. screwPositionRadius=", screwPositionRadius, " flangeOuterDiameter=", flangeOuterDiameter));
-
-  echo("FlangeConnector", screwCount=screwCount, screwDiameter=screwDiameter, screwPosition=screwPosition, border=border);
-  echo("FlangeConnector", screwPositionRadius=screwPositionRadius, fillet=fillet, flangeOuterDiameter=flangeOuterDiameter, innerStartDiameter=innerStartDiameter, flangeWidth=flangeWidth);
-
-  difference ()
-  {
-    //flange
-    union() {
-      pipe(
-        diameter1 = innerStartDiameter,
-        diameter2 = innerEndDiameter,
-        length = length,
-        wallThickness1 = wallThickness,
-        wallThickness2 = wallThickness);
-
-      // flange aound the screws
-      hull () {
-        cylinder (d = flangeOuterDiameter, flangeThickness);
-
-        for (i = [0: screwCount-1]) {
-            // The rotation should try to avoid the screw being under the bent hose.
-            rotate ([fudgeFactor, 0, 180/screwCount * (i * 2 - 1 + screwCount)])
-            translate ([screwPositionRadius, 0, 0])
-            cylinder (d = screwDiameter + border*2, h = flangeThickness);
-        }
-      }
-
-      // taper
-      intersection()
-      {
-        HalfConePipe (
-            diameter = innerEndDiameter,
-            length = fillet,
-            wallThickness1 = fillet - fudgeFactor,
-            wallThickness2 = 0,
-            zPosition= flangeThickness - fudgeFactor);
-
-        translate([0, 0, 0])
-        {
-            // limit fillet to length
-            cylinder(
-                d=innerEndDiameter*2,
-                h=length);
-        }
-      }
-    }
-
-    //Screw cut out
-    for (i = [0: screwCount-1]) {
-        // The rotation should try to avoid the screw being under the bent hose.
-        rotate ([fudgeFactor, 0, 180/screwCount * (i * 2 - 1 + screwCount)])
-        translate ([screwPositionRadius, 0, - fudgeFactor*2])
-        cylinder (d = screwDiameter, h = flangeThickness + length + fudgeFactor*4);
-    }
-
-    //Flange inner
-    translate([0, 0, -fudgeFactor])
-        cylinder (
-            d1 = innerStartDiameter,
-            d2 = innerEndDiameter,
-            h = length + 2 * fudgeFactor*2);
-  }
-
-  HelpTxt("FlangeConnector",[
-    "innerStartDiameter", innerStartDiameter,
-    "innerEndDiameter", innerEndDiameter,
-    "length", length,
-    "wallThickness", wallThickness,
-    "flangeThickness", flangeThickness,
-    "flangeWidth", flangeWidth,
-    "screwPosition", screwPosition,
-    "screwBorder", screwBorder,
-    "screwCount", screwCount,
-    "screwDiameter", screwDiameter,
-    "border", border,
-    "flangeOuterDiameter", flangeOuterDiameter,
-    "screwPositionRadius", screwPositionRadius
-    ],help);
-}
-//CombinedEnd from path connector_flange.scad
 //Combined from path connector_magnetic.scad
 
 
@@ -6955,6 +6959,154 @@ module Nozzle(
     ],help);
 }
 //CombinedEnd from path connector_nozzle.scad
+//Combined from path connector_bosch_sander.scad
+
+
+
+
+
+
+
+
+
+
+// Bosch random orbital sander (e.g. ROS20VS) dust extraction port.
+// The sander's outlet rim has 8 bumps; this connector fits over it and
+// twist-locks via 8 bayonet grooves cut into the inner wall.
+//
+// Adapted from "Bosch ROS20VS sander+vacuum adapter (OpenSCAD)" by tjsoco
+// Source:  https://www.printables.com/model/794035-bosch-ros20vs-sandervacuum-adapter-openscad
+// Original license: Creative Commons Attribution (CC-BY 4.0) - https://creativecommons.org/licenses/by/4.0/
+// The bayonet locking-groove geometry is derived from that work.
+
+
+boschSanderVersion = "1.0";
+boschSanderMeasurement = "inner";     // the diameter is the bore that slips over the sander outlet
+boschSanderInnerDiameter = 28;        // inside dimension of the sander end (fixed by the tool)
+boschSanderWallThickness = 3.5;       // wall thickness (locked to the tool via the settings below)
+boschSanderDefaultLength = 28;
+boschSanderMinLength = 20;            // must clear the bayonet groove (entrance + lock pocket + margin)
+boschSanderGrooveCount = 8;           // the sander rim has 8 bumps
+
+// Bayonet channel geometry, measured axially from the insertion opening (z = 0).
+boschSanderGrooveWidth = 2.7;         // width/diameter of the machined channel
+boschSanderEntranceDepth = 15;        // how far a bump travels straight in before the twist
+boschSanderTwistAngle = 20;           // rotation from the entrance channel to the locking pocket
+boschSanderLockDepth = 2;             // how far the locking pocket rises back toward the opening
+
+// Clearance pocket at the mouth so the connector can seat past the machine's rubber ring
+// (the ring nests in this pocket) far enough for the bumps to reach the bayonet.
+boschSanderRingClearanceDiameter = 30.6;  // outer diameter of the machine's rubber ring
+boschSanderRingClearanceDepth = 5;        // how deep the pocket is bored into the mouth
+boschSanderRingClearanceChamfer = 1;      // 45 lead-in so it slides easily over the rubber
+
+// Bore (measurement + diameter), wall thickness and taper are locked to the tool so the part
+// fits and the transition blends flush -- registered values override the matching Customizer
+// fields, the same as the other tool connectors (Dyson, Makita, ...). Wall defaults to
+// boschSanderWallThickness (outer = boschSanderInnerDiameter + 2 * wall).
+// Length is left unregistered, so End_Length passes through from the Customizer and can be
+// grown from boschSanderMinLength upward (checked in the module below).
+boschSanderSettings = ["bosch_sander", [
+  [iSettingsLength, boschSanderDefaultLength],
+  [iSettingsMeasurement, boschSanderMeasurement],
+  [iSettingsDiameter, boschSanderInnerDiameter],
+  [iSettingsWallThickness, boschSanderWallThickness],
+  [iSettingsTaper, 0],
+  [iSettingsVersion, boschSanderVersion]
+  ]];
+
+connector_bosch_sander_demo = false;
+
+if(connector_bosch_sander_demo){
+  BoschSanderConnector(help = true, $fn = 128);
+}
+
+// A single bayonet groove pattern (subtracted from the tube wall).
+// boreRadius places the channel on the inner wall; the opening is at z = 0.
+module boschSanderLockingGroove(boreRadius){
+  gw = boschSanderGrooveWidth;
+  // Flared lead-in at the mouth so the bump finds the channel.
+  translate([boreRadius,0,0])
+    hull(){
+      sphere(d=gw+0.5);
+      translate([0,0,2]) sphere(d=gw+0.5);
+    }
+  // Straight entrance channel running in from the mouth to the twist.
+  translate([boreRadius,0,0])
+    hull(){
+      sphere(d=gw);
+      translate([0,0,boschSanderEntranceDepth]) sphere(d=gw);
+    }
+  // Lateral channel: the twist that carries the bump sideways.
+  translate([0,0,boschSanderEntranceDepth])
+    rotate_extrude(angle=boschSanderTwistAngle)
+      translate([boreRadius,0,0]) circle(d=gw);
+  // Locking pocket: rises back toward the mouth so the bump is retained.
+  rotate([0,0,boschSanderTwistAngle])
+    translate([boreRadius,0,boschSanderEntranceDepth-boschSanderLockDepth])
+      hull(){
+        sphere(d=gw);
+        translate([0,0,boschSanderLockDepth]) sphere(d=gw);
+      }
+}
+
+module BoschSanderConnector(
+  innerEndDiameter = boschSanderInnerDiameter,
+  length = boschSanderDefaultLength,
+  wallThickness = boschSanderWallThickness,
+  help = false,
+  $fn = 64
+){
+  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, str("innerEndDiameter must be a number greater than 0. Provided:", innerEndDiameter));
+  assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
+  assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
+  assert(is_bool(help), str("help must be a boolean. Provided:", help));
+  // Length may be grown from its minimum; below it the bayonet groove would not fit.
+  assert(length >= boschSanderMinLength, str("length must be at least boschSanderMinLength (", boschSanderMinLength, ") to clear the bayonet groove. Provided:", length));
+
+  boreRadius = innerEndDiameter/2;
+  assert(boreRadius > boschSanderGrooveWidth, str("innerEndDiameter is too small for the locking groove. Provided:", innerEndDiameter));
+  outerDiameter = innerEndDiameter + wallThickness*2;
+  assert(boschSanderRingClearanceDiameter + boschSanderRingClearanceChamfer*2 <= outerDiameter, str("ring clearance (plus chamfer) must fit within the outer diameter (", outerDiameter, "). Provided:", boschSanderRingClearanceDiameter));
+  assert(boschSanderRingClearanceDepth < length, str("ring clearance depth must be less than the connector length (", length, "). Provided:", boschSanderRingClearanceDepth));
+
+  echo("BoschSanderConnector", innerEndDiameter=innerEndDiameter, length=length, wallThickness=wallThickness, grooveCount=boschSanderGrooveCount);
+
+  difference(){
+  
+    union(){
+      pipe(
+        diameter = boschSanderRingClearanceDiameter,
+        length = length,
+        wallThickness = wallThickness-(boschSanderRingClearanceDiameter-innerEndDiameter)/2,
+        chamfer1 = [boschSanderRingClearanceChamfer,0],
+        chamfer2 = [0,0]);
+      
+      translate([0,0,boschSanderRingClearanceDepth])
+      pipe(
+        diameter = innerEndDiameter,
+        length = length-boschSanderRingClearanceDepth,
+        wallThickness = wallThickness,
+        chamfer1 = [(boschSanderRingClearanceDiameter - innerEndDiameter)/2 + fudgeFactor,0],
+        chamfer2 = [0,0]);
+    }
+
+    for(i = [0:boschSanderGrooveCount-1])
+      rotate([0,0,i*360/boschSanderGrooveCount])
+        boschSanderLockingGroove(boreRadius);
+  }
+
+  HelpTxt("BoschSanderConnector",[
+    "innerEndDiameter", innerEndDiameter,
+    "length", length,
+    "wallThickness", wallThickness,
+    "grooveCount", boschSanderGrooveCount,
+    "entranceDepth", boschSanderEntranceDepth,
+    "twistAngle", boschSanderTwistAngle,
+    "lockDepth", boschSanderLockDepth
+    ],help);
+}
+//CombinedEnd from path connector_bosch_sander.scad
 //Combined from path connector_camlock.scad
 
 
@@ -7707,7 +7859,7 @@ module Dw735Connector(
   }
 }
 //CombinedEnd from path connector_dw735.scad
-//Combined from path connector_osvac.scad
+//Combined from path connector_festool.scad
 
 
 
@@ -7715,205 +7867,144 @@ module Dw735Connector(
 
 
 
+//Festool
 
+festoolCleantec_debug = false;
 
-
-
-//osVAC
-//Female documentation https://www.thingiverse.com/thing:4562762
-//Male documentation https://www.thingiverse.com/thing:4562789
-
-osvac_debug = false;
-
-if(osvac_debug){
+if(festoolCleantec_debug){
   $fn = 64;
   //Test female connector
   translate([0,-35,0])
-  osVacFemaleConnector(help=true);
+  FestoolCleantecLugConnector(help=true);
 
   //Test male connector
-  //translate([0,35,0])
-  //osVacMaleConnector(help=true);
+  translate([0,35,0])
+  FestoolCleantecSlotConnector(help=true);
 }
 
 /* Hidden */
-clipCount = 3;
+lugCount = 3;
 
-osvacmVersion = "0.1";
-osvacmMinLength = 30;
-osvacmMeasurement = "inner";
-osvacmOuterDiameter = 37.8;
-osvacmInnerDiameter = 32;
-osvacmWallThickness = (osvacmOuterDiameter - osvacmInnerDiameter)/2;
+festoolCleantecLug_Version = "0.1";
+festoolCleantecLug_MinLength = 31; //measured 26 + 5 for flange
+festoolCleantecLug_Measurement = "outer";
+festoolCleantecLug_OuterDiameter = 40; // 39.6 measured
+festoolCleantecLug_OuterDiameter_tip = 39.4; // 39.5 measured
+festoolCleantecLug_InnerDiameter = 36; // measured
+festoolCleantecLug_WallThickness_tip_measurement = 1.3; // 1.5 measured
+festoolCleantecLug_WallThickness_base_measurement = 2.6; // measured
+festoolCleantecLug_flange_stop = 5; // 44.81measured
+festoolCleantecLug_Doublelug_measurement = 4.8; // measured
+festoolCleantecLug_outer_clip_size = [12.5,9.0]; // width, height.  measured
+festoolCleantecLug_outer_clip_tapers = [1,0,1,0]; // width, height.  measured
 
-osvacm32Settings = ["osvacm32", [
-  [iSettingsLength, osvacmMinLength],
-  [iSettingsMeasurement, osvacmMeasurement],
-  [iSettingsDiameter, osvacmInnerDiameter],
-  [iSettingsWallThickness, osvacmWallThickness],
+festoolCleantecLugSettings = ["festoolcleanteclug", [
+  [iSettingsLength, festoolCleantecLug_MinLength],
+  [iSettingsMeasurement, festoolCleantecLug_Measurement],
+  [iSettingsDiameter, festoolCleantecLug_OuterDiameter+festoolCleantecLug_flange_stop],
+  [iSettingsWallThickness, festoolCleantecLug_WallThickness_base_measurement+festoolCleantecLug_flange_stop/2],
   [iSettingsTaper ,0],
-  [iSettingsVersion, osvacmVersion]
+  [iSettingsVersion, festoolCleantecLug_Version]
   ]];
-osvacmSettings = ["osvacm", [
-  [iSettingsLength, osvacmMinLength],
-  [iSettingsMeasurement, osvacmMeasurement],
-  [iSettingsWallThickness, osvacmWallThickness],
-  [iSettingsTaper ,0],
-  [iSettingsVersion, osvacmVersion]
-  ]];
-
-osvacfVersion = "0.1";
-osvacfMinLength = 34.10;
-osvacfMeasurement = "inner";
-osvacfOuterDiameter = 47.265;
-osvacfInnerDiameter = 32;
-osvacfInnerWallDiameter = 38.2;
-osvacfWallThickness = (osvacfOuterDiameter - osvacfInnerDiameter)/2;
-osvacf32Settings = ["osvacf32", [
-  [iSettingsLength, osvacfMinLength],
-  [iSettingsMeasurement, osvacfMeasurement],
-  [iSettingsDiameter, osvacfInnerDiameter],
-  [iSettingsWallThickness, osvacfWallThickness],
-  [iSettingsTaper ,0],
-  [iSettingsVersion, osvacfVersion]
-  ]];
-osvacfSettings = ["osvacf", [
-  [iSettingsLength, osvacfMinLength],
-  [iSettingsMeasurement, osvacfMeasurement],
-  [iSettingsWallThickness, osvacfWallThickness],
-  [iSettingsTaper ,0],
-  [iSettingsVersion, osvacfVersion]
-  ]];
-
-//Test male connector
-//osVacMaleConnector(innerDiameter = 50, help=true);
-
-//Test female connector
-//osVacFemaleConnector(innerDiameter = 50, help=true);
-
-module osVacFemaleConnector(
-  innerDiameter = osvacfInnerDiameter,
-  length = osvacfMinLength,
-  wallThickness = osvacfWallThickness,
-  help,
-  $fn = 64){
-  innerTaperSize = (osvacfInnerWallDiameter-osvacfInnerDiameter)/2;
-  innerWallDiameter = innerDiameter + innerTaperSize*2;
-  outerDiameter = innerDiameter + wallThickness*2;
-  //finalShaftLength = 5;
-
-  innerShaftLength = 30.5;
-  cutoutz = 3.7;
-  cutoutHeight = 6.35;
-  cutoutDepthz = innerShaftLength - cutoutz;
-  cutoutDepthx = 2;
-  cutoutBumpDepthx = 1.6;
-  cutoutRadius = innerWallDiameter/2+cutoutDepthx;
-  cutoutWidth = 10.2;
   
-  //The distence is base on a f32,
-  //The spec defines it as the ARC Length for 35deg on an F32
-  lockAngle = 35;
-  
-  finalShaftLength = length - innerShaftLength;
-  
-  translate([0,0,innerShaftLength])
-  pipe(
-    diameter = innerDiameter,
-    length = finalShaftLength,
-    wallThickness = wallThickness,
-    chamfer1 = [innerTaperSize,0]);
+festoolCleantecslot_Version = "0.1";
+festoolCleantecslot_MinLength = 25; // measured
+festoolCleantecslot_Measurement = "inner";
+festoolCleantecslot_InnerDiameter = 39.5; // measured
+festoolCleantecslot_WallThickness = 2.5; // measured
 
-    BayonetSlotConnector(
-    //outerDiameter = innerDiameter + innerTaperSize,
-    innerDiameter = innerWallDiameter,
-    length = innerShaftLength,
-    wallThickness = wallThickness-innerTaperSize,
-    slotCount = 3,                // Number of equally spaced slots.
-    slotWidth = cutoutWidth,             // Circumferential size of the slot (Usually outerLugWidth + clearance).
-    slotOffset = cutoutz,             // Distance from connector face to the start (or center) of the slot.
-    slotAxialLength = cutoutHeight,       // Axial size of the lug
-    slotDepth = cutoutDepthx,                // Radial depth of the slot (Must clear lug radial projection)
-    lockAngle = lockAngle,               // Axial size of the lug
-    lockBumpDepth = cutoutBumpDepthx,          // Depth of lock bump that creates the lock when twisted
-    help=true);
+festoolCleantecSlotSettings = ["festoolcleantecslot", [
+  [iSettingsLength, festoolCleantecslot_MinLength],
+  [iSettingsMeasurement, festoolCleantecslot_Measurement],
+  [iSettingsDiameter, festoolCleantecslot_InnerDiameter],
+  [iSettingsWallThickness, festoolCleantecslot_WallThickness],
+  [iSettingsTaper ,0],
+  [iSettingsVersion, festoolCleantecslot_Version]
+  ]];
 
-  HelpTxt("osVacFemaleConnector",[
-    "innerDiameter", innerDiameter,
-    "outerDiameter", outerDiameter,
-    "length", length,
-    "wallThickness", wallThickness,
-    "innerTaperSize", innerTaperSize,
-    "innerWallDiameter", innerWallDiameter,
-    "finalShaftLength", finalShaftLength,
-    "innerShaftLength", innerShaftLength,
-    "cutoutHeight", cutoutHeight,
-    "cutoutz", cutoutz,
-    "cutoutDepthz", cutoutDepthz,
-    "cutoutDepthx", cutoutDepthx,
-    "cutoutBumpDepthx", cutoutBumpDepthx,
-    "cutoutRadius", cutoutRadius,
-    "cutoutWidth", cutoutWidth,
-    "osvacfWallThickness", osvacfWallThickness,
-    "osvacfMinLength", osvacfMinLength,
-    "osvacfInnerDiameter", osvacfInnerDiameter
-    ],help);
-}
 
-module osVacMaleConnector(
-  innerDiameter = osvacmInnerDiameter,
-  length = osvacmMinLength,
-  wallThickness = osvacmWallThickness,
-  help
-){
-  outerDiameter = innerDiameter+wallThickness*2;
-
-  hoseEndTaper=0.7;
-  clipHeight = 6.95;
-  clipz = 3.2;
-  clipr = 1;//not right
-  clipThickness = 2;
-  clipWidth = 9.8;
-  clipTopTaperz = 5.8;
-  clipTopTaperHeight = clipHeight - clipTopTaperz;
-
-  BayonetLugConnector(
-    outerDiameter = outerDiameter,
+module FestoolCleantecSlotConnector(
+  innerDiameter = festoolCleantecslot_InnerDiameter,
+  length = festoolCleantecslot_MinLength,
+  wallThickness = festoolCleantecslot_WallThickness*2,
+  slotCount = lugCount,
+  help){
+   
+   BayonetSlotConnector(
+    innerDiameter = innerDiameter,
     length = length,
     wallThickness = wallThickness,
-    hoseEndTaper=hoseEndTaper,
-    lugCount = 3,                 // Number of equally spaced lugs.
-    outerLugEnabled = true,
-    outerLugWidth = clipWidth,          // Circumferential size of the lug.
-    outerLugHeight = clipThickness,           // Radial projection from the base surface.
-    outerLugAxialLength = clipHeight,   // Axial size of the lug
-    outerLugSideRadius = clipHeight,           // side radius of the lug
-    outerLugOffset = clipz,         // Distance from connector face to the start (or center) of the lug.
-    outerLugTopBottomRadius = [clipThickness,clipThickness],        // Top/bottom of lug radius
-    outerLugTopBottomChamferRadius = [clipHeight/2,clipHeight/2], // Top/bottom of lug champfer corner radius
-    //outerLugTopBottomTaperz = [clipThickness,0],        // Tob bottom of lug taper
+    slotCount = slotCount,
+    slotOffset =6,
+    slotAxialLength = 6.35,
+    slotDepth = 2,
+    lockBumpDepth = 1.9,
+    slotWidth = 10.2,
+    lockAngle = 35,
     help = help);
-
-  HelpTxt("osVacMaleConnector",[
-    "innerDiameter", innerDiameter,
-    "length", length,
-    "wallThickness", wallThickness,
-    "outerDiameter", outerDiameter,
-    "hoseEndTaper", hoseEndTaper,
-    "clipz", clipz,
-    "clipr", clipr,
-    "clipThickness", clipThickness,
-    "clipWidth", clipWidth,
-    "clipTopTaperHeight", clipTopTaperHeight,
-    "osvacmWallThickness", osvacmWallThickness,
-    "osvacmMinLength", osvacmMinLength,
-    "osvacmInnerDiameter", osvacmInnerDiameter
-    ],help);
 }
 
+module FestoolCleantecLugConnector(
+  innerDiameter = festoolCleantecLug_OuterDiameter - festoolCleantecLug_WallThickness_base_measurement*2,
+  length = festoolCleantecLug_MinLength,
+  wallThickness = festoolCleantecLug_WallThickness_base_measurement,
+  lugCount = lugCount,
+  help
+){
+  //settings.
+  outerLugOffset = 5.2;       //measured
+  outerLugAxialLength = 8.6;  //measured
+  outerLugHeight = 1.5;       //estimated
+  outerLugWidth = 11;         //measured
+  
+  innerLugOffset = 5.2;       //measured
+  innerLugAxialLength = 6.5;  //measured
+  innerLugHeight = 1.5;       //estimated
+  innerLugWidth = 11;         //measured
 
+  stopper_size = festoolCleantecLug_flange_stop;  
+  con_length = length - stopper_size;
+  
+  echo("FestoolCleantecLugConnector", festoolCleantecLug_OuterDiameter=festoolCleantecLug_OuterDiameter, innerDiameter=innerDiameter, festoolCleantecLug_WallThickness_base_measurement=festoolCleantecLug_WallThickness_base_measurement);
+  union(){
 
-//CombinedEnd from path connector_osvac.scad
+  Stopper(
+    diameter = innerDiameter,
+    outer = true,
+    totalLength = stopper_size+fudgeFactor,
+    taper1 = 0.5,
+    taper2 = 0,
+    wallThickness = stopper_size/2,
+    stopThickness = stopper_size/2,
+    zPosition = con_length-fudgeFactor,
+    help = help);
+  BayonetLugConnector(
+    innerDiameter1 = festoolCleantecLug_OuterDiameter_tip-festoolCleantecLug_WallThickness_tip_measurement*2,
+    innerDiameter2 = innerDiameter,
+    length = con_length,
+    wallThickness1 = festoolCleantecLug_WallThickness_tip_measurement,
+    wallThickness2 = wallThickness,
+    lugCount = lugCount,
+    hoseEndTaper=0.4,
+    outerLugEnabled = true,
+    outerLugWidth = outerLugWidth,
+    outerLugHeight = outerLugHeight,
+    outerLugAxialLength = outerLugAxialLength,
+    outerLugOffset = outerLugOffset,
+    //outerLugTopBottomTaperz = [outerLugHeight, outerLugHeight],        // Tob bottom of lug taper
+    innerLugEnabled = true,
+    innerLugWidth = innerLugWidth,          // Circumferential size of the lug.
+    innerLugHeight = innerLugHeight, 
+    innerLugAxialLength = innerLugAxialLength,   // Axial size of the lug
+    innerLugOffset = innerLugOffset,         // Distance from connector face to the start (or center) of the lug.
+    //innerLugTopBottomTaperz = [innerLugHeight, innerLugHeight],        // Tob bottom of lug taper
+    help = help);
+    
+    
+  
+  }
+}
+//CombinedEnd from path connector_festool.scad
 //Combined from path module_twist_lock_hose.scad
 
 
@@ -8978,7 +9069,7 @@ module MakitaMaleConnector(
   }
 }
 //CombinedEnd from path connector_makita.scad
-//Combined from path connector_bosch_sander.scad
+//Combined from path connector_osvac.scad
 
 
 
@@ -8989,290 +9080,203 @@ module MakitaMaleConnector(
 
 
 
-// Bosch random orbital sander (e.g. ROS20VS) dust extraction port.
-// The sander's outlet rim has 8 bumps; this connector fits over it and
-// twist-locks via 8 bayonet grooves cut into the inner wall.
-//
-// Adapted from "Bosch ROS20VS sander+vacuum adapter (OpenSCAD)" by tjsoco
-// Source:  https://www.printables.com/model/794035-bosch-ros20vs-sandervacuum-adapter-openscad
-// Original license: Creative Commons Attribution (CC-BY 4.0) - https://creativecommons.org/licenses/by/4.0/
-// The bayonet locking-groove geometry is derived from that work.
 
 
-boschSanderVersion = "1.0";
-boschSanderMeasurement = "inner";     // the diameter is the bore that slips over the sander outlet
-boschSanderInnerDiameter = 28;        // inside dimension of the sander end (fixed by the tool)
-boschSanderWallThickness = 3.5;       // wall thickness (locked to the tool via the settings below)
-boschSanderDefaultLength = 28;
-boschSanderMinLength = 20;            // must clear the bayonet groove (entrance + lock pocket + margin)
-boschSanderGrooveCount = 8;           // the sander rim has 8 bumps
+//osVAC
+//Female documentation https://www.thingiverse.com/thing:4562762
+//Male documentation https://www.thingiverse.com/thing:4562789
 
-// Bayonet channel geometry, measured axially from the insertion opening (z = 0).
-boschSanderGrooveWidth = 2.7;         // width/diameter of the machined channel
-boschSanderEntranceDepth = 15;        // how far a bump travels straight in before the twist
-boschSanderTwistAngle = 20;           // rotation from the entrance channel to the locking pocket
-boschSanderLockDepth = 2;             // how far the locking pocket rises back toward the opening
+osvac_debug = false;
 
-// Clearance pocket at the mouth so the connector can seat past the machine's rubber ring
-// (the ring nests in this pocket) far enough for the bumps to reach the bayonet.
-boschSanderRingClearanceDiameter = 30.6;  // outer diameter of the machine's rubber ring
-boschSanderRingClearanceDepth = 5;        // how deep the pocket is bored into the mouth
-boschSanderRingClearanceChamfer = 1;      // 45 lead-in so it slides easily over the rubber
-
-// Bore (measurement + diameter), wall thickness and taper are locked to the tool so the part
-// fits and the transition blends flush -- registered values override the matching Customizer
-// fields, the same as the other tool connectors (Dyson, Makita, ...). Wall defaults to
-// boschSanderWallThickness (outer = boschSanderInnerDiameter + 2 * wall).
-// Length is left unregistered, so End_Length passes through from the Customizer and can be
-// grown from boschSanderMinLength upward (checked in the module below).
-boschSanderSettings = ["bosch_sander", [
-  [iSettingsLength, boschSanderDefaultLength],
-  [iSettingsMeasurement, boschSanderMeasurement],
-  [iSettingsDiameter, boschSanderInnerDiameter],
-  [iSettingsWallThickness, boschSanderWallThickness],
-  [iSettingsTaper, 0],
-  [iSettingsVersion, boschSanderVersion]
-  ]];
-
-connector_bosch_sander_demo = false;
-
-if(connector_bosch_sander_demo){
-  BoschSanderConnector(help = true, $fn = 128);
-}
-
-// A single bayonet groove pattern (subtracted from the tube wall).
-// boreRadius places the channel on the inner wall; the opening is at z = 0.
-module boschSanderLockingGroove(boreRadius){
-  gw = boschSanderGrooveWidth;
-  // Flared lead-in at the mouth so the bump finds the channel.
-  translate([boreRadius,0,0])
-    hull(){
-      sphere(d=gw+0.5);
-      translate([0,0,2]) sphere(d=gw+0.5);
-    }
-  // Straight entrance channel running in from the mouth to the twist.
-  translate([boreRadius,0,0])
-    hull(){
-      sphere(d=gw);
-      translate([0,0,boschSanderEntranceDepth]) sphere(d=gw);
-    }
-  // Lateral channel: the twist that carries the bump sideways.
-  translate([0,0,boschSanderEntranceDepth])
-    rotate_extrude(angle=boschSanderTwistAngle)
-      translate([boreRadius,0,0]) circle(d=gw);
-  // Locking pocket: rises back toward the mouth so the bump is retained.
-  rotate([0,0,boschSanderTwistAngle])
-    translate([boreRadius,0,boschSanderEntranceDepth-boschSanderLockDepth])
-      hull(){
-        sphere(d=gw);
-        translate([0,0,boschSanderLockDepth]) sphere(d=gw);
-      }
-}
-
-module BoschSanderConnector(
-  innerEndDiameter = boschSanderInnerDiameter,
-  length = boschSanderDefaultLength,
-  wallThickness = boschSanderWallThickness,
-  help = false,
-  $fn = 64
-){
-  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, str("innerEndDiameter must be a number greater than 0. Provided:", innerEndDiameter));
-  assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
-  assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
-  assert(is_bool(help), str("help must be a boolean. Provided:", help));
-  // Length may be grown from its minimum; below it the bayonet groove would not fit.
-  assert(length >= boschSanderMinLength, str("length must be at least boschSanderMinLength (", boschSanderMinLength, ") to clear the bayonet groove. Provided:", length));
-
-  boreRadius = innerEndDiameter/2;
-  assert(boreRadius > boschSanderGrooveWidth, str("innerEndDiameter is too small for the locking groove. Provided:", innerEndDiameter));
-  outerDiameter = innerEndDiameter + wallThickness*2;
-  assert(boschSanderRingClearanceDiameter + boschSanderRingClearanceChamfer*2 <= outerDiameter, str("ring clearance (plus chamfer) must fit within the outer diameter (", outerDiameter, "). Provided:", boschSanderRingClearanceDiameter));
-  assert(boschSanderRingClearanceDepth < length, str("ring clearance depth must be less than the connector length (", length, "). Provided:", boschSanderRingClearanceDepth));
-
-  echo("BoschSanderConnector", innerEndDiameter=innerEndDiameter, length=length, wallThickness=wallThickness, grooveCount=boschSanderGrooveCount);
-
-  difference(){
-  
-    union(){
-      pipe(
-        diameter = boschSanderRingClearanceDiameter,
-        length = length,
-        wallThickness = wallThickness-(boschSanderRingClearanceDiameter-innerEndDiameter)/2,
-        chamfer1 = [boschSanderRingClearanceChamfer,0],
-        chamfer2 = [0,0]);
-      
-      translate([0,0,boschSanderRingClearanceDepth])
-      pipe(
-        diameter = innerEndDiameter,
-        length = length-boschSanderRingClearanceDepth,
-        wallThickness = wallThickness,
-        chamfer1 = [(boschSanderRingClearanceDiameter - innerEndDiameter)/2 + fudgeFactor,0],
-        chamfer2 = [0,0]);
-    }
-
-    for(i = [0:boschSanderGrooveCount-1])
-      rotate([0,0,i*360/boschSanderGrooveCount])
-        boschSanderLockingGroove(boreRadius);
-  }
-
-  HelpTxt("BoschSanderConnector",[
-    "innerEndDiameter", innerEndDiameter,
-    "length", length,
-    "wallThickness", wallThickness,
-    "grooveCount", boschSanderGrooveCount,
-    "entranceDepth", boschSanderEntranceDepth,
-    "twistAngle", boschSanderTwistAngle,
-    "lockDepth", boschSanderLockDepth
-    ],help);
-}
-//CombinedEnd from path connector_bosch_sander.scad
-//Combined from path connector_festool.scad
-
-
-
-
-
-
-
-
-//Festool
-
-festoolCleantec_debug = false;
-
-if(festoolCleantec_debug){
+if(osvac_debug){
   $fn = 64;
   //Test female connector
   translate([0,-35,0])
-  FestoolCleantecLugConnector(help=true);
+  osVacFemaleConnector(help=true);
 
   //Test male connector
-  translate([0,35,0])
-  FestoolCleantecSlotConnector(help=true);
+  //translate([0,35,0])
+  //osVacMaleConnector(help=true);
 }
 
 /* Hidden */
-lugCount = 3;
+clipCount = 3;
 
-festoolCleantecLug_Version = "0.1";
-festoolCleantecLug_MinLength = 26;
-festoolCleantecLug_Measurement = "outer";
-festoolCleantecLug_OuterDiameter = 40; // 39.6 measured
-festoolCleantecLug_OuterDiameter_tip = 39.4; // 39.5 measured
-festoolCleantecLug_InnerDiameter = 36; // measured
-festoolCleantecLug_WallThickness_tip_measurement = 1.3; // 1.5 measured
-festoolCleantecLug_WallThickness_base_measurement = 2.6; // measured
+osvacmVersion = "0.1";
+osvacmMinLength = 30;
+osvacmMeasurement = "inner";
+osvacmOuterDiameter = 37.8;
+osvacmInnerDiameter = 32;
+osvacmWallThickness = (osvacmOuterDiameter - osvacmInnerDiameter)/2;
 
-
-festoolCleantecLug_flange_stop = 5; // 44.81measured
-festoolCleantecLug_Doublelug_measurement = 4.8; // measured
-festoolCleantecLug_outer_clip_size = [12.5,9.0]; // width, height.  measured
-festoolCleantecLug_outer_clip_tapers = [1,0,1,0]; // width, height.  measured
-
-festoolCleantecLugSettings = ["festoolcleanteclug", [
-  [iSettingsLength, festoolCleantecLug_MinLength+festoolCleantecLug_flange_stop],
-  [iSettingsMeasurement, festoolCleantecLug_Measurement],
-  [iSettingsDiameter, festoolCleantecLug_OuterDiameter+festoolCleantecLug_flange_stop],
-  [iSettingsWallThickness, festoolCleantecLug_WallThickness_base_measurement+festoolCleantecLug_flange_stop/2],
+osvacm32Settings = ["osvacm32", [
+  [iSettingsLength, osvacmMinLength],
+  [iSettingsMeasurement, osvacmMeasurement],
+  [iSettingsDiameter, osvacmInnerDiameter],
+  [iSettingsWallThickness, osvacmWallThickness],
   [iSettingsTaper ,0],
-  [iSettingsVersion, festoolCleantecLug_Version]
+  [iSettingsVersion, osvacmVersion]
   ]];
+osvacmSettings = ["osvacm", [
+  [iSettingsLength, osvacmMinLength],
+  [iSettingsMeasurement, osvacmMeasurement],
+  [iSettingsWallThickness, osvacmWallThickness],
+  [iSettingsTaper ,0],
+  [iSettingsVersion, osvacmVersion]
+  ]];
+
+osvacfVersion = "0.1";
+osvacfMinLength = 34.10;
+osvacfMeasurement = "inner";
+osvacfOuterDiameter = 47.265;
+osvacfInnerDiameter = 32;
+osvacfInnerWallDiameter = 38.2;
+osvacfWallThickness = (osvacfOuterDiameter - osvacfInnerDiameter)/2;
+osvacf32Settings = ["osvacf32", [
+  [iSettingsLength, osvacfMinLength],
+  [iSettingsMeasurement, osvacfMeasurement],
+  [iSettingsDiameter, osvacfInnerDiameter],
+  [iSettingsWallThickness, osvacfWallThickness],
+  [iSettingsTaper ,0],
+  [iSettingsVersion, osvacfVersion]
+  ]];
+osvacfSettings = ["osvacf", [
+  [iSettingsLength, osvacfMinLength],
+  [iSettingsMeasurement, osvacfMeasurement],
+  [iSettingsWallThickness, osvacfWallThickness],
+  [iSettingsTaper ,0],
+  [iSettingsVersion, osvacfVersion]
+  ]];
+
+//Test male connector
+//osVacMaleConnector(innerDiameter = 50, help=true);
+
+//Test female connector
+//osVacFemaleConnector(innerDiameter = 50, help=true);
+
+module osVacFemaleConnector(
+  innerDiameter = osvacfInnerDiameter,
+  length = osvacfMinLength,
+  wallThickness = osvacfWallThickness,
+  help,
+  $fn = 64){
+  innerTaperSize = (osvacfInnerWallDiameter-osvacfInnerDiameter)/2;
+  innerWallDiameter = innerDiameter + innerTaperSize*2;
+  outerDiameter = innerDiameter + wallThickness*2;
+  //finalShaftLength = 5;
+
+  innerShaftLength = 30.5;
+  cutoutz = 3.7;
+  cutoutHeight = 6.35;
+  cutoutDepthz = innerShaftLength - cutoutz;
+  cutoutDepthx = 2;
+  cutoutBumpDepthx = 1.6;
+  cutoutRadius = innerWallDiameter/2+cutoutDepthx;
+  cutoutWidth = 10.2;
   
-festoolCleantecslot_Version = "0.1";
-festoolCleantecslot_MinLength = 25; // measured
-festoolCleantecslot_Measurement = "inner";
-festoolCleantecslot_InnerDiameter = 39.5; // measured
-festoolCleantecslot_WallThickness = 2.5; // measured
-
-festoolCleantecSlotSettings = ["festoolcleantecslot", [
-  [iSettingsLength, festoolCleantecslot_MinLength],
-  [iSettingsMeasurement, festoolCleantecslot_Measurement],
-  [iSettingsDiameter, festoolCleantecslot_InnerDiameter],
-  [iSettingsWallThickness, festoolCleantecslot_WallThickness],
-  [iSettingsTaper ,0],
-  [iSettingsVersion, festoolCleantecslot_Version]
-  ]];
-
-
-module FestoolCleantecSlotConnector(
-  innerDiameter = festoolCleantecslot_InnerDiameter,
-  length = festoolCleantecslot_MinLength,
-  wallThickness = festoolCleantecslot_WallThickness*2,
-  slotCount = lugCount,
-  help){
-   
-   BayonetSlotConnector(
-    innerDiameter = innerDiameter,
-    length = length,
+  //The distence is base on a f32,
+  //The spec defines it as the ARC Length for 35deg on an F32
+  lockAngle = 35;
+  
+  finalShaftLength = length - innerShaftLength;
+  
+  translate([0,0,innerShaftLength])
+  pipe(
+    diameter = innerDiameter,
+    length = finalShaftLength,
     wallThickness = wallThickness,
-    slotCount = slotCount,
-    slotOffset =6,
-    slotAxialLength = 6.35,
-    slotDepth = 2,
-    lockBumpDepth = 1.9,
-    slotWidth = 10.2,
-    lockAngle = 35,
-    help = help);
+    chamfer1 = [innerTaperSize,0]);
+
+    BayonetSlotConnector(
+    //outerDiameter = innerDiameter + innerTaperSize,
+    innerDiameter = innerWallDiameter,
+    length = innerShaftLength,
+    wallThickness = wallThickness-innerTaperSize,
+    slotCount = 3,                // Number of equally spaced slots.
+    slotWidth = cutoutWidth,             // Circumferential size of the slot (Usually outerLugWidth + clearance).
+    slotOffset = cutoutz,             // Distance from connector face to the start (or center) of the slot.
+    slotAxialLength = cutoutHeight,       // Axial size of the lug
+    slotDepth = cutoutDepthx,                // Radial depth of the slot (Must clear lug radial projection)
+    lockAngle = lockAngle,               // Axial size of the lug
+    lockBumpDepth = cutoutBumpDepthx,          // Depth of lock bump that creates the lock when twisted
+    help=true);
+
+  HelpTxt("osVacFemaleConnector",[
+    "innerDiameter", innerDiameter,
+    "outerDiameter", outerDiameter,
+    "length", length,
+    "wallThickness", wallThickness,
+    "innerTaperSize", innerTaperSize,
+    "innerWallDiameter", innerWallDiameter,
+    "finalShaftLength", finalShaftLength,
+    "innerShaftLength", innerShaftLength,
+    "cutoutHeight", cutoutHeight,
+    "cutoutz", cutoutz,
+    "cutoutDepthz", cutoutDepthz,
+    "cutoutDepthx", cutoutDepthx,
+    "cutoutBumpDepthx", cutoutBumpDepthx,
+    "cutoutRadius", cutoutRadius,
+    "cutoutWidth", cutoutWidth,
+    "osvacfWallThickness", osvacfWallThickness,
+    "osvacfMinLength", osvacfMinLength,
+    "osvacfInnerDiameter", osvacfInnerDiameter
+    ],help);
 }
 
-module FestoolCleantecLugConnector(
-  innerDiameter = festoolCleantecLug_OuterDiameter - festoolCleantecLug_WallThickness_base_measurement*2,
-  length = festoolCleantecLug_MinLength,
-  wallThickness = festoolCleantecLug_WallThickness_base_measurement,
-  lugCount = lugCount,
+module osVacMaleConnector(
+  innerDiameter = osvacmInnerDiameter,
+  length = osvacmMinLength,
+  wallThickness = osvacmWallThickness,
   help
 ){
-  //settings.
-  outerLugOffset = 5.2;       //measured
-  outerLugAxialLength = 8.6;  //measured
-  outerLugHeight = 1.5;       //estimated
-  outerLugWidth = 11;         //measured
-  
-  innerLugOffset = 5.2;       //measured
-  innerLugAxialLength = 6.5;  //measured
-  innerLugHeight = 1.5;       //estimated
-  innerLugWidth = 11;         //measured
-  
-  
-  echo("FestoolCleantecLugConnector", festoolCleantecLug_OuterDiameter=festoolCleantecLug_OuterDiameter, innerDiameter=innerDiameter, festoolCleantecLug_WallThickness_base_measurement=festoolCleantecLug_WallThickness_base_measurement);
-  union(){
-    stopper_size = festoolCleantecLug_flange_stop;
-  Stopper(
-    diameter = innerDiameter,
-    outer = true,
-    totalLength = stopper_size,
-    taper1 = 0.5,
-    taper2 = 0,
-    wallThickness = stopper_size/2,
-    stopThickness = stopper_size/2,
-    zPosition = length-fudgeFactor,
-    help = help);
+  outerDiameter = innerDiameter+wallThickness*2;
+
+  hoseEndTaper=0.7;
+  clipHeight = 6.95;
+  clipz = 3.2;
+  clipr = 1;//not right
+  clipThickness = 2;
+  clipWidth = 9.8;
+  clipTopTaperz = 5.8;
+  clipTopTaperHeight = clipHeight - clipTopTaperz;
+
   BayonetLugConnector(
-    innerDiameter1 = festoolCleantecLug_OuterDiameter_tip-festoolCleantecLug_WallThickness_tip_measurement*2,
-    innerDiameter2 = innerDiameter,
+    outerDiameter = outerDiameter,
     length = length,
-    wallThickness1 = festoolCleantecLug_WallThickness_tip_measurement,
-    wallThickness2 = wallThickness,
-    lugCount = lugCount,
-    hoseEndTaper=0.4,
+    wallThickness = wallThickness,
+    hoseEndTaper=hoseEndTaper,
+    lugCount = 3,                 // Number of equally spaced lugs.
     outerLugEnabled = true,
-    outerLugWidth = outerLugWidth,
-    outerLugHeight = outerLugHeight,
-    outerLugAxialLength = outerLugAxialLength,
-    outerLugOffset = outerLugOffset,
-    //outerLugTopBottomTaperz = [outerLugHeight, outerLugHeight],        // Tob bottom of lug taper
-    innerLugEnabled = true,
-    innerLugWidth = innerLugWidth,          // Circumferential size of the lug.
-    innerLugHeight = innerLugHeight, 
-    innerLugAxialLength = innerLugAxialLength,   // Axial size of the lug
-    innerLugOffset = innerLugOffset,         // Distance from connector face to the start (or center) of the lug.
-    //innerLugTopBottomTaperz = [innerLugHeight, innerLugHeight],        // Tob bottom of lug taper
+    outerLugWidth = clipWidth,          // Circumferential size of the lug.
+    outerLugHeight = clipThickness,           // Radial projection from the base surface.
+    outerLugAxialLength = clipHeight,   // Axial size of the lug
+    outerLugSideRadius = clipHeight,           // side radius of the lug
+    outerLugOffset = clipz,         // Distance from connector face to the start (or center) of the lug.
+    outerLugTopBottomRadius = [clipThickness,clipThickness],        // Top/bottom of lug radius
+    outerLugTopBottomChamferRadius = [clipHeight/2,clipHeight/2], // Top/bottom of lug champfer corner radius
+    //outerLugTopBottomTaperz = [clipThickness,0],        // Tob bottom of lug taper
     help = help);
-    
-    
-  
-  }
+
+  HelpTxt("osVacMaleConnector",[
+    "innerDiameter", innerDiameter,
+    "length", length,
+    "wallThickness", wallThickness,
+    "outerDiameter", outerDiameter,
+    "hoseEndTaper", hoseEndTaper,
+    "clipz", clipz,
+    "clipr", clipr,
+    "clipThickness", clipThickness,
+    "clipWidth", clipWidth,
+    "clipTopTaperHeight", clipTopTaperHeight,
+    "osvacmWallThickness", osvacmWallThickness,
+    "osvacmMinLength", osvacmMinLength,
+    "osvacmInnerDiameter", osvacmInnerDiameter
+    ],help);
 }
-//CombinedEnd from path connector_festool.scad
+
+
+
+//CombinedEnd from path connector_osvac.scad
 //Combined from path connector_common_post.scad
 
 

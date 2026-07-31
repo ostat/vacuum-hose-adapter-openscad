@@ -146,6 +146,7 @@ function measurement_to_mm(input) =
 function UserConnectorSettings(
   connector,
   style="hose",
+  specialisedStyle="disabled",
   wallThickness=2,
   measurement = "outer",
   diameter = [100,0],
@@ -196,7 +197,7 @@ function UserConnectorSettings(
   ) =
   let(result = [
     connector,
-    style,
+    (specialisedStyle == "" || specialisedStyle == "disabled") ? style : specialisedStyle,
     wallThickness,
     measurement,
     diameter,
