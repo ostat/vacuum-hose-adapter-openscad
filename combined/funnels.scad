@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'funnels.scad'. Generated 2026-07-31 19:50
-//Content hash 43D0EEFF76C57F05DB66576E4A5E2D80EF438E8AA9D60E06F72781FB0E65DDA7
+//Combined version of 'funnels.scad'. Generated 2026-07-31 20:09
+//Content hash D5AF4BBEE821AEACD4BECDEFE3BCA17CCC389ACB8035FD17D30B98A6F549DC82
 ///////////////////////////////////////
 // funnel
 // version 2026-02-27
@@ -4547,7 +4547,7 @@ function measurement_to_mm(input) =
 function UserConnectorSettings(
   connector,
   style="hose",
-  specialisedStyle="",
+  specialisedStyle="disabled",
   wallThickness=2,
   measurement = "outer",
   diameter = [100,0],
@@ -4598,7 +4598,7 @@ function UserConnectorSettings(
   ) =
   let(result = [
     connector,
-    specialisedStyle != "" && specialisedStyle != "disabled" ? specialisedStyle : style,
+    (specialisedStyle == "" || specialisedStyle == "disabled") ? style : specialisedStyle,
     wallThickness,
     measurement,
     diameter,

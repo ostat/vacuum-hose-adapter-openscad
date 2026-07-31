@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-07-31 19:50
-//Content hash 6F9276E428A903DBA49D04D2183BC44F17EDC0DF40491C9062080C33BF3DFDCE
+//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-07-31 20:09
+//Content hash 41FC34914D17039DB1F19E263907239FECE457A487FD8E4787AEF0882A8B9A0C
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -4601,7 +4601,7 @@ function measurement_to_mm(input) =
 function UserConnectorSettings(
   connector,
   style="hose",
-  specialisedStyle="",
+  specialisedStyle="disabled",
   wallThickness=2,
   measurement = "outer",
   diameter = [100,0],
@@ -4652,7 +4652,7 @@ function UserConnectorSettings(
   ) =
   let(result = [
     connector,
-    specialisedStyle != "" && specialisedStyle != "disabled" ? specialisedStyle : style,
+    (specialisedStyle == "" || specialisedStyle == "disabled") ? style : specialisedStyle,
     wallThickness,
     measurement,
     diameter,
