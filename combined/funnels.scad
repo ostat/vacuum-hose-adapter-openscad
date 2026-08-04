@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'funnels.scad'. Generated 2026-08-04 17:34
-//Content hash 65A8905C2836B57A7F56E9EF1DF593E537A2500D51566FAEBF633C4860FD85D5
+//Combined version of 'funnels.scad'. Generated 2026-08-04 17:51
+//Content hash AD644BCA79F26C544A76D2A0CCBC7E4628D8717CA5C4EE5B69E642E10D429FE5
 ///////////////////////////////////////
 // funnel
 // version 2026-02-27
@@ -76,6 +76,11 @@ function getColor(colorSetting, defaultColor) =
     c = colorSetting[0] == "" ? defaultColor : colorSetting[0],
     a = is_num(colorSetting[1]) && colorSetting[1] >=0 && colorSetting[1] <=1 ? colorSetting[1] : 1) [c, a];
 
+function renderModeEnabled(mode) =
+  assert(mode == "disable" || mode == "enable" || mode == "preview only",
+    str("render mode must be 'disable', 'enable', or 'preview only'. Provided: ", mode))
+  mode == "enable" || (mode == "preview only" && $preview);
+
 module adapterAlignmentRing(
   centerDiameter = 0,
   alignmentDepth = 0,
@@ -98,7 +103,7 @@ module adapterAlignmentRing(
       alignmentDepthClearance = alignmentDepthClearance,
       magnetBorder = magnetBorder);
 
-    if($preview&&debug){
+    if(debug){
       cubeSizex = centerDiameter+max(alignmentUpperWidth, alignmentLowerWidth);
       cubeSizey = centerDiameter/2+max(alignmentUpperWidth, alignmentLowerWidth);
       cubeSizez = alignmentDepth*2;
@@ -107,11 +112,11 @@ module adapterAlignmentRing(
       }
     }
 
-    if($preview&&showCaliper){
+    if(showCaliper){
       color("Gold")
       union(){
         rotate([90,0,0])
-        Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
+        Caliper(on=2, messpunkt = false, help=0, size = 5,h = 0.1,
           //center=false,
           l=centerDiameter+max(alignmentUpperWidth, alignmentLowerWidth),
           end=0, in=1,
@@ -119,7 +124,7 @@ module adapterAlignmentRing(
           txt2 = "centerDiameter");
         translate([(centerDiameter)/2,0,0])
         rotate([90,90,0])
-        Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
+        Caliper(on=2, messpunkt = false, help=0, size = 5,h = 0.1,
           l=(alignmentDepth-alignmentDepthClearance)*2,
           end=0, in=4,
           cx= 0,
@@ -340,7 +345,7 @@ module adapter(
          assert(false, str("style not supported style: ", con[iStyle]));
         }
       }
-      if($preview&&debug&&con[iStyle]!="none"){
+      if(debug&&con[iStyle]!="none"){
         cubeSizex = max(con[iInnerStartDiameter],con[iInnerEndDiameter])*2;
         cubeSizey = max(con[iInnerStartDiameter],con[iInnerEndDiameter])*1.5;
         cubeSizez = con[iLength]+fudgeFactor*4
@@ -352,7 +357,7 @@ module adapter(
     }
   }
 
-  if($preview&&showCaliper&&con[iStyle]!="none"){
+  if(showCaliper&&con[iStyle]!="none"){
     color("Gold")
     translate([0, 0, con[iLength]])
     mirror ([0,0,1])
@@ -362,7 +367,7 @@ module adapter(
       addwidth = con[iMeasurement] == "outer" ? con[iWallThickness]*2 : 0;
       translate(con[iStyle] == "nozzle" ? [0,0,con[iLength]] :[0,0,con[iLength]/2])
       rotate([90,0,0])
-       Caliper(messpunkt = false, help=0, size = 7,h = 0.1,
+       Caliper(on=2, messpunkt = false, help=0, size = 7,h = 0.1,
           l=con[iInnerDiameter] + addwidth,
           end=endStyle,
           in=connectorPos == 1 ? 1 : 0,
@@ -370,7 +375,7 @@ module adapter(
       if(con[iInnerDiameter] != con[iInnerStartDiameter]){
         translate([0,0,0])
         rotate([90,0,0])
-        Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
+        Caliper(on=2, messpunkt = false, help=0, size = 5,h = 0.1,
             l=con[iInnerStartDiameter] + addwidth,
             end=endStyle,
             in=connectorPos == 1 ? 1 : 0,
@@ -379,7 +384,7 @@ module adapter(
       if(con[iInnerDiameter] != con[iInnerEndDiameter]){
         translate([0,0,con[iLength]])
         rotate([90,0,0])
-        Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
+        Caliper(on=2, messpunkt = false, help=0, size = 5,h = 0.1,
             l=con[iInnerEndDiameter] + addwidth,
             end=3,
             in=connectorPos == 1 ? 1 : 0,
@@ -390,7 +395,7 @@ module adapter(
       position = con[iInnerDiameter]/2 + con[iWallThickness]*2;
       translate([(connectorPos == 1 ? position  : -position), 0, con[iLength]/2])
       rotate([90,0,0])
-      Caliper(messpunkt = false, help=0, h = 0.1,
+      Caliper(on=2, messpunkt = false, help=0, h = 0.1,
             center=true,
             l=con[iLength],
             cx= 0,
@@ -404,7 +409,7 @@ module adapter(
       {
         translate([(connectorPos == 1 ? position  : -position), 0,-con[iNozzleSize].z/2])
         rotate([90,0,0])
-        Caliper(messpunkt = false, help=0, h = 0.1,
+        Caliper(on=2, messpunkt = false, help=0, h = 0.1,
               l=con[iNozzleSize].z,
               cx= 0,
               end=0,
@@ -565,7 +570,7 @@ module transitionExtension(
           }*/
         }
       }
-      if($preview&&debug){
+      if(debug){
         cubeSize = [max(innerDiameter, effectiveExitDiameter)*2,max(innerDiameter, effectiveExitDiameter)*1.5, totalLength+fudgeFactor*4];
         translate([-cubeSize.x/2, (connector == 1 ? -cubeSize.y : 0), -fudgeFactor*2])
         cube(cubeSize);
@@ -587,7 +592,7 @@ module transitionExtension(
       }
     }
 
-    if($preview&&showCaliper){
+    if(showCaliper){
     /*render on left side
       color("Gold")
       translate(connector == 1 ? [0, 0, length] : [0, 0, length] )
@@ -598,7 +603,7 @@ module transitionExtension(
         position = innerDiameter/2 + wallThickness*2;
         translate([(connector == 1 ? position  : -position), 0, length/2])
         rotate([90,0,0])
-        Caliper(messpunkt = false, help=0, h = 0.1,
+        Caliper(on=2, messpunkt = false, help=0, h = 0.1,
               center=true,
               l=length,
               cx= -1,
@@ -621,7 +626,7 @@ module transitionExtension(
         position = innerDiameter/2 + wallThickness*2;
         translate([(connector == 1 ? position  : -position), 0, length + taperLength/2])
         rotate([90,0,0])
-        Caliper(messpunkt = false, help=0, h = 0.1,
+        Caliper(on=2, messpunkt = false, help=0, h = 0.1,
               center=true,
               l=taperLength,
               cx=0,
@@ -642,7 +647,7 @@ module transitionExtension(
         position = innerDiameter/2 + wallThickness*2;
         translate([(connector == 1 ? position  : -position), 0, length/2])
         rotate([90,0,0])
-        Caliper(messpunkt = false, help=0, h = 0.1,
+        Caliper(on=2, messpunkt = false, help=0, h = 0.1,
               center=true,
               l=length,
               cx=0,
@@ -858,7 +863,7 @@ module transition(
         }
       }
     }
-    if($preview&&debug){
+    if(debug){
       cubeSize = max(connector1InnerEndDiameter,connector2InnerStartDiameter)*3;
       translate([-cubeSize/2, -cubeSize , -fudgeFactor*2])
           cube([cubeSize, cubeSize, cubeSize ]);

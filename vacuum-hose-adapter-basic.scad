@@ -87,9 +87,9 @@ End2_Barbs_Symmetrical = false;
 
 /* [other] */
 //Slice model in half to be able to easy see inside
-Enable_Debug_Slice = false;
+Enable_Debug_Slice = "disable"; //[disable, enable, preview only]
 //Will only show if debug is also enabled
-Enable_Calipers_Slice = false;
+Enable_Calipers_Slice = "disable"; //[disable, enable, preview only]
 Enable_Help = false;
 End1_Color = ["",1];  //0.1
 End2_Color = ["",1];  //0.1
@@ -155,8 +155,8 @@ HoseAdapter(
   transitionCustomBendPipeDiameter = Transition_Custom_Bend_Pipe_Diameter,
   transitionAngle = Transition_Angle,
 
-  sliceDebug = Enable_Debug_Slice,
-  showCaliper = Enable_Calipers_Slice,
+  sliceDebug = renderModeEnabled(Enable_Debug_Slice),
+  showCaliper = renderModeEnabled(Enable_Calipers_Slice),
   end1Color = End1_Color,
   end2Color = End2_Color,
   transitionColor = Transition_Color,

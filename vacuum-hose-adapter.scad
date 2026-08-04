@@ -373,9 +373,9 @@ Alignment_Depth_Clearance = .75;  //0.01
 
 /* [other] */
 //Slice model in half to be able to easy see inside
-Enable_Debug_Slice = false;
+Enable_Debug_Slice = "disable"; //[disable, enable, preview only]
 //Will only show if debug is also enabled
-Enable_Calipers_Slice = false;
+Enable_Calipers_Slice = "disable"; //[disable, enable, preview only]
 Enable_Help = false;
 End1_Color = ["",1];  //0.1
 End2_Color = ["",1];  //0.1
@@ -589,8 +589,8 @@ HoseAdapter(
   alignmentSideClearance = Alignment_Side_Clearance,
   alignmentDepthClearance = Alignment_Depth_Clearance,
 
-  sliceDebug = Enable_Debug_Slice,
-  showCaliper = Enable_Calipers_Slice,
+  sliceDebug = renderModeEnabled(Enable_Debug_Slice),
+  showCaliper = renderModeEnabled(Enable_Calipers_Slice),
   end1Color = End1_Color,
   end2Color = End2_Color,
   end3Color = End3_Color,
