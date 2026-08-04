@@ -28,13 +28,27 @@ End1_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End1_Taper = 1;  //0.1
 
-/* [Connector 1 - Hose connector] */
+/* [Connector 1 - Extension] */
+//Length of the extension
+End1_Extension_Length = 0;
+//Inside diameter at the extension exit. 0 keeps the connector diameter. The change is tapered at 45 degrees.
+End1_Extension_Exit_Diameter = 0; //0.1
+//Size of the grid in the extension. 0: diameter/6
+End1_Extension_GridSize = 0;  //0.1
+//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
+End1_Extension_GridWallThickness = 0;  //0.1
+End1_Extension_Text = "asd-\u0020-asd";
+End1_Extension_Text_Size = 0;
+End1_Extension_SlipRing= "disabled"; //[disabled, notaper: non tapered, inner, outer]
+End1_Extension_SlipRing_Width = 5;
 //Thickness of hose stop
-End1_StopThickness = 0;  //1
+End1_Extension_StopThickness = 0;  //1
 //Length of hose stop
-End1_StopLength = 0;  //1
+End1_Extension_StopLength = 0;  //1
 //Should the stop be tapered both sides. Might easier to print.
-End1_Stop_Symmetrical = false;
+End1_Extension_Stop_Symmetrical = false;
+
+/* [Connector 1 - Hose connector] */
 //Number of barbs
 End1_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
@@ -91,17 +105,6 @@ End1_Magnet_Flange_Roundover = true;
 End1_Ring = "no"; //[no: No alignment ring, protruding: protruding ring, recessed: Recessed ring]
 // Magnetic ring Twist lock bolt size (draft setting)
 End1_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitchen insert,"4":M4,"4cnc":M4 with CNC Kitchen insert,"5":M5,"5cnc":M5 with CNC Kitchen insert]
-
-/* [Connector 1 - Extension] */
-//Length of the extension
-End1_Extension_Length = 0;
-//Size of the grid in the extension. 0: diameter/6
-End1_Extension_GridSize = 0;  //0.1
-//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
-End1_Extension_GridWallThickness = 0;  //0.1
-End1_Extension_Text = "asd-\u0020-asd";
-End1_Extension_Text_Size = 0;
-
 
 /* [Transition] */
 // tapered for hose connections, flat for attaching to a device
@@ -162,13 +165,27 @@ End2_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End2_Taper = 1;  //0.1
 
-/*[Connector 2 - Hose connector] */
+/* [Connector 2 - Extension] */
+//Length of the extension
+End2_Extension_Length = 0;
+//Inside diameter at the extension exit. 0 keeps the connector diameter. The change is tapered at 45 degrees.
+End2_Extension_Exit_Diameter = 0; //0.1
+//Size of the grid in the extension. 0: diameter/6
+End2_Extension_GridSize = 0;  //0.1
+//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
+End2_Extension_GridWallThickness = 0;  //0.1
+End2_Extension_Text = "";
+End2_Extension_Text_Size = 0;
+End2_Extension_SlipRing= "disabled"; //["disabled", "notaper": non tapered, "inner", "outer"]
+End2_Extension_SlipRing_Width = 5;
 //Thickness of hose stop
-End2_StopThickness = 0;  //1
+End2_Extension_StopThickness = 0;  //1
 //Length of hose stop
-End2_StopLength = 0;  //1
+End2_Extension_StopLength = 0;  //1
 //Should the stop be tapered both sides. Might easier to print.
-End2_Stop_Symmetrical = false;
+End2_Extension_Stop_Symmetrical = false;
+
+/*[Connector 2 - Hose connector] */
 //Number of barbs
 End2_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
@@ -236,17 +253,6 @@ End2_Nozzle_Offset = [0,0]; //0.1
 End2_Nozzle_Chamfer_Percentage = 0; //0.1
 End2_Nozzle_Chamfer_Angle = 0; //0.1
 
-/* [Connector 2 - Extension] */
-//Length of the extension
-End2_Extension_Length = 0;
-//Size of the grid in the extension. 0: diameter/6
-End2_Extension_GridSize = 0;  //0.1
-//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
-End2_Extension_GridWallThickness = 0;  //0.1
-End2_Extension_Text = "";
-End2_Extension_Text_Size = 0;
-
-
 /* [Connector 3] */
 //Wall thickness
 End3_Wall_Thickness = 2; //0.01
@@ -263,13 +269,27 @@ End3_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End3_Taper = 0;  //0.1
 
-/*[Connector 3 - Hose connector] */
+/* [Connector 3 - Extension] */
+//Length of the extension
+End3_Extension_Length = 0;
+//Inside diameter at the extension exit. 0 keeps the connector diameter. The change is tapered at 45 degrees.
+End3_Extension_Exit_Diameter = 0; //0.1
+//Size of the grid in the extension. 0: diameter/6
+End3_Extension_GridSize = 0;  //0.1
+//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
+End3_Extension_GridWallThickness = 0;  //0.1
+End3_Extension_Text = "";
+End3_Extension_Text_Size = 0;
+End3_Extension_SlipRing= "disabled"; //[disabled, notaper: non tapered, inner, outer]
+End3_Extension_SlipRing_Width = 5;
 //Thickness of hose stop
-End3_StopThickness = 0;  //1
+End3_Extension_StopThickness = 0;  //1
 //Length of hose stop
-End3_StopLength = 0;  //1
+End3_Extension_StopLength = 0;  //1
 //Should the stop be tapered both sides. Might easier to print.
-End3_Stop_Symmetrical = false;
+End3_Extension_Stop_Symmetrical = false;
+
+/*[Connector 3 - Hose connector] */
 //Number of barbs
 End3_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
@@ -337,16 +357,6 @@ End3_Nozzle_Offset = [0,0]; //0.1
 End3_Nozzle_Chamfer_Percentage = 0; //0.1
 End3_Nozzle_Chamfer_Angle = 0; //0.1
 
-/* [Connector 3 - Extension] */
-//Length of the extension
-End3_Extension_Length = 0;
-//Size of the grid in the extension. 0: diameter/6
-End3_Extension_GridSize = 0;  //0.1
-//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
-End3_Extension_GridWallThickness = 0;  //0.1
-End3_Extension_Text = "";
-End3_Extension_Text_Size = 0;
-
 /* [Alignment Ring] */
 //draw just the alignment ring
 Draw_Alignment_Ring = "no"; //[end1: Draw end 1, end2: Draw end 2, no: Don't draw]
@@ -405,9 +415,6 @@ HoseAdapter(
     endCapThickness=End1_Hose_EndCap_Thickness,
     endCapGridSize=End1_Hose_EndCap_GridSize,
     endCapGridWallThickness=End1_Hose_EndCap_GridWallThickness,
-    stopThickness=End1_StopThickness,
-    stopLength=End1_StopLength,
-    stopSymmetrical=End1_Stop_Symmetrical,
     barbsCount=End1_Barbs_Count,
     barbsThickness=End1_Barbs_Thickness,
     barbsSymmetrical=End1_Barbs_Symmetrical,
@@ -431,10 +438,17 @@ HoseAdapter(
     flangeScrewCount=End1_Flange_Screw_Count,
     flangeScrewDiameter=End1_Flange_Screw_Diameter,
     extensionLength=End1_Extension_Length,
+    extensionExitDiameter=End1_Extension_Exit_Diameter,
     extensionGridSize=End1_Extension_GridSize,
     extensionGridWallThickness=End1_Extension_GridWallThickness,
     extensionText=End1_Extension_Text,
-    extensionTextSize=End1_Extension_Text_Size),
+    extensionTextSize=End1_Extension_Text_Size,
+    extensionSlipRing=End1_Extension_SlipRing,
+    extensionSlipRingWidth=End1_Extension_SlipRing_Width,
+    extensionStopThickness=End1_Extension_StopThickness,
+    extensionStopLength=End1_Extension_StopLength,
+    extensionStopSymmetrical=End1_Extension_Stop_Symmetrical
+    ),
 
   connector2 = UserConnectorSettings(
     connector=2,
@@ -450,9 +464,6 @@ HoseAdapter(
     endCapThickness=End2_Hose_EndCap_Thickness,
     endCapGridSize=End2_Hose_EndCap_GridSize,
     endCapGridWallThickness=End2_Hose_EndCap_GridWallThickness,
-    stopThickness=End2_StopThickness,
-    stopLength=End2_StopLength,
-    stopSymmetrical=End2_Stop_Symmetrical,
     barbsCount=End2_Barbs_Count,
     barbsThickness=End2_Barbs_Thickness,
     barbsSymmetrical=End2_Barbs_Symmetrical,
@@ -483,10 +494,17 @@ HoseAdapter(
     nozzleChamferPercentage=End2_Nozzle_Chamfer_Percentage,
     nozzleChamferAngle=End2_Nozzle_Chamfer_Angle,
     extensionLength=End2_Extension_Length,
+    extensionExitDiameter=End2_Extension_Exit_Diameter,
     extensionGridSize=End2_Extension_GridSize,
     extensionGridWallThickness=End2_Extension_GridWallThickness,
     extensionText=End2_Extension_Text,
-    extensionTextSize=End2_Extension_Text_Size),
+    extensionTextSize=End2_Extension_Text_Size,
+    extensionSlipRing=End2_Extension_SlipRing,
+    extensionSlipRingWidth=End2_Extension_SlipRing_Width,
+    extensionStopThickness=End2_Extension_StopThickness,
+    extensionStopLength=End2_Extension_StopLength,
+    extensionStopSymmetrical=End2_Extension_Stop_Symmetrical
+  ),
 
   connector3 = UserConnectorSettings(
     connector=3,
@@ -502,9 +520,6 @@ HoseAdapter(
     endCapThickness=End3_Hose_EndCap_Thickness,
     endCapGridSize=End3_Hose_EndCap_GridSize,
     endCapGridWallThickness=End3_Hose_EndCap_GridWallThickness,
-    stopThickness=End3_StopThickness,
-    stopLength=End3_StopLength,
-    stopSymmetrical=End3_Stop_Symmetrical,
     barbsCount=End3_Barbs_Count,
     barbsThickness=End3_Barbs_Thickness,
     barbsSymmetrical=End3_Barbs_Symmetrical,
@@ -535,10 +550,17 @@ HoseAdapter(
     nozzleChamferPercentage=End3_Nozzle_Chamfer_Percentage,
     nozzleChamferAngle=End3_Nozzle_Chamfer_Angle,
     extensionLength=End3_Extension_Length,
+    extensionExitDiameter=End3_Extension_Exit_Diameter,
     extensionGridSize=End3_Extension_GridSize,
     extensionGridWallThickness=End3_Extension_GridWallThickness,
     extensionText=End3_Extension_Text,
-    extensionTextSize=End3_Extension_Text_Size),
+    extensionTextSize=End3_Extension_Text_Size,
+    extensionSlipRing=End3_Extension_SlipRing,
+    extensionSlipRingWidth=End3_Extension_SlipRing_Width,
+    extensionStopThickness=End3_Extension_StopThickness,
+    extensionStopLength=End3_Extension_StopLength,
+    extensionStopSymmetrical=End3_Extension_Stop_Symmetrical
+  ),
 
   transitionStyle = Transition_Style,
   transitionLength = Transition_Length,

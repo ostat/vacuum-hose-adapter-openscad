@@ -1,4 +1,3 @@
-
 iConnector=0;
 iStyle=iConnector+1;
 iWallThickness=iStyle+1;
@@ -11,10 +10,7 @@ iEndCapDiameter=iTaper+1;
 iEndCapThickness=iEndCapDiameter+1;
 iEndCapGridSize=iEndCapThickness+1;
 iEndCapGridWallThickness=iEndCapGridSize+1;
-iStopThickness=iEndCapGridWallThickness+1;
-iStopLength=iStopThickness+1;
-iStopSymmetrical=iStopLength+1;
-iBarbsCount=iStopSymmetrical+1;
+iBarbsCount=iEndCapGridWallThickness+1;
 iBarbsThickness=iBarbsCount+1;
 iBarbsSymmetrical=iBarbsThickness+1;
 iEnableThreads=iBarbsSymmetrical+1;
@@ -43,11 +39,17 @@ iNozzleOffset=iNozzleRadius+1;
 iNozzleChamferPercentage=iNozzleOffset+1;
 iNozzleChamferAngle=iNozzleChamferPercentage+1;
 iExtensionLength=iNozzleChamferAngle+1;
-iExtensionGridSize=iExtensionLength+1;
+iExtensionExitDiameter=iExtensionLength+1;
+iExtensionGridSize=iExtensionExitDiameter+1;
 iExtensionGridWallThickness=iExtensionGridSize+1;
 iExtensionText=iExtensionGridWallThickness+1;
 iExtensionTextSize=iExtensionText+1;
-iAlignmentRing=iExtensionTextSize+1;
+iExtensionSlipRing=iExtensionTextSize+1;
+iExtensionSlipRingWidth=iExtensionSlipRing+1;
+iExtensionStopThickness=iExtensionSlipRingWidth+1;
+iExtensionStopLength=iExtensionStopThickness+1;
+iExtensionStopSymmetrical=iExtensionStopLength+1;
+iAlignmentRing=iExtensionStopSymmetrical+1;
 
 //end of user connector settings
 iAlignmentDepth=iAlignmentRing+1;
@@ -61,10 +63,20 @@ iInnerStartDiameter=iInnerDiameter+1;
 iOuterStartDiameter=iInnerStartDiameter+1;
 iInnerEndDiameter=iOuterStartDiameter+1;
 iOuterEndDiameter=iInnerEndDiameter+1;
+iInterfaceInnerDiameter=iOuterEndDiameter+1;
+iInterfaceOuterDiameter=iInterfaceInnerDiameter+1;
+iInterfaceWallThickness=iInterfaceOuterDiameter+1;
+iInterfaceLength=iInterfaceWallThickness+1;
+iExtensionTaperLength=iInterfaceLength+1;
+iExtensionTotalLength=iExtensionTaperLength+1;
+
+userSettingsLength = iAlignmentRing+1;
+connectorSettingsLength = iExtensionTotalLength+1;
 
 module echoConnector(name, end, help){
   assert(is_list(end), "end must be a list");
   HelpTxt(name,[
+    "connector", end[iConnector],
     "style", end[iStyle],
     "iWallThickness", end[iWallThickness],
     "iMeasurement", end[iMeasurement],
@@ -76,9 +88,6 @@ module echoConnector(name, end, help){
     "iEndCapThickness", end[iEndCapThickness],
     "iEndCapGridSize", end[iEndCapGridSize],
     "iEndCapGridWallThickness", end[iEndCapGridWallThickness],
-    "iStopThickness", end[iStopThickness],
-    "iStopLength", end[iStopLength],
-    "iStopSymmetrical", end[iStopSymmetrical],
     "iBarbsCount", end[iBarbsCount],
     "iBarbsThickness", end[iBarbsThickness],
     "iBarbsSymmetrical", end[iBarbsSymmetrical],
@@ -114,18 +123,31 @@ module echoConnector(name, end, help){
     "iNozzleChamferPercentage", end[iNozzleChamferPercentage],
     "iNozzleChamferAngle", end[iNozzleChamferAngle],
     "iExtensionLength", end[iExtensionLength],
+    "iExtensionExitDiameter", end[iExtensionExitDiameter],
     "iExtensionGridSize", end[iExtensionGridSize],
     "iExtensionGridWallThickness", end[iExtensionGridWallThickness],
     "iExtensionText", end[iExtensionText],
     "iExtensionTextSize", end[iExtensionTextSize],
+    "iExtensionSlipRing", end[iExtensionSlipRing],
+    "iExtensionSlipRingWidth", end[iExtensionSlipRingWidth],
+    "iExtensionStopThickness", end[iExtensionStopThickness],
+    "iExtensionStopLength", end[iExtensionStopLength],
+    "iExtensionStopSymmetrical", end[iExtensionStopSymmetrical],
     "iAdapterColor", end[iAdapterColor],
     "iInnerDiameter", end[iInnerDiameter],
     "iInnerStartDiameter", end[iInnerStartDiameter],
     "iOuterStartDiameter", end[iOuterStartDiameter],
-    "iInnerEndDiameter", end[iInnerEndDiameter],
-    "iOuterEndDiameter", end[iOuterEndDiameter]
+    prop_name("iInnerEndDiameter", iInnerEndDiameter), end[iInnerEndDiameter],
+    prop_name("iOuterEndDiameter", iOuterEndDiameter), end[iOuterEndDiameter],
+    prop_name("iInterfaceInnerDiameter", iInterfaceInnerDiameter), end[iInterfaceInnerDiameter],
+    prop_name("iInterfaceOuterDiameter", iInterfaceOuterDiameter), end[iInterfaceOuterDiameter],
+    prop_name("iInterfaceWallThickness", iInterfaceWallThickness), end[iInterfaceWallThickness],
+    prop_name("iInterfaceLength", iInterfaceLength), end[iInterfaceLength],
     ] ,help);
   }
+
+
+function prop_name(name, number) = str(name, "[", number, "]");
 
 function getConnector3Setting(transitionHullCenter, con1, con2, con3) =
   transitionHullCenter == "end1" ? con1
@@ -157,9 +179,6 @@ function UserConnectorSettings(
   endCapThickness = 0,
   endCapGridSize = 0,
   endCapGridWallThickness = 0,
-  stopThickness = 0,
-  stopLength = 0,
-  stopSymmetrical = false,
   barbsCount = 0,
   barbsThickness = 0,
   barbsSymmetrical = false,
@@ -190,10 +209,16 @@ function UserConnectorSettings(
   nozzleChamferPercentage = 0,
   nozzleChamferAngle = 0,
   extensionLength = 0,
+  extensionExitDiameter = 0,
   extensionGridSize = 0,
   extensionGridWallThickness = 0,
   extensionText = "",
-  extensionTextSize = 0
+  extensionTextSize = 0,
+  extensionSlipRing="disabled",
+  extensionSlipRingWidth=5,
+  extensionStopThickness=0,
+  extensionStopLength=0,
+  extensionStopSymmetrical=false
   ) =
   let(result = [
     connector,
@@ -208,9 +233,6 @@ function UserConnectorSettings(
     endCapThickness,
     endCapGridSize,
     endCapGridWallThickness,
-    stopThickness,
-    stopLength,
-    stopSymmetrical,
     barbsCount,
     barbsThickness,
     barbsSymmetrical,
@@ -240,15 +262,23 @@ function UserConnectorSettings(
     nozzleChamferPercentage,
     nozzleChamferAngle,
     extensionLength,
+    extensionExitDiameter,
     extensionGridSize,
     extensionGridWallThickness,
     extensionText,
     extensionTextSize,
+    extensionSlipRing,
+    extensionSlipRingWidth,
+    extensionStopThickness,
+    extensionStopLength,
+    extensionStopSymmetrical,
     alignmentRing])
     ValidateUserConnectorSettings(result);
 
 function ValidateUserConnectorSettings(userSettings) =
   // Parameter validation asserts
+  assert(is_list(userSettings) && len(userSettings) >= userSettingsLength, str("UserSettings must be a list of length ", userSettingsLength ," len:", len(userSettings)))
+
   assert(is_num(userSettings[iConnector]) && userSettings[iConnector] >= 0, str("connector must be a non-negative number:", userSettings[iConnector]))
   assert(is_string(userSettings[iStyle]), str("style must be a string:", userSettings[iStyle]))
   //assert(userSettings[iStyle] == "hose" || userSettings[iStyle] == "mag" || userSettings[iStyle] == "flange" || userSettings[iStyle] == "nozzle", "style must be 'hose', 'mag', 'flange', or 'nozzle'")
@@ -263,9 +293,6 @@ function ValidateUserConnectorSettings(userSettings) =
   assert(is_num(userSettings[iEndCapThickness]) && userSettings[iEndCapThickness] >= 0, str("endCapThickness must be a non-negative number:", userSettings[iEndCapThickness]))
   assert(is_num(userSettings[iEndCapGridSize]) && userSettings[iEndCapGridSize] >= 0, str("endCapGridSize must be a non-negative number:", userSettings[iEndCapGridSize]))
   assert(is_num(userSettings[iEndCapGridWallThickness]) && userSettings[iEndCapGridWallThickness] >= 0, str("endCapGridWallThickness must be a non-negative number:", userSettings[iEndCapGridWallThickness]))
-  assert(is_num(userSettings[iStopThickness]) && userSettings[iStopThickness] >= 0, str("stopThickness must be a non-negative number:", userSettings[iStopThickness]))
-  assert(is_num(userSettings[iStopLength]) && userSettings[iStopLength] >= 0, str("stopLength must be a non-negative number:", userSettings[iStopLength]))
-  assert(is_bool(userSettings[iStopSymmetrical]), str("stopSymmetrical must be a boolean:", userSettings[iStopSymmetrical]))
   assert(is_num(userSettings[iBarbsCount]) && userSettings[iBarbsCount] >= 0, str("barbsCount must be a non-negative number:", userSettings[iBarbsCount]))
   assert(is_num(userSettings[iBarbsThickness]) && userSettings[iBarbsThickness] >= 0, str("barbsThickness must be a non-negative number:", userSettings[iBarbsThickness]))
   assert(is_bool(userSettings[iBarbsSymmetrical]), str("barbsSymmetrical must be a boolean:", userSettings[iBarbsSymmetrical]))
@@ -298,13 +325,18 @@ function ValidateUserConnectorSettings(userSettings) =
   assert(is_num(userSettings[iNozzleChamferPercentage]) && userSettings[iNozzleChamferPercentage] >= 0 && userSettings[iNozzleChamferPercentage] <= 100, str("nozzleChamferPercentage must be between 0 and 100:", userSettings[iNozzleChamferPercentage]))
   assert(is_num(userSettings[iNozzleChamferAngle]) && userSettings[iNozzleChamferAngle] >= 0 && userSettings[iNozzleChamferAngle] <= 90, str("nozzleChamferAngle must be between 0 and 90 degrees:", userSettings[iNozzleChamferAngle]))
   assert(is_num(userSettings[iExtensionLength]) && userSettings[iExtensionLength] >= 0, str("extensionLength must be a non-negative number:", userSettings[iExtensionLength]))
+  assert(is_num(userSettings[iExtensionExitDiameter]) && userSettings[iExtensionExitDiameter] >= 0, str("extensionExitDiameter must be a non-negative number:", userSettings[iExtensionExitDiameter]))
   assert(is_num(userSettings[iExtensionGridSize]) && userSettings[iExtensionGridSize] >= 0, str("extensionGridSize must be a non-negative number:", userSettings[iExtensionGridSize]))
   assert(is_num(userSettings[iExtensionGridWallThickness]) && userSettings[iExtensionGridWallThickness] >= 0, str("extensionGridWallThickness must be a non-negative number:", userSettings[iExtensionGridWallThickness]))
   assert(is_string(userSettings[iExtensionText]), str("extensionText must be a string:", userSettings[iExtensionText]))
   assert(is_num(userSettings[iExtensionTextSize]) && userSettings[iExtensionTextSize] >= 0, str("extensionTextSize must be a non-negative number:", userSettings[iExtensionTextSize]))
+  assert(is_num(userSettings[iExtensionStopThickness]) && userSettings[iExtensionStopThickness] >= 0, str("stopThickness must be a non-negative number:", userSettings[iExtensionStopThickness]))
+  assert(is_num(userSettings[iExtensionStopLength]) && userSettings[iExtensionStopLength] >= 0, str("stopLength must be a non-negative number:", userSettings[iExtensionStopLength]))
+  assert(is_bool(userSettings[iExtensionStopSymmetrical]), str("StopSymmetrical must be a boolean:", userSettings[iExtensionStopSymmetrical]))
   userSettings;
 
 function ValidateConnectorSettings(userSettings) =
+  assert(is_list(userSettings) && len(userSettings) == connectorSettingsLength, str("ConnectorSettings must be a list of length ", connectorSettingsLength ," len:", len(userSettings)))
   assert(is_num(userSettings[iAlignmentDepth]) && userSettings[iAlignmentDepth] >= 0, str("alignmentDepth must be a non-negative number:", userSettings[iAlignmentDepth]))
   assert(is_num(userSettings[iAlignmentUpperWidth]) && userSettings[iAlignmentUpperWidth] >= 0, str("alignmentUpperWidth must be a non-negative number:", userSettings[iAlignmentUpperWidth]))
   assert(is_num(userSettings[iAlignmentLowerWidth]) && userSettings[iAlignmentLowerWidth] >= 0, str("alignmentLowerWidth must be a non-negative number:", userSettings[iAlignmentLowerWidth]))
@@ -315,10 +347,15 @@ function ValidateConnectorSettings(userSettings) =
   assert(is_num(userSettings[iInnerEndDiameter]) && userSettings[iInnerEndDiameter] >= 0, str("innerEndDiameter must be a non-negative number:", userSettings[iInnerEndDiameter]))
   assert(is_num(userSettings[iOuterStartDiameter]) && userSettings[iOuterStartDiameter] >= 0, str("outerStartDiameter must be a non-negative number:", userSettings[iOuterStartDiameter]))
   assert(is_num(userSettings[iOuterEndDiameter]) && userSettings[iOuterEndDiameter] >= 0, str("outerEndDiameter must be a non-negative number:", userSettings[iOuterEndDiameter]))
+  assert(is_num(userSettings[iInterfaceInnerDiameter]) && userSettings[iInterfaceInnerDiameter] >= 0, str("InterfaceInnerDiameter must be a non-negative number:", userSettings[iInterfaceInnerDiameter]))
+  assert(is_num(userSettings[iInterfaceOuterDiameter]) && userSettings[iInterfaceOuterDiameter] >= 0, str("InterfaceOuterDiameter must be a non-negative number:", userSettings[iInterfaceOuterDiameter]))
+  assert(is_num(userSettings[iInterfaceWallThickness]) && userSettings[iInterfaceWallThickness] >= 0, str("InterfaceWallThickness must be a non-negative number:", userSettings[iInterfaceWallThickness]))
+  assert(is_num(userSettings[iInterfaceLength]) && userSettings[iInterfaceLength] >= 0, str("InterfaceLength must be a non-negative number:", userSettings[iInterfaceLength]))
   ValidateUserConnectorSettings(userSettings);
 
 function getConnectorSettings(
   userSettings = [],
+  slipRingSettings = [],
   alignmentDepth,
   alignmentUpperWidth,
   alignmentLowerWidth,
@@ -335,10 +372,28 @@ function getConnectorSettings(
     length = userSettings[iLength],
     taper = userSettings[iTaper],
     wallThickness = userSettings[iWallThickness],
-    stopThickness = userSettings[iStopThickness],
-    stopLength = userSettings[iStopLength],
     flangeThickness = userSettings[iFlangeThickness],
     magnetFlangeThickness = userSettings[iMagnetFlangeThickness],
+    extensionLength = userSettings[iExtensionLength],
+    extensionSlipRing = userSettings[iExtensionSlipRing],
+    extensionStopThickness = userSettings[iExtensionStopThickness],
+    extensionStopLength = userSettings[iExtensionStopLength],
+
+    extensionExitInnerDiameter = userSettings[iExtensionExitDiameter],
+    extensionText = userSettings[iExtensionText],
+    extensionTextSize = userSettings[iExtensionTextSize],
+
+    slipRingSize = slipRingSettings[0],
+    slipRingStartWallThickness = slipRingSettings[1],
+    slipRingEndWallThickness = slipRingSettings[2],
+    slipRingDeltaDiameter = slipRingSettings[3],
+
+    extTextHeight = (is_string(extensionText) && extensionText != "" && extensionTextSize > 0)
+      ? let(
+        tm = textmetrics(text=extensionText,size=extensionTextSize),
+        height = tm.size.y
+        ) height
+      : 0,
 
     _diameter = measurement_to_mm(diameter),
     _length = measurement_to_mm(length),
@@ -360,11 +415,27 @@ function getConnectorSettings(
     conOuterStartDiameter = conInnerStartDiameter + wallThickness*2,
     conInnerEndDiameter = conInnerDiameter + conTaper / 2,
     conOuterEndDiameter = conInnerEndDiameter + wallThickness*2,
+
     //If the connector hose is not shown the stop has no thickness
-    conStopThickness = (conLength <= 0 || style == "mag" || style == "flange") ? 0 : stopThickness,
+    extStopThickness = (conLength <= 0) ? 0 : extensionStopThickness,
     //If the stop has no thickness, it needs no length
-    conStopLength = (conStopThickness > 0 && style == "hose") ? stopLength : 0
-    ) let (
+    extStopLength = (extensionStopThickness <= 0) ? 0 : extensionStopLength,
+
+    extExitInnerDiameter = extensionExitInnerDiameter > 0 ? extensionExitInnerDiameter : conInnerEndDiameter,
+    extTaperLength = abs(extExitInnerDiameter - conInnerEndDiameter)/2,
+
+    conSlipRingLength = (extensionSlipRing != "disabled") ? slipRingSize.y + abs(conWallThickness - slipRingStartWallThickness) : 0,
+    extLength = max(extensionLength, extTextHeight),
+
+    extTotalLength = extStopLength + extLength + conSlipRingLength + extTaperLength,
+    conInterfaceWallThickness = (extensionSlipRing != "disabled") ? slipRingEndWallThickness : conWallThickness,
+    conInterfaceInnerDiameter = extExitInnerDiameter+slipRingDeltaDiameter,
+    conInterfaceOuterDiameter = conInterfaceInnerDiameter+conInterfaceWallThickness*2,
+    conInterfaceLength =  conLength + extTotalLength
+    )
+    echo("getConnectorSettings", slipRingSettings=slipRingSettings, extTaperLength=extTaperLength, extExitInnerDiameter=extExitInnerDiameter, conInnerEndDiameter=conInnerEndDiameter,
+      conInterfaceWallThickness=conInterfaceWallThickness, conInterfaceLength=conInterfaceLength, conLength=conLength)
+    let (
       result = [
         userSettings[iConnector],
         style,
@@ -378,9 +449,6 @@ function getConnectorSettings(
         userSettings[iEndCapThickness],
         userSettings[iEndCapGridSize],
         userSettings[iEndCapGridWallThickness],
-        userSettings[iStopThickness],
-        userSettings[iStopLength],
-        userSettings[iStopSymmetrical],
         userSettings[iBarbsCount],
         userSettings[iBarbsThickness],
         userSettings[iBarbsSymmetrical],
@@ -409,11 +477,17 @@ function getConnectorSettings(
         userSettings[iNozzleOffset],
         userSettings[iNozzleChamferPercentage],
         userSettings[iNozzleChamferAngle],
-        userSettings[iExtensionLength],
+        extLength,
+        userSettings[iExtensionExitDiameter],
         userSettings[iExtensionGridSize],
         userSettings[iExtensionGridWallThickness],
         userSettings[iExtensionText],
         userSettings[iExtensionTextSize],
+        userSettings[iExtensionSlipRing],
+        userSettings[iExtensionSlipRingWidth],
+        extStopThickness,
+        extStopLength,
+        userSettings[iExtensionStopSymmetrical],
         userSettings[iAlignmentRing],
 
         //End of user settings
@@ -422,13 +496,19 @@ function getConnectorSettings(
         alignmentLowerWidth,
         alignmentSideClearance,
         alignmentDepthClearance,
+
         adapterColor,
         conInnerDiameter,
         conInnerStartDiameter,
         conOuterStartDiameter,
         conInnerEndDiameter,
         conOuterEndDiameter,
-        conStopThickness,
-        conStopLength
+        conInterfaceInnerDiameter,
+        conInterfaceOuterDiameter,
+        conInterfaceWallThickness,
+        conInterfaceLength,
+        extTaperLength,
+        extTotalLength
         ])
+        echo(result=result)
         ValidateConnectorSettings(result);

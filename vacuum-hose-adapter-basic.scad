@@ -23,13 +23,17 @@ End1_Length = [40,0];  //0.1
 //Taper of the start connector, use negative to taper other direction.
 End1_Taper = 1;  //0.1
 
-/* [Connector 1 - Hose connector] */
+/* [Connector 1 - Extension] */
+End1_Extension_SlipRing= "disabled"; //[disabled, notaper: non tapered, inner, outer]
+End1_Extension_SlipRing_Width = 5;
 //Thickness of hose stop
-End1_StopThickness = 0;  //1
+End1_Extension_StopThickness = 0;  //1
 //Length of hose stop
-End1_StopLength = 0;  //1
+End1_Extension_StopLength = 0;  //1
 //Should the stop be tapered both sides. Might easier to print.
-End1_Stop_Symmetrical = false;
+End1_Extension_Stop_Symmetrical = false;
+
+/* [Connector 1 - Hose connector] */
 //Number of barbs
 End1_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
@@ -63,13 +67,17 @@ End2_Length = [40 ,0];  //0.1
 //Taper of the start connector, use negative to taper other direction.
 End2_Taper = 1;  //0.1
 
-/*[Connector 2 - Hose connector] */
+/* [Connector 2 - Extension] */
+End2_Extension_SlipRing= "disabled"; //[disabled, notaper: non tapered, inner, outer]
+End2_Extension_SlipRing_Width = 5;
 //Thickness of hose stop
-End2_StopThickness = 0;  //1
+End2_Extension_StopThickness = 0;  //1
 //Length of hose stop
-End2_StopLength = 0;  //1
+End2_Extension_StopLength = 0;  //1
 //Should the stop be tapered both sides. Might easier to print.
-End2_Stop_Symmetrical = false;
+End2_Extension_Stop_Symmetrical = false;
+
+/*[Connector 2 - Hose connector] */
 //Number of barbs
 End2_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
@@ -86,7 +94,7 @@ Enable_Help = false;
 End1_Color = ["",1];  //0.1
 End2_Color = ["",1];  //0.1
 Transition_Color = ["",1]; //The color, then the alpha value
-Extension_Color = ["",1]; //The color, then the alpha value
+Extension_Color = ["",0.7]; //The color, then the alpha value
 
 /* [Model detail] */
 // minimum angle for a fragment (fragments = 360/fa).  Low is more fragments
@@ -114,12 +122,14 @@ HoseAdapter(
     diameter=End1_Diameter,
     length=End1_Length,
     taper=End1_Taper,
-    stopThickness=End1_StopThickness,
-    stopLength=End1_StopLength,
-    stopSymmetrical=End1_Stop_Symmetrical,
     barbsCount=End1_Barbs_Count,
     barbsThickness=End1_Barbs_Thickness,
-    barbsSymmetrical=End1_Barbs_Symmetrical),
+    barbsSymmetrical=End1_Barbs_Symmetrical,
+    extensionSlipRing=End1_Extension_SlipRing,
+    extensionSlipRingWidth=End1_Extension_SlipRing_Width,
+    extensionStopThickness=End1_Extension_StopThickness,
+    extensionStopLength=End1_Extension_StopLength,
+    extensionStopSymmetrical=End1_Extension_Stop_Symmetrical),
 
   connector2 = UserConnectorSettings(
     connector=2,
@@ -129,12 +139,14 @@ HoseAdapter(
     diameter=End2_Diameter,
     length=End2_Length,
     taper=End2_Taper,
-    stopThickness=End2_StopThickness,
-    stopLength=End2_StopLength,
-    stopSymmetrical=End2_Stop_Symmetrical,
     barbsCount=End2_Barbs_Count,
     barbsThickness=End2_Barbs_Thickness,
-    barbsSymmetrical=End2_Barbs_Symmetrical),
+    barbsSymmetrical=End2_Barbs_Symmetrical,
+    extensionSlipRing=End2_Extension_SlipRing,
+    extensionSlipRingWidth=End2_Extension_SlipRing_Width,
+    extensionStopThickness=End2_Extension_StopThickness,
+    extensionStopLength=End2_Extension_StopLength,
+    extensionStopSymmetrical=End2_Extension_Stop_Symmetrical),
 
   transitionStyle = Transition_Style,
   transitionLength = Transition_Length,

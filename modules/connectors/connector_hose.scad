@@ -85,92 +85,113 @@ module HoseConnector(
     help
 )
 {
-  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, "innerEndDiameter must be a number greater than 0");
-  assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");
+  assert(is_num(innerEndDiameter) && innerEndDiameter > 0,
+    str("innerEndDiameter must be a number greater than 0; got: ", innerEndDiameter));
+  assert(is_num(innerStartDiameter) && innerStartDiameter > 0,
+    str("innerStartDiameter must be a number greater than 0; got: ", innerStartDiameter));
   assert(is_string(connectorMeasurement) && (connectorMeasurement == "outer" || connectorMeasurement == "inner"),
-    "connectorMeasurement must be 'outer' or 'inner'");
-  assert(is_num(length) && length > 0, "length must be a number greater than 0");
-  assert(is_num(wallThickness) && wallThickness > 0, "wallThickness must be a number greater than 0");
-  assert(is_num(stopLength) && stopLength >= 0, "stopLength must be a number greater than or equal to 0");
-  assert(is_num(stopWidth) && stopWidth >= 0, "stopWidth must be a number greater than or equal to 0");
+    str("connectorMeasurement must be 'outer' or 'inner'; got: ", connectorMeasurement));
+  assert(is_num(length) && length >= 0, str("length must be a number greater than 0; got: ", length));
+  assert(is_num(wallThickness) && wallThickness > 0,
+    str("wallThickness must be a number greater than 0; got: ", wallThickness));
+  assert(is_num(stopLength) && stopLength >= 0,
+    str("stopLength must be a number greater than or equal to 0; got: ", stopLength));
+  assert(is_num(stopWidth) && stopWidth >= 0,
+    str("stopWidth must be a number greater than or equal to 0; got: ", stopWidth));
   //assert(is_bool(stopSymmetrical), "stopSymmetrical must be a boolean");
-  assert(is_num(barbsCount) && barbsCount >= 0 && floor(barbsCount) == barbsCount, "barbsCount must be a non-negative integer");
-  assert(is_num(barbsThickness) && barbsThickness >= 0, "barbsThickness must be a number greater than or equal to 0");
-  assert(is_bool(barbsSymmetrical), "barbsSymmetrical must be a boolean");
-  assert(is_num(endCapDiameter) && endCapDiameter >= 0, "endCapDiameter must be a number greater than or equal to 0");
-  assert(is_num(endCapThickness) && endCapThickness >= 0, "endCapThickness must be a number greater than or equal to 0");
-  assert(is_num(endCapGridSize) && endCapGridSize >= 0, "endCapGridSize must be a number greater than or equal to 0");
-  assert(is_num(endCapGridWallThickness) && endCapGridWallThickness >= 0, "endCapGridWallThickness must be a number greater than or equal to 0");
-  assert(is_num(chamferLength) && chamferLength >= 0, "chamferLength must be a number greater than or equal to 0");
-  assert(is_num(chamferWidth) && chamferWidth >= 0, "chamferWidth must be a number greater than or equal to 0");
+  assert(is_num(barbsCount) && barbsCount >= 0 && floor(barbsCount) == barbsCount,
+    str("barbsCount must be a non-negative integer; got: ", barbsCount));
+  assert(is_num(barbsThickness) && barbsThickness >= 0,
+    str("barbsThickness must be a number greater than or equal to 0; got: ", barbsThickness));
+  assert(is_bool(barbsSymmetrical), str("barbsSymmetrical must be a boolean; got: ", barbsSymmetrical));
+  assert(is_num(endCapDiameter) && endCapDiameter >= 0,
+    str("endCapDiameter must be a number greater than or equal to 0; got: ", endCapDiameter));
+  assert(is_num(endCapThickness) && endCapThickness >= 0,
+    str("endCapThickness must be a number greater than or equal to 0; got: ", endCapThickness));
+  assert(is_num(endCapGridSize) && endCapGridSize >= 0,
+    str("endCapGridSize must be a number greater than or equal to 0; got: ", endCapGridSize));
+  assert(is_num(endCapGridWallThickness) && endCapGridWallThickness >= 0,
+    str("endCapGridWallThickness must be a number greater than or equal to 0; got: ", endCapGridWallThickness));
+  assert(is_num(chamferLength) && chamferLength >= 0,
+    str("chamferLength must be a number greater than or equal to 0; got: ", chamferLength));
+  assert(is_num(chamferWidth) && chamferWidth >= 0,
+    str("chamferWidth must be a number greater than or equal to 0; got: ", chamferWidth));
   assert(is_string(enableThreads) && (enableThreads == "disabled" || enableThreads == "enabled" || enableThreads == "reversed"),
-    "enableThreads must be 'disabled', 'enabled', or 'reversed'");
-  assert(is_num(threadPitch) && threadPitch >= 0, "threadPitch must be a number greater than or equal to 0");
-  assert(is_num(threadToothAngle) && threadToothAngle >= 0 && threadToothAngle <= 90, "threadToothAngle must be between 0 and 90");
-  assert(is_num(threadToothHeight) && threadToothHeight >= 0, "threadToothHeight must be a number greater than or equal to 0");
+    str("enableThreads must be 'disabled', 'enabled', or 'reversed'; got: ", enableThreads));
+  assert(is_num(threadPitch) && threadPitch >= 0,
+    str("threadPitch must be a number greater than or equal to 0; got: ", threadPitch));
+  assert(is_num(threadToothAngle) && threadToothAngle >= 0 && threadToothAngle <= 90,
+    str("threadToothAngle must be between 0 and 90; got: ", threadToothAngle));
+  assert(is_num(threadToothHeight) && threadToothHeight >= 0,
+    str("threadToothHeight must be a number greater than or equal to 0; got: ", threadToothHeight));
 
-  assert(stopLength == 0 || stopWidth > 0, "stopWidth must be greater than 0 when stopLength is enabled");
-  assert(barbsCount == 0 || wallThickness > 0, "wallThickness must be greater than 0 when barbs are enabled");
-  assert(endCapGridSize == 0 || endCapThickness > 0, "endCapThickness must be greater than 0 when endCapGridSize is enabled");
+  assert(stopLength == 0 || stopWidth > 0,
+    str("stopWidth must be greater than 0 when stopLength is enabled; stopLength=", stopLength, ", stopWidth=", stopWidth));
+  assert(barbsCount == 0 || wallThickness > 0,
+    str("wallThickness must be greater than 0 when barbs are enabled; barbsCount=", barbsCount, ", wallThickness=", wallThickness));
+  assert(endCapGridSize == 0 || endCapThickness > 0,
+    str("endCapThickness must be greater than 0 when endCapGridSize is enabled; endCapGridSize=", endCapGridSize, ", endCapThickness=", endCapThickness));
 
   _barbsThickness = barbsThickness == 0 ? wallThickness/2 : barbsThickness;
   barbLength = length/(barbsCount*2+1);
 
   union() {
-    difference ()
-    {
-      //outer cylinder
-      translate([0,0,0])
-      hull()
+    if(length > 0){
+      difference ()
       {
-        cylinder(fudgeFactor, d=innerStartDiameter+2*wallThickness);
-        translate([0,0,length-fudgeFactor])
-          cylinder(fudgeFactor, d=innerEndDiameter+2*wallThickness);
+        //outer cylinder
+        translate([0,0,0])
+        hull()
+        {
+          cylinder(fudgeFactor, d=innerStartDiameter+2*wallThickness);
+          translate([0,0,length-fudgeFactor])
+            cylinder(fudgeFactor, d=innerEndDiameter+2*wallThickness);
+        }
+
+        //Inner cylinder to remove
+        translate([0,0,0-fudgeFactor])
+        hull()
+        {
+          cylinder(fudgeFactor, d=innerStartDiameter);
+          translate([0,0,length+2*fudgeFactor])
+            cylinder(fudgeFactor, d=innerEndDiameter);
+        }
+        if(chamferLength >0)
+        {
+          pipe(
+            diameter1 = connectorMeasurement == "outer" ?
+              innerStartDiameter + wallThickness*2 - chamferWidth*2 :
+              innerStartDiameter - chamferWidth*2,
+            diameter2 = connectorMeasurement == "outer" ?
+              innerStartDiameter + wallThickness*2 + chamferWidth*2 :
+              innerStartDiameter - chamferWidth*2,
+            length = chamferLength*2,
+            wallThickness1 = chamferWidth*2,
+            wallThickness2 = 0,
+            zPosition = -fudgeFactor);
+        }
       }
 
-      //Inner cylinder to remove
-      translate([0,0,0-fudgeFactor])
-      hull()
-      {
-        cylinder(fudgeFactor, d=innerStartDiameter);
-        translate([0,0,length+2*fudgeFactor])
-          cylinder(fudgeFactor, d=innerEndDiameter);
-      }
-      if(chamferLength >0)
-      {
-        pipe(
-          diameter1 = connectorMeasurement == "outer" ?
-            innerStartDiameter + wallThickness*2 - chamferWidth*2 :
-            innerStartDiameter - chamferWidth*2,
-          diameter2 = connectorMeasurement == "outer" ?
-            innerStartDiameter + wallThickness*2 + chamferWidth*2 :
-            innerStartDiameter - chamferWidth*2,
-          length = chamferLength*2,
-          wallThickness1 = chamferWidth*2,
-          wallThickness2 = 0,
-          zPosition = -fudgeFactor);
-      }
-    }
-
-    if(enableThreads != "disabled"){
-      if(connectorMeasurement == "outer"){
-        ExternalHoseThread(
-          diameter = innerStartDiameter+wallThickness,
+      if(enableThreads != "disabled"){
+        if(connectorMeasurement == "outer"){
+          ExternalHoseThread(
+            diameter = innerStartDiameter+wallThickness,
+            wallThickness=wallThickness,
+            height=length,
+            pitch=threadPitch,
+            tooth_angle=threadToothAngle,
+            tooth_height=threadToothHeight,
+            reverse_thread=(enableThreads == "reversed"));
+        } else {
+        InternalHoseThread(
+          diameter = innerStartDiameter,
           wallThickness=wallThickness,
           height=length,
           pitch=threadPitch,
           tooth_angle=threadToothAngle,
           tooth_height=threadToothHeight,
           reverse_thread=(enableThreads == "reversed"));
-      } else {
-       InternalHoseThread(
-        diameter = innerStartDiameter,
-        wallThickness=wallThickness,
-        height=length,
-        pitch=threadPitch,
-        tooth_angle=threadToothAngle,
-        tooth_height=threadToothHeight,
-        reverse_thread=(enableThreads == "reversed"));
+        }
       }
     }
 
@@ -229,7 +250,7 @@ module HoseConnector(
       translate([0,0,-fudgeFactor])
       Stopper(
         diameter = innerEndDiameter,
-        outer = innerStartDiameter <= innerEndDiameter,
+        outer = innerStartDiameter <= innerEndDiameter && connectorMeasurement != "inner",
         totalLength = stopLength+fudgeFactor*2,
         taper1 = stopSymmetrical ? 0.4 : 0.5,
         taper2 = stopSymmetrical ? 0.4 : 0,

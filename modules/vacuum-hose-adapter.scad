@@ -11,15 +11,18 @@ include <constants.scad>
 include <module_conditional.scad>
 include <modules_utility.scad>
 include <modules_pipe.scad>
+include <modules_slipring.scad>
 
 include <connectors/connectors.scad>
 
+//colorSetting=["colour", alpha]
+//defaultColor="colour"
 function getColor(colorSetting, defaultColor) =
   assert(is_list(colorSetting), str("colorSetting must be a list colorSetting=", colorSetting, " defaultColor", defaultColor))
   assert(len(colorSetting) == 2, "colorSetting be length 2")
   let(
     c = colorSetting[0] == "" ? defaultColor : colorSetting[0],
-    a = is_num(colorSetting[1]) && colorSetting[1] >=0 && colorSetting[1] <=1 ? colorSetting[1] : 1) [c,a];
+    a = is_num(colorSetting[1]) && colorSetting[1] >=0 && colorSetting[1] <=1 ? colorSetting[1] : 1) [c, a];
 
 module adapterAlignmentRing(
   centerDiameter = 0,
@@ -95,7 +98,6 @@ module adapter(
 ){
   assert(is_list(con), "con must be a list")
   assert(is_num(con[iLength]), str("length must be a number :", con[iLength]));
-  assert(is_num(con[iStopLength]), "stopLength must be a number");
   assert(is_list(con[iAdapterColor]), "adapterColor must be a list")
   assert(len(con[iAdapterColor]) == 2, "adapterColor be length 2")
 
@@ -109,7 +111,7 @@ module adapter(
       union(){
         if(con[iStyle] == "mag")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           MagneticConnector(
               innerStartDiameter = con[iInnerStartDiameter],
@@ -134,7 +136,7 @@ module adapter(
         }
         else if(con[iStyle] == "flange")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           FlangeConnector(
             innerStartDiameter = con[iInnerStartDiameter],
@@ -153,7 +155,7 @@ module adapter(
 
         else if(con[iStyle] == "hose")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           HoseConnector(
             innerStartDiameter = con[iInnerStartDiameter],
@@ -161,9 +163,6 @@ module adapter(
             connectorMeasurement = con[iMeasurement],
             length = con[iLength],
             wallThickness = con[iWallThickness],
-            stopLength = con[iStopLength],
-            stopWidth = con[iStopThickness],
-            stopSymmetrical = con[iStopSymmetrical],
             barbsCount  = con[iBarbsCount],
             barbsThickness = con[iBarbsThickness],
             barbsSymmetrical = con[iBarbsSymmetrical],
@@ -180,7 +179,7 @@ module adapter(
         }
         else if(con[iStyle] == "dyson")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           DysonConnector(
             innerEndDiameter = con[iInnerEndDiameter],
@@ -191,7 +190,7 @@ module adapter(
         }
         else if(con[iStyle] == "camlock")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           CamlockConnector(
             innerEndDiameter = con[iInnerEndDiameter],
@@ -201,7 +200,7 @@ module adapter(
         }
         else if(con[iStyle] == "dw735")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           Dw735Connector(
             innerEndDiameter = con[iInnerEndDiameter],
@@ -212,19 +211,19 @@ module adapter(
         }
         else if(con[iStyle] == "centec_female")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           CenTecFemaleConnector($fn = $fn);
         }
         else if(con[iStyle] == "centec_male")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           CenTecMaleConnector($fn = $fn);
         }
         else if(con[iStyle] == "makita_male")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           MakitaMaleConnector(
             help = help,
@@ -232,7 +231,7 @@ module adapter(
         }
         else if(con[iStyle] == "bosch_sander")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           BoschSanderConnector(
             innerEndDiameter = con[iInnerEndDiameter],
@@ -243,7 +242,7 @@ module adapter(
         }
         else if(con[iStyle] == "osvacm" || con[iStyle] == "osvacm32")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           osVacMaleConnector(
             innerDiameter = con[iInnerEndDiameter],
@@ -253,7 +252,7 @@ module adapter(
         }
         else if(con[iStyle] == "osvacf" || con[iStyle] == "osvacf32")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           osVacFemaleConnector(
             innerDiameter = con[iInnerEndDiameter],
@@ -263,7 +262,7 @@ module adapter(
         }
         else if(con[iStyle] == "festoolcleanteclug")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           FestoolCleantecLugConnector(
             help = help,
@@ -292,7 +291,7 @@ module adapter(
       if($preview&&debug&&con[iStyle]!="none"){
         cubeSizex = max(con[iInnerStartDiameter],con[iInnerEndDiameter])*2;
         cubeSizey = max(con[iInnerStartDiameter],con[iInnerEndDiameter])*1.5;
-        cubeSizez = con[iLength]+con[iStopLength]+fudgeFactor*4
+        cubeSizez = con[iLength]+fudgeFactor*4
           +(con[iStyle] == "nozzle"? con[iNozzleSize].z+fudgeFactor : 0)
           +(con[iStyle] == "mag"? con[iAlignmentDepth]: 0);
         translate([-cubeSizex/2, -cubeSizey, -fudgeFactor*2])
@@ -303,7 +302,7 @@ module adapter(
 
   if($preview&&showCaliper&&con[iStyle]!="none"){
     color("Gold")
-    translate([0, 0, con[iLength]+con[iStopLength]])
+    translate([0, 0, con[iLength]])
     mirror ([0,0,1])
     mirror (connectorPos == 1 ? [0,0,0] : [1,0,0])
     union(){
@@ -373,26 +372,47 @@ module adapter(
 
 module transitionExtension(
   connector,
+  connectorMeasurement = "inner",
   innerDiameter = 0,
+  exitDiameter = 0,
+  taperLength = 0,
   wallThickness = 0,
   length = 0 ,
+  stopLength = 0,
+  stopWidth = 0,
+  stopSymmetrical = false,
   gridSize = 0,
   gridWallThickness = 0,
-  transitionColor = ["LightGreen",1],
-  debug = false,
-  showCaliper=false,
   txt="",
   txtSize=0,
   includeHook = 0,
+  extensionSlipRing="disabled",
+  extensionSlipRingWidth=5,
+  transitionColor = ["LightGreen", 1],
+  debug = false,
+  showCaliper=false,
   help){
   assert(is_list(transitionColor), "transitionColor must be a list");
   assert(len(transitionColor) == 2, "transitionColor be length 2");
-  assert(is_num(connector) && (connector ==1 || connector ==2), "connector must be 1 or 2");
+  assert(is_num(connector) && (connector == 1 || connector == 2 || connector == 3), "connector must be 1 or 2");
   assert(is_num(innerDiameter), "innerDiameter must be a number");
+  assert(is_num(exitDiameter) && exitDiameter >= 0, str("exitDiameter must be a non-negative number. Provided:", exitDiameter));
   assert(is_num(wallThickness), "wallThickness must be a number");
   assert(is_num(length), "length must be a number");
   assert(is_num(gridSize), "gridSize must be a number");
   assert(is_num(gridWallThickness), "gridWallThickness must be a number");
+
+  effectiveExitDiameter = exitDiameter == 0 ? innerDiameter : exitDiameter;
+
+  slipRing = calculate_slipring_size(slipring = extensionSlipRing, width = extensionSlipRingWidth);
+  slipRingSize = slipRing[0];
+  slipRingStartWallThickness = slipRing[1];
+  slipRingEndWallThickness = slipRing[2];
+  slipRingDeltaDiameter = slipRing[3];
+
+  spliRingPreTaper = abs(wallThickness - slipRingStartWallThickness);
+
+  totalLength = length + stopLength + taperLength + spliRingPreTaper + slipRingSize.y;
 
   //gridWallThickness, -1 use wall thickness
   gridWallThickness = gridWallThickness < 0
@@ -406,24 +426,58 @@ module transitionExtension(
       ? innerDiameter/6 - gridWallThickness
       : gridSize;
 
-  if(length > 0)
+  if(totalLength > 0)
   {
     difference(){
       color(transitionColor[0], transitionColor[1])
       union(){
-      HoseConnector(
-        innerStartDiameter = innerDiameter,
-        innerEndDiameter = innerDiameter,
-        connectorMeasurement = "inner",
-        length,
-        endCapThickness = gridWallThickness,
-        wallThickness = wallThickness,
-        endCapGridSize = gridSize,
-        endCapGridWallThickness = gridWallThickness,
-        help);
+        if(length > 0 || stopLength > 0)
+          HoseConnector(
+            innerStartDiameter = innerDiameter,
+            innerEndDiameter = innerDiameter,
+            connectorMeasurement = connectorMeasurement,
+            length = length,
+            wallThickness = wallThickness,
+            stopLength = stopLength,
+            stopWidth = stopWidth,
+            stopSymmetrical = stopSymmetrical,
+            endCapThickness = gridWallThickness,
+            endCapGridSize = gridSize,
+            endCapGridWallThickness = gridWallThickness,
+            help = help);
+
+        if(extensionSlipRing != "disabled"){
+          // needed entry taper
+
+          translate([0,0,spliRingPreTaper])
+          translate([0, 0, length + stopLength])
+           slipring(
+            diamater = innerDiameter,
+            ring_width = extensionSlipRingWidth,
+            slip_clearance = 0.3,
+            rounded_clearance = true,
+            taper = extensionSlipRing);
+
+          if(spliRingPreTaper > 0)
+            translate([0, 0, length + stopLength])
+            pipe(
+              diameter = innerDiameter,
+              length = spliRingPreTaper,
+              wallThickness1 = wallThickness,
+              wallThickness2 = slipRingStartWallThickness,
+              enableWallThicknessCompensation = false);
+        }
+
+        if(taperLength > 0)
+          translate([0, 0, length + stopLength])
+          pipe(
+            diameter1 = innerDiameter,
+            diameter2 = effectiveExitDiameter,
+            length = taperLength,
+            wallThickness = wallThickness);
 
         if(includeHook == 1){
-          hootLength = min(15, length);
+          hootLength = min(15, length + stopLength);
           hookSize = wallThickness*2;
           intersection(){
             difference(){
@@ -460,12 +514,12 @@ module transitionExtension(
         }
       }
       if($preview&&debug){
-        cubeSize = [innerDiameter*2,innerDiameter*1.5, length+fudgeFactor*4];
+        cubeSize = [max(innerDiameter, effectiveExitDiameter)*2,max(innerDiameter, effectiveExitDiameter)*1.5, totalLength+fudgeFactor*4];
         translate([-cubeSize.x/2, (connector == 1 ? -cubeSize.y : 0), -fudgeFactor*2])
         cube(cubeSize);
       }
 
-      if(is_string(txt) && len(txt) > 0){
+      if(length > 0 && is_string(txt) && len(txt) > 0){
         textExtrude = min(wallThickness,1);
         border = length * .2; //border above and below the text
         translate([0,0,border])
@@ -504,6 +558,29 @@ module transitionExtension(
       }
     }
     */
+
+    if(taperLength > 0)
+      color("Aquamarine")
+      translate(connector == 1 ? [0, 0, 0] : [0, 0, 0] )
+      mirror(connector == 1 ? [0,0,0] : [0,0,0])
+      rotate(connector == 1 ? [0,0,0] : [0,0,180])
+      union(){
+        barWidth = wallThickness*8;
+        position = innerDiameter/2 + wallThickness*2;
+        translate([(connector == 1 ? position  : -position), 0, length + taperLength/2])
+        rotate([90,0,0])
+        Caliper(messpunkt = false, help=0, h = 0.1,
+              center=true,
+              l=taperLength,
+              cx=0,
+              end=0,
+              size=6,
+              in=connector == 1 ? 2 : 3,
+              translate= connector == 1 ? [15,0,0] : [-15,0,0],
+              txt2 = str("Extension Taper ", connector, " length"));
+      }
+
+      if(length > 0)
       color("Aquamarine")
       translate(connector == 1 ? [0, 0, 0] : [0, 0, 0] )
       mirror(connector == 1 ? [0,0,0] : [0,0,0])
@@ -526,9 +603,16 @@ module transitionExtension(
     }
   }
   HelpTxt("transitionExtension",[
+    "connector", connector,
     "innerDiameter", innerDiameter,
+    "exitDiameter", effectiveExitDiameter,
+    "taperLength", taperLength,
     "wallThickness", wallThickness,
     "length", length,
+    "stopLength", stopLength,
+    "stopWidth", stopWidth,
+    "stopSymmetrical", stopSymmetrical,
+    "taperLength", taperLength,
     "gridSize", gridSize,
     "gridWallThickness", gridWallThickness,
     "transitionColor", transitionColor,
@@ -765,12 +849,9 @@ module transition(
 }
 
 module HoseAdapter(
-  connector1 = UserConnectorSettings(
-    connector=1),
-  connector2 = UserConnectorSettings(
-    connector=2),
-  connector3 = UserConnectorSettings(
-    connector=3),
+  connector1 = UserConnectorSettings(connector=1),
+  connector2 = UserConnectorSettings(connector=2),
+  connector3 = UserConnectorSettings(connector=3),
 
   transitionStyle = "bend+taper",
   transitionLength = 10,
@@ -808,10 +889,11 @@ module HoseAdapter(
   extensionColor = [DefaultExtensionColor,1],
   help = false
 ){
-  $gha=[["connector1",[0,0,0]],["connector2",[0,0,0]],["trasnition",[0,0,0]]];
+  $gha=[["connector1",[0,0,0]],["connector2",[0,0,0]],["transition",[0,0,0]]];
 
   end1 = getConnectorSettings(
     userSettings=connector1,
+    slipRingSettings=calculate_slipring_size(slipring=connector1[iExtensionSlipRing], width=connector1[iExtensionSlipRingWidth]),
     alignmentDepth=alignmentDepth,
     alignmentUpperWidth=alignmentUpperWidth,
     alignmentLowerWidth=alignmentLowerWidth,
@@ -823,6 +905,7 @@ module HoseAdapter(
 
   end2 = getConnectorSettings(
     userSettings=connector2,
+    slipRingSettings=calculate_slipring_size(slipring=connector2[iExtensionSlipRing], width=connector2[iExtensionSlipRingWidth]),
     alignmentDepth=alignmentDepth,
     alignmentUpperWidth=alignmentUpperWidth,
     alignmentLowerWidth=alignmentLowerWidth,
@@ -830,11 +913,12 @@ module HoseAdapter(
     alignmentDepthClearance=alignmentDepthClearance,
     adapterColor = getColor(end2Color, DefaultEnd2Color),
     con1Measurement=end1[iMeasurement],
-    con1OuterEndDiameter=end1[iOuterEndDiameter],
+    con1OuterEndDiameter=end1[iInterfaceOuterDiameter],
     con1WallThickness=end1[iWallThickness]);
 
   end3 = getConnectorSettings(
     userSettings=connector3,
+    slipRingSettings=calculate_slipring_size(slipring=connector3[iExtensionSlipRing], width=connector3[iExtensionSlipRingWidth]),
     alignmentDepth=alignmentDepth,
     alignmentUpperWidth=alignmentUpperWidth,
     alignmentLowerWidth=alignmentLowerWidth,
@@ -842,7 +926,7 @@ module HoseAdapter(
     alignmentDepthClearance=alignmentDepthClearance,
     adapterColor = getColor(end3Color, DefaultEnd3Color),
     con1Measurement=end1[iMeasurement],
-    con1OuterEndDiameter=end1[iOuterEndDiameter],
+    con1OuterEndDiameter=end1[iInterfaceOuterDiameter],
     con1WallThickness=end1[iWallThickness]);
 
   echoConnector("end1", end1, help);
@@ -850,59 +934,56 @@ module HoseAdapter(
   echoConnector("end3", end3, transitionHullCenter == "end3" ? help : false);
 
   //Transition settings
-  //Total length of connector 1
-  endConnector1 = end1[iLength] + end1[iStopLength];
-
-
-      // transitionLength is not wanted for sweep
+  // transitionLength is not wanted for sweep
   _transitionAngle = (transitionStyle == "flat") ? 0 : transitionAngle;
   _transitionStyle = _transitionAngle == 0 && transitionStyle == "organicbend" ? "bend+taper" : transitionStyle;
+
+  echo("_transitionLength", _transitionLength=_transitionLength, end1_iInterfaceOuterDiameter=end1[iInterfaceOuterDiameter], end2iInterfaceOuterDiameter=end2[iInterfaceOuterDiameter], end1iInterfaceInnerDiameter=end1[iInterfaceInnerDiameter], end2iInterfaceInnerDiameter=end2[iInterfaceInnerDiameter]);
   _transitionLength = _transitionStyle == "organicbend" //|| _transitionStyle == "hull"
     ? 0
     : transitionLength == 0
       ? max(
-          abs(end1[iOuterEndDiameter] - end2[iOuterEndDiameter])/2,
-          abs(end1[iInnerEndDiameter] - end2[iInnerEndDiameter])/2)+(end1[iWallThickness]/2+end2[iWallThickness]/2)
+          abs(end1[iInterfaceOuterDiameter] - end2[iInterfaceOuterDiameter])/2,
+          abs(end1[iInterfaceInnerDiameter] - end2[iInterfaceInnerDiameter])/2)+(end1[iInterfaceWallThickness]/2+end2[iInterfaceWallThickness]/2)
       : transitionLength;
 
-      bendPipeDiameter = transitionBendPipeDiameter == "custom"
-        ? transitionCustomBendPipeDiameter
-        : transitionBendPipeDiameter == "smaller"
-          ? min(end1[iInnerEndDiameter], end2[iInnerEndDiameter])
-          : max(end1[iInnerEndDiameter], end2[iInnerEndDiameter]);
-      assert(
-        transitionBendPipeDiameter != "custom" || transitionCustomBendPipeDiameter > 0,
-        "Transition custom bend pipe diameter must be greater than zero");
+  bendPipeDiameter = transitionBendPipeDiameter == "custom"
+    ? transitionCustomBendPipeDiameter
+    : transitionBendPipeDiameter == "smaller"
+      ? min(end1[iInterfaceInnerDiameter], end2[iInterfaceInnerDiameter])
+      : max(end1[iInterfaceInnerDiameter], end2[iInterfaceInnerDiameter]);
 
-      // Preserve the wall of a matching end. For an in-between custom bore,
-      // interpolate the wall; outside that range, use the nearest end's wall.
-      bendPipeWallThickness = end1[iInnerEndDiameter] == end2[iInnerEndDiameter]
-        ? max(end1[iWallThickness], end2[iWallThickness])
-        : let(
-            blend = max(0, min(1,
-              (bendPipeDiameter - end1[iInnerEndDiameter]) /
-              (end2[iInnerEndDiameter] - end1[iInnerEndDiameter]))))
-          end1[iWallThickness] +
-            blend * (end2[iWallThickness] - end1[iWallThickness]);
+  assert(transitionBendPipeDiameter != "custom" || transitionCustomBendPipeDiameter > 0, "Transition custom bend pipe diameter must be greater than zero");
 
-      bendPipeOuterDiameter = bendPipeDiameter + bendPipeWallThickness*2;
-      bendDiameterChangeBefore = abs(bendPipeDiameter - end1[iInnerEndDiameter]);
-      bendDiameterChangeAfter = abs(end2[iInnerEndDiameter] - bendPipeDiameter);
-      bendTotalDiameterChange = bendDiameterChangeBefore + bendDiameterChangeAfter;
+  // Preserve the wall of a matching end. For an in-between custom bore,
+  // interpolate the wall; outside that range, use the nearest end's wall.
+  bendPipeWallThickness = end1[iInterfaceInnerDiameter] == end2[iInterfaceInnerDiameter]
+    ? max(end1[iInterfaceWallThickness], end2[iInterfaceWallThickness])
+    : let(
+        blend = max(0, min(1,
+          (bendPipeDiameter - end1[iInterfaceInnerDiameter]) /
+          (end2[iInterfaceInnerDiameter] - end1[iInterfaceInnerDiameter]))))
+      end1[iInterfaceWallThickness] +
+        blend * (end2[iInterfaceWallThickness] - end1[iInterfaceWallThickness]);
+
+  bendPipeOuterDiameter = bendPipeDiameter + bendPipeWallThickness*2;
+  bendDiameterChangeBefore = abs(bendPipeDiameter - end1[iInterfaceInnerDiameter]);
+  bendDiameterChangeAfter = abs(end2[iInterfaceInnerDiameter] - bendPipeDiameter);
+  bendTotalDiameterChange = bendDiameterChangeBefore + bendDiameterChangeAfter;
 
       // With automatic length, size each taper independently so the steepest
       // of its inner or outer surfaces is approximately 45 degrees.
       bendTaperLengthBefore = transitionLength == 0
         ? max(
             bendDiameterChangeBefore/2,
-            abs(bendPipeOuterDiameter - end1[iOuterEndDiameter])/2)
+            abs(bendPipeOuterDiameter - end1[iInterfaceOuterDiameter])/2)
         : bendTotalDiameterChange == 0
           ? 0
           : transitionLength * bendDiameterChangeBefore / bendTotalDiameterChange;
       bendTaperLengthAfter = transitionLength == 0
         ? max(
             bendDiameterChangeAfter/2,
-            abs(end2[iOuterEndDiameter] - bendPipeOuterDiameter)/2)
+            abs(end2[iInterfaceOuterDiameter] - bendPipeOuterDiameter)/2)
         : bendTotalDiameterChange == 0
           ? 0
           : transitionLength * bendDiameterChangeAfter / bendTotalDiameterChange;
@@ -913,10 +994,10 @@ module HoseAdapter(
 
       //((end2[iInnerStartDiameter] + connector1WallThickness)/ sin(_transitionAngle / 2)/2)/ sin(_transitionAngle) + transitionBendRadius
       //For organic bend only
-      taperedAverageDiameter = (max(end1[iOuterEndDiameter],end2[iOuterStartDiameter])*2 + min(end1[iOuterEndDiameter],end2[iOuterStartDiameter]))/3;
+      taperedAverageDiameter = (max(end1[iInterfaceOuterDiameter],end2[iOuterStartDiameter])*2 + min(end1[iInterfaceOuterDiameter],end2[iOuterStartDiameter]))/3;
 
       hoseSpacer = end2[iWallThickness];
-      shapeOverlap = ((end1[iOuterEndDiameter]/2-hoseSpacer)-(cos(_transitionAngle)*end2[iOuterEndDiameter]))/sin(_transitionAngle);
+      shapeOverlap = ((end1[iInterfaceOuterDiameter]/2-hoseSpacer)-(cos(_transitionAngle)*end2[iInterfaceOuterDiameter]))/sin(_transitionAngle);
       lengthInHull = _transitionStyle == "hull"
         ? (shapeOverlap > 0 ? 0 : shapeOverlap * -1) + _transitionLength
         : 0;
@@ -925,8 +1006,8 @@ module HoseAdapter(
       //Push end horizontially out from verticle center line
       edgeOffset = _transitionStyle == "hull"
         ? (shapeOverlap > 50
-          ? (end1[iOuterEndDiameter] - end2[iOuterEndDiameter])/2-shapeOverlap/2 + transitionHullyOffset
-          : (end1[iOuterEndDiameter] - end2[iOuterEndDiameter])/2 + transitionHullyOffset) * cos(_transitionAngle)
+          ? (end1[iInterfaceOuterDiameter] - end2[iInterfaceOuterDiameter])/2-shapeOverlap/2 + transitionHullyOffset
+          : (end1[iInterfaceOuterDiameter] - end2[iInterfaceOuterDiameter])/2 + transitionHullyOffset) * cos(_transitionAngle)
         : 0;
 
      function bend_radius(transitionAngle, transitionBendRadius, end1OuterEndDiameter, end2OuterEndDiameter, taperedAverageDiameter) =
@@ -951,8 +1032,8 @@ module HoseAdapter(
       bendRadius = bend_radius(
         transitionAngle=_transitionAngle,
         transitionBendRadius=transitionBendRadius,
-        end1OuterEndDiameter=end1[iOuterEndDiameter],
-        end2OuterEndDiameter=end2[iOuterEndDiameter],
+        end1OuterEndDiameter=end1[iInterfaceOuterDiameter],
+        end2OuterEndDiameter=end2[iInterfaceOuterDiameter],
         taperedAverageDiameter=taperedAverageDiameter);
 
   if(drawAlignmentRing == "end1" || drawAlignmentRing == "end2")
@@ -976,7 +1057,7 @@ module HoseAdapter(
       union()
       {
         //End1
-        translate([0, 0, endConnector1])
+        translate([0, 0, end1[iLength]])
         mirror ([0,0,1])
         adapter(
           con = end1,
@@ -986,22 +1067,32 @@ module HoseAdapter(
           showCaliper = showCaliper,
           help = help);
 
-        translate([0, 0, endConnector1])
+        let(active_end = end1)
+        translate([0, 0, active_end[iLength]])
         transitionExtension(
           connector = 1,
-          innerDiameter = end1[iInnerEndDiameter],
-          wallThickness = end1[iWallThickness],
-          length = end1[iExtensionLength],
-          gridSize = end1[iExtensionGridSize],
-          gridWallThickness = end1[iExtensionGridWallThickness],
-          txt = end1[iExtensionText],
-          txtSize=end1[iExtensionTextSize],
-          transitionColor = getColor(extensionColor, DefaultTransitionColor),
+          connectorMeasurement = active_end[iMeasurement],
+          innerDiameter = active_end[iInnerEndDiameter],
+          exitDiameter = active_end[iInterfaceInnerDiameter],
+          taperLength = active_end[iExtensionTaperLength],
+          wallThickness = active_end[iWallThickness],
+          length = active_end[iExtensionLength],
+          stopLength = active_end[iExtensionStopLength],
+          stopWidth = active_end[iExtensionStopThickness],
+          stopSymmetrical = active_end[iExtensionStopSymmetrical],
+          gridSize = active_end[iExtensionGridSize],
+          gridWallThickness = active_end[iExtensionGridWallThickness],
+          txt = active_end[iExtensionText],
+          txtSize=active_end[iExtensionTextSize],
+          extensionSlipRing=active_end[iExtensionSlipRing],
+          extensionSlipRingWidth=active_end[iExtensionSlipRingWidth],
+          transitionColor = getColor(extensionColor, DefaultEnd1ExtensionColor),
           debug = sliceDebug,
           showCaliper = showCaliper,
           help = help);
 
-        translate([0, 0, endConnector1 + end1[iExtensionLength]])
+        echo("end1[iInterfaceLength]", end1_iInterfaceLength=end1[iInterfaceLength], _transitionLength=_transitionLength, end1_iInterfaceInnerDiameter=end1[iInterfaceInnerDiameter], end1_iInterfaceWallThickness=end1[iInterfaceWallThickness]);
+        translate([0, 0, end1[iInterfaceLength]])
         transition(
           style = _transitionStyle,
           length = _transitionLength,
@@ -1009,12 +1100,12 @@ module HoseAdapter(
           bendTaperLengthAfter = bendTaperLengthAfter,
           bendPipeDiameter = bendPipeDiameter,
           bendPipeWallThickness = bendPipeWallThickness,
-          connector1InnerEndDiameter = end1[iInnerEndDiameter],
-          connector2InnerStartDiameter = end2[iInnerEndDiameter],
-          connector3InnerStartDiameter = getConnector3Setting(transitionHullCenter, end1, end2, end3)[iInnerEndDiameter],
-          connector1WallThickness = end1[iWallThickness],
-          connector2WallThickness = end2[iWallThickness],
-          connector3WallThickness = getConnector3Setting(transitionHullCenter, end1, end2, end3)[iWallThickness],
+          connector1InnerEndDiameter = end1[iInterfaceInnerDiameter],
+          connector2InnerStartDiameter = end2[iInterfaceInnerDiameter],
+          connector3InnerStartDiameter = getConnector3Setting(transitionHullCenter, end1, end2, end3)[iInterfaceInnerDiameter],
+          connector1WallThickness = end1[iInterfaceWallThickness],
+          connector2WallThickness = end2[iInterfaceWallThickness],
+          connector3WallThickness = getConnector3Setting(transitionHullCenter, end1, end2, end3)[iInterfaceWallThickness],
           bendRadius = bendRadius,
           angle = _transitionAngle,
           baseType = transitionBaseType,
@@ -1040,21 +1131,21 @@ module HoseAdapter(
         if(end2[iLength] > 0)
         {
           taperBeforeBend = _transitionStyle == "bend+taper"
-            && bendPipeDiameter != end1[iInnerEndDiameter];
+            && bendPipeDiameter != end1[iInterfaceInnerDiameter];
           taperAfterBend = _transitionStyle == "bend+taper"
-            && bendPipeDiameter != end2[iInnerEndDiameter];
+            && bendPipeDiameter != end2[iInterfaceInnerDiameter];
           postRotation = [
             ((_transitionStyle == "taper+bend") ? transitionOffset.x
-              : _transitionStyle == "hull" ? -end1[iOuterEndDiameter]/2
+              : _transitionStyle == "hull" ? -end1[iInterfaceOuterDiameter]/2
               : 0) - bendRadius,
             ((_transitionStyle == "taper+bend") ? transitionOffset.y : 0),
             ((_transitionStyle == "taper+bend" || _transitionStyle == "flat" || _transitionStyle == "none") ? _transitionLength
               : _transitionStyle == "hull" ? 0
-              : 0) + endConnector1 + end1[iExtensionLength]];
+              : 0) + end1[iInterfaceLength]];
 
           preRotation = [
             ((_transitionStyle == "bend+taper") ? transitionOffset.x
-              : _transitionStyle == "hull" ? end1[iOuterEndDiameter]/2-edgeOffset
+              : _transitionStyle == "hull" ? end1[iInterfaceOuterDiameter]/2-edgeOffset
               : 0) + bendRadius,
             ((_transitionStyle == "bend+taper") ? transitionOffset.y : 0),
             ((_transitionStyle == "bend+taper") ? _transitionLength
@@ -1068,7 +1159,7 @@ module HoseAdapter(
             if(sliceDebug == false || rotation ==0)
             rotate([0, 0, rotation*multiConnectorAngle])
             if(_transitionStyle == "bend+taper")
-              translate([0, 0, endConnector1 + end1[iExtensionLength]])
+              translate([0, 0, end1[iInterfaceLength]])
               translate([0, 0, bendTaperLengthBefore])
               translate([-bendRadius, 0, 0])
               rotate([0, -_transitionAngle, 0])
@@ -1077,24 +1168,33 @@ module HoseAdapter(
                 taperAfterBend ? transitionOffset.y : 0,
                 bendTaperLengthAfter])
               union(){
-                translate([0, 0, end2[iExtensionLength]])
+                let(active_end = end2)
+                translate([0, 0, active_end[iExtensionTotalLength]])
                 mirror([0,0,1])
                 mirror([0,1,0])
                 transitionExtension(
                   connector = 2,
-                  innerDiameter = end2[iInnerStartDiameter],
-                  wallThickness = end2[iWallThickness],
-                  length = end2[iExtensionLength],
-                  gridSize = end2[iExtensionGridSize],
-                  gridWallThickness = end2[iExtensionGridWallThickness],
-                  txt = end2[iExtensionText],
-                  txtSize=end2[iExtensionTextSize],
-                  transitionColor = getColor(extensionColor, DefaultTransitionColor),
+                  connectorMeasurement = active_end[iMeasurement],
+                  innerDiameter = active_end[iInnerEndDiameter],
+                  exitDiameter = active_end[iInterfaceInnerDiameter],
+                  taperLength = active_end[iExtensionTaperLength],
+                  wallThickness = active_end[iWallThickness],
+                  length = active_end[iExtensionLength],
+                  stopLength = active_end[iExtensionStopLength],
+                  stopWidth = active_end[iExtensionStopThickness],
+                  stopSymmetrical = active_end[iExtensionStopSymmetrical],
+                  gridSize = active_end[iExtensionGridSize],
+                  gridWallThickness = active_end[iExtensionGridWallThickness],
+                  txt = active_end[iExtensionText],
+                  txtSize=active_end[iExtensionTextSize],
+                  extensionSlipRing=active_end[iExtensionSlipRing],
+                  extensionSlipRingWidth=active_end[iExtensionSlipRingWidth],
+                  transitionColor = getColor(extensionColor, DefaultEnd2ExtensionColor),
                   debug = sliceDebug,
                   showCaliper = showCaliper,
                   help = help);
 
-                translate([0, 0, end2[iExtensionLength]])
+                translate([0, 0, end2[iExtensionTotalLength]])
                 adapter(
                   con = end2,
                   connectorPos=2,
@@ -1108,24 +1208,33 @@ module HoseAdapter(
               rotate([0, -_transitionAngle, 0])
               translate(preRotation)
             union(){
-              translate([0, 0, end2[iExtensionLength]])
+              let(active_end = end2)
+              translate([0, 0, active_end[iExtensionTotalLength]])
               mirror([0,0,1])
               mirror([0,1,0])
               transitionExtension(
                 connector = 2,
-                innerDiameter = end2[iInnerStartDiameter],
-                wallThickness = end2[iWallThickness],
-                length = end2[iExtensionLength],
-                gridSize = end2[iExtensionGridSize],
-                gridWallThickness = end2[iExtensionGridWallThickness],
-                txt = end2[iExtensionText],
-                txtSize=end2[iExtensionTextSize],
-                transitionColor = getColor(extensionColor, DefaultTransitionColor),
+                connectorMeasurement = active_end[iMeasurement],
+                innerDiameter = active_end[iInnerEndDiameter],
+                exitDiameter = active_end[iInterfaceInnerDiameter],
+                taperLength = active_end[iExtensionTaperLength],
+                wallThickness = active_end[iWallThickness],
+                length = active_end[iExtensionLength],
+                stopLength = active_end[iExtensionStopLength],
+                stopWidth = active_end[iExtensionStopThickness],
+                stopSymmetrical = active_end[iExtensionStopSymmetrical],
+                gridSize = active_end[iExtensionGridSize],
+                gridWallThickness = active_end[iExtensionGridWallThickness],
+                txt = active_end[iExtensionText],
+                txtSize=active_end[iExtensionTextSize],
+                extensionSlipRing=active_end[iExtensionSlipRing],
+                extensionSlipRingWidth=active_end[iExtensionSlipRingWidth],
+                transitionColor = getColor(extensionColor, DefaultEnd2ExtensionColor),
                 debug = sliceDebug,
                 showCaliper = showCaliper,
                 help = help);
 
-              translate([0, 0, end2[iExtensionLength]])
+              translate([0, 0, end2[iExtensionTotalLength]])
               adapter(
                 con = end2,
                 connectorPos=2,
@@ -1138,21 +1247,30 @@ module HoseAdapter(
 
           if(_transitionStyle == "hull" && transitionHullCenter != "disabled")
           {
-            translate([0, 0, endConnector1+end1[iExtensionLength]+end3[iStopLength]+transitionCenterHeight+transitionHullCenterLength])
+            translate([0, 0, end1[iInterfaceLength] + transitionCenterHeight + transitionHullCenterLength])
               union(){
-                translate([0, 0, end2[iExtensionLength]])
+                let(active_end = end3)
+                translate([0, 0, active_end[iExtensionLength]])
                 mirror([0,0,1])
                 mirror([0,1,0])
                 transitionExtension(
-                  connector = 2,
-                  innerDiameter = end3[iInnerStartDiameter],
-                  wallThickness = end3[iWallThickness],
-                  length = end3[iExtensionLength],
-                  gridSize = end3[iExtensionGridSize],
-                  gridWallThickness = end3[iExtensionGridWallThickness],
-                  txt = end3[iExtensionText],
-                  txtSize=end3[iExtensionTextSize],
-                  transitionColor = getColor(extensionColor, DefaultTransitionColor),
+                  connector = 3,
+                  connectorMeasurement = active_end[iMeasurement],
+                  innerDiameter = active_end[iInnerEndDiameter],
+                  exitDiameter = active_end[iInterfaceInnerDiameter],
+                  taperLength = active_end[iExtensionTaperLength],
+                  wallThickness = active_end[iWallThickness],
+                  length = active_end[iExtensionLength],
+                  stopLength = active_end[iExtensionStopLength],
+                  stopWidth = active_end[iExtensionStopThickness],
+                  stopSymmetrical = active_end[iExtensionStopSymmetrical],
+                  gridSize = active_end[iExtensionGridSize],
+                  gridWallThickness = active_end[iExtensionGridWallThickness],
+                  txt = active_end[iExtensionText],
+                  txtSize=active_end[iExtensionTextSize],
+                  extensionSlipRing=active_end[iExtensionSlipRing],
+                  extensionSlipRingWidth=active_end[iExtensionSlipRingWidth],
+                  transitionColor = getColor(extensionColor, DefaultEnd3ExtensionColor),
                   debug = sliceDebug,
                   showCaliper = showCaliper,
                   help = help);
