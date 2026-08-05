@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-08-04 17:51
-//Content hash 5CF0E136ED825FCB87B063B3B63F5E702A9549F3C02108714E2667CDEEC038BD
+//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-08-06 00:31
+//Content hash 1434239895FF766938658C7EAED72E18B2441E5C12C9166834C89EA8244B3AD7
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -44,6 +44,12 @@ End1_Extension_Text = "asd-\u0020-asd";
 End1_Extension_Text_Size = 0;
 End1_Extension_SlipRing= "disabled"; //[disabled, notaper: non tapered, inner, outer]
 End1_Extension_SlipRing_Width = 5;
+//Add breakaway supports to the slip ring gap.
+End1_Extension_SlipRing_Support = "disabled"; //[disabled, enabled, internal, external]
+//Diameter of the breakaway supports.
+End1_Extension_SlipRing_Support_Size = 0.2; //0.1
+//Approximate spacing between supports around the selected opening.
+End1_Extension_SlipRing_Support_Spacing = 5; //0.1
 //Thickness of hose stop
 End1_Extension_StopThickness = 0;  //1
 //Length of hose stop
@@ -181,6 +187,12 @@ End2_Extension_Text = "";
 End2_Extension_Text_Size = 0;
 End2_Extension_SlipRing= "disabled"; //["disabled", "notaper": non tapered, "inner", "outer"]
 End2_Extension_SlipRing_Width = 5;
+//Add breakaway supports to the slip ring gap.
+End2_Extension_SlipRing_Support = "disabled"; //[disabled, enabled, internal, external]
+//Diameter of the breakaway supports.
+End2_Extension_SlipRing_Support_Size = 0.2; //0.1
+//Approximate spacing between supports around the selected opening.
+End2_Extension_SlipRing_Support_Spacing = 5; //0.1
 //Thickness of hose stop
 End2_Extension_StopThickness = 0;  //1
 //Length of hose stop
@@ -285,6 +297,12 @@ End3_Extension_Text = "";
 End3_Extension_Text_Size = 0;
 End3_Extension_SlipRing= "disabled"; //[disabled, notaper: non tapered, inner, outer]
 End3_Extension_SlipRing_Width = 5;
+//Add breakaway supports to the slip ring gap.
+End3_Extension_SlipRing_Support = "disabled"; //[disabled, enabled, internal, external]
+//Diameter of the breakaway supports.
+End3_Extension_SlipRing_Support_Size = 0.2; //0.1
+//Approximate spacing between supports around the selected opening.
+End3_Extension_SlipRing_Support_Spacing = 5; //0.1
 //Thickness of hose stop
 End3_Extension_StopThickness = 0;  //1
 //Length of hose stop
@@ -794,6 +812,9 @@ module transitionExtension(
   includeHook = 0,
   extensionSlipRing="disabled",
   extensionSlipRingWidth=5,
+  extensionSlipRingSupport="disabled",
+  extensionSlipRingSupportSize=0.2,
+  extensionSlipRingSupportSpacing=5,
   transitionColor = ["LightGreen", 1],
   debug = false,
   showCaliper=false,
@@ -862,7 +883,10 @@ module transitionExtension(
             ring_width = extensionSlipRingWidth,
             slip_clearance = 0.3,
             rounded_clearance = true,
-            taper = extensionSlipRing);
+            taper = extensionSlipRing,
+            internal_support = extensionSlipRingSupport,
+            internal_support_size = extensionSlipRingSupportSize,
+            internal_support_spacing = extensionSlipRingSupportSpacing);
 
           if(spliRingPreTaper > 0)
             translate([0, 0, length + stopLength])
@@ -883,7 +907,7 @@ module transitionExtension(
             wallThickness = wallThickness);
 
         if(includeHook == 1){
-          hootLength = min(15, length + stopLength);
+          hootLength = max(15, length + stopLength);
           hookSize = wallThickness*2;
           intersection(){
             difference(){
@@ -1492,6 +1516,9 @@ module HoseAdapter(
           txtSize=active_end[iExtensionTextSize],
           extensionSlipRing=active_end[iExtensionSlipRing],
           extensionSlipRingWidth=active_end[iExtensionSlipRingWidth],
+          extensionSlipRingSupport=active_end[iExtensionSlipRingSupport],
+          extensionSlipRingSupportSize=active_end[iExtensionSlipRingSupportSize],
+          extensionSlipRingSupportSpacing=active_end[iExtensionSlipRingSupportSpacing],
           transitionColor = getColor(extensionColor, DefaultEnd1ExtensionColor),
           debug = sliceDebug,
           showCaliper = showCaliper,
@@ -1595,6 +1622,9 @@ module HoseAdapter(
                   txtSize=active_end[iExtensionTextSize],
                   extensionSlipRing=active_end[iExtensionSlipRing],
                   extensionSlipRingWidth=active_end[iExtensionSlipRingWidth],
+                  extensionSlipRingSupport=active_end[iExtensionSlipRingSupport],
+                  extensionSlipRingSupportSize=active_end[iExtensionSlipRingSupportSize],
+                  extensionSlipRingSupportSpacing=active_end[iExtensionSlipRingSupportSpacing],
                   transitionColor = getColor(extensionColor, DefaultEnd2ExtensionColor),
                   debug = sliceDebug,
                   showCaliper = showCaliper,
@@ -1635,6 +1665,9 @@ module HoseAdapter(
                 txtSize=active_end[iExtensionTextSize],
                 extensionSlipRing=active_end[iExtensionSlipRing],
                 extensionSlipRingWidth=active_end[iExtensionSlipRingWidth],
+                extensionSlipRingSupport=active_end[iExtensionSlipRingSupport],
+                extensionSlipRingSupportSize=active_end[iExtensionSlipRingSupportSize],
+                extensionSlipRingSupportSpacing=active_end[iExtensionSlipRingSupportSpacing],
                 transitionColor = getColor(extensionColor, DefaultEnd2ExtensionColor),
                 debug = sliceDebug,
                 showCaliper = showCaliper,
@@ -1676,6 +1709,9 @@ module HoseAdapter(
                   txtSize=active_end[iExtensionTextSize],
                   extensionSlipRing=active_end[iExtensionSlipRing],
                   extensionSlipRingWidth=active_end[iExtensionSlipRingWidth],
+                  extensionSlipRingSupport=active_end[iExtensionSlipRingSupport],
+                  extensionSlipRingSupportSize=active_end[iExtensionSlipRingSupportSize],
+                  extensionSlipRingSupportSpacing=active_end[iExtensionSlipRingSupportSpacing],
                   transitionColor = getColor(extensionColor, DefaultEnd3ExtensionColor),
                   debug = sliceDebug,
                   showCaliper = showCaliper,
@@ -4926,10 +4962,19 @@ function calculate_slipring_size(
     delta_diameter =
       slipring == "inner" ? -width :
       slipring == "outer" ? width : 0,
-    result = [size, start_wall_thickness, end_wall_thickness, delta_diameter]
+    unit_dimension = width / (4 * (1 + sqrt(2))),
+    unit_angled_dimension = unit_dimension * sqrt(2),
+    result = [size, start_wall_thickness, end_wall_thickness, delta_diameter, unit_dimension, unit_angled_dimension]
 )
   echo("calculate_slipring_size", result = result)
   result ;
+
+function slipring_dimension_from_width(width) = width / (4 * (1 + sqrt(2)));
+
+function slipring_inner_radius_offset(width, taper) =
+  taper == "inner"
+    ? slipring_dimension_from_width(width) * (2 + 2 * sqrt(2)) - width
+    : 0;
 
 module slipring_profile_part_a(points) {
   polygon(points);
@@ -5057,15 +5102,46 @@ module slipring(
   ring_width = 5,
   slip_clearance = 0.1,
   rounded_clearance = true,
-  taper = "inner"
+  taper = "inner",
+  internal_support = "disabled", //disabled, enabled, internal, external
+  internal_support_size = 0.2,
+  internal_support_spacing = 5
 ){
-  rotate_extrude()
-  translate([diamater/2,0])
-  slipring_profile(
-    width = ring_width,
-    tolerance = slip_clearance,
-    rounded_clearance = rounded_clearance,
-    taper = taper);
+  assert(internal_support == "disabled" || internal_support == "enabled" || internal_support == "internal" || internal_support == "external",
+    "internal_support must be 'disabled', 'enabled', 'internal', or 'external'");
+  assert(is_num(internal_support_size) && internal_support_size >= 0,
+    "internal_support_size must be a non-negative number");
+  assert(is_num(internal_support_spacing) && internal_support_spacing > 0,
+    "internal_support_spacing must be greater than 0");
+
+  slipring_dimentions = calculate_slipring_size(width=ring_width, slipring=taper);
+  profile_height = slipring_dimentions[0].y;
+  inner_radius = diamater/2 + slipring_inner_radius_offset(ring_width, taper);
+  outer_radius = inner_radius + ring_width;
+  internal_support_count = max(1, round(2 * PI * inner_radius / internal_support_spacing));
+  external_support_count = max(1, round(2 * PI * outer_radius / internal_support_spacing));
+
+  union(){
+    rotate_extrude()
+    translate([diamater/2,0])
+    slipring_profile(
+      width = ring_width,
+      tolerance = slip_clearance,
+      rounded_clearance = rounded_clearance,
+      taper = taper);
+
+    if(internal_support_size > 0 && (internal_support == "enabled" || internal_support == "internal"))
+      for(index = [0:internal_support_count-1])
+        rotate([0, 0, index * 360/internal_support_count])
+        translate([inner_radius + internal_support_size/2, 0, (taper == "inner" ? profile_height-slipring_dimentions[5]*2 : slipring_dimentions[5]*2)-slip_clearance/2])
+        cylinder(h=slip_clearance, d=internal_support_size, $fn = 6);
+
+    if(internal_support_size > 0 && (internal_support == "enabled" || internal_support == "external"))
+      for(index = [0:external_support_count-1])
+        rotate([0, 0, index * 360/external_support_count])
+        translate([outer_radius - internal_support_size/2, 0, (taper == "inner" ? slipring_dimentions[5]*2 : profile_height-slipring_dimentions[5]*2)-slip_clearance/2])
+        cylinder(h=slip_clearance, d=internal_support_size, $fn = 6);
+  }
 }
 //CombinedEnd from path modules_slipring.scad
 //Combined from path connectors.scad
@@ -5144,7 +5220,10 @@ iExtensionText=iExtensionGridWallThickness+1;
 iExtensionTextSize=iExtensionText+1;
 iExtensionSlipRing=iExtensionTextSize+1;
 iExtensionSlipRingWidth=iExtensionSlipRing+1;
-iExtensionStopThickness=iExtensionSlipRingWidth+1;
+iExtensionSlipRingSupport=iExtensionSlipRingWidth+1;
+iExtensionSlipRingSupportSize=iExtensionSlipRingSupport+1;
+iExtensionSlipRingSupportSpacing=iExtensionSlipRingSupportSize+1;
+iExtensionStopThickness=iExtensionSlipRingSupportSpacing+1;
 iExtensionStopLength=iExtensionStopThickness+1;
 iExtensionStopSymmetrical=iExtensionStopLength+1;
 iAlignmentRing=iExtensionStopSymmetrical+1;
@@ -5228,6 +5307,9 @@ module echoConnector(name, end, help){
     "iExtensionTextSize", end[iExtensionTextSize],
     "iExtensionSlipRing", end[iExtensionSlipRing],
     "iExtensionSlipRingWidth", end[iExtensionSlipRingWidth],
+    "iExtensionSlipRingSupport", end[iExtensionSlipRingSupport],
+    "iExtensionSlipRingSupportSize", end[iExtensionSlipRingSupportSize],
+    "iExtensionSlipRingSupportSpacing", end[iExtensionSlipRingSupportSpacing],
     "iExtensionStopThickness", end[iExtensionStopThickness],
     "iExtensionStopLength", end[iExtensionStopLength],
     "iExtensionStopSymmetrical", end[iExtensionStopSymmetrical],
@@ -5314,6 +5396,9 @@ function UserConnectorSettings(
   extensionTextSize = 0,
   extensionSlipRing="disabled",
   extensionSlipRingWidth=5,
+  extensionSlipRingSupport="disabled",
+  extensionSlipRingSupportSize=0.2,
+  extensionSlipRingSupportSpacing=5,
   extensionStopThickness=0,
   extensionStopLength=0,
   extensionStopSymmetrical=false
@@ -5367,6 +5452,9 @@ function UserConnectorSettings(
     extensionTextSize,
     extensionSlipRing,
     extensionSlipRingWidth,
+    extensionSlipRingSupport,
+    extensionSlipRingSupportSize,
+    extensionSlipRingSupportSpacing,
     extensionStopThickness,
     extensionStopLength,
     extensionStopSymmetrical,
@@ -5428,6 +5516,9 @@ function ValidateUserConnectorSettings(userSettings) =
   assert(is_num(userSettings[iExtensionGridWallThickness]) && userSettings[iExtensionGridWallThickness] >= 0, str("extensionGridWallThickness must be a non-negative number:", userSettings[iExtensionGridWallThickness]))
   assert(is_string(userSettings[iExtensionText]), str("extensionText must be a string:", userSettings[iExtensionText]))
   assert(is_num(userSettings[iExtensionTextSize]) && userSettings[iExtensionTextSize] >= 0, str("extensionTextSize must be a non-negative number:", userSettings[iExtensionTextSize]))
+  assert(is_string(userSettings[iExtensionSlipRingSupport]) && (userSettings[iExtensionSlipRingSupport] == "disabled" || userSettings[iExtensionSlipRingSupport] == "enabled" || userSettings[iExtensionSlipRingSupport] == "internal" || userSettings[iExtensionSlipRingSupport] == "external"), str("extensionSlipRingSupport must be 'disabled', 'enabled', 'internal', or 'external':", userSettings[iExtensionSlipRingSupport]))
+  assert(is_num(userSettings[iExtensionSlipRingSupportSize]) && userSettings[iExtensionSlipRingSupportSize] >= 0, str("extensionSlipRingSupportSize must be a non-negative number:", userSettings[iExtensionSlipRingSupportSize]))
+  assert(is_num(userSettings[iExtensionSlipRingSupportSpacing]) && userSettings[iExtensionSlipRingSupportSpacing] > 0, str("extensionSlipRingSupportSpacing must be greater than 0:", userSettings[iExtensionSlipRingSupportSpacing]))
   assert(is_num(userSettings[iExtensionStopThickness]) && userSettings[iExtensionStopThickness] >= 0, str("stopThickness must be a non-negative number:", userSettings[iExtensionStopThickness]))
   assert(is_num(userSettings[iExtensionStopLength]) && userSettings[iExtensionStopLength] >= 0, str("stopLength must be a non-negative number:", userSettings[iExtensionStopLength]))
   assert(is_bool(userSettings[iExtensionStopSymmetrical]), str("StopSymmetrical must be a boolean:", userSettings[iExtensionStopSymmetrical]))
@@ -5583,6 +5674,9 @@ function getConnectorSettings(
         userSettings[iExtensionTextSize],
         userSettings[iExtensionSlipRing],
         userSettings[iExtensionSlipRingWidth],
+        userSettings[iExtensionSlipRingSupport],
+        userSettings[iExtensionSlipRingSupportSize],
+        userSettings[iExtensionSlipRingSupportSpacing],
         extStopThickness,
         extStopLength,
         userSettings[iExtensionStopSymmetrical],
@@ -9803,6 +9897,9 @@ HoseAdapter(
     extensionTextSize=End1_Extension_Text_Size,
     extensionSlipRing=End1_Extension_SlipRing,
     extensionSlipRingWidth=End1_Extension_SlipRing_Width,
+    extensionSlipRingSupport=End1_Extension_SlipRing_Support,
+    extensionSlipRingSupportSize=End1_Extension_SlipRing_Support_Size,
+    extensionSlipRingSupportSpacing=End1_Extension_SlipRing_Support_Spacing,
     extensionStopThickness=End1_Extension_StopThickness,
     extensionStopLength=End1_Extension_StopLength,
     extensionStopSymmetrical=End1_Extension_Stop_Symmetrical
@@ -9859,6 +9956,9 @@ HoseAdapter(
     extensionTextSize=End2_Extension_Text_Size,
     extensionSlipRing=End2_Extension_SlipRing,
     extensionSlipRingWidth=End2_Extension_SlipRing_Width,
+    extensionSlipRingSupport=End2_Extension_SlipRing_Support,
+    extensionSlipRingSupportSize=End2_Extension_SlipRing_Support_Size,
+    extensionSlipRingSupportSpacing=End2_Extension_SlipRing_Support_Spacing,
     extensionStopThickness=End2_Extension_StopThickness,
     extensionStopLength=End2_Extension_StopLength,
     extensionStopSymmetrical=End2_Extension_Stop_Symmetrical
@@ -9915,6 +10015,9 @@ HoseAdapter(
     extensionTextSize=End3_Extension_Text_Size,
     extensionSlipRing=End3_Extension_SlipRing,
     extensionSlipRingWidth=End3_Extension_SlipRing_Width,
+    extensionSlipRingSupport=End3_Extension_SlipRing_Support,
+    extensionSlipRingSupportSize=End3_Extension_SlipRing_Support_Size,
+    extensionSlipRingSupportSpacing=End3_Extension_SlipRing_Support_Spacing,
     extensionStopThickness=End3_Extension_StopThickness,
     extensionStopLength=End3_Extension_StopLength,
     extensionStopSymmetrical=End3_Extension_Stop_Symmetrical

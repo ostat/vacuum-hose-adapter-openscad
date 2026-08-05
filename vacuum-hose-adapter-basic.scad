@@ -26,6 +26,12 @@ End1_Taper = 1;  //0.1
 /* [Connector 1 - Extension] */
 End1_Extension_SlipRing= "disabled"; //[disabled, notaper: non tapered, inner, outer]
 End1_Extension_SlipRing_Width = 5;
+//Add breakaway supports to the slip ring gap.
+End1_Extension_SlipRing_Support = "disabled"; //[disabled, enabled, internal, external]
+//Diameter of the breakaway supports.
+End1_Extension_SlipRing_Support_Size = 0.2; //0.1
+//Approximate spacing between supports around the selected opening.
+End1_Extension_SlipRing_Support_Spacing = 5; //0.1
 //Thickness of hose stop
 End1_Extension_StopThickness = 0;  //1
 //Length of hose stop
@@ -70,6 +76,12 @@ End2_Taper = 1;  //0.1
 /* [Connector 2 - Extension] */
 End2_Extension_SlipRing= "disabled"; //[disabled, notaper: non tapered, inner, outer]
 End2_Extension_SlipRing_Width = 5;
+//Add breakaway supports to the slip ring gap.
+End2_Extension_SlipRing_Support = "disabled"; //[disabled, enabled, internal, external]
+//Diameter of the breakaway supports.
+End2_Extension_SlipRing_Support_Size = 0.2; //0.1
+//Approximate spacing between supports around the selected opening.
+End2_Extension_SlipRing_Support_Spacing = 5; //0.1
 //Thickness of hose stop
 End2_Extension_StopThickness = 0;  //1
 //Length of hose stop
@@ -127,6 +139,9 @@ HoseAdapter(
     barbsSymmetrical=End1_Barbs_Symmetrical,
     extensionSlipRing=End1_Extension_SlipRing,
     extensionSlipRingWidth=End1_Extension_SlipRing_Width,
+    extensionSlipRingSupport=End1_Extension_SlipRing_Support,
+    extensionSlipRingSupportSize=End1_Extension_SlipRing_Support_Size,
+    extensionSlipRingSupportSpacing=End1_Extension_SlipRing_Support_Spacing,
     extensionStopThickness=End1_Extension_StopThickness,
     extensionStopLength=End1_Extension_StopLength,
     extensionStopSymmetrical=End1_Extension_Stop_Symmetrical),
@@ -144,6 +159,9 @@ HoseAdapter(
     barbsSymmetrical=End2_Barbs_Symmetrical,
     extensionSlipRing=End2_Extension_SlipRing,
     extensionSlipRingWidth=End2_Extension_SlipRing_Width,
+    extensionSlipRingSupport=End2_Extension_SlipRing_Support,
+    extensionSlipRingSupportSize=End2_Extension_SlipRing_Support_Size,
+    extensionSlipRingSupportSpacing=End2_Extension_SlipRing_Support_Spacing,
     extensionStopThickness=End2_Extension_StopThickness,
     extensionStopLength=End2_Extension_StopLength,
     extensionStopSymmetrical=End2_Extension_Stop_Symmetrical),

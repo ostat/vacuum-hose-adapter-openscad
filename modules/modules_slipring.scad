@@ -56,10 +56,19 @@ function calculate_slipring_size(
     delta_diameter =
       slipring == "inner" ? -width :
       slipring == "outer" ? width : 0,
-    result = [size, start_wall_thickness, end_wall_thickness, delta_diameter]
+    unit_dimension = width / (4 * (1 + sqrt(2))),
+    unit_angled_dimension = unit_dimension * sqrt(2),
+    result = [size, start_wall_thickness, end_wall_thickness, delta_diameter, unit_dimension, unit_angled_dimension]
 )
   echo("calculate_slipring_size", result = result)
   result ;
+
+function slipring_dimension_from_width(width) = width / (4 * (1 + sqrt(2)));
+
+function slipring_inner_radius_offset(width, taper) =
+  taper == "inner"
+    ? slipring_dimension_from_width(width) * (2 + 2 * sqrt(2)) - width
+    : 0;
 
 module slipring_profile_part_a(points) {
   polygon(points);
@@ -187,13 +196,44 @@ module slipring(
   ring_width = 5,
   slip_clearance = 0.1,
   rounded_clearance = true,
-  taper = "inner"
+  taper = "inner",
+  internal_support = "disabled", //disabled, enabled, internal, external
+  internal_support_size = 0.2,
+  internal_support_spacing = 5
 ){
-  rotate_extrude()
-  translate([diamater/2,0])
-  slipring_profile(
-    width = ring_width,
-    tolerance = slip_clearance,
-    rounded_clearance = rounded_clearance,
-    taper = taper);
+  assert(internal_support == "disabled" || internal_support == "enabled" || internal_support == "internal" || internal_support == "external",
+    "internal_support must be 'disabled', 'enabled', 'internal', or 'external'");
+  assert(is_num(internal_support_size) && internal_support_size >= 0,
+    "internal_support_size must be a non-negative number");
+  assert(is_num(internal_support_spacing) && internal_support_spacing > 0,
+    "internal_support_spacing must be greater than 0");
+
+  slipring_dimentions = calculate_slipring_size(width=ring_width, slipring=taper);
+  profile_height = slipring_dimentions[0].y;
+  inner_radius = diamater/2 + slipring_inner_radius_offset(ring_width, taper);
+  outer_radius = inner_radius + ring_width;
+  internal_support_count = max(1, round(2 * PI * inner_radius / internal_support_spacing));
+  external_support_count = max(1, round(2 * PI * outer_radius / internal_support_spacing));
+
+  union(){
+    rotate_extrude()
+    translate([diamater/2,0])
+    slipring_profile(
+      width = ring_width,
+      tolerance = slip_clearance,
+      rounded_clearance = rounded_clearance,
+      taper = taper);
+
+    if(internal_support_size > 0 && (internal_support == "enabled" || internal_support == "internal"))
+      for(index = [0:internal_support_count-1])
+        rotate([0, 0, index * 360/internal_support_count])
+        translate([inner_radius + internal_support_size/2, 0, (taper == "inner" ? profile_height-slipring_dimentions[5]*2 : slipring_dimentions[5]*2)-slip_clearance/2])
+        cylinder(h=slip_clearance, d=internal_support_size, $fn = 6);
+
+    if(internal_support_size > 0 && (internal_support == "enabled" || internal_support == "external"))
+      for(index = [0:external_support_count-1])
+        rotate([0, 0, index * 360/external_support_count])
+        translate([outer_radius - internal_support_size/2, 0, (taper == "inner" ? slipring_dimentions[5]*2 : profile_height-slipring_dimentions[5]*2)-slip_clearance/2])
+        cylinder(h=slip_clearance, d=internal_support_size, $fn = 6);
+  }
 }

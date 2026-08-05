@@ -41,6 +41,12 @@ End1_Extension_Text = "asd-\u0020-asd";
 End1_Extension_Text_Size = 0;
 End1_Extension_SlipRing= "disabled"; //[disabled, notaper: non tapered, inner, outer]
 End1_Extension_SlipRing_Width = 5;
+//Add breakaway supports to the slip ring gap.
+End1_Extension_SlipRing_Support = "disabled"; //[disabled, enabled, internal, external]
+//Diameter of the breakaway supports.
+End1_Extension_SlipRing_Support_Size = 0.2; //0.1
+//Approximate spacing between supports around the selected opening.
+End1_Extension_SlipRing_Support_Spacing = 5; //0.1
 //Thickness of hose stop
 End1_Extension_StopThickness = 0;  //1
 //Length of hose stop
@@ -178,6 +184,12 @@ End2_Extension_Text = "";
 End2_Extension_Text_Size = 0;
 End2_Extension_SlipRing= "disabled"; //["disabled", "notaper": non tapered, "inner", "outer"]
 End2_Extension_SlipRing_Width = 5;
+//Add breakaway supports to the slip ring gap.
+End2_Extension_SlipRing_Support = "disabled"; //[disabled, enabled, internal, external]
+//Diameter of the breakaway supports.
+End2_Extension_SlipRing_Support_Size = 0.2; //0.1
+//Approximate spacing between supports around the selected opening.
+End2_Extension_SlipRing_Support_Spacing = 5; //0.1
 //Thickness of hose stop
 End2_Extension_StopThickness = 0;  //1
 //Length of hose stop
@@ -282,6 +294,12 @@ End3_Extension_Text = "";
 End3_Extension_Text_Size = 0;
 End3_Extension_SlipRing= "disabled"; //[disabled, notaper: non tapered, inner, outer]
 End3_Extension_SlipRing_Width = 5;
+//Add breakaway supports to the slip ring gap.
+End3_Extension_SlipRing_Support = "disabled"; //[disabled, enabled, internal, external]
+//Diameter of the breakaway supports.
+End3_Extension_SlipRing_Support_Size = 0.2; //0.1
+//Approximate spacing between supports around the selected opening.
+End3_Extension_SlipRing_Support_Spacing = 5; //0.1
 //Thickness of hose stop
 End3_Extension_StopThickness = 0;  //1
 //Length of hose stop
@@ -445,6 +463,9 @@ HoseAdapter(
     extensionTextSize=End1_Extension_Text_Size,
     extensionSlipRing=End1_Extension_SlipRing,
     extensionSlipRingWidth=End1_Extension_SlipRing_Width,
+    extensionSlipRingSupport=End1_Extension_SlipRing_Support,
+    extensionSlipRingSupportSize=End1_Extension_SlipRing_Support_Size,
+    extensionSlipRingSupportSpacing=End1_Extension_SlipRing_Support_Spacing,
     extensionStopThickness=End1_Extension_StopThickness,
     extensionStopLength=End1_Extension_StopLength,
     extensionStopSymmetrical=End1_Extension_Stop_Symmetrical
@@ -501,6 +522,9 @@ HoseAdapter(
     extensionTextSize=End2_Extension_Text_Size,
     extensionSlipRing=End2_Extension_SlipRing,
     extensionSlipRingWidth=End2_Extension_SlipRing_Width,
+    extensionSlipRingSupport=End2_Extension_SlipRing_Support,
+    extensionSlipRingSupportSize=End2_Extension_SlipRing_Support_Size,
+    extensionSlipRingSupportSpacing=End2_Extension_SlipRing_Support_Spacing,
     extensionStopThickness=End2_Extension_StopThickness,
     extensionStopLength=End2_Extension_StopLength,
     extensionStopSymmetrical=End2_Extension_Stop_Symmetrical
@@ -557,6 +581,9 @@ HoseAdapter(
     extensionTextSize=End3_Extension_Text_Size,
     extensionSlipRing=End3_Extension_SlipRing,
     extensionSlipRingWidth=End3_Extension_SlipRing_Width,
+    extensionSlipRingSupport=End3_Extension_SlipRing_Support,
+    extensionSlipRingSupportSize=End3_Extension_SlipRing_Support_Size,
+    extensionSlipRingSupportSpacing=End3_Extension_SlipRing_Support_Spacing,
     extensionStopThickness=End3_Extension_StopThickness,
     extensionStopLength=End3_Extension_StopLength,
     extensionStopSymmetrical=End3_Extension_Stop_Symmetrical

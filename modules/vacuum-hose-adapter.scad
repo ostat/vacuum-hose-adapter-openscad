@@ -393,6 +393,9 @@ module transitionExtension(
   includeHook = 0,
   extensionSlipRing="disabled",
   extensionSlipRingWidth=5,
+  extensionSlipRingSupport="disabled",
+  extensionSlipRingSupportSize=0.2,
+  extensionSlipRingSupportSpacing=5,
   transitionColor = ["LightGreen", 1],
   debug = false,
   showCaliper=false,
@@ -461,7 +464,10 @@ module transitionExtension(
             ring_width = extensionSlipRingWidth,
             slip_clearance = 0.3,
             rounded_clearance = true,
-            taper = extensionSlipRing);
+            taper = extensionSlipRing,
+            internal_support = extensionSlipRingSupport,
+            internal_support_size = extensionSlipRingSupportSize,
+            internal_support_spacing = extensionSlipRingSupportSpacing);
 
           if(spliRingPreTaper > 0)
             translate([0, 0, length + stopLength])
@@ -482,7 +488,7 @@ module transitionExtension(
             wallThickness = wallThickness);
 
         if(includeHook == 1){
-          hootLength = min(15, length + stopLength);
+          hootLength = max(15, length + stopLength);
           hookSize = wallThickness*2;
           intersection(){
             difference(){
@@ -1091,6 +1097,9 @@ module HoseAdapter(
           txtSize=active_end[iExtensionTextSize],
           extensionSlipRing=active_end[iExtensionSlipRing],
           extensionSlipRingWidth=active_end[iExtensionSlipRingWidth],
+          extensionSlipRingSupport=active_end[iExtensionSlipRingSupport],
+          extensionSlipRingSupportSize=active_end[iExtensionSlipRingSupportSize],
+          extensionSlipRingSupportSpacing=active_end[iExtensionSlipRingSupportSpacing],
           transitionColor = getColor(extensionColor, DefaultEnd1ExtensionColor),
           debug = sliceDebug,
           showCaliper = showCaliper,
@@ -1194,6 +1203,9 @@ module HoseAdapter(
                   txtSize=active_end[iExtensionTextSize],
                   extensionSlipRing=active_end[iExtensionSlipRing],
                   extensionSlipRingWidth=active_end[iExtensionSlipRingWidth],
+                  extensionSlipRingSupport=active_end[iExtensionSlipRingSupport],
+                  extensionSlipRingSupportSize=active_end[iExtensionSlipRingSupportSize],
+                  extensionSlipRingSupportSpacing=active_end[iExtensionSlipRingSupportSpacing],
                   transitionColor = getColor(extensionColor, DefaultEnd2ExtensionColor),
                   debug = sliceDebug,
                   showCaliper = showCaliper,
@@ -1234,6 +1246,9 @@ module HoseAdapter(
                 txtSize=active_end[iExtensionTextSize],
                 extensionSlipRing=active_end[iExtensionSlipRing],
                 extensionSlipRingWidth=active_end[iExtensionSlipRingWidth],
+                extensionSlipRingSupport=active_end[iExtensionSlipRingSupport],
+                extensionSlipRingSupportSize=active_end[iExtensionSlipRingSupportSize],
+                extensionSlipRingSupportSpacing=active_end[iExtensionSlipRingSupportSpacing],
                 transitionColor = getColor(extensionColor, DefaultEnd2ExtensionColor),
                 debug = sliceDebug,
                 showCaliper = showCaliper,
@@ -1275,6 +1290,9 @@ module HoseAdapter(
                   txtSize=active_end[iExtensionTextSize],
                   extensionSlipRing=active_end[iExtensionSlipRing],
                   extensionSlipRingWidth=active_end[iExtensionSlipRingWidth],
+                  extensionSlipRingSupport=active_end[iExtensionSlipRingSupport],
+                  extensionSlipRingSupportSize=active_end[iExtensionSlipRingSupportSize],
+                  extensionSlipRingSupportSpacing=active_end[iExtensionSlipRingSupportSpacing],
                   transitionColor = getColor(extensionColor, DefaultEnd3ExtensionColor),
                   debug = sliceDebug,
                   showCaliper = showCaliper,

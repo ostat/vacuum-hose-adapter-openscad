@@ -46,7 +46,10 @@ iExtensionText=iExtensionGridWallThickness+1;
 iExtensionTextSize=iExtensionText+1;
 iExtensionSlipRing=iExtensionTextSize+1;
 iExtensionSlipRingWidth=iExtensionSlipRing+1;
-iExtensionStopThickness=iExtensionSlipRingWidth+1;
+iExtensionSlipRingSupport=iExtensionSlipRingWidth+1;
+iExtensionSlipRingSupportSize=iExtensionSlipRingSupport+1;
+iExtensionSlipRingSupportSpacing=iExtensionSlipRingSupportSize+1;
+iExtensionStopThickness=iExtensionSlipRingSupportSpacing+1;
 iExtensionStopLength=iExtensionStopThickness+1;
 iExtensionStopSymmetrical=iExtensionStopLength+1;
 iAlignmentRing=iExtensionStopSymmetrical+1;
@@ -130,6 +133,9 @@ module echoConnector(name, end, help){
     "iExtensionTextSize", end[iExtensionTextSize],
     "iExtensionSlipRing", end[iExtensionSlipRing],
     "iExtensionSlipRingWidth", end[iExtensionSlipRingWidth],
+    "iExtensionSlipRingSupport", end[iExtensionSlipRingSupport],
+    "iExtensionSlipRingSupportSize", end[iExtensionSlipRingSupportSize],
+    "iExtensionSlipRingSupportSpacing", end[iExtensionSlipRingSupportSpacing],
     "iExtensionStopThickness", end[iExtensionStopThickness],
     "iExtensionStopLength", end[iExtensionStopLength],
     "iExtensionStopSymmetrical", end[iExtensionStopSymmetrical],
@@ -216,6 +222,9 @@ function UserConnectorSettings(
   extensionTextSize = 0,
   extensionSlipRing="disabled",
   extensionSlipRingWidth=5,
+  extensionSlipRingSupport="disabled",
+  extensionSlipRingSupportSize=0.2,
+  extensionSlipRingSupportSpacing=5,
   extensionStopThickness=0,
   extensionStopLength=0,
   extensionStopSymmetrical=false
@@ -269,6 +278,9 @@ function UserConnectorSettings(
     extensionTextSize,
     extensionSlipRing,
     extensionSlipRingWidth,
+    extensionSlipRingSupport,
+    extensionSlipRingSupportSize,
+    extensionSlipRingSupportSpacing,
     extensionStopThickness,
     extensionStopLength,
     extensionStopSymmetrical,
@@ -330,6 +342,9 @@ function ValidateUserConnectorSettings(userSettings) =
   assert(is_num(userSettings[iExtensionGridWallThickness]) && userSettings[iExtensionGridWallThickness] >= 0, str("extensionGridWallThickness must be a non-negative number:", userSettings[iExtensionGridWallThickness]))
   assert(is_string(userSettings[iExtensionText]), str("extensionText must be a string:", userSettings[iExtensionText]))
   assert(is_num(userSettings[iExtensionTextSize]) && userSettings[iExtensionTextSize] >= 0, str("extensionTextSize must be a non-negative number:", userSettings[iExtensionTextSize]))
+  assert(is_string(userSettings[iExtensionSlipRingSupport]) && (userSettings[iExtensionSlipRingSupport] == "disabled" || userSettings[iExtensionSlipRingSupport] == "enabled" || userSettings[iExtensionSlipRingSupport] == "internal" || userSettings[iExtensionSlipRingSupport] == "external"), str("extensionSlipRingSupport must be 'disabled', 'enabled', 'internal', or 'external':", userSettings[iExtensionSlipRingSupport]))
+  assert(is_num(userSettings[iExtensionSlipRingSupportSize]) && userSettings[iExtensionSlipRingSupportSize] >= 0, str("extensionSlipRingSupportSize must be a non-negative number:", userSettings[iExtensionSlipRingSupportSize]))
+  assert(is_num(userSettings[iExtensionSlipRingSupportSpacing]) && userSettings[iExtensionSlipRingSupportSpacing] > 0, str("extensionSlipRingSupportSpacing must be greater than 0:", userSettings[iExtensionSlipRingSupportSpacing]))
   assert(is_num(userSettings[iExtensionStopThickness]) && userSettings[iExtensionStopThickness] >= 0, str("stopThickness must be a non-negative number:", userSettings[iExtensionStopThickness]))
   assert(is_num(userSettings[iExtensionStopLength]) && userSettings[iExtensionStopLength] >= 0, str("stopLength must be a non-negative number:", userSettings[iExtensionStopLength]))
   assert(is_bool(userSettings[iExtensionStopSymmetrical]), str("StopSymmetrical must be a boolean:", userSettings[iExtensionStopSymmetrical]))
@@ -485,6 +500,9 @@ function getConnectorSettings(
         userSettings[iExtensionTextSize],
         userSettings[iExtensionSlipRing],
         userSettings[iExtensionSlipRingWidth],
+        userSettings[iExtensionSlipRingSupport],
+        userSettings[iExtensionSlipRingSupportSize],
+        userSettings[iExtensionSlipRingSupportSpacing],
         extStopThickness,
         extStopLength,
         userSettings[iExtensionStopSymmetrical],
