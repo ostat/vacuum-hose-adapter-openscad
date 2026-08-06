@@ -16,6 +16,8 @@ include <modules/vacuum-hose-adapter.scad>
 End1_Wall_Thickness = 2; //0.01
 //The style of the end
 End1_Style="hose"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, kobalt: Kobalt Saw Dust Outlet, rigid_nxt: Rigid NXT Vac Hose]
+End1_Style="hose"; // [hose: Hose connector, mag: Magnetic Flange, flange: Flange, osvacm:osVAC Male, osvacf:osVAC Female]
+End1_Specialised_Style="disabled"; // [disabled:Disabled, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacf32:osVAC F32,  makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, festoolcleanteclug: Festool Cleantec Lug]
 // Is the measurement the adapter's outside or inside diameter?
 End1_Measurement = "outer"; //[inner, outer]
 // End 1 diameter of the adapter (mm, inch)
@@ -27,13 +29,33 @@ End1_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End1_Taper = 1;  //0.1
 
-/* [Connector 1 - Hose connector] */
+/* [Connector 1 - Extension] */
+//Length of the extension
+End1_Extension_Length = 0;
+//Inside diameter at the extension exit. 0 keeps the connector diameter. The change is tapered at 45 degrees.
+End1_Extension_Exit_Diameter = 0; //0.1
+//Size of the grid in the extension. 0: diameter/6
+End1_Extension_GridSize = 0;  //0.1
+//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
+End1_Extension_GridWallThickness = 0;  //0.1
+End1_Extension_Text = "asd-\u0020-asd";
+End1_Extension_Text_Size = 0;
+End1_Extension_SlipRing= "disabled"; //[disabled, notaper: non tapered, inner, outer]
+End1_Extension_SlipRing_Width = 5;
+//Add breakaway supports to the slip ring gap.
+End1_Extension_SlipRing_Support = "disabled"; //[disabled, enabled, internal, external]
+//Diameter of the breakaway supports.
+End1_Extension_SlipRing_Support_Size = 0.2; //0.1
+//Approximate spacing between supports around the selected opening.
+End1_Extension_SlipRing_Support_Spacing = 5; //0.1
 //Thickness of hose stop
-End1_StopThickness = 0;  //1
+End1_Extension_StopThickness = 0;  //1
 //Length of hose stop
-End1_StopLength = 0;  //1
+End1_Extension_StopLength = 0;  //1
 //Should the stop be tapered both sides. Might easier to print.
-End1_Stop_Symmetrical = false;
+End1_Extension_Stop_Symmetrical = false;
+
+/* [Connector 1 - Hose connector] */
 //Number of barbs
 End1_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
@@ -84,31 +106,26 @@ End1_Magnet_Border = 2;  //0.1
 End1_Magnet_ZOffset = 0;  //0.1
 // Thickness of the magnet flange (mm)
 End1_Magnet_Flange_Thickness = 6;  //0.1
+// Round over the outside edge of the magnetic flange
+End1_Magnet_Flange_Roundover = true;
 // Include a flange alignment ring
 End1_Ring = "no"; //[no: No alignment ring, protruding: protruding ring, recessed: Recessed ring]
 // Magnetic ring Twist lock bolt size (draft setting)
 End1_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitchen insert,"4":M4,"4cnc":M4 with CNC Kitchen insert,"5":M5,"5cnc":M5 with CNC Kitchen insert]
 
-/* [Connector 1 - Extension] */
-//Length of the extension
-End1_Extension_Length = 0;
-//Size of the grid in the extension. 0: diameter/6
-End1_Extension_GridSize = 0;  //0.1
-//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
-End1_Extension_GridWallThickness = 0;  //0.1
-End1_Extension_Text = "asd-\u0020-asd";
-End1_Extension_Text_Size = 0;
-
-
 /* [Transition] */
 // tapered for hose connections, flat for attaching to a device
-Transition_Style = "bend+taper"; //[flat, taper+bend: Taper then bend, bend+taper: Bend then taper, organicbend: Tapered bend, hull: Hull for multiple end count, none: no transition]
+Transition_Style = "bend+taper"; //[flat, bend+taper: Bend and taper, organicbend: Tapered bend, hull: Hull for multiple end count, none: no transition]
 //Length of the transition between the two ends
 Transition_Length = 0;  //1
-// Radius of transition bend (mm)
-Transition_Bend_Radius = 0;  //1
 //Angle of bend through the transition section.
 Transition_Angle = 0;  //1
+// Radius of transition bend (mm)
+Transition_Bend_Radius = 0;  //1
+// Select the bend pipe's inside diameter from the two ends, or enter a custom value
+Transition_Bend_Pipe_Diameter = "larger"; //[larger, smaller, custom]
+// Inside diameter of the bend pipe when custom is selected
+Transition_Custom_Bend_Pipe_Diameter = 40; //0.1
 // offset for the connector, not supported on taperedbend.
 Transition_Offset = [0,0]; // 0.1
 
@@ -143,6 +160,8 @@ Transition_Base_Angle=0;
 //Wall thickness
 End2_Wall_Thickness = 2; //0.01
 End2_Style="hose"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, kobalt: Kobalt Saw Dust Outlet, rigid_nxt: Rigid NXT Vac Hose, none: None]
+End2_Style="hose"; // [hose: Hose connector, mag: Magnetic Flange, flange: Flange, nozzle: Nozzle attachement, osvacm:osVAC Male, osvacf:osVAC Female, none: None]
+End2_Specialised_Style="disabled"; // [disabled:Disabled, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacf32:osVAC F32,  makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, festoolcleanteclug: Festool Cleantec Lug]
 // Is the measurement the adapter's outside or inside diameter?
 End2_Measurement = "outer"; //[inner, outer]
 // End 2 diameter of the adapter (mm, inch)
@@ -154,13 +173,33 @@ End2_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End2_Taper = 1;  //0.1
 
-/*[Connector 2 - Hose connector] */
+/* [Connector 2 - Extension] */
+//Length of the extension
+End2_Extension_Length = 0;
+//Inside diameter at the extension exit. 0 keeps the connector diameter. The change is tapered at 45 degrees.
+End2_Extension_Exit_Diameter = 0; //0.1
+//Size of the grid in the extension. 0: diameter/6
+End2_Extension_GridSize = 0;  //0.1
+//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
+End2_Extension_GridWallThickness = 0;  //0.1
+End2_Extension_Text = "";
+End2_Extension_Text_Size = 0;
+End2_Extension_SlipRing= "disabled"; //["disabled", "notaper": non tapered, "inner", "outer"]
+End2_Extension_SlipRing_Width = 5;
+//Add breakaway supports to the slip ring gap.
+End2_Extension_SlipRing_Support = "disabled"; //[disabled, enabled, internal, external]
+//Diameter of the breakaway supports.
+End2_Extension_SlipRing_Support_Size = 0.2; //0.1
+//Approximate spacing between supports around the selected opening.
+End2_Extension_SlipRing_Support_Spacing = 5; //0.1
 //Thickness of hose stop
-End2_StopThickness = 0;  //1
+End2_Extension_StopThickness = 0;  //1
 //Length of hose stop
-End2_StopLength = 0;  //1
+End2_Extension_StopLength = 0;  //1
 //Should the stop be tapered both sides. Might easier to print.
-End2_Stop_Symmetrical = false;
+End2_Extension_Stop_Symmetrical = false;
+
+/*[Connector 2 - Hose connector] */
 //Number of barbs
 End2_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
@@ -211,6 +250,8 @@ End2_Magnet_Border = 2;  //0.1
 End2_Magnet_ZOffset = 0;  //0.1
 //Inner diameter of the Magnet flange
 End2_Magnet_Flange_Thickness = 10;  //0.1
+// Round over the outside edge of the magnetic flange
+End2_Magnet_Flange_Roundover = true;
 //Include a flange alignment ring
 End2_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recessed: Recessed ring]
 //Magnetic ring twist lock bolt size (draft setting)
@@ -226,21 +267,11 @@ End2_Nozzle_Offset = [0,0]; //0.1
 End2_Nozzle_Chamfer_Percentage = 0; //0.1
 End2_Nozzle_Chamfer_Angle = 0; //0.1
 
-/* [Connector 2 - Extension] */
-//Length of the extension
-End2_Extension_Length = 0;
-//Size of the grid in the extension. 0: diameter/6
-End2_Extension_GridSize = 0;  //0.1
-//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
-End2_Extension_GridWallThickness = 0;  //0.1
-End2_Extension_Text = "";
-End2_Extension_Text_Size = 0;
-
-
 /* [Connector 3] */
 //Wall thickness
 End3_Wall_Thickness = 2; //0.01
-End3_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, none: None]
+End3_Style="hose"; // [hose: Hose connector, mag: Magnetic Flange, flange: Flange, nozzle: Nozzle attachement, osvacm:osVAC Male, osvacf:osVAC Female, none: None]
+End3_Specialised_Style="disabled"; // [disabled:Disabled, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacf32:osVAC F32,  makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, festoolcleanteclug: Festool Cleantec Lug]
 // Is the measurement the adapter's outside or inside diameter?
 End3_Measurement = "outer"; //[inner, outer]
 // End 3 diameter of the adapter (mm, inch)
@@ -252,13 +283,33 @@ End3_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End3_Taper = 0;  //0.1
 
-/*[Connector 3 - Hose connector] */
+/* [Connector 3 - Extension] */
+//Length of the extension
+End3_Extension_Length = 0;
+//Inside diameter at the extension exit. 0 keeps the connector diameter. The change is tapered at 45 degrees.
+End3_Extension_Exit_Diameter = 0; //0.1
+//Size of the grid in the extension. 0: diameter/6
+End3_Extension_GridSize = 0;  //0.1
+//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
+End3_Extension_GridWallThickness = 0;  //0.1
+End3_Extension_Text = "";
+End3_Extension_Text_Size = 0;
+End3_Extension_SlipRing= "disabled"; //[disabled, notaper: non tapered, inner, outer]
+End3_Extension_SlipRing_Width = 5;
+//Add breakaway supports to the slip ring gap.
+End3_Extension_SlipRing_Support = "disabled"; //[disabled, enabled, internal, external]
+//Diameter of the breakaway supports.
+End3_Extension_SlipRing_Support_Size = 0.2; //0.1
+//Approximate spacing between supports around the selected opening.
+End3_Extension_SlipRing_Support_Spacing = 5; //0.1
 //Thickness of hose stop
-End3_StopThickness = 0;  //1
+End3_Extension_StopThickness = 0;  //1
 //Length of hose stop
-End3_StopLength = 0;  //1
+End3_Extension_StopLength = 0;  //1
 //Should the stop be tapered both sides. Might easier to print.
-End3_Stop_Symmetrical = false;
+End3_Extension_Stop_Symmetrical = false;
+
+/*[Connector 3 - Hose connector] */
 //Number of barbs
 End3_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
@@ -309,6 +360,8 @@ End3_Magnet_Border = 2;  //0.1
 End3_Magnet_ZOffset = 0;  //0.1
 // Inner diameter of the Magnet flange
 End3_Magnet_Flange_Thickness = 10;  //0.1
+// Round over the outside edge of the magnetic flange
+End3_Magnet_Flange_Roundover = true;
 // Include a flange alignment ring
 End3_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recessed: Recessed ring]
 // Magnetic ring twist lock bolt size (draft setting)
@@ -323,16 +376,6 @@ End3_Nozzle_Radius = 0; //0.1
 End3_Nozzle_Offset = [0,0]; //0.1
 End3_Nozzle_Chamfer_Percentage = 0; //0.1
 End3_Nozzle_Chamfer_Angle = 0; //0.1
-
-/* [Connector 3 - Extension] */
-//Length of the extension
-End3_Extension_Length = 0;
-//Size of the grid in the extension. 0: diameter/6
-End3_Extension_GridSize = 0;  //0.1
-//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
-End3_Extension_GridWallThickness = 0;  //0.1
-End3_Extension_Text = "";
-End3_Extension_Text_Size = 0;
 
 /* [Alignment Ring] */
 //draw just the alignment ring
@@ -350,9 +393,9 @@ Alignment_Depth_Clearance = .75;  //0.01
 
 /* [other] */
 //Slice model in half to be able to easy see inside
-Enable_Debug_Slice = false;
+Enable_Debug_Slice = "disable"; //[disable, enable, preview only]
 //Will only show if debug is also enabled
-Enable_Calipers_Slice = false;
+Enable_Calipers_Slice = "disable"; //[disable, enable, preview only]
 Enable_Help = false;
 End1_Color = ["",1];  //0.1
 End2_Color = ["",1];  //0.1
@@ -381,6 +424,7 @@ HoseAdapter(
   connector1 = UserConnectorSettings(
     connector=1,
     style=End1_Style,
+    specialisedStyle=End1_Specialised_Style,
     wallThickness=End1_Wall_Thickness,
     measurement=End1_Measurement,
     diameter=End1_Diameter,
@@ -391,9 +435,6 @@ HoseAdapter(
     endCapThickness=End1_Hose_EndCap_Thickness,
     endCapGridSize=End1_Hose_EndCap_GridSize,
     endCapGridWallThickness=End1_Hose_EndCap_GridWallThickness,
-    stopThickness=End1_StopThickness,
-    stopLength=End1_StopLength,
-    stopSymmetrical=End1_Stop_Symmetrical,
     barbsCount=End1_Barbs_Count,
     barbsThickness=End1_Barbs_Thickness,
     barbsSymmetrical=End1_Barbs_Symmetrical,
@@ -407,6 +448,7 @@ HoseAdapter(
     magnetBorder=End1_Magnet_Border,
     magnetZOffset=End1_Magnet_ZOffset,
     magnetFlangeThickness=End1_Magnet_Flange_Thickness,
+    magnetFlangeRoundover=End1_Magnet_Flange_Roundover,
     magnetTwistLockSize=End1_Magnet_Twist_Lock_Size,
     alignmentRing=End1_Ring,
     flangeWidth=End1_Flange_Width,
@@ -416,14 +458,25 @@ HoseAdapter(
     flangeScrewCount=End1_Flange_Screw_Count,
     flangeScrewDiameter=End1_Flange_Screw_Diameter,
     extensionLength=End1_Extension_Length,
+    extensionExitDiameter=End1_Extension_Exit_Diameter,
     extensionGridSize=End1_Extension_GridSize,
     extensionGridWallThickness=End1_Extension_GridWallThickness,
     extensionText=End1_Extension_Text,
-    extensionTextSize=End1_Extension_Text_Size),
+    extensionTextSize=End1_Extension_Text_Size,
+    extensionSlipRing=End1_Extension_SlipRing,
+    extensionSlipRingWidth=End1_Extension_SlipRing_Width,
+    extensionSlipRingSupport=End1_Extension_SlipRing_Support,
+    extensionSlipRingSupportSize=End1_Extension_SlipRing_Support_Size,
+    extensionSlipRingSupportSpacing=End1_Extension_SlipRing_Support_Spacing,
+    extensionStopThickness=End1_Extension_StopThickness,
+    extensionStopLength=End1_Extension_StopLength,
+    extensionStopSymmetrical=End1_Extension_Stop_Symmetrical
+    ),
 
   connector2 = UserConnectorSettings(
     connector=2,
     style=End2_Style,
+    specialisedStyle=End2_Specialised_Style,
     wallThickness=End2_Wall_Thickness,
     measurement=End2_Measurement,
     diameter=End2_Diameter,
@@ -434,9 +487,6 @@ HoseAdapter(
     endCapThickness=End2_Hose_EndCap_Thickness,
     endCapGridSize=End2_Hose_EndCap_GridSize,
     endCapGridWallThickness=End2_Hose_EndCap_GridWallThickness,
-    stopThickness=End2_StopThickness,
-    stopLength=End2_StopLength,
-    stopSymmetrical=End2_Stop_Symmetrical,
     barbsCount=End2_Barbs_Count,
     barbsThickness=End2_Barbs_Thickness,
     barbsSymmetrical=End2_Barbs_Symmetrical,
@@ -450,6 +500,7 @@ HoseAdapter(
     magnetBorder=End2_Magnet_Border,
     magnetZOffset=End2_Magnet_ZOffset,
     magnetFlangeThickness=End2_Magnet_Flange_Thickness,
+    magnetFlangeRoundover=End2_Magnet_Flange_Roundover,
     magnetTwistLockSize=End2_Magnet_Twist_Lock_Size,
     alignmentRing=End2_Ring,
     flangeWidth=End2_Flange_Width,
@@ -466,14 +517,25 @@ HoseAdapter(
     nozzleChamferPercentage=End2_Nozzle_Chamfer_Percentage,
     nozzleChamferAngle=End2_Nozzle_Chamfer_Angle,
     extensionLength=End2_Extension_Length,
+    extensionExitDiameter=End2_Extension_Exit_Diameter,
     extensionGridSize=End2_Extension_GridSize,
     extensionGridWallThickness=End2_Extension_GridWallThickness,
     extensionText=End2_Extension_Text,
-    extensionTextSize=End2_Extension_Text_Size),
+    extensionTextSize=End2_Extension_Text_Size,
+    extensionSlipRing=End2_Extension_SlipRing,
+    extensionSlipRingWidth=End2_Extension_SlipRing_Width,
+    extensionSlipRingSupport=End2_Extension_SlipRing_Support,
+    extensionSlipRingSupportSize=End2_Extension_SlipRing_Support_Size,
+    extensionSlipRingSupportSpacing=End2_Extension_SlipRing_Support_Spacing,
+    extensionStopThickness=End2_Extension_StopThickness,
+    extensionStopLength=End2_Extension_StopLength,
+    extensionStopSymmetrical=End2_Extension_Stop_Symmetrical
+  ),
 
   connector3 = UserConnectorSettings(
     connector=3,
     style=End3_Style,
+    specialisedStyle=End3_Specialised_Style,
     wallThickness=End3_Wall_Thickness,
     measurement=End3_Measurement,
     diameter=End3_Diameter,
@@ -484,9 +546,6 @@ HoseAdapter(
     endCapThickness=End3_Hose_EndCap_Thickness,
     endCapGridSize=End3_Hose_EndCap_GridSize,
     endCapGridWallThickness=End3_Hose_EndCap_GridWallThickness,
-    stopThickness=End3_StopThickness,
-    stopLength=End3_StopLength,
-    stopSymmetrical=End3_Stop_Symmetrical,
     barbsCount=End3_Barbs_Count,
     barbsThickness=End3_Barbs_Thickness,
     barbsSymmetrical=End3_Barbs_Symmetrical,
@@ -500,6 +559,7 @@ HoseAdapter(
     magnetBorder=End3_Magnet_Border,
     magnetZOffset=End3_Magnet_ZOffset,
     magnetFlangeThickness=End3_Magnet_Flange_Thickness,
+    magnetFlangeRoundover=End3_Magnet_Flange_Roundover,
     magnetTwistLockSize=End3_Magnet_Twist_Lock_Size,
     alignmentRing=End3_Ring,
     flangeWidth=End3_Flange_Width,
@@ -516,14 +576,26 @@ HoseAdapter(
     nozzleChamferPercentage=End3_Nozzle_Chamfer_Percentage,
     nozzleChamferAngle=End3_Nozzle_Chamfer_Angle,
     extensionLength=End3_Extension_Length,
+    extensionExitDiameter=End3_Extension_Exit_Diameter,
     extensionGridSize=End3_Extension_GridSize,
     extensionGridWallThickness=End3_Extension_GridWallThickness,
     extensionText=End3_Extension_Text,
-    extensionTextSize=End3_Extension_Text_Size),
+    extensionTextSize=End3_Extension_Text_Size,
+    extensionSlipRing=End3_Extension_SlipRing,
+    extensionSlipRingWidth=End3_Extension_SlipRing_Width,
+    extensionSlipRingSupport=End3_Extension_SlipRing_Support,
+    extensionSlipRingSupportSize=End3_Extension_SlipRing_Support_Size,
+    extensionSlipRingSupportSpacing=End3_Extension_SlipRing_Support_Spacing,
+    extensionStopThickness=End3_Extension_StopThickness,
+    extensionStopLength=End3_Extension_StopLength,
+    extensionStopSymmetrical=End3_Extension_Stop_Symmetrical
+  ),
 
   transitionStyle = Transition_Style,
   transitionLength = Transition_Length,
   transitionBendRadius = Transition_Bend_Radius,
+  transitionBendPipeDiameter = Transition_Bend_Pipe_Diameter,
+  transitionCustomBendPipeDiameter = Transition_Custom_Bend_Pipe_Diameter,
   transitionAngle = Transition_Angle,
   transitionOffset = Transition_Offset,
   transitionBaseType = Transition_Base_Type,
@@ -546,8 +618,8 @@ HoseAdapter(
   alignmentSideClearance = Alignment_Side_Clearance,
   alignmentDepthClearance = Alignment_Depth_Clearance,
 
-  sliceDebug = Enable_Debug_Slice,
-  showCaliper = Enable_Calipers_Slice,
+  sliceDebug = renderModeEnabled(Enable_Debug_Slice),
+  showCaliper = renderModeEnabled(Enable_Calipers_Slice),
   end1Color = End1_Color,
   end2Color = End2_Color,
   end3Color = End3_Color,

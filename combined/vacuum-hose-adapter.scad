@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-07-19 21:51
-//Content hash 9D5103552AEA61B76E49365AD580B976806EAEC34E3FD02A281D7746B7A3DE14
+//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-08-06 00:31
+//Content hash 1434239895FF766938658C7EAED72E18B2441E5C12C9166834C89EA8244B3AD7
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -18,7 +18,8 @@
 //Wall thickness
 End1_Wall_Thickness = 2; //0.01
 //The style of the end
-End1_Style="hose"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector]
+End1_Style="hose"; // [hose: Hose connector, mag: Magnetic Flange, flange: Flange, osvacm:osVAC Male, osvacf:osVAC Female]
+End1_Specialised_Style="disabled"; // [disabled:Disabled, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacf32:osVAC F32,  makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, festoolcleanteclug: Festool Cleantec Lug]
 // Is the measurement the adapter's outside or inside diameter?
 End1_Measurement = "outer"; //[inner, outer]
 // End 1 diameter of the adapter (mm, inch)
@@ -30,13 +31,33 @@ End1_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End1_Taper = 1;  //0.1
 
-/* [Connector 1 - Hose connector] */
+/* [Connector 1 - Extension] */
+//Length of the extension
+End1_Extension_Length = 0;
+//Inside diameter at the extension exit. 0 keeps the connector diameter. The change is tapered at 45 degrees.
+End1_Extension_Exit_Diameter = 0; //0.1
+//Size of the grid in the extension. 0: diameter/6
+End1_Extension_GridSize = 0;  //0.1
+//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
+End1_Extension_GridWallThickness = 0;  //0.1
+End1_Extension_Text = "asd-\u0020-asd";
+End1_Extension_Text_Size = 0;
+End1_Extension_SlipRing= "disabled"; //[disabled, notaper: non tapered, inner, outer]
+End1_Extension_SlipRing_Width = 5;
+//Add breakaway supports to the slip ring gap.
+End1_Extension_SlipRing_Support = "disabled"; //[disabled, enabled, internal, external]
+//Diameter of the breakaway supports.
+End1_Extension_SlipRing_Support_Size = 0.2; //0.1
+//Approximate spacing between supports around the selected opening.
+End1_Extension_SlipRing_Support_Spacing = 5; //0.1
 //Thickness of hose stop
-End1_StopThickness = 0;  //1
+End1_Extension_StopThickness = 0;  //1
 //Length of hose stop
-End1_StopLength = 0;  //1
+End1_Extension_StopLength = 0;  //1
 //Should the stop be tapered both sides. Might easier to print.
-End1_Stop_Symmetrical = false;
+End1_Extension_Stop_Symmetrical = false;
+
+/* [Connector 1 - Hose connector] */
 //Number of barbs
 End1_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
@@ -87,31 +108,26 @@ End1_Magnet_Border = 2;  //0.1
 End1_Magnet_ZOffset = 0;  //0.1
 // Thickness of the magnet flange (mm)
 End1_Magnet_Flange_Thickness = 6;  //0.1
+// Round over the outside edge of the magnetic flange
+End1_Magnet_Flange_Roundover = true;
 // Include a flange alignment ring
 End1_Ring = "no"; //[no: No alignment ring, protruding: protruding ring, recessed: Recessed ring]
 // Magnetic ring Twist lock bolt size (draft setting)
 End1_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitchen insert,"4":M4,"4cnc":M4 with CNC Kitchen insert,"5":M5,"5cnc":M5 with CNC Kitchen insert]
 
-/* [Connector 1 - Extension] */
-//Length of the extension
-End1_Extension_Length = 0;
-//Size of the grid in the extension. 0: diameter/6
-End1_Extension_GridSize = 0;  //0.1
-//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
-End1_Extension_GridWallThickness = 0;  //0.1
-End1_Extension_Text = "asd-\u0020-asd";
-End1_Extension_Text_Size = 0;
-
-
 /* [Transition] */
 // tapered for hose connections, flat for attaching to a device
-Transition_Style = "bend+taper"; //[flat, taper+bend: Taper then bend, bend+taper: Bend then taper, organicbend: Tapered bend, hull: Hull for multiple end count, none: no transition]
+Transition_Style = "bend+taper"; //[flat, bend+taper: Bend and taper, organicbend: Tapered bend, hull: Hull for multiple end count, none: no transition]
 //Length of the transition between the two ends
 Transition_Length = 0;  //1
-// Radius of transition bend (mm)
-Transition_Bend_Radius = 0;  //1
 //Angle of bend through the transition section.
 Transition_Angle = 0;  //1
+// Radius of transition bend (mm)
+Transition_Bend_Radius = 0;  //1
+// Select the bend pipe's inside diameter from the two ends, or enter a custom value
+Transition_Bend_Pipe_Diameter = "larger"; //[larger, smaller, custom]
+// Inside diameter of the bend pipe when custom is selected
+Transition_Custom_Bend_Pipe_Diameter = 40; //0.1
 // offset for the connector, not supported on taperedbend.
 Transition_Offset = [0,0]; // 0.1
 
@@ -145,7 +161,8 @@ Transition_Base_Angle=0;
 /* [Connector 2] */
 //Wall thickness
 End2_Wall_Thickness = 2; //0.01
-End2_Style="hose"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, none: None]
+End2_Style="hose"; // [hose: Hose connector, mag: Magnetic Flange, flange: Flange, nozzle: Nozzle attachement, osvacm:osVAC Male, osvacf:osVAC Female, none: None]
+End2_Specialised_Style="disabled"; // [disabled:Disabled, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacf32:osVAC F32,  makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, festoolcleanteclug: Festool Cleantec Lug]
 // Is the measurement the adapter's outside or inside diameter?
 End2_Measurement = "outer"; //[inner, outer]
 // End 2 diameter of the adapter (mm, inch)
@@ -157,13 +174,33 @@ End2_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End2_Taper = 1;  //0.1
 
-/*[Connector 2 - Hose connector] */
+/* [Connector 2 - Extension] */
+//Length of the extension
+End2_Extension_Length = 0;
+//Inside diameter at the extension exit. 0 keeps the connector diameter. The change is tapered at 45 degrees.
+End2_Extension_Exit_Diameter = 0; //0.1
+//Size of the grid in the extension. 0: diameter/6
+End2_Extension_GridSize = 0;  //0.1
+//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
+End2_Extension_GridWallThickness = 0;  //0.1
+End2_Extension_Text = "";
+End2_Extension_Text_Size = 0;
+End2_Extension_SlipRing= "disabled"; //["disabled", "notaper": non tapered, "inner", "outer"]
+End2_Extension_SlipRing_Width = 5;
+//Add breakaway supports to the slip ring gap.
+End2_Extension_SlipRing_Support = "disabled"; //[disabled, enabled, internal, external]
+//Diameter of the breakaway supports.
+End2_Extension_SlipRing_Support_Size = 0.2; //0.1
+//Approximate spacing between supports around the selected opening.
+End2_Extension_SlipRing_Support_Spacing = 5; //0.1
 //Thickness of hose stop
-End2_StopThickness = 0;  //1
+End2_Extension_StopThickness = 0;  //1
 //Length of hose stop
-End2_StopLength = 0;  //1
+End2_Extension_StopLength = 0;  //1
 //Should the stop be tapered both sides. Might easier to print.
-End2_Stop_Symmetrical = false;
+End2_Extension_Stop_Symmetrical = false;
+
+/*[Connector 2 - Hose connector] */
 //Number of barbs
 End2_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
@@ -214,6 +251,8 @@ End2_Magnet_Border = 2;  //0.1
 End2_Magnet_ZOffset = 0;  //0.1
 //Inner diameter of the Magnet flange
 End2_Magnet_Flange_Thickness = 10;  //0.1
+// Round over the outside edge of the magnetic flange
+End2_Magnet_Flange_Roundover = true;
 //Include a flange alignment ring
 End2_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recessed: Recessed ring]
 //Magnetic ring twist lock bolt size (draft setting)
@@ -229,21 +268,11 @@ End2_Nozzle_Offset = [0,0]; //0.1
 End2_Nozzle_Chamfer_Percentage = 0; //0.1
 End2_Nozzle_Chamfer_Angle = 0; //0.1
 
-/* [Connector 2 - Extension] */
-//Length of the extension
-End2_Extension_Length = 0;
-//Size of the grid in the extension. 0: diameter/6
-End2_Extension_GridSize = 0;  //0.1
-//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
-End2_Extension_GridWallThickness = 0;  //0.1
-End2_Extension_Text = "";
-End2_Extension_Text_Size = 0;
-
-
 /* [Connector 3] */
 //Wall thickness
 End3_Wall_Thickness = 2; //0.01
-End3_Style="nozzle"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, none: None]
+End3_Style="hose"; // [hose: Hose connector, mag: Magnetic Flange, flange: Flange, nozzle: Nozzle attachement, osvacm:osVAC Male, osvacf:osVAC Female, none: None]
+End3_Specialised_Style="disabled"; // [disabled:Disabled, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacf32:osVAC F32,  makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, festoolcleanteclug: Festool Cleantec Lug]
 // Is the measurement the adapter's outside or inside diameter?
 End3_Measurement = "outer"; //[inner, outer]
 // End 3 diameter of the adapter (mm, inch)
@@ -255,13 +284,33 @@ End3_Rotation= 0;
 //Taper of the start connector, use negative to taper other direction.
 End3_Taper = 0;  //0.1
 
-/*[Connector 3 - Hose connector] */
+/* [Connector 3 - Extension] */
+//Length of the extension
+End3_Extension_Length = 0;
+//Inside diameter at the extension exit. 0 keeps the connector diameter. The change is tapered at 45 degrees.
+End3_Extension_Exit_Diameter = 0; //0.1
+//Size of the grid in the extension. 0: diameter/6
+End3_Extension_GridSize = 0;  //0.1
+//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
+End3_Extension_GridWallThickness = 0;  //0.1
+End3_Extension_Text = "";
+End3_Extension_Text_Size = 0;
+End3_Extension_SlipRing= "disabled"; //[disabled, notaper: non tapered, inner, outer]
+End3_Extension_SlipRing_Width = 5;
+//Add breakaway supports to the slip ring gap.
+End3_Extension_SlipRing_Support = "disabled"; //[disabled, enabled, internal, external]
+//Diameter of the breakaway supports.
+End3_Extension_SlipRing_Support_Size = 0.2; //0.1
+//Approximate spacing between supports around the selected opening.
+End3_Extension_SlipRing_Support_Spacing = 5; //0.1
 //Thickness of hose stop
-End3_StopThickness = 0;  //1
+End3_Extension_StopThickness = 0;  //1
 //Length of hose stop
-End3_StopLength = 0;  //1
+End3_Extension_StopLength = 0;  //1
 //Should the stop be tapered both sides. Might easier to print.
-End3_Stop_Symmetrical = false;
+End3_Extension_Stop_Symmetrical = false;
+
+/*[Connector 3 - Hose connector] */
 //Number of barbs
 End3_Barbs_Count = 0;
 //Thickness of the barbs, default is half wall thickness
@@ -312,6 +361,8 @@ End3_Magnet_Border = 2;  //0.1
 End3_Magnet_ZOffset = 0;  //0.1
 // Inner diameter of the Magnet flange
 End3_Magnet_Flange_Thickness = 10;  //0.1
+// Round over the outside edge of the magnetic flange
+End3_Magnet_Flange_Roundover = true;
 // Include a flange alignment ring
 End3_Ring = "no"; //[no: No alignment ring, protruding: Protruding ring, recessed: Recessed ring]
 // Magnetic ring twist lock bolt size (draft setting)
@@ -326,16 +377,6 @@ End3_Nozzle_Radius = 0; //0.1
 End3_Nozzle_Offset = [0,0]; //0.1
 End3_Nozzle_Chamfer_Percentage = 0; //0.1
 End3_Nozzle_Chamfer_Angle = 0; //0.1
-
-/* [Connector 3 - Extension] */
-//Length of the extension
-End3_Extension_Length = 0;
-//Size of the grid in the extension. 0: diameter/6
-End3_Extension_GridSize = 0;  //0.1
-//Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
-End3_Extension_GridWallThickness = 0;  //0.1
-End3_Extension_Text = "";
-End3_Extension_Text_Size = 0;
 
 /* [Alignment Ring] */
 //draw just the alignment ring
@@ -353,9 +394,9 @@ Alignment_Depth_Clearance = .75;  //0.01
 
 /* [other] */
 //Slice model in half to be able to easy see inside
-Enable_Debug_Slice = false;
+Enable_Debug_Slice = "disable"; //[disable, enable, preview only]
 //Will only show if debug is also enabled
-Enable_Calipers_Slice = false;
+Enable_Calipers_Slice = "disable"; //[disable, enable, preview only]
 Enable_Help = false;
 End1_Color = ["",1];  //0.1
 End2_Color = ["",1];  //0.1
@@ -382,6 +423,7 @@ module end_of_customizer_opts() {}
 
 
 
+
 // Hose connector
 // version 2024-04-30
 // repo https://github.com/ostat/vacuum-hose-adapter-openscad
@@ -392,12 +434,19 @@ module end_of_customizer_opts() {}
 
 
 
+//colorSetting=["colour", alpha]
+//defaultColor="colour"
 function getColor(colorSetting, defaultColor) =
   assert(is_list(colorSetting), str("colorSetting must be a list colorSetting=", colorSetting, " defaultColor", defaultColor))
   assert(len(colorSetting) == 2, "colorSetting be length 2")
   let(
     c = colorSetting[0] == "" ? defaultColor : colorSetting[0],
-    a = is_num(colorSetting[1]) && colorSetting[1] >=0 && colorSetting[1] <=1 ? colorSetting[1] : 1) [c,a];
+    a = is_num(colorSetting[1]) && colorSetting[1] >=0 && colorSetting[1] <=1 ? colorSetting[1] : 1) [c, a];
+
+function renderModeEnabled(mode) =
+  assert(mode == "disable" || mode == "enable" || mode == "preview only",
+    str("render mode must be 'disable', 'enable', or 'preview only'. Provided: ", mode))
+  mode == "enable" || (mode == "preview only" && $preview);
 
 module adapterAlignmentRing(
   centerDiameter = 0,
@@ -421,7 +470,7 @@ module adapterAlignmentRing(
       alignmentDepthClearance = alignmentDepthClearance,
       magnetBorder = magnetBorder);
 
-    if($preview&&debug){
+    if(debug){
       cubeSizex = centerDiameter+max(alignmentUpperWidth, alignmentLowerWidth);
       cubeSizey = centerDiameter/2+max(alignmentUpperWidth, alignmentLowerWidth);
       cubeSizez = alignmentDepth*2;
@@ -430,11 +479,11 @@ module adapterAlignmentRing(
       }
     }
 
-    if($preview&&showCaliper){
+    if(showCaliper){
       color("Gold")
       union(){
         rotate([90,0,0])
-        Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
+        Caliper(on=2, messpunkt = false, help=0, size = 5,h = 0.1,
           //center=false,
           l=centerDiameter+max(alignmentUpperWidth, alignmentLowerWidth),
           end=0, in=1,
@@ -442,7 +491,7 @@ module adapterAlignmentRing(
           txt2 = "centerDiameter");
         translate([(centerDiameter)/2,0,0])
         rotate([90,90,0])
-        Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
+        Caliper(on=2, messpunkt = false, help=0, size = 5,h = 0.1,
           l=(alignmentDepth-alignmentDepthClearance)*2,
           end=0, in=4,
           cx= 0,
@@ -473,7 +522,6 @@ module adapter(
 ){
   assert(is_list(con), "con must be a list")
   assert(is_num(con[iLength]), str("length must be a number :", con[iLength]));
-  assert(is_num(con[iStopLength]), "stopLength must be a number");
   assert(is_list(con[iAdapterColor]), "adapterColor must be a list")
   assert(len(con[iAdapterColor]) == 2, "adapterColor be length 2")
 
@@ -487,7 +535,7 @@ module adapter(
       union(){
         if(con[iStyle] == "mag")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           MagneticConnector(
               innerStartDiameter = con[iInnerStartDiameter],
@@ -507,11 +555,12 @@ module adapter(
               alignmentSideClearance = con[iAlignmentSideClearance],
               alignmentDepthClearance = con[iAlignmentDepthClearance],
               twistLockSize = con[iMagnetTwistLockSize],
+              roundover = con[iMagnetFlangeRoundover],
               $fn = $fn);
         }
         else if(con[iStyle] == "flange")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           FlangeConnector(
             innerStartDiameter = con[iInnerStartDiameter],
@@ -530,7 +579,7 @@ module adapter(
 
         else if(con[iStyle] == "hose")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           HoseConnector(
             innerStartDiameter = con[iInnerStartDiameter],
@@ -538,9 +587,6 @@ module adapter(
             connectorMeasurement = con[iMeasurement],
             length = con[iLength],
             wallThickness = con[iWallThickness],
-            stopLength = con[iStopLength],
-            stopWidth = con[iStopThickness],
-            stopSymmetrical = con[iStopSymmetrical],
             barbsCount  = con[iBarbsCount],
             barbsThickness = con[iBarbsThickness],
             barbsSymmetrical = con[iBarbsSymmetrical],
@@ -557,7 +603,7 @@ module adapter(
         }
         else if(con[iStyle] == "dyson")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           DysonConnector(
             innerEndDiameter = con[iInnerEndDiameter],
@@ -568,7 +614,7 @@ module adapter(
         }
         else if(con[iStyle] == "camlock")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           CamlockConnector(
             innerEndDiameter = con[iInnerEndDiameter],
@@ -578,7 +624,7 @@ module adapter(
         }
         else if(con[iStyle] == "dw735")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           Dw735Connector(
             innerEndDiameter = con[iInnerEndDiameter],
@@ -589,27 +635,38 @@ module adapter(
         }
         else if(con[iStyle] == "centec_female")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           CenTecFemaleConnector($fn = $fn);
         }
         else if(con[iStyle] == "centec_male")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           CenTecMaleConnector($fn = $fn);
         }
         else if(con[iStyle] == "makita_male")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           MakitaMaleConnector(
             help = help,
             $fn = $fn);
         }
+        else if(con[iStyle] == "bosch_sander")
+        {
+          translate([0, 0, con[iLength]])
+          mirror ([0,0,1])
+          BoschSanderConnector(
+            innerEndDiameter = con[iInnerEndDiameter],
+            length = con[iLength],
+            wallThickness = con[iWallThickness],
+            help = help,
+            $fn = $fn);
+        }
         else if(con[iStyle] == "osvacm" || con[iStyle] == "osvacm32")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           osVacMaleConnector(
             innerDiameter = con[iInnerEndDiameter],
@@ -619,11 +676,19 @@ module adapter(
         }
         else if(con[iStyle] == "osvacf" || con[iStyle] == "osvacf32")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           osVacFemaleConnector(
             innerDiameter = con[iInnerEndDiameter],
             length = con[iLength],
+            help = help,
+            $fn = $fn);
+        }
+        else if(con[iStyle] == "festoolcleanteclug")
+        {
+          translate([0, 0, con[iLength]])
+          mirror ([0,0,1])
+          FestoolCleantecLugConnector(
             help = help,
             $fn = $fn);
         }
@@ -647,10 +712,10 @@ module adapter(
          assert(false, str("style not supported style: ", con[iStyle]));
         }
       }
-      if($preview&&debug&&con[iStyle]!="none"){
+      if(debug&&con[iStyle]!="none"){
         cubeSizex = max(con[iInnerStartDiameter],con[iInnerEndDiameter])*2;
         cubeSizey = max(con[iInnerStartDiameter],con[iInnerEndDiameter])*1.5;
-        cubeSizez = con[iLength]+con[iStopLength]+fudgeFactor*4
+        cubeSizez = con[iLength]+fudgeFactor*4
           +(con[iStyle] == "nozzle"? con[iNozzleSize].z+fudgeFactor : 0)
           +(con[iStyle] == "mag"? con[iAlignmentDepth]: 0);
         translate([-cubeSizex/2, -cubeSizey, -fudgeFactor*2])
@@ -659,9 +724,9 @@ module adapter(
     }
   }
 
-  if($preview&&showCaliper&&con[iStyle]!="none"){
+  if(showCaliper&&con[iStyle]!="none"){
     color("Gold")
-    translate([0, 0, con[iLength]+con[iStopLength]])
+    translate([0, 0, con[iLength]])
     mirror ([0,0,1])
     mirror (connectorPos == 1 ? [0,0,0] : [1,0,0])
     union(){
@@ -669,7 +734,7 @@ module adapter(
       addwidth = con[iMeasurement] == "outer" ? con[iWallThickness]*2 : 0;
       translate(con[iStyle] == "nozzle" ? [0,0,con[iLength]] :[0,0,con[iLength]/2])
       rotate([90,0,0])
-       Caliper(messpunkt = false, help=0, size = 7,h = 0.1,
+       Caliper(on=2, messpunkt = false, help=0, size = 7,h = 0.1,
           l=con[iInnerDiameter] + addwidth,
           end=endStyle,
           in=connectorPos == 1 ? 1 : 0,
@@ -677,7 +742,7 @@ module adapter(
       if(con[iInnerDiameter] != con[iInnerStartDiameter]){
         translate([0,0,0])
         rotate([90,0,0])
-        Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
+        Caliper(on=2, messpunkt = false, help=0, size = 5,h = 0.1,
             l=con[iInnerStartDiameter] + addwidth,
             end=endStyle,
             in=connectorPos == 1 ? 1 : 0,
@@ -686,7 +751,7 @@ module adapter(
       if(con[iInnerDiameter] != con[iInnerEndDiameter]){
         translate([0,0,con[iLength]])
         rotate([90,0,0])
-        Caliper(messpunkt = false, help=0, size = 5,h = 0.1,
+        Caliper(on=2, messpunkt = false, help=0, size = 5,h = 0.1,
             l=con[iInnerEndDiameter] + addwidth,
             end=3,
             in=connectorPos == 1 ? 1 : 0,
@@ -697,7 +762,7 @@ module adapter(
       position = con[iInnerDiameter]/2 + con[iWallThickness]*2;
       translate([(connectorPos == 1 ? position  : -position), 0, con[iLength]/2])
       rotate([90,0,0])
-      Caliper(messpunkt = false, help=0, h = 0.1,
+      Caliper(on=2, messpunkt = false, help=0, h = 0.1,
             center=true,
             l=con[iLength],
             cx= 0,
@@ -711,7 +776,7 @@ module adapter(
       {
         translate([(connectorPos == 1 ? position  : -position), 0,-con[iNozzleSize].z/2])
         rotate([90,0,0])
-        Caliper(messpunkt = false, help=0, h = 0.1,
+        Caliper(on=2, messpunkt = false, help=0, h = 0.1,
               l=con[iNozzleSize].z,
               cx= 0,
               end=0,
@@ -731,26 +796,50 @@ module adapter(
 
 module transitionExtension(
   connector,
+  connectorMeasurement = "inner",
   innerDiameter = 0,
+  exitDiameter = 0,
+  taperLength = 0,
   wallThickness = 0,
   length = 0 ,
+  stopLength = 0,
+  stopWidth = 0,
+  stopSymmetrical = false,
   gridSize = 0,
   gridWallThickness = 0,
-  transitionColor = ["LightGreen",1],
-  debug = false,
-  showCaliper=false,
   txt="",
   txtSize=0,
   includeHook = 0,
+  extensionSlipRing="disabled",
+  extensionSlipRingWidth=5,
+  extensionSlipRingSupport="disabled",
+  extensionSlipRingSupportSize=0.2,
+  extensionSlipRingSupportSpacing=5,
+  transitionColor = ["LightGreen", 1],
+  debug = false,
+  showCaliper=false,
   help){
   assert(is_list(transitionColor), "transitionColor must be a list");
   assert(len(transitionColor) == 2, "transitionColor be length 2");
-  assert(is_num(connector) && (connector ==1 || connector ==2), "connector must be 1 or 2");
+  assert(is_num(connector) && (connector == 1 || connector == 2 || connector == 3), "connector must be 1 or 2");
   assert(is_num(innerDiameter), "innerDiameter must be a number");
+  assert(is_num(exitDiameter) && exitDiameter >= 0, str("exitDiameter must be a non-negative number. Provided:", exitDiameter));
   assert(is_num(wallThickness), "wallThickness must be a number");
   assert(is_num(length), "length must be a number");
   assert(is_num(gridSize), "gridSize must be a number");
   assert(is_num(gridWallThickness), "gridWallThickness must be a number");
+
+  effectiveExitDiameter = exitDiameter == 0 ? innerDiameter : exitDiameter;
+
+  slipRing = calculate_slipring_size(slipring = extensionSlipRing, width = extensionSlipRingWidth);
+  slipRingSize = slipRing[0];
+  slipRingStartWallThickness = slipRing[1];
+  slipRingEndWallThickness = slipRing[2];
+  slipRingDeltaDiameter = slipRing[3];
+
+  spliRingPreTaper = abs(wallThickness - slipRingStartWallThickness);
+
+  totalLength = length + stopLength + taperLength + spliRingPreTaper + slipRingSize.y;
 
   //gridWallThickness, -1 use wall thickness
   gridWallThickness = gridWallThickness < 0
@@ -764,24 +853,61 @@ module transitionExtension(
       ? innerDiameter/6 - gridWallThickness
       : gridSize;
 
-  if(length > 0)
+  if(totalLength > 0)
   {
     difference(){
       color(transitionColor[0], transitionColor[1])
       union(){
-      HoseConnector(
-        innerStartDiameter = innerDiameter,
-        innerEndDiameter = innerDiameter,
-        connectorMeasurement = "inner",
-        length,
-        endCapThickness = gridWallThickness,
-        wallThickness = wallThickness,
-        endCapGridSize = gridSize,
-        endCapGridWallThickness = gridWallThickness,
-        help);
+        if(length > 0 || stopLength > 0)
+          HoseConnector(
+            innerStartDiameter = innerDiameter,
+            innerEndDiameter = innerDiameter,
+            connectorMeasurement = connectorMeasurement,
+            length = length,
+            wallThickness = wallThickness,
+            stopLength = stopLength,
+            stopWidth = stopWidth,
+            stopSymmetrical = stopSymmetrical,
+            endCapThickness = gridWallThickness,
+            endCapGridSize = gridSize,
+            endCapGridWallThickness = gridWallThickness,
+            help = help);
+
+        if(extensionSlipRing != "disabled"){
+          // needed entry taper
+
+          translate([0,0,spliRingPreTaper])
+          translate([0, 0, length + stopLength])
+           slipring(
+            diamater = innerDiameter,
+            ring_width = extensionSlipRingWidth,
+            slip_clearance = 0.3,
+            rounded_clearance = true,
+            taper = extensionSlipRing,
+            internal_support = extensionSlipRingSupport,
+            internal_support_size = extensionSlipRingSupportSize,
+            internal_support_spacing = extensionSlipRingSupportSpacing);
+
+          if(spliRingPreTaper > 0)
+            translate([0, 0, length + stopLength])
+            pipe(
+              diameter = innerDiameter,
+              length = spliRingPreTaper,
+              wallThickness1 = wallThickness,
+              wallThickness2 = slipRingStartWallThickness,
+              enableWallThicknessCompensation = false);
+        }
+
+        if(taperLength > 0)
+          translate([0, 0, length + stopLength])
+          pipe(
+            diameter1 = innerDiameter,
+            diameter2 = effectiveExitDiameter,
+            length = taperLength,
+            wallThickness = wallThickness);
 
         if(includeHook == 1){
-          hootLength = min(15, length);
+          hootLength = max(15, length + stopLength);
           hookSize = wallThickness*2;
           intersection(){
             difference(){
@@ -817,13 +943,13 @@ module transitionExtension(
           }*/
         }
       }
-      if($preview&&debug){
-        cubeSize = [innerDiameter*2,innerDiameter*1.5, length+fudgeFactor*4];
+      if(debug){
+        cubeSize = [max(innerDiameter, effectiveExitDiameter)*2,max(innerDiameter, effectiveExitDiameter)*1.5, totalLength+fudgeFactor*4];
         translate([-cubeSize.x/2, (connector == 1 ? -cubeSize.y : 0), -fudgeFactor*2])
         cube(cubeSize);
       }
 
-      if(is_string(txt) && len(txt) > 0){
+      if(length > 0 && is_string(txt) && len(txt) > 0){
         textExtrude = min(wallThickness,1);
         border = length * .2; //border above and below the text
         translate([0,0,border])
@@ -839,7 +965,7 @@ module transitionExtension(
       }
     }
 
-    if($preview&&showCaliper){
+    if(showCaliper){
     /*render on left side
       color("Gold")
       translate(connector == 1 ? [0, 0, length] : [0, 0, length] )
@@ -850,7 +976,7 @@ module transitionExtension(
         position = innerDiameter/2 + wallThickness*2;
         translate([(connector == 1 ? position  : -position), 0, length/2])
         rotate([90,0,0])
-        Caliper(messpunkt = false, help=0, h = 0.1,
+        Caliper(on=2, messpunkt = false, help=0, h = 0.1,
               center=true,
               l=length,
               cx= -1,
@@ -862,6 +988,29 @@ module transitionExtension(
       }
     }
     */
+
+    if(taperLength > 0)
+      color("Aquamarine")
+      translate(connector == 1 ? [0, 0, 0] : [0, 0, 0] )
+      mirror(connector == 1 ? [0,0,0] : [0,0,0])
+      rotate(connector == 1 ? [0,0,0] : [0,0,180])
+      union(){
+        barWidth = wallThickness*8;
+        position = innerDiameter/2 + wallThickness*2;
+        translate([(connector == 1 ? position  : -position), 0, length + taperLength/2])
+        rotate([90,0,0])
+        Caliper(on=2, messpunkt = false, help=0, h = 0.1,
+              center=true,
+              l=taperLength,
+              cx=0,
+              end=0,
+              size=6,
+              in=connector == 1 ? 2 : 3,
+              translate= connector == 1 ? [15,0,0] : [-15,0,0],
+              txt2 = str("Extension Taper ", connector, " length"));
+      }
+
+      if(length > 0)
       color("Aquamarine")
       translate(connector == 1 ? [0, 0, 0] : [0, 0, 0] )
       mirror(connector == 1 ? [0,0,0] : [0,0,0])
@@ -871,7 +1020,7 @@ module transitionExtension(
         position = innerDiameter/2 + wallThickness*2;
         translate([(connector == 1 ? position  : -position), 0, length/2])
         rotate([90,0,0])
-        Caliper(messpunkt = false, help=0, h = 0.1,
+        Caliper(on=2, messpunkt = false, help=0, h = 0.1,
               center=true,
               l=length,
               cx=0,
@@ -884,9 +1033,16 @@ module transitionExtension(
     }
   }
   HelpTxt("transitionExtension",[
+    "connector", connector,
     "innerDiameter", innerDiameter,
+    "exitDiameter", effectiveExitDiameter,
+    "taperLength", taperLength,
     "wallThickness", wallThickness,
     "length", length,
+    "stopLength", stopLength,
+    "stopWidth", stopWidth,
+    "stopSymmetrical", stopSymmetrical,
+    "taperLength", taperLength,
     "gridSize", gridSize,
     "gridWallThickness", gridWallThickness,
     "transitionColor", transitionColor,
@@ -898,6 +1054,10 @@ module transitionExtension(
 module transition(
   style,
   length,
+  bendTaperLengthBefore,
+  bendTaperLengthAfter,
+  bendPipeDiameter,
+  bendPipeWallThickness,
   connector1InnerEndDiameter,
   connector2InnerStartDiameter,
   connector3InnerStartDiameter,
@@ -961,8 +1121,7 @@ module transition(
           baseWidth = baseWidth,
           baseLength = baseLength,
           baseAngle = baseAngle,
-          end2Count = connector2Count,
-          end2Angle = connector2Angle);
+          end2Count = connector2Count);
       }
       else if(style == "hull")
       {
@@ -987,15 +1146,31 @@ module transition(
       }
       else if(style == "bend+taper")
       {
-        //Tapered transition
-        //the bent pipe section, diameter matches connector 1.
+        // General bend and taper transition. A taper is added on either side
+        // of the bend only when the selected bend pipe differs from that end.
+        taperBeforeBend = bendPipeDiameter != connector1InnerEndDiameter;
+        taperAfterBend = bendPipeDiameter != connector2InnerStartDiameter;
+
+        if(taperBeforeBend)
+        {
+          color(transitionColor[0], transitionColor[1])
+          pipe_with_offset(
+            diameter1 = connector1InnerEndDiameter,
+            diameter2 = bendPipeDiameter,
+            length = bendTaperLengthBefore,
+            wallThickness1 = connector1WallThickness,
+            wallThickness2 = bendPipeWallThickness,
+            Offset = [0,0]);
+        }
+
         if(angle > 0)
         {
+          translate([0, 0, bendTaperLengthBefore])
           color(transitionColor[0], transitionColor[1])
           BentPipe(
             bendRadius = bendRadius,
-            innerPipeDiameter = connector1InnerEndDiameter,
-            wallThickness = connector1WallThickness,
+            innerPipeDiameter = bendPipeDiameter,
+            wallThickness = bendPipeWallThickness,
             pipeAngle = angle,
             baseType = baseType,
             baseThickness = baseThickness,
@@ -1006,22 +1181,25 @@ module transition(
             end2Angle = connector2Angle);
         }
 
-        //Tapered section position to the end of the bent pipe
-        for (rotation = [0:connector2Count-1])
+        if(taperAfterBend)
         {
-          //color("SpringGreen")
-          color(transitionColor[0], transitionColor[1])
-          rotate([0, 0, rotation*multiConnectorAngle])
-          translate([-bendRadius, 0, 0])
-            rotate([0, -angle, 0])
-            translate([bendRadius, 0, 0])
+          // Tapered section positioned at the outlet of each bent pipe.
+          for (rotation = [0:connector2Count-1])
+          {
+            color(transitionColor[0], transitionColor[1])
+            rotate([0, 0, rotation*multiConnectorAngle])
+            translate([0, 0, bendTaperLengthBefore])
+              translate([-bendRadius, 0, 0])
+              rotate([0, -angle, 0])
+              translate([bendRadius, 0, 0])
               pipe_with_offset(
-                diameter1 = connector1InnerEndDiameter,
+                diameter1 = bendPipeDiameter,
                 diameter2 = connector2InnerStartDiameter,
-                length = length,
-                wallThickness1 = connector1WallThickness,
+                length = bendTaperLengthAfter,
+                wallThickness1 = bendPipeWallThickness,
                 wallThickness2 = connector2WallThickness,
                 Offset = Offset);
+          }
         }
       }
       else if(style == "taper+bend")
@@ -1058,7 +1236,7 @@ module transition(
         }
       }
     }
-    if($preview&&debug){
+    if(debug){
       cubeSize = max(connector1InnerEndDiameter,connector2InnerStartDiameter)*3;
       translate([-cubeSize/2, -cubeSize , -fudgeFactor*2])
           cube([cubeSize, cubeSize, cubeSize ]);
@@ -1101,16 +1279,15 @@ module transition(
 }
 
 module HoseAdapter(
-  connector1 = UserConnectorSettings(
-    connector=1),
-  connector2 = UserConnectorSettings(
-    connector=2),
-  connector3 = UserConnectorSettings(
-    connector=3),
+  connector1 = UserConnectorSettings(connector=1),
+  connector2 = UserConnectorSettings(connector=2),
+  connector3 = UserConnectorSettings(connector=3),
 
   transitionStyle = "bend+taper",
   transitionLength = 10,
   transitionBendRadius = 0,
+  transitionBendPipeDiameter = "larger",
+  transitionCustomBendPipeDiameter = 40,
   transitionAngle = 0,
   transitionOffset = [0,0],
   transitionBaseType = "none",
@@ -1142,10 +1319,11 @@ module HoseAdapter(
   extensionColor = [DefaultExtensionColor,1],
   help = false
 ){
-  $gha=[["connector1",[0,0,0]],["connector2",[0,0,0]],["trasnition",[0,0,0]]];
+  $gha=[["connector1",[0,0,0]],["connector2",[0,0,0]],["transition",[0,0,0]]];
 
   end1 = getConnectorSettings(
     userSettings=connector1,
+    slipRingSettings=calculate_slipring_size(slipring=connector1[iExtensionSlipRing], width=connector1[iExtensionSlipRingWidth]),
     alignmentDepth=alignmentDepth,
     alignmentUpperWidth=alignmentUpperWidth,
     alignmentLowerWidth=alignmentLowerWidth,
@@ -1157,6 +1335,7 @@ module HoseAdapter(
 
   end2 = getConnectorSettings(
     userSettings=connector2,
+    slipRingSettings=calculate_slipring_size(slipring=connector2[iExtensionSlipRing], width=connector2[iExtensionSlipRingWidth]),
     alignmentDepth=alignmentDepth,
     alignmentUpperWidth=alignmentUpperWidth,
     alignmentLowerWidth=alignmentLowerWidth,
@@ -1164,11 +1343,12 @@ module HoseAdapter(
     alignmentDepthClearance=alignmentDepthClearance,
     adapterColor = getColor(end2Color, DefaultEnd2Color),
     con1Measurement=end1[iMeasurement],
-    con1OuterEndDiameter=end1[iOuterEndDiameter],
+    con1OuterEndDiameter=end1[iInterfaceOuterDiameter],
     con1WallThickness=end1[iWallThickness]);
 
   end3 = getConnectorSettings(
     userSettings=connector3,
+    slipRingSettings=calculate_slipring_size(slipring=connector3[iExtensionSlipRing], width=connector3[iExtensionSlipRingWidth]),
     alignmentDepth=alignmentDepth,
     alignmentUpperWidth=alignmentUpperWidth,
     alignmentLowerWidth=alignmentLowerWidth,
@@ -1176,7 +1356,7 @@ module HoseAdapter(
     alignmentDepthClearance=alignmentDepthClearance,
     adapterColor = getColor(end3Color, DefaultEnd3Color),
     con1Measurement=end1[iMeasurement],
-    con1OuterEndDiameter=end1[iOuterEndDiameter],
+    con1OuterEndDiameter=end1[iInterfaceOuterDiameter],
     con1WallThickness=end1[iWallThickness]);
 
   echoConnector("end1", end1, help);
@@ -1184,20 +1364,59 @@ module HoseAdapter(
   echoConnector("end3", end3, transitionHullCenter == "end3" ? help : false);
 
   //Transition settings
-  //Total length of connector 1
-  endConnector1 = end1[iLength] + end1[iStopLength];
-
-
-      // transitionLength is not wanted for sweep
+  // transitionLength is not wanted for sweep
   _transitionAngle = (transitionStyle == "flat") ? 0 : transitionAngle;
   _transitionStyle = _transitionAngle == 0 && transitionStyle == "organicbend" ? "bend+taper" : transitionStyle;
+
+  echo("_transitionLength", _transitionLength=_transitionLength, end1_iInterfaceOuterDiameter=end1[iInterfaceOuterDiameter], end2iInterfaceOuterDiameter=end2[iInterfaceOuterDiameter], end1iInterfaceInnerDiameter=end1[iInterfaceInnerDiameter], end2iInterfaceInnerDiameter=end2[iInterfaceInnerDiameter]);
   _transitionLength = _transitionStyle == "organicbend" //|| _transitionStyle == "hull"
     ? 0
     : transitionLength == 0
       ? max(
-          abs(end1[iOuterEndDiameter] - end2[iOuterEndDiameter])/2,
-          abs(end1[iInnerEndDiameter] - end2[iInnerEndDiameter])/2)+(end1[iWallThickness]/2+end2[iWallThickness]/2)
+          abs(end1[iInterfaceOuterDiameter] - end2[iInterfaceOuterDiameter])/2,
+          abs(end1[iInterfaceInnerDiameter] - end2[iInterfaceInnerDiameter])/2)+(end1[iInterfaceWallThickness]/2+end2[iInterfaceWallThickness]/2)
       : transitionLength;
+
+  bendPipeDiameter = transitionBendPipeDiameter == "custom"
+    ? transitionCustomBendPipeDiameter
+    : transitionBendPipeDiameter == "smaller"
+      ? min(end1[iInterfaceInnerDiameter], end2[iInterfaceInnerDiameter])
+      : max(end1[iInterfaceInnerDiameter], end2[iInterfaceInnerDiameter]);
+
+  assert(transitionBendPipeDiameter != "custom" || transitionCustomBendPipeDiameter > 0, "Transition custom bend pipe diameter must be greater than zero");
+
+  // Preserve the wall of a matching end. For an in-between custom bore,
+  // interpolate the wall; outside that range, use the nearest end's wall.
+  bendPipeWallThickness = end1[iInterfaceInnerDiameter] == end2[iInterfaceInnerDiameter]
+    ? max(end1[iInterfaceWallThickness], end2[iInterfaceWallThickness])
+    : let(
+        blend = max(0, min(1,
+          (bendPipeDiameter - end1[iInterfaceInnerDiameter]) /
+          (end2[iInterfaceInnerDiameter] - end1[iInterfaceInnerDiameter]))))
+      end1[iInterfaceWallThickness] +
+        blend * (end2[iInterfaceWallThickness] - end1[iInterfaceWallThickness]);
+
+  bendPipeOuterDiameter = bendPipeDiameter + bendPipeWallThickness*2;
+  bendDiameterChangeBefore = abs(bendPipeDiameter - end1[iInterfaceInnerDiameter]);
+  bendDiameterChangeAfter = abs(end2[iInterfaceInnerDiameter] - bendPipeDiameter);
+  bendTotalDiameterChange = bendDiameterChangeBefore + bendDiameterChangeAfter;
+
+      // With automatic length, size each taper independently so the steepest
+      // of its inner or outer surfaces is approximately 45 degrees.
+      bendTaperLengthBefore = transitionLength == 0
+        ? max(
+            bendDiameterChangeBefore/2,
+            abs(bendPipeOuterDiameter - end1[iInterfaceOuterDiameter])/2)
+        : bendTotalDiameterChange == 0
+          ? 0
+          : transitionLength * bendDiameterChangeBefore / bendTotalDiameterChange;
+      bendTaperLengthAfter = transitionLength == 0
+        ? max(
+            bendDiameterChangeAfter/2,
+            abs(end2[iInterfaceOuterDiameter] - bendPipeOuterDiameter)/2)
+        : bendTotalDiameterChange == 0
+          ? 0
+          : transitionLength * bendDiameterChangeAfter / bendTotalDiameterChange;
 
       //Calculate the bend radius
       //organicbend, the '0' value must be max of connector 1 or 2 diameter, plus the wall thickness * 2 otherwise it will clip, then add provided radius.
@@ -1205,10 +1424,10 @@ module HoseAdapter(
 
       //((end2[iInnerStartDiameter] + connector1WallThickness)/ sin(_transitionAngle / 2)/2)/ sin(_transitionAngle) + transitionBendRadius
       //For organic bend only
-      taperedAverageDiameter = (max(end1[iOuterEndDiameter],end2[iOuterStartDiameter])*2 + min(end1[iOuterEndDiameter],end2[iOuterStartDiameter]))/3;
+      taperedAverageDiameter = (max(end1[iInterfaceOuterDiameter],end2[iOuterStartDiameter])*2 + min(end1[iInterfaceOuterDiameter],end2[iOuterStartDiameter]))/3;
 
       hoseSpacer = end2[iWallThickness];
-      shapeOverlap = ((end1[iOuterEndDiameter]/2-hoseSpacer)-(cos(_transitionAngle)*end2[iOuterEndDiameter]))/sin(_transitionAngle);
+      shapeOverlap = ((end1[iInterfaceOuterDiameter]/2-hoseSpacer)-(cos(_transitionAngle)*end2[iInterfaceOuterDiameter]))/sin(_transitionAngle);
       lengthInHull = _transitionStyle == "hull"
         ? (shapeOverlap > 0 ? 0 : shapeOverlap * -1) + _transitionLength
         : 0;
@@ -1217,17 +1436,18 @@ module HoseAdapter(
       //Push end horizontially out from verticle center line
       edgeOffset = _transitionStyle == "hull"
         ? (shapeOverlap > 50
-          ? (end1[iOuterEndDiameter] - end2[iOuterEndDiameter])/2-shapeOverlap/2 + transitionHullyOffset
-          : (end1[iOuterEndDiameter] - end2[iOuterEndDiameter])/2 + transitionHullyOffset) * cos(_transitionAngle)
+          ? (end1[iInterfaceOuterDiameter] - end2[iInterfaceOuterDiameter])/2-shapeOverlap/2 + transitionHullyOffset
+          : (end1[iInterfaceOuterDiameter] - end2[iInterfaceOuterDiameter])/2 + transitionHullyOffset) * cos(_transitionAngle)
         : 0;
 
      function bend_radius(transitionAngle, transitionBendRadius, end1OuterEndDiameter, end2OuterEndDiameter, taperedAverageDiameter) =
          let(organic_bend_radius = transitionEnd2Count > 1
                 ? -(taperedAverageDiameter/2)/(cos(transitionAngle)-1)-taperedAverageDiameter/2 + transitionBendRadius
                 : taperedAverageDiameter + transitionBendRadius,
+             bendPipeOuterDiameter = bendPipeDiameter + bendPipeWallThickness*2,
              bend_taper_radius = transitionEnd2Count > 1
-                ? -(end1OuterEndDiameter/2)/(cos(transitionAngle)-1)-end1OuterEndDiameter/2 + transitionBendRadius
-                : end1OuterEndDiameter/2 + transitionBendRadius,
+                ? -(bendPipeOuterDiameter/2)/(cos(transitionAngle)-1)-bendPipeOuterDiameter/2 + transitionBendRadius
+                : bendPipeOuterDiameter/2 + transitionBendRadius,
              taper_bend_radius = transitionEnd2Count > 1
                 ? -(end2OuterEndDiameter/2)/(cos(transitionAngle)-1)-end2OuterEndDiameter/2 + transitionBendRadius
                 : end2OuterEndDiameter/2 + transitionBendRadius,
@@ -1242,8 +1462,8 @@ module HoseAdapter(
       bendRadius = bend_radius(
         transitionAngle=_transitionAngle,
         transitionBendRadius=transitionBendRadius,
-        end1OuterEndDiameter=end1[iOuterEndDiameter],
-        end2OuterEndDiameter=end2[iOuterEndDiameter],
+        end1OuterEndDiameter=end1[iInterfaceOuterDiameter],
+        end2OuterEndDiameter=end2[iInterfaceOuterDiameter],
         taperedAverageDiameter=taperedAverageDiameter);
 
   if(drawAlignmentRing == "end1" || drawAlignmentRing == "end2")
@@ -1267,7 +1487,7 @@ module HoseAdapter(
       union()
       {
         //End1
-        translate([0, 0, endConnector1])
+        translate([0, 0, end1[iLength]])
         mirror ([0,0,1])
         adapter(
           con = end1,
@@ -1277,31 +1497,48 @@ module HoseAdapter(
           showCaliper = showCaliper,
           help = help);
 
-        translate([0, 0, endConnector1])
+        let(active_end = end1)
+        translate([0, 0, active_end[iLength]])
         transitionExtension(
           connector = 1,
-          innerDiameter = end1[iInnerEndDiameter],
-          wallThickness = end1[iWallThickness],
-          length = end1[iExtensionLength],
-          gridSize = end1[iExtensionGridSize],
-          gridWallThickness = end1[iExtensionGridWallThickness],
-          txt = end1[iExtensionText],
-          txtSize=end1[iExtensionTextSize],
-          transitionColor = getColor(extensionColor, DefaultTransitionColor),
+          connectorMeasurement = active_end[iMeasurement],
+          innerDiameter = active_end[iInnerEndDiameter],
+          exitDiameter = active_end[iInterfaceInnerDiameter],
+          taperLength = active_end[iExtensionTaperLength],
+          wallThickness = active_end[iWallThickness],
+          length = active_end[iExtensionLength],
+          stopLength = active_end[iExtensionStopLength],
+          stopWidth = active_end[iExtensionStopThickness],
+          stopSymmetrical = active_end[iExtensionStopSymmetrical],
+          gridSize = active_end[iExtensionGridSize],
+          gridWallThickness = active_end[iExtensionGridWallThickness],
+          txt = active_end[iExtensionText],
+          txtSize=active_end[iExtensionTextSize],
+          extensionSlipRing=active_end[iExtensionSlipRing],
+          extensionSlipRingWidth=active_end[iExtensionSlipRingWidth],
+          extensionSlipRingSupport=active_end[iExtensionSlipRingSupport],
+          extensionSlipRingSupportSize=active_end[iExtensionSlipRingSupportSize],
+          extensionSlipRingSupportSpacing=active_end[iExtensionSlipRingSupportSpacing],
+          transitionColor = getColor(extensionColor, DefaultEnd1ExtensionColor),
           debug = sliceDebug,
           showCaliper = showCaliper,
           help = help);
 
-        translate([0, 0, endConnector1 + end1[iExtensionLength]])
+        echo("end1[iInterfaceLength]", end1_iInterfaceLength=end1[iInterfaceLength], _transitionLength=_transitionLength, end1_iInterfaceInnerDiameter=end1[iInterfaceInnerDiameter], end1_iInterfaceWallThickness=end1[iInterfaceWallThickness]);
+        translate([0, 0, end1[iInterfaceLength]])
         transition(
           style = _transitionStyle,
           length = _transitionLength,
-          connector1InnerEndDiameter = end1[iInnerEndDiameter],
-          connector2InnerStartDiameter = end2[iInnerEndDiameter],
-          connector3InnerStartDiameter = getConnector3Setting(transitionHullCenter, end1, end2, end3)[iInnerEndDiameter],
-          connector1WallThickness = end1[iWallThickness],
-          connector2WallThickness = end2[iWallThickness],
-          connector3WallThickness = getConnector3Setting(transitionHullCenter, end1, end2, end3)[iWallThickness],
+          bendTaperLengthBefore = bendTaperLengthBefore,
+          bendTaperLengthAfter = bendTaperLengthAfter,
+          bendPipeDiameter = bendPipeDiameter,
+          bendPipeWallThickness = bendPipeWallThickness,
+          connector1InnerEndDiameter = end1[iInterfaceInnerDiameter],
+          connector2InnerStartDiameter = end2[iInterfaceInnerDiameter],
+          connector3InnerStartDiameter = getConnector3Setting(transitionHullCenter, end1, end2, end3)[iInterfaceInnerDiameter],
+          connector1WallThickness = end1[iInterfaceWallThickness],
+          connector2WallThickness = end2[iInterfaceWallThickness],
+          connector3WallThickness = getConnector3Setting(transitionHullCenter, end1, end2, end3)[iInterfaceWallThickness],
           bendRadius = bendRadius,
           angle = _transitionAngle,
           baseType = transitionBaseType,
@@ -1326,18 +1563,22 @@ module HoseAdapter(
         // Create the end connector
         if(end2[iLength] > 0)
         {
+          taperBeforeBend = _transitionStyle == "bend+taper"
+            && bendPipeDiameter != end1[iInterfaceInnerDiameter];
+          taperAfterBend = _transitionStyle == "bend+taper"
+            && bendPipeDiameter != end2[iInterfaceInnerDiameter];
           postRotation = [
             ((_transitionStyle == "taper+bend") ? transitionOffset.x
-              : _transitionStyle == "hull" ? -end1[iOuterEndDiameter]/2
+              : _transitionStyle == "hull" ? -end1[iInterfaceOuterDiameter]/2
               : 0) - bendRadius,
             ((_transitionStyle == "taper+bend") ? transitionOffset.y : 0),
             ((_transitionStyle == "taper+bend" || _transitionStyle == "flat" || _transitionStyle == "none") ? _transitionLength
               : _transitionStyle == "hull" ? 0
-              : 0) + endConnector1 + end1[iExtensionLength]];
+              : 0) + end1[iInterfaceLength]];
 
           preRotation = [
             ((_transitionStyle == "bend+taper") ? transitionOffset.x
-              : _transitionStyle == "hull" ? end1[iOuterEndDiameter]/2-edgeOffset
+              : _transitionStyle == "hull" ? end1[iInterfaceOuterDiameter]/2-edgeOffset
               : 0) + bendRadius,
             ((_transitionStyle == "bend+taper") ? transitionOffset.y : 0),
             ((_transitionStyle == "bend+taper") ? _transitionLength
@@ -1350,28 +1591,89 @@ module HoseAdapter(
           {
             if(sliceDebug == false || rotation ==0)
             rotate([0, 0, rotation*multiConnectorAngle])
-            translate(postRotation)
-            rotate([0, -_transitionAngle, 0])
-            translate(preRotation)
+            if(_transitionStyle == "bend+taper")
+              translate([0, 0, end1[iInterfaceLength]])
+              translate([0, 0, bendTaperLengthBefore])
+              translate([-bendRadius, 0, 0])
+              rotate([0, -_transitionAngle, 0])
+              translate([
+                bendRadius + (taperAfterBend ? transitionOffset.x : 0),
+                taperAfterBend ? transitionOffset.y : 0,
+                bendTaperLengthAfter])
+              union(){
+                let(active_end = end2)
+                translate([0, 0, active_end[iExtensionTotalLength]])
+                mirror([0,0,1])
+                mirror([0,1,0])
+                transitionExtension(
+                  connector = 2,
+                  connectorMeasurement = active_end[iMeasurement],
+                  innerDiameter = active_end[iInnerEndDiameter],
+                  exitDiameter = active_end[iInterfaceInnerDiameter],
+                  taperLength = active_end[iExtensionTaperLength],
+                  wallThickness = active_end[iWallThickness],
+                  length = active_end[iExtensionLength],
+                  stopLength = active_end[iExtensionStopLength],
+                  stopWidth = active_end[iExtensionStopThickness],
+                  stopSymmetrical = active_end[iExtensionStopSymmetrical],
+                  gridSize = active_end[iExtensionGridSize],
+                  gridWallThickness = active_end[iExtensionGridWallThickness],
+                  txt = active_end[iExtensionText],
+                  txtSize=active_end[iExtensionTextSize],
+                  extensionSlipRing=active_end[iExtensionSlipRing],
+                  extensionSlipRingWidth=active_end[iExtensionSlipRingWidth],
+                  extensionSlipRingSupport=active_end[iExtensionSlipRingSupport],
+                  extensionSlipRingSupportSize=active_end[iExtensionSlipRingSupportSize],
+                  extensionSlipRingSupportSpacing=active_end[iExtensionSlipRingSupportSpacing],
+                  transitionColor = getColor(extensionColor, DefaultEnd2ExtensionColor),
+                  debug = sliceDebug,
+                  showCaliper = showCaliper,
+                  help = help);
+
+                translate([0, 0, end2[iExtensionTotalLength]])
+                adapter(
+                  con = end2,
+                  connectorPos=2,
+                  transitionAngle =_transitionAngle,
+                  debug = sliceDebug,
+                  showCaliper = rotation == 0 ? showCaliper : false,
+                  help = help);
+              }
+            else
+              translate(postRotation)
+              rotate([0, -_transitionAngle, 0])
+              translate(preRotation)
             union(){
-              translate([0, 0, end2[iExtensionLength]])
+              let(active_end = end2)
+              translate([0, 0, active_end[iExtensionTotalLength]])
               mirror([0,0,1])
               mirror([0,1,0])
               transitionExtension(
                 connector = 2,
-                innerDiameter = end2[iInnerStartDiameter],
-                wallThickness = end2[iWallThickness],
-                length = end2[iExtensionLength],
-                gridSize = end2[iExtensionGridSize],
-                gridWallThickness = end2[iExtensionGridWallThickness],
-                txt = end2[iExtensionText],
-                txtSize=end2[iExtensionTextSize],
-                transitionColor = getColor(extensionColor, DefaultTransitionColor),
+                connectorMeasurement = active_end[iMeasurement],
+                innerDiameter = active_end[iInnerEndDiameter],
+                exitDiameter = active_end[iInterfaceInnerDiameter],
+                taperLength = active_end[iExtensionTaperLength],
+                wallThickness = active_end[iWallThickness],
+                length = active_end[iExtensionLength],
+                stopLength = active_end[iExtensionStopLength],
+                stopWidth = active_end[iExtensionStopThickness],
+                stopSymmetrical = active_end[iExtensionStopSymmetrical],
+                gridSize = active_end[iExtensionGridSize],
+                gridWallThickness = active_end[iExtensionGridWallThickness],
+                txt = active_end[iExtensionText],
+                txtSize=active_end[iExtensionTextSize],
+                extensionSlipRing=active_end[iExtensionSlipRing],
+                extensionSlipRingWidth=active_end[iExtensionSlipRingWidth],
+                extensionSlipRingSupport=active_end[iExtensionSlipRingSupport],
+                extensionSlipRingSupportSize=active_end[iExtensionSlipRingSupportSize],
+                extensionSlipRingSupportSpacing=active_end[iExtensionSlipRingSupportSpacing],
+                transitionColor = getColor(extensionColor, DefaultEnd2ExtensionColor),
                 debug = sliceDebug,
                 showCaliper = showCaliper,
                 help = help);
 
-              translate([0, 0, end2[iExtensionLength]])
+              translate([0, 0, end2[iExtensionTotalLength]])
               adapter(
                 con = end2,
                 connectorPos=2,
@@ -1384,21 +1686,33 @@ module HoseAdapter(
 
           if(_transitionStyle == "hull" && transitionHullCenter != "disabled")
           {
-            translate([0, 0, endConnector1+end1[iExtensionLength]+end3[iStopLength]+transitionCenterHeight+transitionHullCenterLength])
+            translate([0, 0, end1[iInterfaceLength] + transitionCenterHeight + transitionHullCenterLength])
               union(){
-                translate([0, 0, end2[iExtensionLength]])
+                let(active_end = end3)
+                translate([0, 0, active_end[iExtensionLength]])
                 mirror([0,0,1])
                 mirror([0,1,0])
                 transitionExtension(
-                  connector = 2,
-                  innerDiameter = end3[iInnerStartDiameter],
-                  wallThickness = end3[iWallThickness],
-                  length = end3[iExtensionLength],
-                  gridSize = end3[iExtensionGridSize],
-                  gridWallThickness = end3[iExtensionGridWallThickness],
-                  txt = end3[iExtensionText],
-                  txtSize=end3[iExtensionTextSize],
-                  transitionColor = getColor(extensionColor, DefaultTransitionColor),
+                  connector = 3,
+                  connectorMeasurement = active_end[iMeasurement],
+                  innerDiameter = active_end[iInnerEndDiameter],
+                  exitDiameter = active_end[iInterfaceInnerDiameter],
+                  taperLength = active_end[iExtensionTaperLength],
+                  wallThickness = active_end[iWallThickness],
+                  length = active_end[iExtensionLength],
+                  stopLength = active_end[iExtensionStopLength],
+                  stopWidth = active_end[iExtensionStopThickness],
+                  stopSymmetrical = active_end[iExtensionStopSymmetrical],
+                  gridSize = active_end[iExtensionGridSize],
+                  gridWallThickness = active_end[iExtensionGridWallThickness],
+                  txt = active_end[iExtensionText],
+                  txtSize=active_end[iExtensionTextSize],
+                  extensionSlipRing=active_end[iExtensionSlipRing],
+                  extensionSlipRingWidth=active_end[iExtensionSlipRingWidth],
+                  extensionSlipRingSupport=active_end[iExtensionSlipRingSupport],
+                  extensionSlipRingSupportSize=active_end[iExtensionSlipRingSupportSize],
+                  extensionSlipRingSupportSpacing=active_end[iExtensionSlipRingSupportSpacing],
+                  transitionColor = getColor(extensionColor, DefaultEnd3ExtensionColor),
                   debug = sliceDebug,
                   showCaliper = showCaliper,
                   help = help);
@@ -2296,10 +2610,16 @@ iSettingsTaper = 4;
 iSettingsVersion = 5;
 
 DefaultEnd1Color = "LightPink";
+DefaultEnd1ExtensionColor = "HotPink";
+
 DefaultEnd2Color = "SkyBlue";
+DefaultEnd2ExtensionColor = "DeepSkyBlue";
+
 DefaultEnd3Color = "MediumPurple";
+DefaultEnd3ExtensionColor = "DarkOrchid";
+
 DefaultTransitionColor = "LightGreen";
-DefaultExtensionColor = "MediumSeaGreen";
+DefaultExtensionColor = "purple";
 //CombinedEnd from path constants.scad
 //Combined from path module_conditional.scad
 
@@ -3444,7 +3764,8 @@ module pipe(
     chamfer,
     chamfer1 = [0,0],
     chamfer2 = [0,0],
-    centerSmallerWall = false)
+    centerSmallerWall = false,
+    enableWallThicknessCompensation = true)
 {
   wallThickness1 = is_undef(wallThickness) ? wallThickness1 : wallThickness;
   wallThickness2 = is_undef(wallThickness) ? wallThickness2 : wallThickness;
@@ -3492,6 +3813,17 @@ module pipe(
   endInnerZ = max(0, length - min(length, innerChamferEndEff));
   endOuterZ = max(0, length - min(length, outerChamferEndEff));
 
+  leadIn = enableWallThicknessCompensation  ? max(fudgeFactor, min(wallThickness1, wallThickness2, length)/2) : fudgeFactor;
+  startOuterLeadIn = outerRadius1 > outerRadius2 ? leadIn : fudgeFactor;
+  startInnerLeadIn = innerRadius1 > innerRadius2 ? fudgeFactor : leadIn;
+  endOuterLeadIn = outerRadius2 > outerRadius1 ? leadIn : fudgeFactor;
+  endInnerLeadIn = innerRadius2 > innerRadius1 ? fudgeFactor : leadIn;
+
+  startOuterWallZ = max(startOuterZ, startOuterLeadIn);
+  startInnerWallZ = max(startInnerZ, startInnerLeadIn);
+  endOuterWallZ = min(endOuterZ, length-endOuterLeadIn);
+  endInnerWallZ = min(endInnerZ, length-endInnerLeadIn);
+
   assert(length > 0, "length must be greater than 0");
   assert(innerRadius1 > 0 && innerRadius2 > 0, "Inner diameters must be greater than 0");
   assert(wallThickness1 >= 0 && wallThickness2 >= 0, str("Wall thicknesses must be greater than 0 wallThickness1:", wallThickness1, " wallThickness2:", wallThickness2));
@@ -3500,12 +3832,12 @@ module pipe(
   rotate_extrude(convexity = 10)
     polygon(points = [
       [max(fudgeFactor, outerRadius1 - outerChamferStartEff), 0],    // 1) Outer start edge at z=0 (after optional start outer chamfer).
-      [outerRadius1, startOuterZ],                                // 2) Outer start wall at chamfer end.
-      [outerRadius2, endOuterZ],                                  // 3) Outer end wall just before end chamfer.
+      [outerRadius1, startOuterWallZ],                            // 2) Outer start wall after chamfer/lead-in.
+      [outerRadius2, endOuterWallZ],                              // 3) Outer end wall before chamfer/lead-in.
       [max(fudgeFactor, outerRadius2 - outerChamferEndEff), length], // 4) Outer end edge at z=length (after optional end outer chamfer).
       [innerRadius2 + innerChamferEndEff, length],                   // 5) Inner end edge at z=length (after optional end inner chamfer).
-      [innerRadius2, endInnerZ],                                  // 6) Inner end wall just before end chamfer.
-      [innerRadius1, startInnerZ],                                // 7) Inner start wall at chamfer end.
+      [innerRadius2, endInnerWallZ],                              // 6) Inner end wall before chamfer/lead-in.
+      [innerRadius1, startInnerWallZ],                            // 7) Inner start wall after chamfer/lead-in.
       [innerRadius1 + innerChamferStartEff, 0]                       // 8) Inner start edge at z=0 (after optional start inner chamfer).
     ]);
 }
@@ -4569,6 +4901,249 @@ module test_sweep_solid(points, faces, triangles) {
 
 function reverse(lt) = [for(i = len(lt) - 1; i > -1; i = i - 1) lt[i]];
 //CombinedEnd from path reverse.scad
+//Combined from path modules_slipring.scad
+
+
+
+slipring_demo = false;
+
+if(slipring_demo){
+  $fn = 128;
+
+  color("green")
+  translate([0,-10])
+  slipring_profile(taper = "notaper");
+
+  color("lightblue")
+  translate([0,0])
+  slipring_profile(taper = "inner");
+
+  color("pink")
+  translate([0,10])
+  slipring_profile(taper = "outer");
+
+  color("green")
+  slipring(
+    diamater = 50,
+    ring_width = 5,
+    slip_clearance = 0.1,
+    rounded_clearance = true,
+    taper = "notaper", //notaper, inner, outer
+    );
+
+  color("lightblue")
+  translate([0,0, 10])
+  slipring(
+    diamater = 50,
+    ring_width = 5,
+    slip_clearance = 0.1,
+    rounded_clearance = false,
+    taper = "inner", //notaper, inner, outer
+    );
+
+  color("pink")
+  translate([0,0, 20])
+  slipring(
+    diamater = 50,
+    ring_width = 5,
+    slip_clearance = 0.1,
+    rounded_clearance = false,
+    taper = "outer", //notaper, inner, outer
+    );
+}
+
+function calculate_slipring_size(
+  slipring = "disabled", //disabled, notaper, inner, outer
+  width = 5
+  ) = let(
+    size = (slipring == "disabled") ? [0, 0] : [width, width * (4 - 2 * sqrt(2))],
+    start_wall_thickness = slipring == "notaper" ? width : width/2,
+    end_wall_thickness = slipring == "notaper" ? width : width/2,
+    delta_diameter =
+      slipring == "inner" ? -width :
+      slipring == "outer" ? width : 0,
+    unit_dimension = width / (4 * (1 + sqrt(2))),
+    unit_angled_dimension = unit_dimension * sqrt(2),
+    result = [size, start_wall_thickness, end_wall_thickness, delta_diameter, unit_dimension, unit_angled_dimension]
+)
+  echo("calculate_slipring_size", result = result)
+  result ;
+
+function slipring_dimension_from_width(width) = width / (4 * (1 + sqrt(2)));
+
+function slipring_inner_radius_offset(width, taper) =
+  taper == "inner"
+    ? slipring_dimension_from_width(width) * (2 + 2 * sqrt(2)) - width
+    : 0;
+
+module slipring_profile_part_a(points) {
+  polygon(points);
+}
+
+module slipring_profile_part_b(
+  points,
+  profile_width,
+  profile_height) {
+  translate([profile_width, profile_height])
+    rotate(180)
+    polygon(points);
+}
+
+
+/*
+    Expands a shape by the requested amount.
+    offset(r=...) gives a true radial offset and rounds corners.
+    offset(delta=...) preserves the sharp angled profile.
+*/
+module clearance_expansion(amount, rounded = true) {
+  if (rounded)
+    offset(r = amount)
+      children();
+  else
+    offset(delta = amount, chamfer = false)
+      children();
+}
+
+
+/*
+    tolerance is the total gap.
+
+    Each part is moved away from the nominal interface
+    by tolerance / 2.
+*/
+module slipring_profile(
+  width = 5,
+  tolerance = 0.3,
+  rounded_clearance = true,
+  taper = "inner", //disabled, inner, outer
+){
+
+  function splitring_profile_points(dimension, angled_dimension, split_taper) = [
+      //start point
+      [0,                                         angled_dimension * 2+split_taper],
+      [split_taper,                               angled_dimension * 2],
+      [dimension * 2,                             angled_dimension * 2],
+      [dimension * 2 + angled_dimension,          angled_dimension],
+      [dimension * 2 + angled_dimension * 3,      angled_dimension * 3],
+      [dimension * 2 + angled_dimension,          angled_dimension * 5],
+      [dimension * 2 + angled_dimension * 3,      angled_dimension * 7],
+      [dimension * 2 + angled_dimension * 4,      angled_dimension * 6],
+      //[dimension * 4 + angled_dimension * 4,      angled_dimension * 6],
+      [dimension * 4 + angled_dimension * 4-split_taper,      angled_dimension * 6],
+      [dimension * 4 + angled_dimension * 4,      angled_dimension * 6+split_taper],
+      //top right
+      [dimension * 4 + angled_dimension * 4,      angled_dimension * 8],
+
+      [dimension * 2 + angled_dimension * 2,      angled_dimension * 8],
+
+      //taper section
+      [corner_taper_size ,                               angled_dimension * 8],
+      [0,                                         angled_dimension * 8-corner_taper_size],
+
+      //end
+      [0,                                         angled_dimension * 8]
+  ];
+
+  function dimension_from_x(x) = x / (4 * (1 + sqrt(2)));
+
+  dimension = dimension_from_x(width);
+  angled_dimension = dimension * sqrt(2);
+
+  size = calculate_slipring_size(width=width, slipring=taper);
+  profile_width = size[0].x; //dimension * 4 + angled_dimension * 4;
+  profile_height = size[0].y; //angled_dimension * 8;
+
+  corner_taper_size = taper != "notaper" ? dimension * 2 + angled_dimension * 2 : 0;
+
+  split_taper = 0;//angled_dimension;
+
+  // Exact-contact profile for part A.
+  //
+  // Important: [0,0] was removed because it caused the
+  // closing edge to overlap the first edge.
+  points = splitring_profile_points(dimension, angled_dimension, split_taper);
+  points_negative = splitring_profile_points(dimension, angled_dimension, 0);
+
+  translate(taper == "inner" ? [corner_taper_size,0] : [0,0])
+  mirror(taper == "inner" ? [1,0] : [0,0])
+  union(){
+    //slipring_part_a
+    if (tolerance == 0) {
+      slipring_profile_part_a(points);
+    } else {
+      difference() {
+        slipring_profile_part_a(points);
+
+        clearance_expansion(tolerance / 2, rounded_clearance)
+          slipring_profile_part_b(points_negative, profile_width, profile_height);
+      }
+    }
+
+    //slipring_part_b
+    if (tolerance == 0) {
+      slipring_profile_part_b(points);
+    } else {
+      difference() {
+        slipring_profile_part_b(points, profile_width, profile_height);
+
+        clearance_expansion(tolerance / 2, rounded_clearance)
+          slipring_profile_part_a(points_negative);
+      }
+    }
+  }
+}
+
+// true  = constant radial distance around corners
+// false = preserve sharp/mitered corners
+// Total assembled gap between the two parts.
+
+module slipring(
+  diamater = 50,
+  ring_width = 5,
+  slip_clearance = 0.1,
+  rounded_clearance = true,
+  taper = "inner",
+  internal_support = "disabled", //disabled, enabled, internal, external
+  internal_support_size = 0.2,
+  internal_support_spacing = 5
+){
+  assert(internal_support == "disabled" || internal_support == "enabled" || internal_support == "internal" || internal_support == "external",
+    "internal_support must be 'disabled', 'enabled', 'internal', or 'external'");
+  assert(is_num(internal_support_size) && internal_support_size >= 0,
+    "internal_support_size must be a non-negative number");
+  assert(is_num(internal_support_spacing) && internal_support_spacing > 0,
+    "internal_support_spacing must be greater than 0");
+
+  slipring_dimentions = calculate_slipring_size(width=ring_width, slipring=taper);
+  profile_height = slipring_dimentions[0].y;
+  inner_radius = diamater/2 + slipring_inner_radius_offset(ring_width, taper);
+  outer_radius = inner_radius + ring_width;
+  internal_support_count = max(1, round(2 * PI * inner_radius / internal_support_spacing));
+  external_support_count = max(1, round(2 * PI * outer_radius / internal_support_spacing));
+
+  union(){
+    rotate_extrude()
+    translate([diamater/2,0])
+    slipring_profile(
+      width = ring_width,
+      tolerance = slip_clearance,
+      rounded_clearance = rounded_clearance,
+      taper = taper);
+
+    if(internal_support_size > 0 && (internal_support == "enabled" || internal_support == "internal"))
+      for(index = [0:internal_support_count-1])
+        rotate([0, 0, index * 360/internal_support_count])
+        translate([inner_radius + internal_support_size/2, 0, (taper == "inner" ? profile_height-slipring_dimentions[5]*2 : slipring_dimentions[5]*2)-slip_clearance/2])
+        cylinder(h=slip_clearance, d=internal_support_size, $fn = 6);
+
+    if(internal_support_size > 0 && (internal_support == "enabled" || internal_support == "external"))
+      for(index = [0:external_support_count-1])
+        rotate([0, 0, index * 360/external_support_count])
+        translate([outer_radius - internal_support_size/2, 0, (taper == "inner" ? slipring_dimentions[5]*2 : profile_height-slipring_dimentions[5]*2)-slip_clearance/2])
+        cylinder(h=slip_clearance, d=internal_support_size, $fn = 6);
+  }
+}
+//CombinedEnd from path modules_slipring.scad
 //Combined from path connectors.scad
 
 
@@ -4587,9 +5162,14 @@ function reverse(lt) = [for(i = len(lt) - 1; i > -1; i = i - 1) lt[i]];
 
 
 
+
+// generic connectors
+
+// specialised connectors
+
+// order matters needs to come after the connectors
 //CombinedEnd from path connectors.scad
 //Combined from path connector_object.scad
-
 
 
 iConnector=0;
@@ -4604,10 +5184,7 @@ iEndCapDiameter=iTaper+1;
 iEndCapThickness=iEndCapDiameter+1;
 iEndCapGridSize=iEndCapThickness+1;
 iEndCapGridWallThickness=iEndCapGridSize+1;
-iStopThickness=iEndCapGridWallThickness+1;
-iStopLength=iStopThickness+1;
-iStopSymmetrical=iStopLength+1;
-iBarbsCount=iStopSymmetrical+1;
+iBarbsCount=iEndCapGridWallThickness+1;
 iBarbsThickness=iBarbsCount+1;
 iBarbsSymmetrical=iBarbsThickness+1;
 iEnableThreads=iBarbsSymmetrical+1;
@@ -4620,7 +5197,8 @@ iMagnetThickness=iMagnetDiameter+1;
 iMagnetBorder=iMagnetThickness+1;
 iMagnetZOffset=iMagnetBorder+1;
 iMagnetFlangeThickness=iMagnetZOffset+1;
-iMagnetTwistLockSize=iMagnetFlangeThickness+1;
+iMagnetFlangeRoundover=iMagnetFlangeThickness+1;
+iMagnetTwistLockSize=iMagnetFlangeRoundover+1;
 iFlangeWidth=iMagnetTwistLockSize+1;
 iFlangeThickness=iFlangeWidth+1;
 iFlangeScrewPosition=iFlangeThickness+1;
@@ -4635,11 +5213,20 @@ iNozzleOffset=iNozzleRadius+1;
 iNozzleChamferPercentage=iNozzleOffset+1;
 iNozzleChamferAngle=iNozzleChamferPercentage+1;
 iExtensionLength=iNozzleChamferAngle+1;
-iExtensionGridSize=iExtensionLength+1;
+iExtensionExitDiameter=iExtensionLength+1;
+iExtensionGridSize=iExtensionExitDiameter+1;
 iExtensionGridWallThickness=iExtensionGridSize+1;
 iExtensionText=iExtensionGridWallThickness+1;
 iExtensionTextSize=iExtensionText+1;
-iAlignmentRing=iExtensionTextSize+1;
+iExtensionSlipRing=iExtensionTextSize+1;
+iExtensionSlipRingWidth=iExtensionSlipRing+1;
+iExtensionSlipRingSupport=iExtensionSlipRingWidth+1;
+iExtensionSlipRingSupportSize=iExtensionSlipRingSupport+1;
+iExtensionSlipRingSupportSpacing=iExtensionSlipRingSupportSize+1;
+iExtensionStopThickness=iExtensionSlipRingSupportSpacing+1;
+iExtensionStopLength=iExtensionStopThickness+1;
+iExtensionStopSymmetrical=iExtensionStopLength+1;
+iAlignmentRing=iExtensionStopSymmetrical+1;
 
 //end of user connector settings
 iAlignmentDepth=iAlignmentRing+1;
@@ -4653,10 +5240,20 @@ iInnerStartDiameter=iInnerDiameter+1;
 iOuterStartDiameter=iInnerStartDiameter+1;
 iInnerEndDiameter=iOuterStartDiameter+1;
 iOuterEndDiameter=iInnerEndDiameter+1;
+iInterfaceInnerDiameter=iOuterEndDiameter+1;
+iInterfaceOuterDiameter=iInterfaceInnerDiameter+1;
+iInterfaceWallThickness=iInterfaceOuterDiameter+1;
+iInterfaceLength=iInterfaceWallThickness+1;
+iExtensionTaperLength=iInterfaceLength+1;
+iExtensionTotalLength=iExtensionTaperLength+1;
+
+userSettingsLength = iAlignmentRing+1;
+connectorSettingsLength = iExtensionTotalLength+1;
 
 module echoConnector(name, end, help){
   assert(is_list(end), "end must be a list");
   HelpTxt(name,[
+    "connector", end[iConnector],
     "style", end[iStyle],
     "iWallThickness", end[iWallThickness],
     "iMeasurement", end[iMeasurement],
@@ -4668,9 +5265,6 @@ module echoConnector(name, end, help){
     "iEndCapThickness", end[iEndCapThickness],
     "iEndCapGridSize", end[iEndCapGridSize],
     "iEndCapGridWallThickness", end[iEndCapGridWallThickness],
-    "iStopThickness", end[iStopThickness],
-    "iStopLength", end[iStopLength],
-    "iStopSymmetrical", end[iStopSymmetrical],
     "iBarbsCount", end[iBarbsCount],
     "iBarbsThickness", end[iBarbsThickness],
     "iBarbsSymmetrical", end[iBarbsSymmetrical],
@@ -4684,6 +5278,7 @@ module echoConnector(name, end, help){
     "iMagnetBorder", end[iMagnetBorder],
     "iMagnetZOffset", end[iMagnetZOffset],
     "iMagnetFlangeThickness", end[iMagnetFlangeThickness],
+    "iMagnetFlangeRoundover", end[iMagnetFlangeRoundover],
     "iMagnetTwistLockSize", end[iMagnetTwistLockSize],
     "iAlignmentRing", end[iAlignmentRing],
     "iAlignmentDepth", end[iAlignmentDepth],
@@ -4705,18 +5300,34 @@ module echoConnector(name, end, help){
     "iNozzleChamferPercentage", end[iNozzleChamferPercentage],
     "iNozzleChamferAngle", end[iNozzleChamferAngle],
     "iExtensionLength", end[iExtensionLength],
+    "iExtensionExitDiameter", end[iExtensionExitDiameter],
     "iExtensionGridSize", end[iExtensionGridSize],
     "iExtensionGridWallThickness", end[iExtensionGridWallThickness],
     "iExtensionText", end[iExtensionText],
     "iExtensionTextSize", end[iExtensionTextSize],
+    "iExtensionSlipRing", end[iExtensionSlipRing],
+    "iExtensionSlipRingWidth", end[iExtensionSlipRingWidth],
+    "iExtensionSlipRingSupport", end[iExtensionSlipRingSupport],
+    "iExtensionSlipRingSupportSize", end[iExtensionSlipRingSupportSize],
+    "iExtensionSlipRingSupportSpacing", end[iExtensionSlipRingSupportSpacing],
+    "iExtensionStopThickness", end[iExtensionStopThickness],
+    "iExtensionStopLength", end[iExtensionStopLength],
+    "iExtensionStopSymmetrical", end[iExtensionStopSymmetrical],
     "iAdapterColor", end[iAdapterColor],
     "iInnerDiameter", end[iInnerDiameter],
     "iInnerStartDiameter", end[iInnerStartDiameter],
     "iOuterStartDiameter", end[iOuterStartDiameter],
-    "iInnerEndDiameter", end[iInnerEndDiameter],
-    "iOuterEndDiameter", end[iOuterEndDiameter]
+    prop_name("iInnerEndDiameter", iInnerEndDiameter), end[iInnerEndDiameter],
+    prop_name("iOuterEndDiameter", iOuterEndDiameter), end[iOuterEndDiameter],
+    prop_name("iInterfaceInnerDiameter", iInterfaceInnerDiameter), end[iInterfaceInnerDiameter],
+    prop_name("iInterfaceOuterDiameter", iInterfaceOuterDiameter), end[iInterfaceOuterDiameter],
+    prop_name("iInterfaceWallThickness", iInterfaceWallThickness), end[iInterfaceWallThickness],
+    prop_name("iInterfaceLength", iInterfaceLength), end[iInterfaceLength],
     ] ,help);
   }
+
+
+function prop_name(name, number) = str(name, "[", number, "]");
 
 function getConnector3Setting(transitionHullCenter, con1, con2, con3) =
   transitionHullCenter == "end1" ? con1
@@ -4737,6 +5348,7 @@ function measurement_to_mm(input) =
 function UserConnectorSettings(
   connector,
   style="hose",
+  specialisedStyle="disabled",
   wallThickness=2,
   measurement = "outer",
   diameter = [100,0],
@@ -4747,9 +5359,6 @@ function UserConnectorSettings(
   endCapThickness = 0,
   endCapGridSize = 0,
   endCapGridWallThickness = 0,
-  stopThickness = 0,
-  stopLength = 0,
-  stopSymmetrical = false,
   barbsCount = 0,
   barbsThickness = 0,
   barbsSymmetrical = false,
@@ -4763,6 +5372,7 @@ function UserConnectorSettings(
   magnetBorder = 2,
   magnetZOffset = 0,
   magnetFlangeThickness = 6,
+  magnetFlangeRoundover = true,
   magnetTwistLockSize = "0",
   alignmentRing = "no",
   flangeWidth = 20,
@@ -4779,14 +5389,23 @@ function UserConnectorSettings(
   nozzleChamferPercentage = 0,
   nozzleChamferAngle = 0,
   extensionLength = 0,
+  extensionExitDiameter = 0,
   extensionGridSize = 0,
   extensionGridWallThickness = 0,
   extensionText = "",
-  extensionTextSize = 0
+  extensionTextSize = 0,
+  extensionSlipRing="disabled",
+  extensionSlipRingWidth=5,
+  extensionSlipRingSupport="disabled",
+  extensionSlipRingSupportSize=0.2,
+  extensionSlipRingSupportSpacing=5,
+  extensionStopThickness=0,
+  extensionStopLength=0,
+  extensionStopSymmetrical=false
   ) =
   let(result = [
     connector,
-    style,
+    (specialisedStyle == "" || specialisedStyle == "disabled") ? style : specialisedStyle,
     wallThickness,
     measurement,
     diameter,
@@ -4797,9 +5416,6 @@ function UserConnectorSettings(
     endCapThickness,
     endCapGridSize,
     endCapGridWallThickness,
-    stopThickness,
-    stopLength,
-    stopSymmetrical,
     barbsCount,
     barbsThickness,
     barbsSymmetrical,
@@ -4813,6 +5429,7 @@ function UserConnectorSettings(
     magnetBorder,
     magnetZOffset,
     magnetFlangeThickness,
+    magnetFlangeRoundover,
     magnetTwistLockSize,
     flangeWidth,
     flangeThickness,
@@ -4828,15 +5445,26 @@ function UserConnectorSettings(
     nozzleChamferPercentage,
     nozzleChamferAngle,
     extensionLength,
+    extensionExitDiameter,
     extensionGridSize,
     extensionGridWallThickness,
     extensionText,
     extensionTextSize,
+    extensionSlipRing,
+    extensionSlipRingWidth,
+    extensionSlipRingSupport,
+    extensionSlipRingSupportSize,
+    extensionSlipRingSupportSpacing,
+    extensionStopThickness,
+    extensionStopLength,
+    extensionStopSymmetrical,
     alignmentRing])
     ValidateUserConnectorSettings(result);
 
 function ValidateUserConnectorSettings(userSettings) =
   // Parameter validation asserts
+  assert(is_list(userSettings) && len(userSettings) >= userSettingsLength, str("UserSettings must be a list of length ", userSettingsLength ," len:", len(userSettings)))
+
   assert(is_num(userSettings[iConnector]) && userSettings[iConnector] >= 0, str("connector must be a non-negative number:", userSettings[iConnector]))
   assert(is_string(userSettings[iStyle]), str("style must be a string:", userSettings[iStyle]))
   //assert(userSettings[iStyle] == "hose" || userSettings[iStyle] == "mag" || userSettings[iStyle] == "flange" || userSettings[iStyle] == "nozzle", "style must be 'hose', 'mag', 'flange', or 'nozzle'")
@@ -4851,9 +5479,6 @@ function ValidateUserConnectorSettings(userSettings) =
   assert(is_num(userSettings[iEndCapThickness]) && userSettings[iEndCapThickness] >= 0, str("endCapThickness must be a non-negative number:", userSettings[iEndCapThickness]))
   assert(is_num(userSettings[iEndCapGridSize]) && userSettings[iEndCapGridSize] >= 0, str("endCapGridSize must be a non-negative number:", userSettings[iEndCapGridSize]))
   assert(is_num(userSettings[iEndCapGridWallThickness]) && userSettings[iEndCapGridWallThickness] >= 0, str("endCapGridWallThickness must be a non-negative number:", userSettings[iEndCapGridWallThickness]))
-  assert(is_num(userSettings[iStopThickness]) && userSettings[iStopThickness] >= 0, str("stopThickness must be a non-negative number:", userSettings[iStopThickness]))
-  assert(is_num(userSettings[iStopLength]) && userSettings[iStopLength] >= 0, str("stopLength must be a non-negative number:", userSettings[iStopLength]))
-  assert(is_bool(userSettings[iStopSymmetrical]), str("stopSymmetrical must be a boolean:", userSettings[iStopSymmetrical]))
   assert(is_num(userSettings[iBarbsCount]) && userSettings[iBarbsCount] >= 0, str("barbsCount must be a non-negative number:", userSettings[iBarbsCount]))
   assert(is_num(userSettings[iBarbsThickness]) && userSettings[iBarbsThickness] >= 0, str("barbsThickness must be a non-negative number:", userSettings[iBarbsThickness]))
   assert(is_bool(userSettings[iBarbsSymmetrical]), str("barbsSymmetrical must be a boolean:", userSettings[iBarbsSymmetrical]))
@@ -4867,6 +5492,7 @@ function ValidateUserConnectorSettings(userSettings) =
   assert(is_num(userSettings[iMagnetBorder]) && userSettings[iMagnetBorder] >= 0, str("magnetBorder must be a non-negative number:", userSettings[iMagnetBorder]))
   assert(is_num(userSettings[iMagnetZOffset]), str("magnetZOffset must be a number:", userSettings[iMagnetZOffset]))
   assert(is_num(userSettings[iMagnetFlangeThickness]) && userSettings[iMagnetFlangeThickness] >= 0, str("magnetFlangeThickness must be a non-negative number:", userSettings[iMagnetFlangeThickness]))
+  assert(is_bool(userSettings[iMagnetFlangeRoundover]), str("magnetFlangeRoundover must be a boolean:", userSettings[iMagnetFlangeRoundover]))
   assert(is_string(userSettings[iMagnetTwistLockSize]), str("magnetTwistLockSize must be a string:", userSettings[iMagnetTwistLockSize]))
   assert(is_string(userSettings[iAlignmentRing]), str("alignmentRing must be a string:", userSettings[iAlignmentRing]))
   assert(userSettings[iAlignmentRing] == "no" || userSettings[iAlignmentRing] == "protruding" || userSettings[iAlignmentRing] == "recessed", str("alignmentRing must be 'no', 'protruding', or 'recessed':", userSettings[iAlignmentRing]))
@@ -4885,13 +5511,21 @@ function ValidateUserConnectorSettings(userSettings) =
   assert(is_num(userSettings[iNozzleChamferPercentage]) && userSettings[iNozzleChamferPercentage] >= 0 && userSettings[iNozzleChamferPercentage] <= 100, str("nozzleChamferPercentage must be between 0 and 100:", userSettings[iNozzleChamferPercentage]))
   assert(is_num(userSettings[iNozzleChamferAngle]) && userSettings[iNozzleChamferAngle] >= 0 && userSettings[iNozzleChamferAngle] <= 90, str("nozzleChamferAngle must be between 0 and 90 degrees:", userSettings[iNozzleChamferAngle]))
   assert(is_num(userSettings[iExtensionLength]) && userSettings[iExtensionLength] >= 0, str("extensionLength must be a non-negative number:", userSettings[iExtensionLength]))
+  assert(is_num(userSettings[iExtensionExitDiameter]) && userSettings[iExtensionExitDiameter] >= 0, str("extensionExitDiameter must be a non-negative number:", userSettings[iExtensionExitDiameter]))
   assert(is_num(userSettings[iExtensionGridSize]) && userSettings[iExtensionGridSize] >= 0, str("extensionGridSize must be a non-negative number:", userSettings[iExtensionGridSize]))
   assert(is_num(userSettings[iExtensionGridWallThickness]) && userSettings[iExtensionGridWallThickness] >= 0, str("extensionGridWallThickness must be a non-negative number:", userSettings[iExtensionGridWallThickness]))
   assert(is_string(userSettings[iExtensionText]), str("extensionText must be a string:", userSettings[iExtensionText]))
   assert(is_num(userSettings[iExtensionTextSize]) && userSettings[iExtensionTextSize] >= 0, str("extensionTextSize must be a non-negative number:", userSettings[iExtensionTextSize]))
+  assert(is_string(userSettings[iExtensionSlipRingSupport]) && (userSettings[iExtensionSlipRingSupport] == "disabled" || userSettings[iExtensionSlipRingSupport] == "enabled" || userSettings[iExtensionSlipRingSupport] == "internal" || userSettings[iExtensionSlipRingSupport] == "external"), str("extensionSlipRingSupport must be 'disabled', 'enabled', 'internal', or 'external':", userSettings[iExtensionSlipRingSupport]))
+  assert(is_num(userSettings[iExtensionSlipRingSupportSize]) && userSettings[iExtensionSlipRingSupportSize] >= 0, str("extensionSlipRingSupportSize must be a non-negative number:", userSettings[iExtensionSlipRingSupportSize]))
+  assert(is_num(userSettings[iExtensionSlipRingSupportSpacing]) && userSettings[iExtensionSlipRingSupportSpacing] > 0, str("extensionSlipRingSupportSpacing must be greater than 0:", userSettings[iExtensionSlipRingSupportSpacing]))
+  assert(is_num(userSettings[iExtensionStopThickness]) && userSettings[iExtensionStopThickness] >= 0, str("stopThickness must be a non-negative number:", userSettings[iExtensionStopThickness]))
+  assert(is_num(userSettings[iExtensionStopLength]) && userSettings[iExtensionStopLength] >= 0, str("stopLength must be a non-negative number:", userSettings[iExtensionStopLength]))
+  assert(is_bool(userSettings[iExtensionStopSymmetrical]), str("StopSymmetrical must be a boolean:", userSettings[iExtensionStopSymmetrical]))
   userSettings;
 
 function ValidateConnectorSettings(userSettings) =
+  assert(is_list(userSettings) && len(userSettings) == connectorSettingsLength, str("ConnectorSettings must be a list of length ", connectorSettingsLength ," len:", len(userSettings)))
   assert(is_num(userSettings[iAlignmentDepth]) && userSettings[iAlignmentDepth] >= 0, str("alignmentDepth must be a non-negative number:", userSettings[iAlignmentDepth]))
   assert(is_num(userSettings[iAlignmentUpperWidth]) && userSettings[iAlignmentUpperWidth] >= 0, str("alignmentUpperWidth must be a non-negative number:", userSettings[iAlignmentUpperWidth]))
   assert(is_num(userSettings[iAlignmentLowerWidth]) && userSettings[iAlignmentLowerWidth] >= 0, str("alignmentLowerWidth must be a non-negative number:", userSettings[iAlignmentLowerWidth]))
@@ -4902,10 +5536,15 @@ function ValidateConnectorSettings(userSettings) =
   assert(is_num(userSettings[iInnerEndDiameter]) && userSettings[iInnerEndDiameter] >= 0, str("innerEndDiameter must be a non-negative number:", userSettings[iInnerEndDiameter]))
   assert(is_num(userSettings[iOuterStartDiameter]) && userSettings[iOuterStartDiameter] >= 0, str("outerStartDiameter must be a non-negative number:", userSettings[iOuterStartDiameter]))
   assert(is_num(userSettings[iOuterEndDiameter]) && userSettings[iOuterEndDiameter] >= 0, str("outerEndDiameter must be a non-negative number:", userSettings[iOuterEndDiameter]))
+  assert(is_num(userSettings[iInterfaceInnerDiameter]) && userSettings[iInterfaceInnerDiameter] >= 0, str("InterfaceInnerDiameter must be a non-negative number:", userSettings[iInterfaceInnerDiameter]))
+  assert(is_num(userSettings[iInterfaceOuterDiameter]) && userSettings[iInterfaceOuterDiameter] >= 0, str("InterfaceOuterDiameter must be a non-negative number:", userSettings[iInterfaceOuterDiameter]))
+  assert(is_num(userSettings[iInterfaceWallThickness]) && userSettings[iInterfaceWallThickness] >= 0, str("InterfaceWallThickness must be a non-negative number:", userSettings[iInterfaceWallThickness]))
+  assert(is_num(userSettings[iInterfaceLength]) && userSettings[iInterfaceLength] >= 0, str("InterfaceLength must be a non-negative number:", userSettings[iInterfaceLength]))
   ValidateUserConnectorSettings(userSettings);
 
 function getConnectorSettings(
   userSettings = [],
+  slipRingSettings = [],
   alignmentDepth,
   alignmentUpperWidth,
   alignmentLowerWidth,
@@ -4922,8 +5561,28 @@ function getConnectorSettings(
     length = userSettings[iLength],
     taper = userSettings[iTaper],
     wallThickness = userSettings[iWallThickness],
-    stopThickness = userSettings[iStopThickness],
-    stopLength = userSettings[iStopLength],
+    flangeThickness = userSettings[iFlangeThickness],
+    magnetFlangeThickness = userSettings[iMagnetFlangeThickness],
+    extensionLength = userSettings[iExtensionLength],
+    extensionSlipRing = userSettings[iExtensionSlipRing],
+    extensionStopThickness = userSettings[iExtensionStopThickness],
+    extensionStopLength = userSettings[iExtensionStopLength],
+
+    extensionExitInnerDiameter = userSettings[iExtensionExitDiameter],
+    extensionText = userSettings[iExtensionText],
+    extensionTextSize = userSettings[iExtensionTextSize],
+
+    slipRingSize = slipRingSettings[0],
+    slipRingStartWallThickness = slipRingSettings[1],
+    slipRingEndWallThickness = slipRingSettings[2],
+    slipRingDeltaDiameter = slipRingSettings[3],
+
+    extTextHeight = (is_string(extensionText) && extensionText != "" && extensionTextSize > 0)
+      ? let(
+        tm = textmetrics(text=extensionText,size=extensionTextSize),
+        height = tm.size.y
+        ) height
+      : 0,
 
     _diameter = measurement_to_mm(diameter),
     _length = measurement_to_mm(length),
@@ -4936,18 +5595,36 @@ function getConnectorSettings(
       (style == "nozzle" && d == 0) ? con1OuterEndDiameter : d,
     conWallThickness = let(w = retrieveConnectorSetting(style, iSettingsWallThickness, wallThickness))
       (style == "nozzle" && w == 0) ? con1WallThickness : w,
-    conLength = retrieveConnectorSetting(style, iSettingsLength, _length),
+    conLength = let( l = retrieveConnectorSetting(style, iSettingsLength, _length))
+      (style == "mag") ? max(l, magnetFlangeThickness)
+      : (style == "flange") ? max(l, flangeThickness) : l,
     conTaper = let(t = (style == "nozzle") ? 0 : retrieveConnectorSetting(style, iSettingsTaper, taper)) conMeasurement == "inner" ? t*-1 : t,
     conInnerDiameter = conMeasurement == "inner" ? conDiameter : conDiameter - conWallThickness * 2,
     conInnerStartDiameter = conInnerDiameter - conTaper / 2,
     conOuterStartDiameter = conInnerStartDiameter + wallThickness*2,
     conInnerEndDiameter = conInnerDiameter + conTaper / 2,
     conOuterEndDiameter = conInnerEndDiameter + wallThickness*2,
+
     //If the connector hose is not shown the stop has no thickness
-    conStopThickness = (conLength <= 0 || style == "mag" || style == "flange") ? 0 : stopThickness,
+    extStopThickness = (conLength <= 0) ? 0 : extensionStopThickness,
     //If the stop has no thickness, it needs no length
-    conStopLength = (conStopThickness > 0 && style == "hose") ? stopLength : 0
-    ) let (
+    extStopLength = (extensionStopThickness <= 0) ? 0 : extensionStopLength,
+
+    extExitInnerDiameter = extensionExitInnerDiameter > 0 ? extensionExitInnerDiameter : conInnerEndDiameter,
+    extTaperLength = abs(extExitInnerDiameter - conInnerEndDiameter)/2,
+
+    conSlipRingLength = (extensionSlipRing != "disabled") ? slipRingSize.y + abs(conWallThickness - slipRingStartWallThickness) : 0,
+    extLength = max(extensionLength, extTextHeight),
+
+    extTotalLength = extStopLength + extLength + conSlipRingLength + extTaperLength,
+    conInterfaceWallThickness = (extensionSlipRing != "disabled") ? slipRingEndWallThickness : conWallThickness,
+    conInterfaceInnerDiameter = extExitInnerDiameter+slipRingDeltaDiameter,
+    conInterfaceOuterDiameter = conInterfaceInnerDiameter+conInterfaceWallThickness*2,
+    conInterfaceLength =  conLength + extTotalLength
+    )
+    echo("getConnectorSettings", slipRingSettings=slipRingSettings, extTaperLength=extTaperLength, extExitInnerDiameter=extExitInnerDiameter, conInnerEndDiameter=conInnerEndDiameter,
+      conInterfaceWallThickness=conInterfaceWallThickness, conInterfaceLength=conInterfaceLength, conLength=conLength)
+    let (
       result = [
         userSettings[iConnector],
         style,
@@ -4961,9 +5638,6 @@ function getConnectorSettings(
         userSettings[iEndCapThickness],
         userSettings[iEndCapGridSize],
         userSettings[iEndCapGridWallThickness],
-        userSettings[iStopThickness],
-        userSettings[iStopLength],
-        userSettings[iStopSymmetrical],
         userSettings[iBarbsCount],
         userSettings[iBarbsThickness],
         userSettings[iBarbsSymmetrical],
@@ -4977,6 +5651,7 @@ function getConnectorSettings(
         userSettings[iMagnetBorder],
         userSettings[iMagnetZOffset],
         userSettings[iMagnetFlangeThickness],
+        userSettings[iMagnetFlangeRoundover],
         userSettings[iMagnetTwistLockSize],
         userSettings[iFlangeWidth],
         userSettings[iFlangeThickness],
@@ -4991,11 +5666,20 @@ function getConnectorSettings(
         userSettings[iNozzleOffset],
         userSettings[iNozzleChamferPercentage],
         userSettings[iNozzleChamferAngle],
-        userSettings[iExtensionLength],
+        extLength,
+        userSettings[iExtensionExitDiameter],
         userSettings[iExtensionGridSize],
         userSettings[iExtensionGridWallThickness],
         userSettings[iExtensionText],
         userSettings[iExtensionTextSize],
+        userSettings[iExtensionSlipRing],
+        userSettings[iExtensionSlipRingWidth],
+        userSettings[iExtensionSlipRingSupport],
+        userSettings[iExtensionSlipRingSupportSize],
+        userSettings[iExtensionSlipRingSupportSpacing],
+        extStopThickness,
+        extStopLength,
+        userSettings[iExtensionStopSymmetrical],
         userSettings[iAlignmentRing],
 
         //End of user settings
@@ -5004,15 +5688,21 @@ function getConnectorSettings(
         alignmentLowerWidth,
         alignmentSideClearance,
         alignmentDepthClearance,
+
         adapterColor,
         conInnerDiameter,
         conInnerStartDiameter,
         conOuterStartDiameter,
         conInnerEndDiameter,
         conOuterEndDiameter,
-        conStopThickness,
-        conStopLength
+        conInterfaceInnerDiameter,
+        conInterfaceOuterDiameter,
+        conInterfaceWallThickness,
+        conInterfaceLength,
+        extTaperLength,
+        extTotalLength
         ])
+        echo(result=result)
         ValidateConnectorSettings(result);
 //CombinedEnd from path connector_object.scad
 //Combined from path connector_common.scad
@@ -5037,6 +5727,164 @@ function retrieveConnectorSetting(connector, iSetting, default = -1) = let(
     ? default
     : settingValue;
 //CombinedEnd from path connector_common.scad
+//Combined from path connector_flange.scad
+
+
+
+
+
+
+
+
+
+connector_flange_demo = false;
+
+if(connector_flange_demo && $preview){
+  $fn = 64;
+  spacer = 100;
+
+  render_options = [
+    [40, 32, 40, 2, 6, 8, 20, 2, 4, 5],
+    [40, 32, 45, 2.5, 8, 10, 18, 1.5, 4, 6],
+    [50, 36, 48, 3, 10, 12, 24, 2, 5, 6],
+    [50, 42, 55, 3, 12, 14, 30, 3, 6, 8]
+  ];
+
+  for(iRender = [0:len(render_options)-1])
+    translate([spacer * (iRender % 2), spacer * floor(iRender / 2), 0])
+      FlangeConnector(
+        innerStartDiameter = render_options[iRender][0],
+        innerEndDiameter = render_options[iRender][1],
+        length = render_options[iRender][2],
+        wallThickness = render_options[iRender][3],
+        flangeThickness = render_options[iRender][4],
+        flangeWidth = render_options[iRender][5],
+        screwPosition = render_options[iRender][6],
+        screwBorder = render_options[iRender][7],
+        screwCount = render_options[iRender][8],
+        screwDiameter = render_options[iRender][9],
+        help = true);
+}
+
+module FlangeConnector(
+    innerStartDiameter,
+    innerEndDiameter,
+    length,
+    wallThickness,
+    flangeThickness,
+    flangeWidth,
+    screwPosition,
+    screwBorder,
+    screwCount,
+    screwDiameter,
+    help
+)
+{
+  assert(is_num(innerStartDiameter) && innerStartDiameter > 0, str("innerStartDiameter must be a number greater than 0. Provided:", innerStartDiameter));
+  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, str("innerEndDiameter must be a number greater than 0. Provided:", innerEndDiameter));
+  assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
+  assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
+  assert(is_num(flangeThickness) && flangeThickness > 0, str("flangeThickness must be a number greater than 0. Provided:", flangeThickness));
+  assert(is_num(flangeWidth) && flangeWidth > 0, str("flangeWidth must be a number greater than 0. Provided:", flangeWidth));
+  assert(is_num(screwPosition) && screwPosition >= 0, str("screwPosition must be a number greater than or equal to 0. Provided:", screwPosition));
+  assert(is_num(screwBorder) && screwBorder >= 0, str("screwBorder must be a number greater than or equal to 0. Provided:", screwBorder));
+  assert(is_num(screwCount) && screwCount >= 1 && floor(screwCount) == screwCount, str("screwCount must be an integer greater than or equal to 1. Provided:", screwCount));
+  assert(is_num(screwDiameter) && screwDiameter > 0, str("screwDiameter must be a number greater than 0. Provided:", screwDiameter));
+  assert(is_bool(help), str("help must be a boolean. Provided:", help));
+
+  //The fillet around the edge
+  fillet = flangeThickness;
+  border = screwBorder == 0 ? flangeWidth/4 : screwBorder;
+  flangeOuterDiameter = innerStartDiameter + flangeWidth;
+  screwPositionRadius = screwPosition != 0
+    ? innerStartDiameter/2 + screwDiameter/2 + screwPosition/2
+    : (innerStartDiameter/2 + fillet + (flangeWidth/2-fillet)/2);
+
+  //assert(innerEndDiameter <= innerStartDiameter, str("innerEndDiameter should not exceed innerStartDiameter for this flange form. innerEndDiameter=", innerEndDiameter, " innerStartDiameter=", innerStartDiameter));
+  //assert(flangeOuterDiameter > innerStartDiameter, str("flangeOuterDiameter must be greater than innerStartDiameter. flangeOuterDiameter=", flangeOuterDiameter, " innerStartDiameter=", innerStartDiameter));
+  assert(border >= 0, str("border must be greater than or equal to 0. Provided:", border));
+  assert(screwPositionRadius > 0, str("screwPositionRadius must be greater than 0. Provided:", screwPositionRadius));
+//  assert(screwPositionRadius + screwDiameter/2 <= flangeOuterDiameter/2 + screwDiameter, str("screwPositionRadius is too large for flangeOuterDiameter. screwPositionRadius=", screwPositionRadius, " flangeOuterDiameter=", flangeOuterDiameter));
+
+  echo("FlangeConnector", screwCount=screwCount, screwDiameter=screwDiameter, screwPosition=screwPosition, border=border);
+  echo("FlangeConnector", screwPositionRadius=screwPositionRadius, fillet=fillet, flangeOuterDiameter=flangeOuterDiameter, innerStartDiameter=innerStartDiameter, flangeWidth=flangeWidth);
+
+  difference ()
+  {
+    //flange
+    union() {
+      pipe(
+        diameter1 = innerStartDiameter,
+        diameter2 = innerEndDiameter,
+        length = length,
+        wallThickness1 = wallThickness,
+        wallThickness2 = wallThickness);
+
+      // flange aound the screws
+      hull () {
+        cylinder (d = flangeOuterDiameter, flangeThickness);
+
+        for (i = [0: screwCount-1]) {
+            // The rotation should try to avoid the screw being under the bent hose.
+            rotate ([fudgeFactor, 0, 180/screwCount * (i * 2 - 1 + screwCount)])
+            translate ([screwPositionRadius, 0, 0])
+            cylinder (d = screwDiameter + border*2, h = flangeThickness);
+        }
+      }
+
+      // taper
+      intersection()
+      {
+        HalfConePipe (
+            diameter = innerEndDiameter,
+            length = fillet,
+            wallThickness1 = fillet - fudgeFactor,
+            wallThickness2 = 0,
+            zPosition= flangeThickness - fudgeFactor);
+
+        translate([0, 0, 0])
+        {
+            // limit fillet to length
+            cylinder(
+                d=innerEndDiameter*2,
+                h=length);
+        }
+      }
+    }
+
+    //Screw cut out
+    for (i = [0: screwCount-1]) {
+        // The rotation should try to avoid the screw being under the bent hose.
+        rotate ([fudgeFactor, 0, 180/screwCount * (i * 2 - 1 + screwCount)])
+        translate ([screwPositionRadius, 0, - fudgeFactor*2])
+        cylinder (d = screwDiameter, h = flangeThickness + length + fudgeFactor*4);
+    }
+
+    //Flange inner
+    translate([0, 0, -fudgeFactor])
+        cylinder (
+            d1 = innerStartDiameter,
+            d2 = innerEndDiameter,
+            h = length + 2 * fudgeFactor*2);
+  }
+
+  HelpTxt("FlangeConnector",[
+    "innerStartDiameter", innerStartDiameter,
+    "innerEndDiameter", innerEndDiameter,
+    "length", length,
+    "wallThickness", wallThickness,
+    "flangeThickness", flangeThickness,
+    "flangeWidth", flangeWidth,
+    "screwPosition", screwPosition,
+    "screwBorder", screwBorder,
+    "screwCount", screwCount,
+    "screwDiameter", screwDiameter,
+    "border", border,
+    "flangeOuterDiameter", flangeOuterDiameter,
+    "screwPositionRadius", screwPositionRadius
+    ],help);
+}
+//CombinedEnd from path connector_flange.scad
 //Combined from path connector_hose.scad
 
 
@@ -5131,92 +5979,113 @@ module HoseConnector(
     help
 )
 {
-  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, "innerEndDiameter must be a number greater than 0");
-  assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");
+  assert(is_num(innerEndDiameter) && innerEndDiameter > 0,
+    str("innerEndDiameter must be a number greater than 0; got: ", innerEndDiameter));
+  assert(is_num(innerStartDiameter) && innerStartDiameter > 0,
+    str("innerStartDiameter must be a number greater than 0; got: ", innerStartDiameter));
   assert(is_string(connectorMeasurement) && (connectorMeasurement == "outer" || connectorMeasurement == "inner"),
-    "connectorMeasurement must be 'outer' or 'inner'");
-  assert(is_num(length) && length > 0, "length must be a number greater than 0");
-  assert(is_num(wallThickness) && wallThickness > 0, "wallThickness must be a number greater than 0");
-  assert(is_num(stopLength) && stopLength >= 0, "stopLength must be a number greater than or equal to 0");
-  assert(is_num(stopWidth) && stopWidth >= 0, "stopWidth must be a number greater than or equal to 0");
+    str("connectorMeasurement must be 'outer' or 'inner'; got: ", connectorMeasurement));
+  assert(is_num(length) && length >= 0, str("length must be a number greater than 0; got: ", length));
+  assert(is_num(wallThickness) && wallThickness > 0,
+    str("wallThickness must be a number greater than 0; got: ", wallThickness));
+  assert(is_num(stopLength) && stopLength >= 0,
+    str("stopLength must be a number greater than or equal to 0; got: ", stopLength));
+  assert(is_num(stopWidth) && stopWidth >= 0,
+    str("stopWidth must be a number greater than or equal to 0; got: ", stopWidth));
   //assert(is_bool(stopSymmetrical), "stopSymmetrical must be a boolean");
-  assert(is_num(barbsCount) && barbsCount >= 0 && floor(barbsCount) == barbsCount, "barbsCount must be a non-negative integer");
-  assert(is_num(barbsThickness) && barbsThickness >= 0, "barbsThickness must be a number greater than or equal to 0");
-  assert(is_bool(barbsSymmetrical), "barbsSymmetrical must be a boolean");
-  assert(is_num(endCapDiameter) && endCapDiameter >= 0, "endCapDiameter must be a number greater than or equal to 0");
-  assert(is_num(endCapThickness) && endCapThickness >= 0, "endCapThickness must be a number greater than or equal to 0");
-  assert(is_num(endCapGridSize) && endCapGridSize >= 0, "endCapGridSize must be a number greater than or equal to 0");
-  assert(is_num(endCapGridWallThickness) && endCapGridWallThickness >= 0, "endCapGridWallThickness must be a number greater than or equal to 0");
-  assert(is_num(chamferLength) && chamferLength >= 0, "chamferLength must be a number greater than or equal to 0");
-  assert(is_num(chamferWidth) && chamferWidth >= 0, "chamferWidth must be a number greater than or equal to 0");
+  assert(is_num(barbsCount) && barbsCount >= 0 && floor(barbsCount) == barbsCount,
+    str("barbsCount must be a non-negative integer; got: ", barbsCount));
+  assert(is_num(barbsThickness) && barbsThickness >= 0,
+    str("barbsThickness must be a number greater than or equal to 0; got: ", barbsThickness));
+  assert(is_bool(barbsSymmetrical), str("barbsSymmetrical must be a boolean; got: ", barbsSymmetrical));
+  assert(is_num(endCapDiameter) && endCapDiameter >= 0,
+    str("endCapDiameter must be a number greater than or equal to 0; got: ", endCapDiameter));
+  assert(is_num(endCapThickness) && endCapThickness >= 0,
+    str("endCapThickness must be a number greater than or equal to 0; got: ", endCapThickness));
+  assert(is_num(endCapGridSize) && endCapGridSize >= 0,
+    str("endCapGridSize must be a number greater than or equal to 0; got: ", endCapGridSize));
+  assert(is_num(endCapGridWallThickness) && endCapGridWallThickness >= 0,
+    str("endCapGridWallThickness must be a number greater than or equal to 0; got: ", endCapGridWallThickness));
+  assert(is_num(chamferLength) && chamferLength >= 0,
+    str("chamferLength must be a number greater than or equal to 0; got: ", chamferLength));
+  assert(is_num(chamferWidth) && chamferWidth >= 0,
+    str("chamferWidth must be a number greater than or equal to 0; got: ", chamferWidth));
   assert(is_string(enableThreads) && (enableThreads == "disabled" || enableThreads == "enabled" || enableThreads == "reversed"),
-    "enableThreads must be 'disabled', 'enabled', or 'reversed'");
-  assert(is_num(threadPitch) && threadPitch >= 0, "threadPitch must be a number greater than or equal to 0");
-  assert(is_num(threadToothAngle) && threadToothAngle >= 0 && threadToothAngle <= 90, "threadToothAngle must be between 0 and 90");
-  assert(is_num(threadToothHeight) && threadToothHeight >= 0, "threadToothHeight must be a number greater than or equal to 0");
+    str("enableThreads must be 'disabled', 'enabled', or 'reversed'; got: ", enableThreads));
+  assert(is_num(threadPitch) && threadPitch >= 0,
+    str("threadPitch must be a number greater than or equal to 0; got: ", threadPitch));
+  assert(is_num(threadToothAngle) && threadToothAngle >= 0 && threadToothAngle <= 90,
+    str("threadToothAngle must be between 0 and 90; got: ", threadToothAngle));
+  assert(is_num(threadToothHeight) && threadToothHeight >= 0,
+    str("threadToothHeight must be a number greater than or equal to 0; got: ", threadToothHeight));
 
-  assert(stopLength == 0 || stopWidth > 0, "stopWidth must be greater than 0 when stopLength is enabled");
-  assert(barbsCount == 0 || wallThickness > 0, "wallThickness must be greater than 0 when barbs are enabled");
-  assert(endCapGridSize == 0 || endCapThickness > 0, "endCapThickness must be greater than 0 when endCapGridSize is enabled");
+  assert(stopLength == 0 || stopWidth > 0,
+    str("stopWidth must be greater than 0 when stopLength is enabled; stopLength=", stopLength, ", stopWidth=", stopWidth));
+  assert(barbsCount == 0 || wallThickness > 0,
+    str("wallThickness must be greater than 0 when barbs are enabled; barbsCount=", barbsCount, ", wallThickness=", wallThickness));
+  assert(endCapGridSize == 0 || endCapThickness > 0,
+    str("endCapThickness must be greater than 0 when endCapGridSize is enabled; endCapGridSize=", endCapGridSize, ", endCapThickness=", endCapThickness));
 
   _barbsThickness = barbsThickness == 0 ? wallThickness/2 : barbsThickness;
   barbLength = length/(barbsCount*2+1);
 
   union() {
-    difference ()
-    {
-      //outer cylinder
-      translate([0,0,0])
-      hull()
+    if(length > 0){
+      difference ()
       {
-        cylinder(fudgeFactor, d=innerStartDiameter+2*wallThickness);
-        translate([0,0,length-fudgeFactor])
-          cylinder(fudgeFactor, d=innerEndDiameter+2*wallThickness);
+        //outer cylinder
+        translate([0,0,0])
+        hull()
+        {
+          cylinder(fudgeFactor, d=innerStartDiameter+2*wallThickness);
+          translate([0,0,length-fudgeFactor])
+            cylinder(fudgeFactor, d=innerEndDiameter+2*wallThickness);
+        }
+
+        //Inner cylinder to remove
+        translate([0,0,0-fudgeFactor])
+        hull()
+        {
+          cylinder(fudgeFactor, d=innerStartDiameter);
+          translate([0,0,length+2*fudgeFactor])
+            cylinder(fudgeFactor, d=innerEndDiameter);
+        }
+        if(chamferLength >0)
+        {
+          pipe(
+            diameter1 = connectorMeasurement == "outer" ?
+              innerStartDiameter + wallThickness*2 - chamferWidth*2 :
+              innerStartDiameter - chamferWidth*2,
+            diameter2 = connectorMeasurement == "outer" ?
+              innerStartDiameter + wallThickness*2 + chamferWidth*2 :
+              innerStartDiameter - chamferWidth*2,
+            length = chamferLength*2,
+            wallThickness1 = chamferWidth*2,
+            wallThickness2 = 0,
+            zPosition = -fudgeFactor);
+        }
       }
 
-      //Inner cylinder to remove
-      translate([0,0,0-fudgeFactor])
-      hull()
-      {
-        cylinder(fudgeFactor, d=innerStartDiameter);
-        translate([0,0,length+2*fudgeFactor])
-          cylinder(fudgeFactor, d=innerEndDiameter);
-      }
-      if(chamferLength >0)
-      {
-        pipe(
-          diameter1 = connectorMeasurement == "outer" ?
-            innerStartDiameter + wallThickness*2 - chamferWidth*2 :
-            innerStartDiameter - chamferWidth*2,
-          diameter2 = connectorMeasurement == "outer" ?
-            innerStartDiameter + wallThickness*2 + chamferWidth*2 :
-            innerStartDiameter - chamferWidth*2,
-          length = chamferLength*2,
-          wallThickness1 = chamferWidth*2,
-          wallThickness2 = 0,
-          zPosition = -fudgeFactor);
-      }
-    }
-
-    if(enableThreads != "disabled"){
-      if(connectorMeasurement == "outer"){
-        ExternalHoseThread(
-          diameter = innerStartDiameter+wallThickness,
+      if(enableThreads != "disabled"){
+        if(connectorMeasurement == "outer"){
+          ExternalHoseThread(
+            diameter = innerStartDiameter+wallThickness,
+            wallThickness=wallThickness,
+            height=length,
+            pitch=threadPitch,
+            tooth_angle=threadToothAngle,
+            tooth_height=threadToothHeight,
+            reverse_thread=(enableThreads == "reversed"));
+        } else {
+        InternalHoseThread(
+          diameter = innerStartDiameter,
           wallThickness=wallThickness,
           height=length,
           pitch=threadPitch,
           tooth_angle=threadToothAngle,
           tooth_height=threadToothHeight,
           reverse_thread=(enableThreads == "reversed"));
-      } else {
-       InternalHoseThread(
-        diameter = innerStartDiameter,
-        wallThickness=wallThickness,
-        height=length,
-        pitch=threadPitch,
-        tooth_angle=threadToothAngle,
-        tooth_height=threadToothHeight,
-        reverse_thread=(enableThreads == "reversed"));
+        }
       }
     }
 
@@ -5275,7 +6144,7 @@ module HoseConnector(
       translate([0,0,-fudgeFactor])
       Stopper(
         diameter = innerEndDiameter,
-        outer = innerStartDiameter <= innerEndDiameter,
+        outer = innerStartDiameter <= innerEndDiameter && connectorMeasurement != "inner",
         totalLength = stopLength+fudgeFactor*2,
         taper1 = stopSymmetrical ? 0.4 : 0.5,
         taper2 = stopSymmetrical ? 0.4 : 0,
@@ -5358,17 +6227,32 @@ module InternalHoseThread(
   tooth_angle=30,
   tooth_height=0,
   reverse_thread = false) {
+
+  // Same bore sizing as ScrewHole.
+  cut_diam = 1.01*diameter + 1.25*tolerance;
+  _pitch = (pitch==0) ? ThreadPitch(cut_diam) : pitch;
+  _tooth_height = (tooth_height==0) ? _pitch : min(tooth_height, _pitch);
+
+  // ScrewHole's cut profile is flat at the root radius, which truncates the
+  // material teeth flat when tooth_height < pitch. Cutting with a full-height
+  // (pointy) thread enlarged by 'shift', clipped back to the intended major
+  // radius, keeps the teeth pointy at the requested height and flank angle.
+  shift = (_pitch - _tooth_height) / (2*tan(tooth_angle));
+  extra_height = 0.001 * height;
+
   mirror(reverse_thread ? [0,0,0] :[1,0,0])
-  ScrewHole(
-    outer_diam=diameter,
-    height=height,
-    tolerance=tolerance,
-    position=position,
-    rotation=rotation,
-    pitch=pitch,
-    tooth_angle=tooth_angle,
-    tooth_height=tooth_height)
+  difference() {
     cylinder(h=height, r=diameter/2+wallThickness);
+    translate(position)
+      rotate(rotation)
+      translate([0, 0, -extra_height/2])
+      intersection() {
+        ScrewThread(cut_diam + 2*shift, height + extra_height,
+          pitch=_pitch, tooth_angle=tooth_angle, tolerance=tolerance);
+        // ScrewThread's crest radius for cut_diam, shrinkage correction included.
+        cylinder(h=height + extra_height, r=(cut_diam + 0.25*tolerance)/2);
+      }
+  }
 }
 
 // create an external thread outside a hose (like a bolt)
@@ -6057,164 +6941,6 @@ module Demo() {
 //MetricBoltSet(6, 8, 10);
 
 //CombinedEnd from path threads.scad
-//Combined from path connector_flange.scad
-
-
-
-
-
-
-
-
-
-connector_flange_demo = false;
-
-if(connector_flange_demo && $preview){
-  $fn = 64;
-  spacer = 100;
-
-  render_options = [
-    [40, 32, 40, 2, 6, 8, 20, 2, 4, 5],
-    [40, 32, 45, 2.5, 8, 10, 18, 1.5, 4, 6],
-    [50, 36, 48, 3, 10, 12, 24, 2, 5, 6],
-    [50, 42, 55, 3, 12, 14, 30, 3, 6, 8]
-  ];
-
-  for(iRender = [0:len(render_options)-1])
-    translate([spacer * (iRender % 2), spacer * floor(iRender / 2), 0])
-      FlangeConnector(
-        innerStartDiameter = render_options[iRender][0],
-        innerEndDiameter = render_options[iRender][1],
-        length = render_options[iRender][2],
-        wallThickness = render_options[iRender][3],
-        flangeThickness = render_options[iRender][4],
-        flangeWidth = render_options[iRender][5],
-        screwPosition = render_options[iRender][6],
-        screwBorder = render_options[iRender][7],
-        screwCount = render_options[iRender][8],
-        screwDiameter = render_options[iRender][9],
-        help = true);
-}
-
-module FlangeConnector(
-    innerStartDiameter,
-    innerEndDiameter,
-    length,
-    wallThickness,
-    flangeThickness,
-    flangeWidth,
-    screwPosition,
-    screwBorder,
-    screwCount,
-    screwDiameter,
-    help
-)
-{
-  assert(is_num(innerStartDiameter) && innerStartDiameter > 0, str("innerStartDiameter must be a number greater than 0. Provided:", innerStartDiameter));
-  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, str("innerEndDiameter must be a number greater than 0. Provided:", innerEndDiameter));
-  assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
-  assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
-  assert(is_num(flangeThickness) && flangeThickness > 0, str("flangeThickness must be a number greater than 0. Provided:", flangeThickness));
-  assert(is_num(flangeWidth) && flangeWidth > 0, str("flangeWidth must be a number greater than 0. Provided:", flangeWidth));
-  assert(is_num(screwPosition) && screwPosition >= 0, str("screwPosition must be a number greater than or equal to 0. Provided:", screwPosition));
-  assert(is_num(screwBorder) && screwBorder >= 0, str("screwBorder must be a number greater than or equal to 0. Provided:", screwBorder));
-  assert(is_num(screwCount) && screwCount >= 1 && floor(screwCount) == screwCount, str("screwCount must be an integer greater than or equal to 1. Provided:", screwCount));
-  assert(is_num(screwDiameter) && screwDiameter > 0, str("screwDiameter must be a number greater than 0. Provided:", screwDiameter));
-  assert(is_bool(help), str("help must be a boolean. Provided:", help));
-
-  //The fillet around the edge
-  fillet = flangeThickness;
-  border = screwBorder == 0 ? flangeWidth/4 : screwBorder;
-  flangeOuterDiameter = innerStartDiameter + flangeWidth;
-  screwPositionRadius = screwPosition != 0
-    ? innerStartDiameter/2 + screwDiameter/2 + screwPosition/2
-    : (innerStartDiameter/2 + fillet + (flangeWidth/2-fillet)/2);
-
-  //assert(innerEndDiameter <= innerStartDiameter, str("innerEndDiameter should not exceed innerStartDiameter for this flange form. innerEndDiameter=", innerEndDiameter, " innerStartDiameter=", innerStartDiameter));
-  //assert(flangeOuterDiameter > innerStartDiameter, str("flangeOuterDiameter must be greater than innerStartDiameter. flangeOuterDiameter=", flangeOuterDiameter, " innerStartDiameter=", innerStartDiameter));
-  assert(border >= 0, str("border must be greater than or equal to 0. Provided:", border));
-  assert(screwPositionRadius > 0, str("screwPositionRadius must be greater than 0. Provided:", screwPositionRadius));
-//  assert(screwPositionRadius + screwDiameter/2 <= flangeOuterDiameter/2 + screwDiameter, str("screwPositionRadius is too large for flangeOuterDiameter. screwPositionRadius=", screwPositionRadius, " flangeOuterDiameter=", flangeOuterDiameter));
-
-  echo("FlangeConnector", screwCount=screwCount, screwDiameter=screwDiameter, screwPosition=screwPosition, border=border);
-  echo("FlangeConnector", screwPositionRadius=screwPositionRadius, fillet=fillet, flangeOuterDiameter=flangeOuterDiameter, innerStartDiameter=innerStartDiameter, flangeWidth=flangeWidth);
-
-  difference ()
-  {
-    //flange
-    union() {
-      pipe(
-        diameter1 = innerStartDiameter,
-        diameter2 = innerEndDiameter,
-        length = length,
-        wallThickness1 = wallThickness,
-        wallThickness2 = wallThickness);
-
-      // flange aound the screws
-      hull () {
-        cylinder (d = flangeOuterDiameter, flangeThickness);
-
-        for (i = [0: screwCount-1]) {
-            // The rotation should try to avoid the screw being under the bent hose.
-            rotate ([fudgeFactor, 0, 180/screwCount * (i * 2 - 1 + screwCount)])
-            translate ([screwPositionRadius, 0, 0])
-            cylinder (d = screwDiameter + border*2, h = flangeThickness);
-        }
-      }
-
-      // taper
-      intersection()
-      {
-        HalfConePipe (
-            diameter = innerEndDiameter,
-            length = fillet,
-            wallThickness1 = fillet - fudgeFactor,
-            wallThickness2 = 0,
-            zPosition= flangeThickness - fudgeFactor);
-
-        translate([0, 0, 0])
-        {
-            // limit fillet to length
-            cylinder(
-                d=innerEndDiameter*2,
-                h=length);
-        }
-      }
-    }
-
-    //Screw cut out
-    for (i = [0: screwCount-1]) {
-        // The rotation should try to avoid the screw being under the bent hose.
-        rotate ([fudgeFactor, 0, 180/screwCount * (i * 2 - 1 + screwCount)])
-        translate ([screwPositionRadius, 0, - fudgeFactor*2])
-        cylinder (d = screwDiameter, h = flangeThickness + length + fudgeFactor*4);
-    }
-
-    //Flange inner
-    translate([0, 0, -fudgeFactor])
-        cylinder (
-            d1 = innerStartDiameter,
-            d2 = innerEndDiameter,
-            h = length + 2 * fudgeFactor*2);
-  }
-
-  HelpTxt("FlangeConnector",[
-    "innerStartDiameter", innerStartDiameter,
-    "innerEndDiameter", innerEndDiameter,
-    "length", length,
-    "wallThickness", wallThickness,
-    "flangeThickness", flangeThickness,
-    "flangeWidth", flangeWidth,
-    "screwPosition", screwPosition,
-    "screwBorder", screwBorder,
-    "screwCount", screwCount,
-    "screwDiameter", screwDiameter,
-    "border", border,
-    "flangeOuterDiameter", flangeOuterDiameter,
-    "screwPositionRadius", screwPositionRadius
-    ],help);
-}
-//CombinedEnd from path connector_flange.scad
 //Combined from path connector_magnetic.scad
 
 
@@ -6232,13 +6958,21 @@ if(connector_magnetic_demo && $preview){
     diameter = 50;
     spacer = diameter * 1.8;
 
+    imagnetic_demo_length = 0;
+    imagnetic_demo_magnetDiameter = 1;
+    imagnetic_demo_alignmentRing = 2;
+    imagnetic_demo_twistLockSize = 3;
+    imagnetic_demo_magnetCount = 4;
+    
     render_options = [
-        ["no", "0", 8],
-        ["protruding", "0", 8],
-        ["recessed", "0", 8],
-        ["no", "4", 8],
-        ["no", "4cnc", 8],
-        ["no", "0", 12]
+        [7.5, 8, "no", "0", 8],
+        [8, 8, "no", "0", 8],
+        [20, 10.5, "no", "0", 8],
+        [20, 10.5, "protruding", "0", 8],
+        [20, 10.5, "recessed", "0", 8],
+        [20, 10.5, "no", "4", 8],
+        [20, 10.5, "no", "4cnc", 8],
+        [20, 10.5, "no", "0", 12]
     ];
 
     for(iRender = [0:len(render_options)-1])
@@ -6246,21 +6980,21 @@ if(connector_magnetic_demo && $preview){
         MagneticConnector(
             innerStartDiameter = diameter,
             innerEndDiameter = diameter,
-            length = 20,
+            length = render_options[iRender][imagnetic_demo_length],
             wallThickness = 2,
-            magnetDiameter = 10.5,
+            magnetDiameter = render_options[iRender][imagnetic_demo_magnetDiameter],
             magnetThickness = 4,
             magnetBorder = 2,
             magnetZOffset = 0,
             flangeThickness = 7.5,
-            magnetCount = render_options[iRender][2],
-            alignmentRing = render_options[iRender][0],
+            magnetCount = render_options[iRender][imagnetic_demo_magnetCount],
+            alignmentRing = render_options[iRender][imagnetic_demo_alignmentRing],
             alignmentDepth = 2,
             alignmentUpperWidth = 3,
             alignmentLowerWidth = 1,
             alignmentSideClearance = 0.25,
             alignmentDepthClearance = 0.75,
-            twistLockSize = render_options[iRender][1]);
+            twistLockSize = render_options[iRender][imagnetic_demo_twistLockSize]);
 }
 
 module MagneticConnector(
@@ -6281,6 +7015,7 @@ module MagneticConnector(
     alignmentSideClearance,
     alignmentDepthClearance,
     twistLockSize,
+    roundover = true,
 )
 {
     assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");
@@ -6302,6 +7037,7 @@ module MagneticConnector(
         "alignmentRing must be one of 'no', 'protruding', or 'recessed'");
     assert(is_string(twistLockSize) && (twistLockSize == "0" || twistLockSize == "3" || twistLockSize == "3cnc" || twistLockSize == "4" || twistLockSize == "4cnc" || twistLockSize == "5" || twistLockSize == "5cnc"),
         "twistLockSize must be one of '0', '3', '3cnc', '4', '4cnc', '5', or '5cnc'");
+    assert(is_bool(roundover), "roundover must be a boolean");
 
     assert(magnetZOffset + magnetThickness <= flangeThickness + fudgeFactor, "magnetZOffset + magnetThickness must be less than or equal to flangeThickness");
     assert(alignmentDepthClearance <= alignmentDepth, "alignmentDepthClearance must be less than or equal to alignmentDepth");
@@ -6343,7 +7079,10 @@ module MagneticConnector(
 
 
   echo("MagneticConnector_locking", magnetDivisionAngle=magnetDivisionAngle, magnetCir=magnetCir, magnetDivisionCir=magnetDivisionCir, minLockSpace = lockingSystemSize, endAngleoffset=endAngleoffset, endAngleoffset=endAngleoffset);
-  fillet = flangeThickness;
+  roundoverSize = !roundover || lockingSize != [0,0,0] ? 0
+    : max(flangeThickness-magnetThickness-magnetZOffset,0);
+
+  fillet = flangeThickness - roundoverSize;
     difference ()
     {
         //flange
@@ -6357,17 +7096,15 @@ module MagneticConnector(
 
             // flange aound the magnets
             hull () {
-                roundover = lockingSize !=[0,0,0] ? 0
-                  : max(flangeThickness-magnetThickness-magnetZOffset,0);
-                  echo(roundover=roundover);
+
                 for (i = [0: magnetCount-1]) {
                     rotate ([0, 0, i * magnetDivisionAngle])
                     translate ([magnetPosition, 0, 0])
-                    if(roundover > 0){
+                    if(roundoverSize > 0){
                       roundedCylinder(
                         h = flangeThickness,
                         r = (magnetDiameter + magnetBorder)/2,
-                        roundedr2=roundover);
+                        roundedr2=roundoverSize);
                     }else {
                       cylinder (d = magnetDiameter + magnetBorder * 2, flangeThickness);
                     }
@@ -6771,6 +7508,154 @@ module Nozzle(
     ],help);
 }
 //CombinedEnd from path connector_nozzle.scad
+//Combined from path connector_bosch_sander.scad
+
+
+
+
+
+
+
+
+
+
+// Bosch random orbital sander (e.g. ROS20VS) dust extraction port.
+// The sander's outlet rim has 8 bumps; this connector fits over it and
+// twist-locks via 8 bayonet grooves cut into the inner wall.
+//
+// Adapted from "Bosch ROS20VS sander+vacuum adapter (OpenSCAD)" by tjsoco
+// Source:  https://www.printables.com/model/794035-bosch-ros20vs-sandervacuum-adapter-openscad
+// Original license: Creative Commons Attribution (CC-BY 4.0) - https://creativecommons.org/licenses/by/4.0/
+// The bayonet locking-groove geometry is derived from that work.
+
+
+boschSanderVersion = "1.0";
+boschSanderMeasurement = "inner";     // the diameter is the bore that slips over the sander outlet
+boschSanderInnerDiameter = 28;        // inside dimension of the sander end (fixed by the tool)
+boschSanderWallThickness = 3.5;       // wall thickness (locked to the tool via the settings below)
+boschSanderDefaultLength = 28;
+boschSanderMinLength = 20;            // must clear the bayonet groove (entrance + lock pocket + margin)
+boschSanderGrooveCount = 8;           // the sander rim has 8 bumps
+
+// Bayonet channel geometry, measured axially from the insertion opening (z = 0).
+boschSanderGrooveWidth = 2.7;         // width/diameter of the machined channel
+boschSanderEntranceDepth = 15;        // how far a bump travels straight in before the twist
+boschSanderTwistAngle = 20;           // rotation from the entrance channel to the locking pocket
+boschSanderLockDepth = 2;             // how far the locking pocket rises back toward the opening
+
+// Clearance pocket at the mouth so the connector can seat past the machine's rubber ring
+// (the ring nests in this pocket) far enough for the bumps to reach the bayonet.
+boschSanderRingClearanceDiameter = 30.6;  // outer diameter of the machine's rubber ring
+boschSanderRingClearanceDepth = 5;        // how deep the pocket is bored into the mouth
+boschSanderRingClearanceChamfer = 1;      // 45 lead-in so it slides easily over the rubber
+
+// Bore (measurement + diameter), wall thickness and taper are locked to the tool so the part
+// fits and the transition blends flush -- registered values override the matching Customizer
+// fields, the same as the other tool connectors (Dyson, Makita, ...). Wall defaults to
+// boschSanderWallThickness (outer = boschSanderInnerDiameter + 2 * wall).
+// Length is left unregistered, so End_Length passes through from the Customizer and can be
+// grown from boschSanderMinLength upward (checked in the module below).
+boschSanderSettings = ["bosch_sander", [
+  [iSettingsLength, boschSanderDefaultLength],
+  [iSettingsMeasurement, boschSanderMeasurement],
+  [iSettingsDiameter, boschSanderInnerDiameter],
+  [iSettingsWallThickness, boschSanderWallThickness],
+  [iSettingsTaper, 0],
+  [iSettingsVersion, boschSanderVersion]
+  ]];
+
+connector_bosch_sander_demo = false;
+
+if(connector_bosch_sander_demo){
+  BoschSanderConnector(help = true, $fn = 128);
+}
+
+// A single bayonet groove pattern (subtracted from the tube wall).
+// boreRadius places the channel on the inner wall; the opening is at z = 0.
+module boschSanderLockingGroove(boreRadius){
+  gw = boschSanderGrooveWidth;
+  // Flared lead-in at the mouth so the bump finds the channel.
+  translate([boreRadius,0,0])
+    hull(){
+      sphere(d=gw+0.5);
+      translate([0,0,2]) sphere(d=gw+0.5);
+    }
+  // Straight entrance channel running in from the mouth to the twist.
+  translate([boreRadius,0,0])
+    hull(){
+      sphere(d=gw);
+      translate([0,0,boschSanderEntranceDepth]) sphere(d=gw);
+    }
+  // Lateral channel: the twist that carries the bump sideways.
+  translate([0,0,boschSanderEntranceDepth])
+    rotate_extrude(angle=boschSanderTwistAngle)
+      translate([boreRadius,0,0]) circle(d=gw);
+  // Locking pocket: rises back toward the mouth so the bump is retained.
+  rotate([0,0,boschSanderTwistAngle])
+    translate([boreRadius,0,boschSanderEntranceDepth-boschSanderLockDepth])
+      hull(){
+        sphere(d=gw);
+        translate([0,0,boschSanderLockDepth]) sphere(d=gw);
+      }
+}
+
+module BoschSanderConnector(
+  innerEndDiameter = boschSanderInnerDiameter,
+  length = boschSanderDefaultLength,
+  wallThickness = boschSanderWallThickness,
+  help = false,
+  $fn = 64
+){
+  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, str("innerEndDiameter must be a number greater than 0. Provided:", innerEndDiameter));
+  assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
+  assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
+  assert(is_bool(help), str("help must be a boolean. Provided:", help));
+  // Length may be grown from its minimum; below it the bayonet groove would not fit.
+  assert(length >= boschSanderMinLength, str("length must be at least boschSanderMinLength (", boschSanderMinLength, ") to clear the bayonet groove. Provided:", length));
+
+  boreRadius = innerEndDiameter/2;
+  assert(boreRadius > boschSanderGrooveWidth, str("innerEndDiameter is too small for the locking groove. Provided:", innerEndDiameter));
+  outerDiameter = innerEndDiameter + wallThickness*2;
+  assert(boschSanderRingClearanceDiameter + boschSanderRingClearanceChamfer*2 <= outerDiameter, str("ring clearance (plus chamfer) must fit within the outer diameter (", outerDiameter, "). Provided:", boschSanderRingClearanceDiameter));
+  assert(boschSanderRingClearanceDepth < length, str("ring clearance depth must be less than the connector length (", length, "). Provided:", boschSanderRingClearanceDepth));
+
+  echo("BoschSanderConnector", innerEndDiameter=innerEndDiameter, length=length, wallThickness=wallThickness, grooveCount=boschSanderGrooveCount);
+
+  difference(){
+  
+    union(){
+      pipe(
+        diameter = boschSanderRingClearanceDiameter,
+        length = length,
+        wallThickness = wallThickness-(boschSanderRingClearanceDiameter-innerEndDiameter)/2,
+        chamfer1 = [boschSanderRingClearanceChamfer,0],
+        chamfer2 = [0,0]);
+      
+      translate([0,0,boschSanderRingClearanceDepth])
+      pipe(
+        diameter = innerEndDiameter,
+        length = length-boschSanderRingClearanceDepth,
+        wallThickness = wallThickness,
+        chamfer1 = [(boschSanderRingClearanceDiameter - innerEndDiameter)/2 + fudgeFactor,0],
+        chamfer2 = [0,0]);
+    }
+
+    for(i = [0:boschSanderGrooveCount-1])
+      rotate([0,0,i*360/boschSanderGrooveCount])
+        boschSanderLockingGroove(boreRadius);
+  }
+
+  HelpTxt("BoschSanderConnector",[
+    "innerEndDiameter", innerEndDiameter,
+    "length", length,
+    "wallThickness", wallThickness,
+    "grooveCount", boschSanderGrooveCount,
+    "entranceDepth", boschSanderEntranceDepth,
+    "twistAngle", boschSanderTwistAngle,
+    "lockDepth", boschSanderLockDepth
+    ],help);
+}
+//CombinedEnd from path connector_bosch_sander.scad
 //Combined from path connector_camlock.scad
 
 
@@ -6818,10 +7703,10 @@ module CamlockConnector(
   length,
   wallThickness){
 
-  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, "innerEndDiameter must be a number greater than 0");
-  assert(is_num(length) && length > 0, "length must be a number greater than 0");
-  assert(is_num(wallThickness) && wallThickness > 0, "wallThickness must be a number greater than 0");
-  assert(length >= camlockMinLength, "length must be at least camlockMinLength");
+  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, str("innerEndDiameter must be a number greater than 0. Provided:", innerEndDiameter));
+  assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
+  assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
+  assert(length >= camlockMinLength, str("length must be at least camlockMinLength. length=", length, " camlockMinLength=", camlockMinLength));
 
   innerDiameter =  20*2;
   //camlockOuterDiameter = 48.5;
@@ -6836,19 +7721,19 @@ module CamlockConnector(
   camlockChamfer = 1.6;
   camlockChamferLength = 1.6;
 
-  assert(is_num(innerDiameter) && innerDiameter > 0, "innerDiameter must be a number greater than 0");
-  assert(is_num(outerDiameter) && outerDiameter > innerDiameter, "outerDiameter must be greater than innerDiameter");
-  assert(is_num(camlockHeight) && camlockHeight > 0 && camlockHeight <= camlockMinLength, "camlockHeight must be positive and no greater than camlockMinLength");
-  assert(is_num(camlockStopLength) && camlockStopLength >= 0, "camlockStopLength must be a number greater than or equal to 0");
-  assert(is_num(camlockStopWidth) && camlockStopWidth > 0, "camlockStopWidth must be a number greater than 0");
-  assert(is_num(camlockWallThickness) && camlockWallThickness > 0, "camlockWallThickness must be a number greater than 0");
-  assert(is_num(camlockRingClipRadius) && camlockRingClipRadius > 0, "camlockRingClipRadius must be a number greater than 0");
-  assert(is_num(camlockRingClipHeight) && camlockRingClipHeight > 0, "camlockRingClipHeight must be a number greater than 0");
-  assert(is_num(camlockRingClipPosition) && camlockRingClipPosition > outerDiameter / 2, "camlockRingClipPosition must be outside the outer radius");
-  assert(is_num(camlockChamfer) && camlockChamfer > 0, "camlockChamfer must be a number greater than 0");
-  assert(is_num(camlockChamferLength) && camlockChamferLength > 0, "camlockChamferLength must be a number greater than 0");
-  assert(camlockRingClipHeight + wallThickness / 2 <= camlockMinLength + fudgeFactor, "ring clip cutout must fit within the camlock length");
-  assert(camlockChamferLength <= camlockHeight, "camlockChamferLength must be less than or equal to camlockHeight");
+  assert(is_num(innerDiameter) && innerDiameter > 0, str("innerDiameter must be a number greater than 0. Provided:", innerDiameter));
+  assert(is_num(outerDiameter) && outerDiameter > innerDiameter, str("outerDiameter must be greater than innerDiameter. outerDiameter=", outerDiameter, " innerDiameter=", innerDiameter));
+  assert(is_num(camlockHeight) && camlockHeight > 0 && camlockHeight <= camlockMinLength, str("camlockHeight must be positive and no greater than camlockMinLength. camlockHeight=", camlockHeight, " camlockMinLength=", camlockMinLength));
+  assert(is_num(camlockStopLength) && camlockStopLength >= 0, str("camlockStopLength must be a number greater than or equal to 0. Provided:", camlockStopLength));
+  assert(is_num(camlockStopWidth) && camlockStopWidth > 0, str("camlockStopWidth must be a number greater than 0. Provided:", camlockStopWidth));
+  assert(is_num(camlockWallThickness) && camlockWallThickness > 0, str("camlockWallThickness must be a number greater than 0. Provided:", camlockWallThickness));
+  assert(is_num(camlockRingClipRadius) && camlockRingClipRadius > 0, str("camlockRingClipRadius must be a number greater than 0. Provided:", camlockRingClipRadius));
+  assert(is_num(camlockRingClipHeight) && camlockRingClipHeight > 0, str("camlockRingClipHeight must be a number greater than 0. Provided:", camlockRingClipHeight));
+  assert(is_num(camlockRingClipPosition) && camlockRingClipPosition > outerDiameter / 2, str("camlockRingClipPosition must be outside the outer radius. camlockRingClipPosition=", camlockRingClipPosition, " outerRadius=", outerDiameter / 2));
+  assert(is_num(camlockChamfer) && camlockChamfer > 0, str("camlockChamfer must be a number greater than 0. Provided:", camlockChamfer));
+  assert(is_num(camlockChamferLength) && camlockChamferLength > 0, str("camlockChamferLength must be a number greater than 0. Provided:", camlockChamferLength));
+  assert(camlockRingClipHeight + wallThickness / 2 <= camlockMinLength + fudgeFactor, str("ring clip cutout must fit within the camlock length. cutoutEnd=", camlockRingClipHeight + wallThickness / 2, " maximum=", camlockMinLength + fudgeFactor));
+  assert(camlockChamferLength <= camlockHeight, str("camlockChamferLength must be less than or equal to camlockHeight. camlockChamferLength=", camlockChamferLength, " camlockHeight=", camlockHeight));
 
  echo("CamlockConnector", innerDiameter = innerDiameter, outerDiameter=outerDiameter, camlockHeight=camlockHeight, length = length, camlockWallThickness = camlockWallThickness);
 
@@ -7523,7 +8408,7 @@ module Dw735Connector(
   }
 }
 //CombinedEnd from path connector_dw735.scad
-//Combined from path connector_osvac.scad
+//Combined from path connector_festool.scad
 
 
 
@@ -7531,205 +8416,144 @@ module Dw735Connector(
 
 
 
+//Festool
 
+festoolCleantec_debug = false;
 
-
-
-//osVAC
-//Female documentation https://www.thingiverse.com/thing:4562762
-//Male documentation https://www.thingiverse.com/thing:4562789
-
-osvac_debug = false;
-
-if(osvac_debug){
+if(festoolCleantec_debug){
   $fn = 64;
   //Test female connector
   translate([0,-35,0])
-  osVacFemaleConnector(help=true);
+  FestoolCleantecLugConnector(help=true);
 
   //Test male connector
-  //translate([0,35,0])
-  //osVacMaleConnector(help=true);
+  translate([0,35,0])
+  FestoolCleantecSlotConnector(help=true);
 }
 
 /* Hidden */
-clipCount = 3;
+lugCount = 3;
 
-osvacmVersion = "0.1";
-osvacmMinLength = 30;
-osvacmMeasurement = "inner";
-osvacmOuterDiameter = 37.8;
-osvacmInnerDiameter = 32;
-osvacmWallThickness = (osvacmOuterDiameter - osvacmInnerDiameter)/2;
+festoolCleantecLug_Version = "0.1";
+festoolCleantecLug_MinLength = 31; //measured 26 + 5 for flange
+festoolCleantecLug_Measurement = "outer";
+festoolCleantecLug_OuterDiameter = 40; // 39.6 measured
+festoolCleantecLug_OuterDiameter_tip = 39.4; // 39.5 measured
+festoolCleantecLug_InnerDiameter = 36; // measured
+festoolCleantecLug_WallThickness_tip_measurement = 1.3; // 1.5 measured
+festoolCleantecLug_WallThickness_base_measurement = 2.6; // measured
+festoolCleantecLug_flange_stop = 5; // 44.81measured
+festoolCleantecLug_Doublelug_measurement = 4.8; // measured
+festoolCleantecLug_outer_clip_size = [12.5,9.0]; // width, height.  measured
+festoolCleantecLug_outer_clip_tapers = [1,0,1,0]; // width, height.  measured
 
-osvacm32Settings = ["osvacm32", [
-  [iSettingsLength, osvacmMinLength],
-  [iSettingsMeasurement, osvacmMeasurement],
-  [iSettingsDiameter, osvacmInnerDiameter],
-  [iSettingsWallThickness, osvacmWallThickness],
+festoolCleantecLugSettings = ["festoolcleanteclug", [
+  [iSettingsLength, festoolCleantecLug_MinLength],
+  [iSettingsMeasurement, festoolCleantecLug_Measurement],
+  [iSettingsDiameter, festoolCleantecLug_OuterDiameter+festoolCleantecLug_flange_stop],
+  [iSettingsWallThickness, festoolCleantecLug_WallThickness_base_measurement+festoolCleantecLug_flange_stop/2],
   [iSettingsTaper ,0],
-  [iSettingsVersion, osvacmVersion]
+  [iSettingsVersion, festoolCleantecLug_Version]
   ]];
-osvacmSettings = ["osvacm", [
-  [iSettingsLength, osvacmMinLength],
-  [iSettingsMeasurement, osvacmMeasurement],
-  [iSettingsWallThickness, osvacmWallThickness],
-  [iSettingsTaper ,0],
-  [iSettingsVersion, osvacmVersion]
-  ]];
-
-osvacfVersion = "0.1";
-osvacfMinLength = 34.10;
-osvacfMeasurement = "inner";
-osvacfOuterDiameter = 47.265;
-osvacfInnerDiameter = 32;
-osvacfInnerWallDiameter = 38.2;
-osvacfWallThickness = (osvacfOuterDiameter - osvacfInnerDiameter)/2;
-osvacf32Settings = ["osvacf32", [
-  [iSettingsLength, osvacfMinLength],
-  [iSettingsMeasurement, osvacfMeasurement],
-  [iSettingsDiameter, osvacfInnerDiameter],
-  [iSettingsWallThickness, osvacfWallThickness],
-  [iSettingsTaper ,0],
-  [iSettingsVersion, osvacfVersion]
-  ]];
-osvacfSettings = ["osvacf", [
-  [iSettingsLength, osvacfMinLength],
-  [iSettingsMeasurement, osvacfMeasurement],
-  [iSettingsWallThickness, osvacfWallThickness],
-  [iSettingsTaper ,0],
-  [iSettingsVersion, osvacfVersion]
-  ]];
-
-//Test male connector
-//osVacMaleConnector(innerDiameter = 50, help=true);
-
-//Test female connector
-//osVacFemaleConnector(innerDiameter = 50, help=true);
-
-module osVacFemaleConnector(
-  innerDiameter = osvacfInnerDiameter,
-  length = osvacfMinLength,
-  wallThickness = osvacfWallThickness,
-  help,
-  $fn = 64){
-  innerTaperSize = (osvacfInnerWallDiameter-osvacfInnerDiameter)/2;
-  innerWallDiameter = innerDiameter + innerTaperSize*2;
-  outerDiameter = innerDiameter + wallThickness*2;
-  //finalShaftLength = 5;
-
-  innerShaftLength = 30.5;
-  cutoutz = 3.7;
-  cutoutHeight = 6.35;
-  cutoutDepthz = innerShaftLength - cutoutz;
-  cutoutDepthx = 2;
-  cutoutBumpDepthx = 1.6;
-  cutoutRadius = innerWallDiameter/2+cutoutDepthx;
-  cutoutWidth = 10.2;
   
-  //The distence is base on a f32,
-  //The spec defines it as the ARC Length for 35deg on an F32
-  lockAngle = 35;
-  
-  finalShaftLength = length - innerShaftLength;
-  
-  translate([0,0,innerShaftLength])
-  pipe(
-    diameter = innerDiameter,
-    length = finalShaftLength,
-    wallThickness = wallThickness,
-    chamfer1 = [innerTaperSize,0]);
+festoolCleantecslot_Version = "0.1";
+festoolCleantecslot_MinLength = 25; // measured
+festoolCleantecslot_Measurement = "inner";
+festoolCleantecslot_InnerDiameter = 39.5; // measured
+festoolCleantecslot_WallThickness = 2.5; // measured
 
-    BayonetSlotConnector(
-    //outerDiameter = innerDiameter + innerTaperSize,
-    innerDiameter = innerWallDiameter,
-    length = innerShaftLength,
-    wallThickness = wallThickness-innerTaperSize,
-    slotCount = 3,                // Number of equally spaced slots.
-    slotWidth = cutoutWidth,             // Circumferential size of the slot (Usually outerLugWidth + clearance).
-    slotOffset = cutoutz,             // Distance from connector face to the start (or center) of the slot.
-    slotAxialLength = cutoutHeight,       // Axial size of the lug
-    slotDepth = cutoutDepthx,                // Radial depth of the slot (Must clear lug radial projection)
-    lockAngle = lockAngle,               // Axial size of the lug
-    lockBumpDepth = cutoutBumpDepthx,          // Depth of lock bump that creates the lock when twisted
-    help=true);
+festoolCleantecSlotSettings = ["festoolcleantecslot", [
+  [iSettingsLength, festoolCleantecslot_MinLength],
+  [iSettingsMeasurement, festoolCleantecslot_Measurement],
+  [iSettingsDiameter, festoolCleantecslot_InnerDiameter],
+  [iSettingsWallThickness, festoolCleantecslot_WallThickness],
+  [iSettingsTaper ,0],
+  [iSettingsVersion, festoolCleantecslot_Version]
+  ]];
 
-  HelpTxt("osVacFemaleConnector",[
-    "innerDiameter", innerDiameter,
-    "outerDiameter", outerDiameter,
-    "length", length,
-    "wallThickness", wallThickness,
-    "innerTaperSize", innerTaperSize,
-    "innerWallDiameter", innerWallDiameter,
-    "finalShaftLength", finalShaftLength,
-    "innerShaftLength", innerShaftLength,
-    "cutoutHeight", cutoutHeight,
-    "cutoutz", cutoutz,
-    "cutoutDepthz", cutoutDepthz,
-    "cutoutDepthx", cutoutDepthx,
-    "cutoutBumpDepthx", cutoutBumpDepthx,
-    "cutoutRadius", cutoutRadius,
-    "cutoutWidth", cutoutWidth,
-    "osvacfWallThickness", osvacfWallThickness,
-    "osvacfMinLength", osvacfMinLength,
-    "osvacfInnerDiameter", osvacfInnerDiameter
-    ],help);
-}
 
-module osVacMaleConnector(
-  innerDiameter = osvacmInnerDiameter,
-  length = osvacmMinLength,
-  wallThickness = osvacmWallThickness,
-  help
-){
-  outerDiameter = innerDiameter+wallThickness*2;
-
-  hoseEndTaper=0.7;
-  clipHeight = 6.95;
-  clipz = 3.2;
-  clipr = 1;//not right
-  clipThickness = 2;
-  clipWidth = 9.8;
-  clipTopTaperz = 5.8;
-  clipTopTaperHeight = clipHeight - clipTopTaperz;
-
-  BayonetLugConnector(
-    outerDiameter = outerDiameter,
+module FestoolCleantecSlotConnector(
+  innerDiameter = festoolCleantecslot_InnerDiameter,
+  length = festoolCleantecslot_MinLength,
+  wallThickness = festoolCleantecslot_WallThickness*2,
+  slotCount = lugCount,
+  help){
+   
+   BayonetSlotConnector(
+    innerDiameter = innerDiameter,
     length = length,
     wallThickness = wallThickness,
-    hoseEndTaper=hoseEndTaper,
-    lugCount = 3,                 // Number of equally spaced lugs.
-    outerLugEnabled = true,
-    outerLugWidth = clipWidth,          // Circumferential size of the lug.
-    outerLugHeight = clipThickness,           // Radial projection from the base surface.
-    outerLugAxialLength = clipHeight,   // Axial size of the lug
-    outerLugSideRadius = clipHeight,           // side radius of the lug
-    outerLugOffset = clipz,         // Distance from connector face to the start (or center) of the lug.
-    outerLugTopBottomRadius = [clipThickness,clipThickness],        // Top/bottom of lug radius
-    outerLugTopBottomChamferRadius = [clipHeight/2,clipHeight/2], // Top/bottom of lug champfer corner radius
-    //outerLugTopBottomTaperz = [clipThickness,0],        // Tob bottom of lug taper
+    slotCount = slotCount,
+    slotOffset =6,
+    slotAxialLength = 6.35,
+    slotDepth = 2,
+    lockBumpDepth = 1.9,
+    slotWidth = 10.2,
+    lockAngle = 35,
     help = help);
-
-  HelpTxt("osVacMaleConnector",[
-    "innerDiameter", innerDiameter,
-    "length", length,
-    "wallThickness", wallThickness,
-    "outerDiameter", outerDiameter,
-    "hoseEndTaper", hoseEndTaper,
-    "clipz", clipz,
-    "clipr", clipr,
-    "clipThickness", clipThickness,
-    "clipWidth", clipWidth,
-    "clipTopTaperHeight", clipTopTaperHeight,
-    "osvacmWallThickness", osvacmWallThickness,
-    "osvacmMinLength", osvacmMinLength,
-    "osvacmInnerDiameter", osvacmInnerDiameter
-    ],help);
 }
 
+module FestoolCleantecLugConnector(
+  innerDiameter = festoolCleantecLug_OuterDiameter - festoolCleantecLug_WallThickness_base_measurement*2,
+  length = festoolCleantecLug_MinLength,
+  wallThickness = festoolCleantecLug_WallThickness_base_measurement,
+  lugCount = lugCount,
+  help
+){
+  //settings.
+  outerLugOffset = 5.2;       //measured
+  outerLugAxialLength = 8.6;  //measured
+  outerLugHeight = 1.5;       //estimated
+  outerLugWidth = 11;         //measured
+  
+  innerLugOffset = 5.2;       //measured
+  innerLugAxialLength = 6.5;  //measured
+  innerLugHeight = 1.5;       //estimated
+  innerLugWidth = 11;         //measured
 
+  stopper_size = festoolCleantecLug_flange_stop;  
+  con_length = length - stopper_size;
+  
+  echo("FestoolCleantecLugConnector", festoolCleantecLug_OuterDiameter=festoolCleantecLug_OuterDiameter, innerDiameter=innerDiameter, festoolCleantecLug_WallThickness_base_measurement=festoolCleantecLug_WallThickness_base_measurement);
+  union(){
 
-//CombinedEnd from path connector_osvac.scad
+  Stopper(
+    diameter = innerDiameter,
+    outer = true,
+    totalLength = stopper_size+fudgeFactor,
+    taper1 = 0.5,
+    taper2 = 0,
+    wallThickness = stopper_size/2,
+    stopThickness = stopper_size/2,
+    zPosition = con_length-fudgeFactor,
+    help = help);
+  BayonetLugConnector(
+    innerDiameter1 = festoolCleantecLug_OuterDiameter_tip-festoolCleantecLug_WallThickness_tip_measurement*2,
+    innerDiameter2 = innerDiameter,
+    length = con_length,
+    wallThickness1 = festoolCleantecLug_WallThickness_tip_measurement,
+    wallThickness2 = wallThickness,
+    lugCount = lugCount,
+    hoseEndTaper=0.4,
+    outerLugEnabled = true,
+    outerLugWidth = outerLugWidth,
+    outerLugHeight = outerLugHeight,
+    outerLugAxialLength = outerLugAxialLength,
+    outerLugOffset = outerLugOffset,
+    //outerLugTopBottomTaperz = [outerLugHeight, outerLugHeight],        // Tob bottom of lug taper
+    innerLugEnabled = true,
+    innerLugWidth = innerLugWidth,          // Circumferential size of the lug.
+    innerLugHeight = innerLugHeight, 
+    innerLugAxialLength = innerLugAxialLength,   // Axial size of the lug
+    innerLugOffset = innerLugOffset,         // Distance from connector face to the start (or center) of the lug.
+    //innerLugTopBottomTaperz = [innerLugHeight, innerLugHeight],        // Tob bottom of lug taper
+    help = help);
+    
+    
+  
+  }
+}
+//CombinedEnd from path connector_festool.scad
 //Combined from path module_twist_lock_hose.scad
 
 
@@ -8794,6 +9618,214 @@ module MakitaMaleConnector(
   }
 }
 //CombinedEnd from path connector_makita.scad
+//Combined from path connector_osvac.scad
+
+
+
+
+
+
+
+
+
+
+
+
+//osVAC
+//Female documentation https://www.thingiverse.com/thing:4562762
+//Male documentation https://www.thingiverse.com/thing:4562789
+
+osvac_debug = false;
+
+if(osvac_debug){
+  $fn = 64;
+  //Test female connector
+  translate([0,-35,0])
+  osVacFemaleConnector(help=true);
+
+  //Test male connector
+  //translate([0,35,0])
+  //osVacMaleConnector(help=true);
+}
+
+/* Hidden */
+clipCount = 3;
+
+osvacmVersion = "0.1";
+osvacmMinLength = 30;
+osvacmMeasurement = "inner";
+osvacmOuterDiameter = 37.8;
+osvacmInnerDiameter = 32;
+osvacmWallThickness = (osvacmOuterDiameter - osvacmInnerDiameter)/2;
+
+osvacm32Settings = ["osvacm32", [
+  [iSettingsLength, osvacmMinLength],
+  [iSettingsMeasurement, osvacmMeasurement],
+  [iSettingsDiameter, osvacmInnerDiameter],
+  [iSettingsWallThickness, osvacmWallThickness],
+  [iSettingsTaper ,0],
+  [iSettingsVersion, osvacmVersion]
+  ]];
+osvacmSettings = ["osvacm", [
+  [iSettingsLength, osvacmMinLength],
+  [iSettingsMeasurement, osvacmMeasurement],
+  [iSettingsWallThickness, osvacmWallThickness],
+  [iSettingsTaper ,0],
+  [iSettingsVersion, osvacmVersion]
+  ]];
+
+osvacfVersion = "0.1";
+osvacfMinLength = 34.10;
+osvacfMeasurement = "inner";
+osvacfOuterDiameter = 47.265;
+osvacfInnerDiameter = 32;
+osvacfInnerWallDiameter = 38.2;
+osvacfWallThickness = (osvacfOuterDiameter - osvacfInnerDiameter)/2;
+osvacf32Settings = ["osvacf32", [
+  [iSettingsLength, osvacfMinLength],
+  [iSettingsMeasurement, osvacfMeasurement],
+  [iSettingsDiameter, osvacfInnerDiameter],
+  [iSettingsWallThickness, osvacfWallThickness],
+  [iSettingsTaper ,0],
+  [iSettingsVersion, osvacfVersion]
+  ]];
+osvacfSettings = ["osvacf", [
+  [iSettingsLength, osvacfMinLength],
+  [iSettingsMeasurement, osvacfMeasurement],
+  [iSettingsWallThickness, osvacfWallThickness],
+  [iSettingsTaper ,0],
+  [iSettingsVersion, osvacfVersion]
+  ]];
+
+//Test male connector
+//osVacMaleConnector(innerDiameter = 50, help=true);
+
+//Test female connector
+//osVacFemaleConnector(innerDiameter = 50, help=true);
+
+module osVacFemaleConnector(
+  innerDiameter = osvacfInnerDiameter,
+  length = osvacfMinLength,
+  wallThickness = osvacfWallThickness,
+  help,
+  $fn = 64){
+  innerTaperSize = (osvacfInnerWallDiameter-osvacfInnerDiameter)/2;
+  innerWallDiameter = innerDiameter + innerTaperSize*2;
+  outerDiameter = innerDiameter + wallThickness*2;
+  //finalShaftLength = 5;
+
+  innerShaftLength = 30.5;
+  cutoutz = 3.7;
+  cutoutHeight = 6.35;
+  cutoutDepthz = innerShaftLength - cutoutz;
+  cutoutDepthx = 2;
+  cutoutBumpDepthx = 1.6;
+  cutoutRadius = innerWallDiameter/2+cutoutDepthx;
+  cutoutWidth = 10.2;
+  
+  //The distence is base on a f32,
+  //The spec defines it as the ARC Length for 35deg on an F32
+  lockAngle = 35;
+  
+  finalShaftLength = length - innerShaftLength;
+  
+  translate([0,0,innerShaftLength])
+  pipe(
+    diameter = innerDiameter,
+    length = finalShaftLength,
+    wallThickness = wallThickness,
+    chamfer1 = [innerTaperSize,0]);
+
+    BayonetSlotConnector(
+    //outerDiameter = innerDiameter + innerTaperSize,
+    innerDiameter = innerWallDiameter,
+    length = innerShaftLength,
+    wallThickness = wallThickness-innerTaperSize,
+    slotCount = 3,                // Number of equally spaced slots.
+    slotWidth = cutoutWidth,             // Circumferential size of the slot (Usually outerLugWidth + clearance).
+    slotOffset = cutoutz,             // Distance from connector face to the start (or center) of the slot.
+    slotAxialLength = cutoutHeight,       // Axial size of the lug
+    slotDepth = cutoutDepthx,                // Radial depth of the slot (Must clear lug radial projection)
+    lockAngle = lockAngle,               // Axial size of the lug
+    lockBumpDepth = cutoutBumpDepthx,          // Depth of lock bump that creates the lock when twisted
+    help=true);
+
+  HelpTxt("osVacFemaleConnector",[
+    "innerDiameter", innerDiameter,
+    "outerDiameter", outerDiameter,
+    "length", length,
+    "wallThickness", wallThickness,
+    "innerTaperSize", innerTaperSize,
+    "innerWallDiameter", innerWallDiameter,
+    "finalShaftLength", finalShaftLength,
+    "innerShaftLength", innerShaftLength,
+    "cutoutHeight", cutoutHeight,
+    "cutoutz", cutoutz,
+    "cutoutDepthz", cutoutDepthz,
+    "cutoutDepthx", cutoutDepthx,
+    "cutoutBumpDepthx", cutoutBumpDepthx,
+    "cutoutRadius", cutoutRadius,
+    "cutoutWidth", cutoutWidth,
+    "osvacfWallThickness", osvacfWallThickness,
+    "osvacfMinLength", osvacfMinLength,
+    "osvacfInnerDiameter", osvacfInnerDiameter
+    ],help);
+}
+
+module osVacMaleConnector(
+  innerDiameter = osvacmInnerDiameter,
+  length = osvacmMinLength,
+  wallThickness = osvacmWallThickness,
+  help
+){
+  outerDiameter = innerDiameter+wallThickness*2;
+
+  hoseEndTaper=0.7;
+  clipHeight = 6.95;
+  clipz = 3.2;
+  clipr = 1;//not right
+  clipThickness = 2;
+  clipWidth = 9.8;
+  clipTopTaperz = 5.8;
+  clipTopTaperHeight = clipHeight - clipTopTaperz;
+
+  BayonetLugConnector(
+    outerDiameter = outerDiameter,
+    length = length,
+    wallThickness = wallThickness,
+    hoseEndTaper=hoseEndTaper,
+    lugCount = 3,                 // Number of equally spaced lugs.
+    outerLugEnabled = true,
+    outerLugWidth = clipWidth,          // Circumferential size of the lug.
+    outerLugHeight = clipThickness,           // Radial projection from the base surface.
+    outerLugAxialLength = clipHeight,   // Axial size of the lug
+    outerLugSideRadius = clipHeight,           // side radius of the lug
+    outerLugOffset = clipz,         // Distance from connector face to the start (or center) of the lug.
+    outerLugTopBottomRadius = [clipThickness,clipThickness],        // Top/bottom of lug radius
+    outerLugTopBottomChamferRadius = [clipHeight/2,clipHeight/2], // Top/bottom of lug champfer corner radius
+    //outerLugTopBottomTaperz = [clipThickness,0],        // Tob bottom of lug taper
+    help = help);
+
+  HelpTxt("osVacMaleConnector",[
+    "innerDiameter", innerDiameter,
+    "length", length,
+    "wallThickness", wallThickness,
+    "outerDiameter", outerDiameter,
+    "hoseEndTaper", hoseEndTaper,
+    "clipz", clipz,
+    "clipr", clipr,
+    "clipThickness", clipThickness,
+    "clipWidth", clipWidth,
+    "clipTopTaperHeight", clipTopTaperHeight,
+    "osvacmWallThickness", osvacmWallThickness,
+    "osvacmMinLength", osvacmMinLength,
+    "osvacmInnerDiameter", osvacmInnerDiameter
+    ],help);
+}
+
+
+
+//CombinedEnd from path connector_osvac.scad
 //Combined from path connector_common_post.scad
 
 
@@ -8808,7 +9840,10 @@ connectorSettings =[
   osvacm32Settings,
   osvacfSettings,
   osvacf32Settings,
-  makitaMaleSettings];
+  makitaMaleSettings,
+  boschSanderSettings,
+  festoolCleantecLugSettings
+  ];
 //CombinedEnd from path connector_common_post.scad
 
 //Some online generators do not like direct setting of fa,fs,fn
@@ -8821,6 +9856,7 @@ HoseAdapter(
   connector1 = UserConnectorSettings(
     connector=1,
     style=End1_Style,
+    specialisedStyle=End1_Specialised_Style,
     wallThickness=End1_Wall_Thickness,
     measurement=End1_Measurement,
     diameter=End1_Diameter,
@@ -8831,9 +9867,6 @@ HoseAdapter(
     endCapThickness=End1_Hose_EndCap_Thickness,
     endCapGridSize=End1_Hose_EndCap_GridSize,
     endCapGridWallThickness=End1_Hose_EndCap_GridWallThickness,
-    stopThickness=End1_StopThickness,
-    stopLength=End1_StopLength,
-    stopSymmetrical=End1_Stop_Symmetrical,
     barbsCount=End1_Barbs_Count,
     barbsThickness=End1_Barbs_Thickness,
     barbsSymmetrical=End1_Barbs_Symmetrical,
@@ -8847,6 +9880,7 @@ HoseAdapter(
     magnetBorder=End1_Magnet_Border,
     magnetZOffset=End1_Magnet_ZOffset,
     magnetFlangeThickness=End1_Magnet_Flange_Thickness,
+    magnetFlangeRoundover=End1_Magnet_Flange_Roundover,
     magnetTwistLockSize=End1_Magnet_Twist_Lock_Size,
     alignmentRing=End1_Ring,
     flangeWidth=End1_Flange_Width,
@@ -8856,14 +9890,25 @@ HoseAdapter(
     flangeScrewCount=End1_Flange_Screw_Count,
     flangeScrewDiameter=End1_Flange_Screw_Diameter,
     extensionLength=End1_Extension_Length,
+    extensionExitDiameter=End1_Extension_Exit_Diameter,
     extensionGridSize=End1_Extension_GridSize,
     extensionGridWallThickness=End1_Extension_GridWallThickness,
     extensionText=End1_Extension_Text,
-    extensionTextSize=End1_Extension_Text_Size),
+    extensionTextSize=End1_Extension_Text_Size,
+    extensionSlipRing=End1_Extension_SlipRing,
+    extensionSlipRingWidth=End1_Extension_SlipRing_Width,
+    extensionSlipRingSupport=End1_Extension_SlipRing_Support,
+    extensionSlipRingSupportSize=End1_Extension_SlipRing_Support_Size,
+    extensionSlipRingSupportSpacing=End1_Extension_SlipRing_Support_Spacing,
+    extensionStopThickness=End1_Extension_StopThickness,
+    extensionStopLength=End1_Extension_StopLength,
+    extensionStopSymmetrical=End1_Extension_Stop_Symmetrical
+    ),
 
   connector2 = UserConnectorSettings(
     connector=2,
     style=End2_Style,
+    specialisedStyle=End2_Specialised_Style,
     wallThickness=End2_Wall_Thickness,
     measurement=End2_Measurement,
     diameter=End2_Diameter,
@@ -8874,9 +9919,6 @@ HoseAdapter(
     endCapThickness=End2_Hose_EndCap_Thickness,
     endCapGridSize=End2_Hose_EndCap_GridSize,
     endCapGridWallThickness=End2_Hose_EndCap_GridWallThickness,
-    stopThickness=End2_StopThickness,
-    stopLength=End2_StopLength,
-    stopSymmetrical=End2_Stop_Symmetrical,
     barbsCount=End2_Barbs_Count,
     barbsThickness=End2_Barbs_Thickness,
     barbsSymmetrical=End2_Barbs_Symmetrical,
@@ -8890,6 +9932,7 @@ HoseAdapter(
     magnetBorder=End2_Magnet_Border,
     magnetZOffset=End2_Magnet_ZOffset,
     magnetFlangeThickness=End2_Magnet_Flange_Thickness,
+    magnetFlangeRoundover=End2_Magnet_Flange_Roundover,
     magnetTwistLockSize=End2_Magnet_Twist_Lock_Size,
     alignmentRing=End2_Ring,
     flangeWidth=End2_Flange_Width,
@@ -8906,14 +9949,25 @@ HoseAdapter(
     nozzleChamferPercentage=End2_Nozzle_Chamfer_Percentage,
     nozzleChamferAngle=End2_Nozzle_Chamfer_Angle,
     extensionLength=End2_Extension_Length,
+    extensionExitDiameter=End2_Extension_Exit_Diameter,
     extensionGridSize=End2_Extension_GridSize,
     extensionGridWallThickness=End2_Extension_GridWallThickness,
     extensionText=End2_Extension_Text,
-    extensionTextSize=End2_Extension_Text_Size),
+    extensionTextSize=End2_Extension_Text_Size,
+    extensionSlipRing=End2_Extension_SlipRing,
+    extensionSlipRingWidth=End2_Extension_SlipRing_Width,
+    extensionSlipRingSupport=End2_Extension_SlipRing_Support,
+    extensionSlipRingSupportSize=End2_Extension_SlipRing_Support_Size,
+    extensionSlipRingSupportSpacing=End2_Extension_SlipRing_Support_Spacing,
+    extensionStopThickness=End2_Extension_StopThickness,
+    extensionStopLength=End2_Extension_StopLength,
+    extensionStopSymmetrical=End2_Extension_Stop_Symmetrical
+  ),
 
   connector3 = UserConnectorSettings(
     connector=3,
     style=End3_Style,
+    specialisedStyle=End3_Specialised_Style,
     wallThickness=End3_Wall_Thickness,
     measurement=End3_Measurement,
     diameter=End3_Diameter,
@@ -8924,9 +9978,6 @@ HoseAdapter(
     endCapThickness=End3_Hose_EndCap_Thickness,
     endCapGridSize=End3_Hose_EndCap_GridSize,
     endCapGridWallThickness=End3_Hose_EndCap_GridWallThickness,
-    stopThickness=End3_StopThickness,
-    stopLength=End3_StopLength,
-    stopSymmetrical=End3_Stop_Symmetrical,
     barbsCount=End3_Barbs_Count,
     barbsThickness=End3_Barbs_Thickness,
     barbsSymmetrical=End3_Barbs_Symmetrical,
@@ -8940,6 +9991,7 @@ HoseAdapter(
     magnetBorder=End3_Magnet_Border,
     magnetZOffset=End3_Magnet_ZOffset,
     magnetFlangeThickness=End3_Magnet_Flange_Thickness,
+    magnetFlangeRoundover=End3_Magnet_Flange_Roundover,
     magnetTwistLockSize=End3_Magnet_Twist_Lock_Size,
     alignmentRing=End3_Ring,
     flangeWidth=End3_Flange_Width,
@@ -8956,14 +10008,26 @@ HoseAdapter(
     nozzleChamferPercentage=End3_Nozzle_Chamfer_Percentage,
     nozzleChamferAngle=End3_Nozzle_Chamfer_Angle,
     extensionLength=End3_Extension_Length,
+    extensionExitDiameter=End3_Extension_Exit_Diameter,
     extensionGridSize=End3_Extension_GridSize,
     extensionGridWallThickness=End3_Extension_GridWallThickness,
     extensionText=End3_Extension_Text,
-    extensionTextSize=End3_Extension_Text_Size),
+    extensionTextSize=End3_Extension_Text_Size,
+    extensionSlipRing=End3_Extension_SlipRing,
+    extensionSlipRingWidth=End3_Extension_SlipRing_Width,
+    extensionSlipRingSupport=End3_Extension_SlipRing_Support,
+    extensionSlipRingSupportSize=End3_Extension_SlipRing_Support_Size,
+    extensionSlipRingSupportSpacing=End3_Extension_SlipRing_Support_Spacing,
+    extensionStopThickness=End3_Extension_StopThickness,
+    extensionStopLength=End3_Extension_StopLength,
+    extensionStopSymmetrical=End3_Extension_Stop_Symmetrical
+  ),
 
   transitionStyle = Transition_Style,
   transitionLength = Transition_Length,
   transitionBendRadius = Transition_Bend_Radius,
+  transitionBendPipeDiameter = Transition_Bend_Pipe_Diameter,
+  transitionCustomBendPipeDiameter = Transition_Custom_Bend_Pipe_Diameter,
   transitionAngle = Transition_Angle,
   transitionOffset = Transition_Offset,
   transitionBaseType = Transition_Base_Type,
@@ -8986,8 +10050,8 @@ HoseAdapter(
   alignmentSideClearance = Alignment_Side_Clearance,
   alignmentDepthClearance = Alignment_Depth_Clearance,
 
-  sliceDebug = Enable_Debug_Slice,
-  showCaliper = Enable_Calipers_Slice,
+  sliceDebug = renderModeEnabled(Enable_Debug_Slice),
+  showCaliper = renderModeEnabled(Enable_Calipers_Slice),
   end1Color = End1_Color,
   end2Color = End2_Color,
   end3Color = End3_Color,

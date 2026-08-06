@@ -9,7 +9,13 @@ iSettingsTaper = 4;
 iSettingsVersion = 5;
 
 DefaultEnd1Color = "LightPink";
+DefaultEnd1ExtensionColor = "HotPink";
+
 DefaultEnd2Color = "SkyBlue";
+DefaultEnd2ExtensionColor = "DeepSkyBlue";
+
 DefaultEnd3Color = "MediumPurple";
+DefaultEnd3ExtensionColor = "DarkOrchid";
+
 DefaultTransitionColor = "LightGreen";
-DefaultExtensionColor = "MediumSeaGreen";
+DefaultExtensionColor = "purple";

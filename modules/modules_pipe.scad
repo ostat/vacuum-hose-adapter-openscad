@@ -378,7 +378,8 @@ module pipe(
     chamfer,
     chamfer1 = [0,0],
     chamfer2 = [0,0],
-    centerSmallerWall = false)
+    centerSmallerWall = false,
+    enableWallThicknessCompensation = true)
 {
   wallThickness1 = is_undef(wallThickness) ? wallThickness1 : wallThickness;
   wallThickness2 = is_undef(wallThickness) ? wallThickness2 : wallThickness;
@@ -426,6 +427,17 @@ module pipe(
   endInnerZ = max(0, length - min(length, innerChamferEndEff));
   endOuterZ = max(0, length - min(length, outerChamferEndEff));
 
+  leadIn = enableWallThicknessCompensation  ? max(fudgeFactor, min(wallThickness1, wallThickness2, length)/2) : fudgeFactor;
+  startOuterLeadIn = outerRadius1 > outerRadius2 ? leadIn : fudgeFactor;
+  startInnerLeadIn = innerRadius1 > innerRadius2 ? fudgeFactor : leadIn;
+  endOuterLeadIn = outerRadius2 > outerRadius1 ? leadIn : fudgeFactor;
+  endInnerLeadIn = innerRadius2 > innerRadius1 ? fudgeFactor : leadIn;
+
+  startOuterWallZ = max(startOuterZ, startOuterLeadIn);
+  startInnerWallZ = max(startInnerZ, startInnerLeadIn);
+  endOuterWallZ = min(endOuterZ, length-endOuterLeadIn);
+  endInnerWallZ = min(endInnerZ, length-endInnerLeadIn);
+
   assert(length > 0, "length must be greater than 0");
   assert(innerRadius1 > 0 && innerRadius2 > 0, "Inner diameters must be greater than 0");
   assert(wallThickness1 >= 0 && wallThickness2 >= 0, str("Wall thicknesses must be greater than 0 wallThickness1:", wallThickness1, " wallThickness2:", wallThickness2));
@@ -434,12 +446,12 @@ module pipe(
   rotate_extrude(convexity = 10)
     polygon(points = [
       [max(fudgeFactor, outerRadius1 - outerChamferStartEff), 0],    // 1) Outer start edge at z=0 (after optional start outer chamfer).
-      [outerRadius1, startOuterZ],                                // 2) Outer start wall at chamfer end.
-      [outerRadius2, endOuterZ],                                  // 3) Outer end wall just before end chamfer.
+      [outerRadius1, startOuterWallZ],                            // 2) Outer start wall after chamfer/lead-in.
+      [outerRadius2, endOuterWallZ],                              // 3) Outer end wall before chamfer/lead-in.
       [max(fudgeFactor, outerRadius2 - outerChamferEndEff), length], // 4) Outer end edge at z=length (after optional end outer chamfer).
       [innerRadius2 + innerChamferEndEff, length],                   // 5) Inner end edge at z=length (after optional end inner chamfer).
-      [innerRadius2, endInnerZ],                                  // 6) Inner end wall just before end chamfer.
-      [innerRadius1, startInnerZ],                                // 7) Inner start wall at chamfer end.
+      [innerRadius2, endInnerWallZ],                              // 6) Inner end wall before chamfer/lead-in.
+      [innerRadius1, startInnerWallZ],                            // 7) Inner start wall after chamfer/lead-in.
       [innerRadius1 + innerChamferStartEff, 0]                       // 8) Inner start edge at z=0 (after optional start inner chamfer).
     ]);
 }

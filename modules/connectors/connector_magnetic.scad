@@ -9,13 +9,21 @@ if(connector_magnetic_demo && $preview){
     diameter = 50;
     spacer = diameter * 1.8;
 
+    imagnetic_demo_length = 0;
+    imagnetic_demo_magnetDiameter = 1;
+    imagnetic_demo_alignmentRing = 2;
+    imagnetic_demo_twistLockSize = 3;
+    imagnetic_demo_magnetCount = 4;
+    
     render_options = [
-        ["no", "0", 8],
-        ["protruding", "0", 8],
-        ["recessed", "0", 8],
-        ["no", "4", 8],
-        ["no", "4cnc", 8],
-        ["no", "0", 12]
+        [7.5, 8, "no", "0", 8],
+        [8, 8, "no", "0", 8],
+        [20, 10.5, "no", "0", 8],
+        [20, 10.5, "protruding", "0", 8],
+        [20, 10.5, "recessed", "0", 8],
+        [20, 10.5, "no", "4", 8],
+        [20, 10.5, "no", "4cnc", 8],
+        [20, 10.5, "no", "0", 12]
     ];
 
     for(iRender = [0:len(render_options)-1])
@@ -23,21 +31,21 @@ if(connector_magnetic_demo && $preview){
         MagneticConnector(
             innerStartDiameter = diameter,
             innerEndDiameter = diameter,
-            length = 20,
+            length = render_options[iRender][imagnetic_demo_length],
             wallThickness = 2,
-            magnetDiameter = 10.5,
+            magnetDiameter = render_options[iRender][imagnetic_demo_magnetDiameter],
             magnetThickness = 4,
             magnetBorder = 2,
             magnetZOffset = 0,
             flangeThickness = 7.5,
-            magnetCount = render_options[iRender][2],
-            alignmentRing = render_options[iRender][0],
+            magnetCount = render_options[iRender][imagnetic_demo_magnetCount],
+            alignmentRing = render_options[iRender][imagnetic_demo_alignmentRing],
             alignmentDepth = 2,
             alignmentUpperWidth = 3,
             alignmentLowerWidth = 1,
             alignmentSideClearance = 0.25,
             alignmentDepthClearance = 0.75,
-            twistLockSize = render_options[iRender][1]);
+            twistLockSize = render_options[iRender][imagnetic_demo_twistLockSize]);
 }
 
 module MagneticConnector(
@@ -58,6 +66,7 @@ module MagneticConnector(
     alignmentSideClearance,
     alignmentDepthClearance,
     twistLockSize,
+    roundover = true,
 )
 {
     assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");
@@ -79,6 +88,7 @@ module MagneticConnector(
         "alignmentRing must be one of 'no', 'protruding', or 'recessed'");
     assert(is_string(twistLockSize) && (twistLockSize == "0" || twistLockSize == "3" || twistLockSize == "3cnc" || twistLockSize == "4" || twistLockSize == "4cnc" || twistLockSize == "5" || twistLockSize == "5cnc"),
         "twistLockSize must be one of '0', '3', '3cnc', '4', '4cnc', '5', or '5cnc'");
+    assert(is_bool(roundover), "roundover must be a boolean");
 
     assert(magnetZOffset + magnetThickness <= flangeThickness + fudgeFactor, "magnetZOffset + magnetThickness must be less than or equal to flangeThickness");
     assert(alignmentDepthClearance <= alignmentDepth, "alignmentDepthClearance must be less than or equal to alignmentDepth");
@@ -120,7 +130,10 @@ module MagneticConnector(
 
 
   echo("MagneticConnector_locking", magnetDivisionAngle=magnetDivisionAngle, magnetCir=magnetCir, magnetDivisionCir=magnetDivisionCir, minLockSpace = lockingSystemSize, endAngleoffset=endAngleoffset, endAngleoffset=endAngleoffset);
-  fillet = flangeThickness;
+  roundoverSize = !roundover || lockingSize != [0,0,0] ? 0
+    : max(flangeThickness-magnetThickness-magnetZOffset,0);
+
+  fillet = flangeThickness - roundoverSize;
     difference ()
     {
         //flange
@@ -134,17 +147,15 @@ module MagneticConnector(
 
             // flange aound the magnets
             hull () {
-                roundover = lockingSize !=[0,0,0] ? 0
-                  : max(flangeThickness-magnetThickness-magnetZOffset,0);
-                  echo(roundover=roundover);
+
                 for (i = [0: magnetCount-1]) {
                     rotate ([0, 0, i * magnetDivisionAngle])
                     translate ([magnetPosition, 0, 0])
-                    if(roundover > 0){
+                    if(roundoverSize > 0){
                       roundedCylinder(
                         h = flangeThickness,
                         r = (magnetDiameter + magnetBorder)/2,
-                        roundedr2=roundover);
+                        roundedr2=roundoverSize);
                     }else {
                       cylinder (d = magnetDiameter + magnetBorder * 2, flangeThickness);
                     }
