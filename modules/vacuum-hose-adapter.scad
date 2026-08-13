@@ -247,7 +247,7 @@ module adapter(
         }
         else if(con[iStyle] == "kobalt")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           KobaltConnector(
             innerEndDiameter = con[iInnerEndDiameter],
@@ -258,7 +258,7 @@ module adapter(
         }
         else if(con[iStyle] == "rigid_nxt" || con[iStyle] == "nxt")
         {
-          translate([0, 0, con[iLength]+con[iStopLength]])
+          translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           RigidNXTConnector(
             outerStartDiameter = con[iOuterStartDiameter],

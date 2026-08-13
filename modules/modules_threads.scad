@@ -80,7 +80,6 @@ module InternalHoseThread(
         }
     }
   }
-  }
 }
 
 // create an external thread outside a hose (like a bolt)
