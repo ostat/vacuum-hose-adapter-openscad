@@ -148,13 +148,26 @@ module HoseConnector(
             cylinder(fudgeFactor, d=innerEndDiameter+2*wallThickness);
         }
 
-        //Inner cylinder to remove
-        translate([0,0,0-fudgeFactor])
-        hull()
-        {
-          cylinder(fudgeFactor, d=innerStartDiameter);
-          translate([0,0,length+2*fudgeFactor])
-            cylinder(fudgeFactor, d=innerEndDiameter);
+        //Inner cylinder or internal thread to remove
+        if (enableThreads != "disabled" && connectorMeasurement == "inner") {
+          translate([0, 0, -fudgeFactor])
+          mirror((enableThreads == "reversed") ? [1,0,0] : [0,0,0])
+          ScrewThread(
+            outer_diam = innerStartDiameter,
+            height = length + fudgeFactor*2,
+            pitch = threadPitch,
+            tooth_angle = threadToothAngle,
+            tooth_height = threadToothHeight,
+            referenceThreadOuter = true
+          );
+        } else {
+          translate([0,0,0-fudgeFactor])
+          hull()
+          {
+            cylinder(fudgeFactor, d=innerStartDiameter);
+            translate([0,0,length+2*fudgeFactor])
+              cylinder(fudgeFactor, d=innerEndDiameter);
+          }
         }
         if(chamferLength >0)
         {
@@ -172,26 +185,15 @@ module HoseConnector(
         }
       }
 
-      if(enableThreads != "disabled"){
-        if(connectorMeasurement == "outer"){
-          ExternalHoseThread(
-            diameter = innerStartDiameter+wallThickness,
-            wallThickness=wallThickness,
-            height=length,
-            pitch=threadPitch,
-            tooth_angle=threadToothAngle,
-            tooth_height=threadToothHeight,
-            reverse_thread=(enableThreads == "reversed"));
-        } else {
-        InternalHoseThread(
-          diameter = innerStartDiameter,
+      if(enableThreads != "disabled" && connectorMeasurement == "outer"){
+        ExternalHoseThread(
+          diameter = innerStartDiameter+wallThickness,
           wallThickness=wallThickness,
           height=length,
           pitch=threadPitch,
           tooth_angle=threadToothAngle,
           tooth_height=threadToothHeight,
           reverse_thread=(enableThreads == "reversed"));
-        }
       }
     }
 
