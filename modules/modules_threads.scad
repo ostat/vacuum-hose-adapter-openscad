@@ -137,3 +137,43 @@ module ExternalHoseThread(
       }
   }
 }
+
+// create a round / half-circle (knuckle) internal or external thread cutter
+module RoundScrewThread(
+    major_diam = 33.29,
+    height = 14.0,
+    pitch = 2.7,
+    tooth_height = 0.98,
+    tooth_width = 2.33,
+    reverse = true,
+    steps_per_turn = 48
+) {
+    total_turns = height / pitch + 2;
+    steps = ceil(total_turns * steps_per_turn);
+    d_theta = 360 / steps_per_turn;
+    dz = pitch / steps_per_turn;
+    
+    r_center = (major_diam / 2);
+    rx = tooth_height;
+    ry = (tooth_width > 0) ? tooth_width / 2 : tooth_height;
+    rz = (tooth_width > 0) ? tooth_width / 2 : tooth_height;
+    
+    for (s = [0:steps-1]) {
+        let(
+            t1 = (reverse ? -1 : 1) * s * d_theta,
+            z1 = s * dz - pitch,
+            t2 = (reverse ? -1 : 1) * (s + 1) * d_theta,
+            z2 = (s + 1) * dz - pitch
+        )
+        hull() {
+            translate([r_center * cos(t1), r_center * sin(t1), z1])
+                rotate([0, 0, t1])
+                scale([rx, ry, rz])
+                sphere(r = 1, $fn = 24);
+            translate([r_center * cos(t2), r_center * sin(t2), z2])
+                rotate([0, 0, t2])
+                scale([rx, ry, rz])
+                sphere(r = 1, $fn = 24);
+        }
+    }
+}

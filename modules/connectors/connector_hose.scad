@@ -82,6 +82,8 @@ module HoseConnector(
     threadPitch=0,
     threadToothAngle=30,
     threadToothHeight=0,
+    threadToothWidth=0,
+    threadProfile="v_angle",
     help
 )
 {
@@ -118,12 +120,17 @@ module HoseConnector(
     str("chamferWidth must be a number greater than or equal to 0; got: ", chamferWidth));
   assert(is_string(enableThreads) && (enableThreads == "disabled" || enableThreads == "enabled" || enableThreads == "reversed"),
     str("enableThreads must be 'disabled', 'enabled', or 'reversed'; got: ", enableThreads));
+  assert(is_string(threadProfile) && (threadProfile == "v_angle" || threadProfile == "round"),
+    str("threadProfile must be 'v_angle' or 'round'; got: ", threadProfile));
+
   assert(is_num(threadPitch) && threadPitch >= 0,
     str("threadPitch must be a number greater than or equal to 0; got: ", threadPitch));
   assert(is_num(threadToothAngle) && threadToothAngle >= 0 && threadToothAngle <= 90,
     str("threadToothAngle must be between 0 and 90; got: ", threadToothAngle));
   assert(is_num(threadToothHeight) && threadToothHeight >= 0,
     str("threadToothHeight must be a number greater than or equal to 0; got: ", threadToothHeight));
+  assert(is_num(threadToothWidth) && threadToothWidth >= 0,
+    str("threadToothWidth must be a number greater than or equal to 0; got: ", threadToothWidth));
 
   assert(stopLength == 0 || stopWidth > 0,
     str("stopWidth must be greater than 0 when stopLength is enabled; stopLength=", stopLength, ", stopWidth=", stopWidth));
@@ -150,16 +157,33 @@ module HoseConnector(
 
         //Inner cylinder or internal thread to remove
         if (enableThreads != "disabled" && connectorMeasurement == "inner") {
-          translate([0, 0, -fudgeFactor])
-          mirror((enableThreads == "reversed") ? [1,0,0] : [0,0,0])
-          ScrewThread(
-            outer_diam = innerStartDiameter,
-            height = length + fudgeFactor*2,
-            pitch = threadPitch,
-            tooth_angle = threadToothAngle,
-            tooth_height = threadToothHeight,
-            referenceThreadOuter = true
-          );
+          if (threadProfile == "round") {
+            RoundScrewThread(
+              major_diam = innerStartDiameter,
+              height = length,
+              pitch = threadPitch,
+              tooth_height = threadToothHeight,
+              tooth_width = threadToothWidth,
+              reverse = (enableThreads == "reversed")
+            );
+            // Clean open center bore at innerStartDiameter for half-circle grooves
+            translate([0, 0, -fudgeFactor])
+            cylinder(h = length + fudgeFactor*4, d = innerStartDiameter);
+          } else {
+            translate([0, 0, -threadPitch])
+            mirror((enableThreads == "reversed") ? [1,0,0] : [0,0,0])
+            ScrewThread(
+              outer_diam = innerStartDiameter,
+              height = length + threadPitch*2,
+              pitch = threadPitch,
+              tooth_angle = threadToothAngle,
+              tooth_height = threadToothHeight,
+              referenceThreadOuter = true
+            );
+            // Clean open center bore
+            translate([0, 0, -fudgeFactor])
+            cylinder(h = length + fudgeFactor*4, d = innerStartDiameter - 2*threadToothHeight);
+          }
         } else {
           translate([0,0,0-fudgeFactor])
           hull()

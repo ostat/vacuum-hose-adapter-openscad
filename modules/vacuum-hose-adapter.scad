@@ -179,6 +179,7 @@ module adapter(
             threadPitch = con[iThreadPitch],
             threadToothAngle = con[iThreadToothAngle],
             threadToothHeight = con[iThreadToothHeight],
+            threadProfile = con[iThreadProfile],
             help = help,
             $fn = $fn);
         }
