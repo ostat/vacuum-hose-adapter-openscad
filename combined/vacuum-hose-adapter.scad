@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-08-06 00:31
-//Content hash 1434239895FF766938658C7EAED72E18B2441E5C12C9166834C89EA8244B3AD7
+//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-08-15 22:26
+//Content hash 4D871A48B0105784D5C110D2AD8FED0A73FAC1E7F8BE343177DB1B8F50A3F515
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -19,7 +19,7 @@
 End1_Wall_Thickness = 2; //0.01
 //The style of the end
 End1_Style="hose"; // [hose: Hose connector, mag: Magnetic Flange, flange: Flange, osvacm:osVAC Male, osvacf:osVAC Female]
-End1_Specialised_Style="disabled"; // [disabled:Disabled, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacf32:osVAC F32,  makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, festoolcleanteclug: Festool Cleantec Lug]
+End1_Specialised_Style="disabled"; // [disabled:Disabled, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacf32:osVAC F32, makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, festoolcleanteclug: Festool Cleantec Lug, kobalt: Kobalt Saw Dust Outlet, rigid_nxt: Rigid NXT Vac Hose]
 // Is the measurement the adapter's outside or inside diameter?
 End1_Measurement = "outer"; //[inner, outer]
 // End 1 diameter of the adapter (mm, inch)
@@ -161,8 +161,16 @@ Transition_Base_Angle=0;
 /* [Connector 2] */
 //Wall thickness
 End2_Wall_Thickness = 2; //0.01
+<<<<<<< HEAD
+<<<<<<< HEAD
 End2_Style="hose"; // [hose: Hose connector, mag: Magnetic Flange, flange: Flange, nozzle: Nozzle attachement, osvacm:osVAC Male, osvacf:osVAC Female, none: None]
 End2_Specialised_Style="disabled"; // [disabled:Disabled, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacf32:osVAC F32,  makita_male: Makita Quick connect Male connector, bosch_sander: Bosch orbital sander, festoolcleanteclug: Festool Cleantec Lug]
+=======
+End2_Style="hose"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, kobalt: Kobalt Saw Dust Outlet, none: None]
+>>>>>>> f855436 (feat(connectors): add Kobalt saw dust outlet connector module)
+=======
+End2_Style="hose"; // [mag: Magnetic Flange, flange: Flange, hose: Hose connector, nozzle: Nozzle attachement, dyson: Dyson connector, camlock: CAMLOCK connetor, dw735: Dewalt DW735x, centec_female: Cen-Tec quick female connect, centec_male: Cen-Tec quick male connect, osvacm32:osVAC M32, osvacm:osVAC Male, osvacf32:osVAC F32,osvacf:osVAC Female, makita_male: Makita Quick connect Male connector, kobalt: Kobalt Saw Dust Outlet, rigid_nxt: Rigid NXT Vac Hose, none: None]
+>>>>>>> d73a8cc (feat(connectors): add Rigid NXT shop vac hose connector module)
 // Is the measurement the adapter's outside or inside diameter?
 End2_Measurement = "outer"; //[inner, outer]
 // End 2 diameter of the adapter (mm, inch)
@@ -598,6 +606,7 @@ module adapter(
             threadPitch = con[iThreadPitch],
             threadToothAngle = con[iThreadToothAngle],
             threadToothHeight = con[iThreadToothHeight],
+            threadProfile = con[iThreadProfile],
             help = help,
             $fn = $fn);
         }
@@ -659,6 +668,29 @@ module adapter(
           mirror ([0,0,1])
           BoschSanderConnector(
             innerEndDiameter = con[iInnerEndDiameter],
+            length = con[iLength],
+            wallThickness = con[iWallThickness],
+            help = help,
+            $fn = $fn);
+        }
+        else if(con[iStyle] == "kobalt")
+        {
+          translate([0, 0, con[iLength]])
+          mirror ([0,0,1])
+          KobaltConnector(
+            innerEndDiameter = con[iInnerEndDiameter],
+            length = con[iLength],
+            wallThickness = con[iWallThickness],
+            help = help,
+            $fn = $fn);
+        }
+        else if(con[iStyle] == "rigid_nxt" || con[iStyle] == "nxt")
+        {
+          translate([0, 0, con[iLength]])
+          mirror ([0,0,1])
+          RigidNXTConnector(
+            outerStartDiameter = con[iOuterStartDiameter],
+            outerEndDiameter = con[iOuterEndDiameter],
             length = con[iLength],
             wallThickness = con[iWallThickness],
             help = help,
@@ -5163,6 +5195,8 @@ module slipring(
 
 
 
+
+
 // generic connectors
 
 // specialised connectors
@@ -5191,7 +5225,8 @@ iEnableThreads=iBarbsSymmetrical+1;
 iThreadPitch=iEnableThreads+1;
 iThreadToothAngle=iThreadPitch+1;
 iThreadToothHeight=iThreadToothAngle+1;
-iMagnetCount=iThreadToothHeight+1;
+iThreadProfile=iThreadToothHeight+1;
+iMagnetCount=iThreadProfile+1;
 iMagnetDiameter=iMagnetCount+1;
 iMagnetThickness=iMagnetDiameter+1;
 iMagnetBorder=iMagnetThickness+1;
@@ -5366,6 +5401,7 @@ function UserConnectorSettings(
   threadPitch = 0,
   threadToothAngle = 30,
   threadToothHeight = 0,
+  threadProfile = "v_angle",
   magnetCount = 0,
   magnetDiameter = 0,
   magnetThickness = 0,
@@ -5423,6 +5459,7 @@ function UserConnectorSettings(
     threadPitch,
     threadToothAngle,
     threadToothHeight,
+    threadProfile,
     magnetCount,
     magnetDiameter,
     magnetThickness,
@@ -5645,6 +5682,7 @@ function getConnectorSettings(
         userSettings[iThreadPitch],
         userSettings[iThreadToothAngle],
         userSettings[iThreadToothHeight],
+        userSettings[iThreadProfile],
         userSettings[iMagnetCount],
         userSettings[iMagnetDiameter],
         userSettings[iMagnetThickness],
@@ -5976,6 +6014,8 @@ module HoseConnector(
     threadPitch=0,
     threadToothAngle=30,
     threadToothHeight=0,
+    threadToothWidth=0,
+    threadProfile="v_angle",
     help
 )
 {
@@ -6012,12 +6052,17 @@ module HoseConnector(
     str("chamferWidth must be a number greater than or equal to 0; got: ", chamferWidth));
   assert(is_string(enableThreads) && (enableThreads == "disabled" || enableThreads == "enabled" || enableThreads == "reversed"),
     str("enableThreads must be 'disabled', 'enabled', or 'reversed'; got: ", enableThreads));
+  assert(is_string(threadProfile) && (threadProfile == "v_angle" || threadProfile == "round"),
+    str("threadProfile must be 'v_angle' or 'round'; got: ", threadProfile));
+
   assert(is_num(threadPitch) && threadPitch >= 0,
     str("threadPitch must be a number greater than or equal to 0; got: ", threadPitch));
   assert(is_num(threadToothAngle) && threadToothAngle >= 0 && threadToothAngle <= 90,
     str("threadToothAngle must be between 0 and 90; got: ", threadToothAngle));
   assert(is_num(threadToothHeight) && threadToothHeight >= 0,
     str("threadToothHeight must be a number greater than or equal to 0; got: ", threadToothHeight));
+  assert(is_num(threadToothWidth) && threadToothWidth >= 0,
+    str("threadToothWidth must be a number greater than or equal to 0; got: ", threadToothWidth));
 
   assert(stopLength == 0 || stopWidth > 0,
     str("stopWidth must be greater than 0 when stopLength is enabled; stopLength=", stopLength, ", stopWidth=", stopWidth));
@@ -6042,13 +6087,43 @@ module HoseConnector(
             cylinder(fudgeFactor, d=innerEndDiameter+2*wallThickness);
         }
 
-        //Inner cylinder to remove
-        translate([0,0,0-fudgeFactor])
-        hull()
-        {
-          cylinder(fudgeFactor, d=innerStartDiameter);
-          translate([0,0,length+2*fudgeFactor])
-            cylinder(fudgeFactor, d=innerEndDiameter);
+        //Inner cylinder or internal thread to remove
+        if (enableThreads != "disabled" && connectorMeasurement == "inner") {
+          if (threadProfile == "round") {
+            RoundScrewThread(
+              major_diam = innerStartDiameter,
+              height = length,
+              pitch = threadPitch,
+              tooth_height = threadToothHeight,
+              tooth_width = threadToothWidth,
+              reverse = (enableThreads == "reversed")
+            );
+            // Clean open center bore at innerStartDiameter for half-circle grooves
+            translate([0, 0, -fudgeFactor])
+            cylinder(h = length + fudgeFactor*4, d = innerStartDiameter);
+          } else {
+            translate([0, 0, -threadPitch])
+            mirror((enableThreads == "reversed") ? [1,0,0] : [0,0,0])
+            ScrewThread(
+              outer_diam = innerStartDiameter,
+              height = length + threadPitch*2,
+              pitch = threadPitch,
+              tooth_angle = threadToothAngle,
+              tooth_height = threadToothHeight,
+              referenceThreadOuter = true
+            );
+            // Clean open center bore
+            translate([0, 0, -fudgeFactor])
+            cylinder(h = length + fudgeFactor*4, d = innerStartDiameter - 2*threadToothHeight);
+          }
+        } else {
+          translate([0,0,0-fudgeFactor])
+          hull()
+          {
+            cylinder(fudgeFactor, d=innerStartDiameter);
+            translate([0,0,length+2*fudgeFactor])
+              cylinder(fudgeFactor, d=innerEndDiameter);
+          }
         }
         if(chamferLength >0)
         {
@@ -6066,26 +6141,15 @@ module HoseConnector(
         }
       }
 
-      if(enableThreads != "disabled"){
-        if(connectorMeasurement == "outer"){
-          ExternalHoseThread(
-            diameter = innerStartDiameter+wallThickness,
-            wallThickness=wallThickness,
-            height=length,
-            pitch=threadPitch,
-            tooth_angle=threadToothAngle,
-            tooth_height=threadToothHeight,
-            reverse_thread=(enableThreads == "reversed"));
-        } else {
-        InternalHoseThread(
-          diameter = innerStartDiameter,
+      if(enableThreads != "disabled" && connectorMeasurement == "outer"){
+        ExternalHoseThread(
+          diameter = innerStartDiameter+wallThickness,
           wallThickness=wallThickness,
           height=length,
           pitch=threadPitch,
           tooth_angle=threadToothAngle,
           tooth_height=threadToothHeight,
           reverse_thread=(enableThreads == "reversed"));
-        }
       }
     }
 
@@ -6227,7 +6291,6 @@ module InternalHoseThread(
   tooth_angle=30,
   tooth_height=0,
   reverse_thread = false) {
-
   // Same bore sizing as ScrewHole.
   cut_diam = 1.01*diameter + 1.25*tolerance;
   _pitch = (pitch==0) ? ThreadPitch(cut_diam) : pitch;
@@ -6240,18 +6303,33 @@ module InternalHoseThread(
   shift = (_pitch - _tooth_height) / (2*tan(tooth_angle));
   extra_height = 0.001 * height;
 
-  mirror(reverse_thread ? [0,0,0] :[1,0,0])
-  difference() {
-    cylinder(h=height, r=diameter/2+wallThickness);
-    translate(position)
-      rotate(rotation)
-      translate([0, 0, -extra_height/2])
-      intersection() {
-        ScrewThread(cut_diam + 2*shift, height + extra_height,
-          pitch=_pitch, tooth_angle=tooth_angle, tolerance=tolerance);
-        // ScrewThread's crest radius for cut_diam, shrinkage correction included.
-        cylinder(h=height + extra_height, r=(cut_diam + 0.25*tolerance)/2);
-      }
+  if (reverse_thread) {
+    mirror([1,0,0])
+    difference() {
+      cylinder(h=height, r=diameter/2+wallThickness);
+      translate(position)
+        rotate(rotation)
+        translate([0, 0, -extra_height/2])
+        intersection() {
+          ScrewThread(cut_diam + 2*shift, height + extra_height,
+            pitch=_pitch, tooth_angle=tooth_angle, tolerance=tolerance);
+          // ScrewThread's crest radius for cut_diam, shrinkage correction included.
+          cylinder(h=height + extra_height, r=(cut_diam + 0.25*tolerance)/2);
+        }
+    }
+  } else {
+    difference() {
+      cylinder(h=height, r=diameter/2+wallThickness);
+      translate(position)
+        rotate(rotation)
+        translate([0, 0, -extra_height/2])
+        intersection() {
+          ScrewThread(cut_diam + 2*shift, height + extra_height,
+            pitch=_pitch, tooth_angle=tooth_angle, tolerance=tolerance);
+          // ScrewThread's crest radius for cut_diam, shrinkage correction included.
+          cylinder(h=height + extra_height, r=(cut_diam + 0.25*tolerance)/2);
+        }
+    }
   }
 }
 
@@ -6271,23 +6349,83 @@ module ExternalHoseThread(
 
   fudgeFactor = 0.01;
 
-  mirror(reverse_thread ? [0,0,0] :[1,0,0])
-  translate([0,0,height])
-  rotate([0,180,0])
-    difference(){
-      ScrewThread(
-        outer_diam=diameter+wallThickness*2,
-        height=height,
-        tolerance=tolerance,
-        tip_height=tip_height == 0 ? ThreadPitch(diameter) : tip_height,
-        pitch=pitch,
-        tooth_angle=tooth_angle,
-        tooth_height=min(tooth_height, pitch==0 ? ThreadPitch(diameter+wallThickness*2) : pitch),
-        tip_min_fract=tip_min_fract,
-        referenceThreadOuter= false);
+  if (reverse_thread) {
+    mirror([1,0,0])
+    translate([0,0,height])
+    rotate([0,180,0])
+      difference(){
+        ScrewThread(
+          outer_diam=diameter+wallThickness*2,
+          height=height,
+          tolerance=tolerance,
+          tip_height=tip_height == 0 ? ThreadPitch(diameter) : tip_height,
+          pitch=pitch,
+          tooth_angle=tooth_angle,
+          tooth_height=min(tooth_height, pitch==0 ? ThreadPitch(diameter+wallThickness*2) : pitch),
+          tip_min_fract=tip_min_fract,
+          referenceThreadOuter= false);
 
-    translate([0,0,-fudgeFactor])
-      cylinder(h=height+fudgeFactor*2, d=diameter);
+      translate([0,0,-fudgeFactor])
+        cylinder(h=height+fudgeFactor*2, d=diameter);
+      }
+  } else {
+    translate([0,0,height])
+    rotate([0,180,0])
+      difference(){
+        ScrewThread(
+          outer_diam=diameter+wallThickness*2,
+          height=height,
+          tolerance=tolerance,
+          tip_height=tip_height == 0 ? ThreadPitch(diameter) : tip_height,
+          pitch=pitch,
+          tooth_angle=tooth_angle,
+          tooth_height=min(tooth_height, pitch==0 ? ThreadPitch(diameter+wallThickness*2) : pitch),
+          tip_min_fract=tip_min_fract,
+          referenceThreadOuter= false);
+
+      translate([0,0,-fudgeFactor])
+        cylinder(h=height+fudgeFactor*2, d=diameter);
+      }
+  }
+}
+
+// create a round / half-circle (knuckle) internal or external thread cutter
+module RoundScrewThread(
+    major_diam = 33.29,
+    height = 14.0,
+    pitch = 2.7,
+    tooth_height = 0.98,
+    tooth_width = 2.33,
+    reverse = true,
+    steps_per_turn = 48
+) {
+    total_turns = height / pitch + 2;
+    steps = ceil(total_turns * steps_per_turn);
+    d_theta = 360 / steps_per_turn;
+    dz = pitch / steps_per_turn;
+    
+    r_center = (major_diam / 2);
+    rx = tooth_height;
+    ry = (tooth_width > 0) ? tooth_width / 2 : tooth_height;
+    rz = (tooth_width > 0) ? tooth_width / 2 : tooth_height;
+    
+    for (s = [0:steps-1]) {
+        let(
+            t1 = (reverse ? -1 : 1) * s * d_theta,
+            z1 = s * dz - pitch,
+            t2 = (reverse ? -1 : 1) * (s + 1) * d_theta,
+            z2 = (s + 1) * dz - pitch
+        )
+        hull() {
+            translate([r_center * cos(t1), r_center * sin(t1), z1])
+                rotate([0, 0, t1])
+                scale([rx, ry, rz])
+                sphere(r = 1, $fn = 24);
+            translate([r_center * cos(t2), r_center * sin(t2), z2])
+                rotate([0, 0, t2])
+                scale([rx, ry, rz])
+                sphere(r = 1, $fn = 24);
+        }
     }
 }
 //CombinedEnd from path modules_threads.scad
@@ -9826,6 +9964,203 @@ module osVacMaleConnector(
 
 
 //CombinedEnd from path connector_osvac.scad
+//Combined from path connector_kobalt.scad
+
+
+
+
+
+
+
+kobaltVersion = "1.0";
+kobaltMinLength = 16.7;
+kobaltMeasurement = "inner";
+kobaltBaseOD = 38.20;
+kobaltRingOD = 39.85;
+kobaltFitClearance = -0.30;
+kobaltInnerDiameter = kobaltBaseOD + kobaltFitClearance; // 37.90mm
+kobaltWallThickness = 2.50;
+
+kobaltSettings = ["kobalt", [
+  [iSettingsLength, kobaltMinLength],
+  [iSettingsMeasurement, kobaltMeasurement],
+  [iSettingsDiameter, kobaltInnerDiameter],
+  [iSettingsTaper, 0],
+  [iSettingsWallThickness, kobaltWallThickness],
+  [iSettingsVersion, kobaltVersion]
+]];
+
+kobaltConnector_demo = false;
+if (kobaltConnector_demo) {
+  $fn = 128;
+  KobaltConnector(help = true);
+}
+
+module KobaltConnector(
+  innerEndDiameter = kobaltInnerDiameter,
+  length = kobaltMinLength,
+  wallThickness = kobaltWallThickness,
+  fitClearance = kobaltFitClearance,
+  ringOD = kobaltRingOD,
+  entryChamfer = 1.50,
+  enableRecesses = true,
+  help = false,
+  $fn = 64
+) {
+  assert(is_num(innerEndDiameter) && innerEndDiameter > 0, "innerEndDiameter must be a number > 0");
+  assert(is_num(length) && length > 0, "length must be a number > 0");
+  assert(is_num(wallThickness) && wallThickness > 0, "wallThickness must be a number > 0");
+
+  recess_id = ringOD + fitClearance;
+  recess_r_outer = recess_id / 2;
+  recess_r_inner = innerEndDiameter / 2 - 0.1;
+  depth = recess_r_outer - recess_r_inner;
+
+  upper_h = (8.35 - 5.50) / 2;
+  upper_points = [
+    [recess_r_inner, upper_h],
+    for (a = [90 : -10 : -90])
+      [recess_r_inner + depth * cos(a), upper_h * sin(a)],
+    [recess_r_inner, -upper_h]
+  ];
+
+  lower_h = (16.70 - 14.00) / 2;
+  lower_points = [
+    [recess_r_inner, lower_h],
+    for (a = [90 : -10 : -90])
+      [recess_r_inner + depth * cos(a), lower_h * sin(a)],
+    [recess_r_inner, -lower_h]
+  ];
+
+  difference() {
+    HoseConnector(
+      connectorMeasurement = "inner",
+      innerStartDiameter = innerEndDiameter,
+      innerEndDiameter = innerEndDiameter,
+      length = length,
+      wallThickness = wallThickness,
+      help = help,
+      $fn = $fn
+    );
+
+    if (enableRecesses && depth > 0) {
+      // Upper ring recess (depth 5.50mm to 8.35mm from lip, peak at 6.925mm)
+      translate([0, 0, length - 6.925])
+        rotate_extrude($fn = $fn)
+          polygon(points = upper_points);
+
+      // Lower ring recess (depth 14.00mm to 16.70mm from lip, peak at 15.35mm)
+      translate([0, 0, length - 15.35])
+        rotate_extrude($fn = $fn)
+          polygon(points = lower_points);
+    }
+
+    if (entryChamfer > 0) {
+      translate([0, 0, length - entryChamfer]) {
+        rotate_extrude($fn = $fn) {
+          polygon(points = [
+            [innerEndDiameter / 2, -0.1],
+            [innerEndDiameter / 2 + entryChamfer + 0.1, entryChamfer + 0.1],
+            [innerEndDiameter / 2, entryChamfer + 0.1]
+          ]);
+        }
+      }
+    }
+  }
+}
+//CombinedEnd from path connector_kobalt.scad
+//Combined from path connector_rigid_nxt.scad
+
+
+
+
+
+
+
+nxtVersion = "1.0";
+nxtMinLength = 25.0;
+nxtMeasurement = "outer";
+nxtOuterDiameter = 63.70;
+nxtInnerDiameter = 58.20;
+nxtWallThickness = (nxtOuterDiameter - nxtInnerDiameter) / 2; // 2.75mm
+nxtRidgeHeight = 2.60;
+nxtRidgeCount = 6;
+nxtRidgeSpan = 19.25;
+nxtRidgeArc = 55;
+nxtRidgeOffset = 2.0;
+
+rigidNxtSettings = ["rigid_nxt", [
+  [iSettingsLength, nxtMinLength],
+  [iSettingsMeasurement, nxtMeasurement],
+  [iSettingsDiameter, nxtOuterDiameter],
+  [iSettingsTaper, 0],
+  [iSettingsWallThickness, nxtWallThickness],
+  [iSettingsVersion, nxtVersion]
+]];
+
+rigidNxtConnector_demo = false;
+if (rigidNxtConnector_demo) {
+  $fn = 128;
+  RigidNXTConnector(help = true);
+}
+
+module RigidNXTConnector(
+  outerStartDiameter = nxtOuterDiameter,
+  outerEndDiameter = nxtOuterDiameter,
+  length = nxtMinLength,
+  wallThickness = nxtWallThickness,
+  ridgeCount = nxtRidgeCount,
+  ridgeHeight = nxtRidgeHeight,
+  ridgeSpan = nxtRidgeSpan,
+  ridgeArc = nxtRidgeArc,
+  ridgeOffset = nxtRidgeOffset,
+  help = false,
+  $fn = 64
+) {
+  assert(is_num(outerStartDiameter) && outerStartDiameter > 0, "outerStartDiameter must be a number > 0");
+  assert(is_num(length) && length > 0, "length must be a number > 0");
+  assert(is_num(wallThickness) && wallThickness > 0, "wallThickness must be a number > 0");
+
+  innerStartDiameter = outerStartDiameter - wallThickness * 2;
+  innerEndDiameter = outerEndDiameter - wallThickness * 2;
+  ridgePitch = ridgeCount > 1 ? ridgeSpan / (ridgeCount - 1) : 0;
+  r_base = outerStartDiameter / 2;
+  r_max = r_base + ridgeHeight;
+  ramp_len = ridgePitch * 0.82;
+
+  union() {
+    HoseConnector(
+      connectorMeasurement = "outer",
+      innerStartDiameter = innerStartDiameter,
+      innerEndDiameter = innerEndDiameter,
+      length = length,
+      wallThickness = wallThickness,
+      help = help,
+      $fn = $fn
+    );
+
+    if (ridgeCount > 0 && ridgeHeight > 0) {
+      rotate([0, 0, 90 - ridgeArc / 2]) {
+        rotate_extrude(angle = ridgeArc, $fn = $fn) {
+          for (i = [0 : ridgeCount - 1]) {
+            z0 = ridgeOffset + i * ridgePitch;
+            z1 = z0 + ramp_len;
+            z2 = z0 + ridgePitch;
+
+            if (z2 <= length + 0.1) {
+              polygon(points = [
+                [r_base - 0.1, z0],
+                [r_max, z1],
+                [r_base - 0.1, z2]
+              ]);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+//CombinedEnd from path connector_rigid_nxt.scad
 //Combined from path connector_common_post.scad
 
 
