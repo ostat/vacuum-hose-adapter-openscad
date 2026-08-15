@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'funnels.scad'. Generated 2026-08-15 22:56
-//Content hash 6F2B08FAFA50191259C01F73A476E8AB2AA1A55D7F209E6D1B18893DB00AEF5F
+//Combined version of 'funnels.scad'. Generated 2026-08-15 22:59
+//Content hash 22DB2BB28D2721AA35E48796D261EBBEEB21B02884724E96BE281C561DF7F017
 ///////////////////////////////////////
 // funnel
 // version 2026-02-27
@@ -314,8 +314,7 @@ module adapter(
           translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           RigidNXTConnector(
-            outerStartDiameter = con[iOuterStartDiameter],
-            outerEndDiameter = con[iOuterEndDiameter],
+            innerEndDiameter = con[iInnerEndDiameter],
             length = con[iLength],
             wallThickness = con[iWallThickness],
             help = help,
@@ -9658,15 +9657,14 @@ module KobaltConnector(
   ];
 
   difference() {
-    HoseConnector(
-      connectorMeasurement = "inner",
-      innerStartDiameter = innerEndDiameter,
-      innerEndDiameter = innerEndDiameter,
-      length = length,
-      wallThickness = wallThickness,
-      help = help,
-      $fn = $fn
-    );
+    pipe(
+        diameter = innerEndDiameter,
+        length = length,
+        wallThickness = wallThickness,
+        chamfer1 = [0,0],
+        chamfer2 = [entryChamfer,0],
+        centerSmallerWall = false,
+        enableWallThicknessCompensation = true);
 
     if (enableRecesses && depth > 0) {
       // Upper ring recess (depth 5.50mm to 8.35mm from lip, peak at 6.925mm)
@@ -9678,18 +9676,6 @@ module KobaltConnector(
       translate([0, 0, length - 15.35])
         rotate_extrude($fn = $fn)
           polygon(points = lower_points);
-    }
-
-    if (entryChamfer > 0) {
-      translate([0, 0, length - entryChamfer]) {
-        rotate_extrude($fn = $fn) {
-          polygon(points = [
-            [innerEndDiameter / 2, -0.1],
-            [innerEndDiameter / 2 + entryChamfer + 0.1, entryChamfer + 0.1],
-            [innerEndDiameter / 2, entryChamfer + 0.1]
-          ]);
-        }
-      }
     }
   }
 }
@@ -9802,7 +9788,9 @@ connectorSettings =[
   osvacf32Settings,
   makitaMaleSettings,
   boschSanderSettings,
-  festoolCleantecLugSettings
+  festoolCleantecLugSettings,
+  rigidNxtSettings,
+  kobaltSettings,
   ];
 //CombinedEnd from path connector_common_post.scad
 
