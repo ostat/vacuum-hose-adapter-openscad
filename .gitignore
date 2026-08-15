@@ -1,3 +1,20 @@
+# AI / agent instruction files
+AGENTS.md
+**/AGENTS.md
+
+# Cursor/Copilot instruction conventions
+.cursor/
+**/.cursor/
+**/*.instructions.md
+**/*.prompt.md
+**/*.agent.md
+**/copilot-instructions.md
+**/.github/copilot-instructions.md
+
+# Skill definition docs used by agent tooling
+**/SKILL.md
+
+# project specific
 sandpit/
 test_results/
 demos/output/
