@@ -62,15 +62,14 @@ module KobaltConnector(
   ];
 
   difference() {
-    HoseConnector(
-      connectorMeasurement = "inner",
-      innerStartDiameter = innerEndDiameter,
-      innerEndDiameter = innerEndDiameter,
-      length = length,
-      wallThickness = wallThickness,
-      help = help,
-      $fn = $fn
-    );
+    pipe(
+        diameter = innerEndDiameter,
+        length = length,
+        wallThickness = wallThickness,
+        chamfer1 = [0,0],
+        chamfer2 = [entryChamfer,0],
+        centerSmallerWall = false,
+        enableWallThicknessCompensation = true);
 
     if (enableRecesses && depth > 0) {
       // Upper ring recess (depth 5.50mm to 8.35mm from lip, peak at 6.925mm)
@@ -82,18 +81,6 @@ module KobaltConnector(
       translate([0, 0, length - 15.35])
         rotate_extrude($fn = $fn)
           polygon(points = lower_points);
-    }
-
-    if (entryChamfer > 0) {
-      translate([0, 0, length - entryChamfer]) {
-        rotate_extrude($fn = $fn) {
-          polygon(points = [
-            [innerEndDiameter / 2, -0.1],
-            [innerEndDiameter / 2 + entryChamfer + 0.1, entryChamfer + 0.1],
-            [innerEndDiameter / 2, entryChamfer + 0.1]
-          ]);
-        }
-      }
     }
   }
 }

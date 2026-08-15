@@ -262,8 +262,7 @@ module adapter(
           translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           RigidNXTConnector(
-            outerStartDiameter = con[iOuterStartDiameter],
-            outerEndDiameter = con[iOuterEndDiameter],
+            innerEndDiameter = con[iInnerEndDiameter],
             length = con[iLength],
             wallThickness = con[iWallThickness],
             help = help,
