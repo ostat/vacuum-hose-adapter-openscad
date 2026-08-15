@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-08-15 22:59
-//Content hash 5AADDFE45C472D7FE471DF4EC2AADDB05C57E7CB2E38E14663A4F1EE2FB3B8A9
+//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-08-15 23:04
+//Content hash 2E4D1558D696E20A989B66187B6A5AF77EAE0763B53E4259ACE63777E1479577
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -8574,6 +8574,7 @@ module BayonetSlotConnector(
 
   cutoutArcLength = lockAngle/180*PI*(id/2+slotDepth);
 
+  union(){
   difference(){
     //main pipe
     pipe(
@@ -8617,6 +8618,15 @@ module BayonetSlotConnector(
         }
       }
     }
+  }
+
+  //it creates the bump to produce the lock
+  for(i = [0:slotCount-1])
+    rotate([0,0,i*360/slotCount+lockAngle/4])
+    translate([0,0,slotAxialHeight-slotAxialLength-slotDepth])
+      rotate_extrude(angle=lockAngle/2)
+        translate([slotFaceRadius-slotDepth+lockBumpDepth,0])
+          square([slotDepth,slotAxialLength+slotDepth]);
   }
 
   HelpTxt("BayonetSlotConnector",[

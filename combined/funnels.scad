@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'funnels.scad'. Generated 2026-08-15 22:59
-//Content hash 22DB2BB28D2721AA35E48796D261EBBEEB21B02884724E96BE281C561DF7F017
+//Combined version of 'funnels.scad'. Generated 2026-08-15 23:04
+//Content hash DECD505D2C8440110FD6440A34F7FE3157A4A7DB4275795177AD498EF4B93957
 ///////////////////////////////////////
 // funnel
 // version 2026-02-27
@@ -8500,6 +8500,7 @@ module BayonetSlotConnector(
 
   cutoutArcLength = lockAngle/180*PI*(id/2+slotDepth);
 
+  union(){
   difference(){
     //main pipe
     pipe(
@@ -8543,6 +8544,15 @@ module BayonetSlotConnector(
         }
       }
     }
+  }
+
+  //it creates the bump to produce the lock
+  for(i = [0:slotCount-1])
+    rotate([0,0,i*360/slotCount+lockAngle/4])
+    translate([0,0,slotAxialHeight-slotAxialLength-slotDepth])
+      rotate_extrude(angle=lockAngle/2)
+        translate([slotFaceRadius-slotDepth+lockBumpDepth,0])
+          square([slotDepth,slotAxialLength+slotDepth]);
   }
 
   HelpTxt("BayonetSlotConnector",[
