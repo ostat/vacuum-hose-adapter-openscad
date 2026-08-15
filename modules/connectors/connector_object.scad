@@ -17,7 +17,8 @@ iEnableThreads=iBarbsSymmetrical+1;
 iThreadPitch=iEnableThreads+1;
 iThreadToothAngle=iThreadPitch+1;
 iThreadToothHeight=iThreadToothAngle+1;
-iMagnetCount=iThreadToothHeight+1;
+iThreadProfile=iThreadToothHeight+1;
+iMagnetCount=iThreadProfile+1;
 iMagnetDiameter=iMagnetCount+1;
 iMagnetThickness=iMagnetDiameter+1;
 iMagnetBorder=iMagnetThickness+1;
@@ -192,6 +193,7 @@ function UserConnectorSettings(
   threadPitch = 0,
   threadToothAngle = 30,
   threadToothHeight = 0,
+  threadProfile = "v_angle",
   magnetCount = 0,
   magnetDiameter = 0,
   magnetThickness = 0,
@@ -249,6 +251,7 @@ function UserConnectorSettings(
     threadPitch,
     threadToothAngle,
     threadToothHeight,
+    threadProfile,
     magnetCount,
     magnetDiameter,
     magnetThickness,
@@ -471,6 +474,7 @@ function getConnectorSettings(
         userSettings[iThreadPitch],
         userSettings[iThreadToothAngle],
         userSettings[iThreadToothHeight],
+        userSettings[iThreadProfile],
         userSettings[iMagnetCount],
         userSettings[iMagnetDiameter],
         userSettings[iMagnetThickness],

@@ -179,6 +179,7 @@ module adapter(
             threadPitch = con[iThreadPitch],
             threadToothAngle = con[iThreadToothAngle],
             threadToothHeight = con[iThreadToothHeight],
+            threadProfile = con[iThreadProfile],
             help = help,
             $fn = $fn);
         }
@@ -240,6 +241,29 @@ module adapter(
           mirror ([0,0,1])
           BoschSanderConnector(
             innerEndDiameter = con[iInnerEndDiameter],
+            length = con[iLength],
+            wallThickness = con[iWallThickness],
+            help = help,
+            $fn = $fn);
+        }
+        else if(con[iStyle] == "kobalt")
+        {
+          translate([0, 0, con[iLength]])
+          mirror ([0,0,1])
+          KobaltConnector(
+            innerEndDiameter = con[iInnerEndDiameter],
+            length = con[iLength],
+            wallThickness = con[iWallThickness],
+            help = help,
+            $fn = $fn);
+        }
+        else if(con[iStyle] == "rigid_nxt" || con[iStyle] == "nxt")
+        {
+          translate([0, 0, con[iLength]])
+          mirror ([0,0,1])
+          RigidNXTConnector(
+            outerStartDiameter = con[iOuterStartDiameter],
+            outerEndDiameter = con[iOuterEndDiameter],
             length = con[iLength],
             wallThickness = con[iWallThickness],
             help = help,

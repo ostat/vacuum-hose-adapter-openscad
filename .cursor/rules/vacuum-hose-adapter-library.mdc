@@ -1,0 +1,64 @@
+---
+description: Integration guide and rules for using the vacuum-hose-adapter-openscad library
+globs: "*.scad"
+alwaysApply: false
+---
+
+# Vacuum Hose Adapter Library Integration Rule
+
+Use this rule whenever designing, modifying, or creating OpenSCAD models for vacuum hose adapters, dust ports, magnetic quick-connects, osVAC fittings, or custom tool nozzles.
+
+## Library Location
+
+- **Core Module**: `modules/vacuum-hose-adapter.scad`
+- Full technical guide and recipes: [`docs/VACUUM_HOSE_ADAPTER_GUIDE.md`](file:///Users/ksteddom/Source/vacuum-hose-adapter-openscad/docs/VACUUM_HOSE_ADAPTER_GUIDE.md)
+
+## Basic Usage Skeleton
+
+```scad
+include <modules/vacuum-hose-adapter.scad>
+
+// --- Parameters ---
+connector1_diameter = 50;  // mm — Hose outer diameter
+connector2_diameter = 35;  // mm — Tool port inner diameter
+wall_thickness = 2.5;       // mm — Main wall thickness
+
+$fa = 3;
+$fs = 0.1;
+
+// --- Geometry ---
+HoseAdapter(
+  connector1 = UserConnectorSettings(
+    connector = 1,
+    style = "hose",
+    wallThickness = wall_thickness,
+    measurement = "outer",
+    diameter = [connector1_diameter, 0],
+    length = [35, 0],
+    taper = 1
+  ),
+  connector2 = UserConnectorSettings(
+    connector = 2,
+    style = "hose",
+    wallThickness = wall_thickness,
+    measurement = "inner",
+    diameter = [connector2_diameter, 0],
+    length = [30, 0],
+    taper = 0.5
+  ),
+  transitionStyle = "bend+taper",
+  transitionLength = 15
+);
+```
+
+## Supported Connector Styles
+
+- `"hose"`: Standard smooth or tapered hose connection
+- `"mag"`: Magnetic flange connector (requires `magnetCount`, `magnetDiameter`, `magnetThickness`)
+- `"flange"`: Screw mounting flange (requires `flangeWidth`, `flangeThickness`, `screwCount`, `screwDiameter`)
+- `"osvacm"`, `"osvacm32"`, `"osvacf"`, `"osvacf32"`: osVAC standard male/female quick-connect
+- `"centec_male"`, `"centec_female"`: Cen-Tec quick disconnect system
+- `"makita_male"`: Makita tool vacuum port
+- `"dyson"`: Dyson cordless vacuum tool fitting
+- `"camlock"`: Camlock fitting
+- `"nozzle"`: Custom nozzle attachment (`"round"`, `"rectangle"`, `"oval"`)
