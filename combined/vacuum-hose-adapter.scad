@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-08-15 22:56
-//Content hash D71AACCFD3A7882CD45E965EC9607E6F33780B263C5A1BCC331BF82586A2F9AE
+//Combined version of 'vacuum-hose-adapter.scad'. Generated 2026-11-07 07:24
+//Content hash 69C94CB579C8E5FE79303A8693E8621682F3AF7D32AED96B9E8DBFDC6722CBA5
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -262,8 +262,16 @@ End2_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitche
 /* [Connector 2 - Nozzle] */
 // Is the measurement the adapter's outside or inside diameter?
 End2_Nozzle_Shape = "square"; //[square, circle]
-End2_Nozzle_Size = [10,5,10]; //0.1
+//Are the nozzle base size, tip size and radius measured on the inside or outside of the nozzle?
+End2_Nozzle_Measurement = "inner"; //[inner, outer]
+//Opening where the nozzle base ends [x, y]. Circle uses x as the diameter.
+End2_Nozzle_Base_Size = [10,5]; //0.1
+//Opening at the tip of the nozzle [x, y]. Circle uses x as the diameter. 0: same as the base size.
+End2_Nozzle_Tip_Size = [0,0]; //0.1
+//Length of the nozzle section, from the base size to the tip size.
+End2_Nozzle_Length = 10; //0.1
 End2_Nozzle_Tip_Wall_Thickness = 0; //0.1
+//Corner radius of a square nozzle. Circle only uses this when the base size x is 0.
 End2_Nozzle_Radius = 0; //0.1
 End2_Nozzle_Offset = [0,0]; //0.1
 End2_Nozzle_Chamfer_Percentage = 0; //0.1
@@ -373,8 +381,16 @@ End3_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitche
 /* [Connector 3 - Nozzle] */
 // Is the measurement the adapter's outside or inside diameter?
 End3_Nozzle_Shape = "square"; //[square, circle]
-End3_Nozzle_Size = [10,5,10]; //0.1
+//Are the nozzle base size, tip size and radius measured on the inside or outside of the nozzle?
+End3_Nozzle_Measurement = "inner"; //[inner, outer]
+//Opening where the nozzle base ends [x, y]. Circle uses x as the diameter.
+End3_Nozzle_Base_Size = [10,5]; //0.1
+//Opening at the tip of the nozzle [x, y]. Circle uses x as the diameter. 0: same as the base size.
+End3_Nozzle_Tip_Size = [0,0]; //0.1
+//Length of the nozzle section, from the base size to the tip size.
+End3_Nozzle_Length = 10; //0.1
 End3_Nozzle_Tip_Wall_Thickness = 0; //0.1
+//Corner radius of a square nozzle. Circle only uses this when the base size x is 0.
 End3_Nozzle_Radius = 0; //0.1
 End3_Nozzle_Offset = [0,0]; //0.1
 End3_Nozzle_Chamfer_Percentage = 0; //0.1
@@ -683,8 +699,7 @@ module adapter(
           translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           RigidNXTConnector(
-            outerStartDiameter = con[iOuterStartDiameter],
-            outerEndDiameter = con[iOuterEndDiameter],
+            innerEndDiameter = con[iInnerEndDiameter],
             length = con[iLength],
             wallThickness = con[iWallThickness],
             help = help,
@@ -725,7 +740,10 @@ module adapter(
             length = con[iLength],
             wallThickness = con[iWallThickness],
             nozzleShape = con[iNozzleShape],
-            nozzleSize = con[iNozzleSize],
+            nozzleMeasurement = con[iNozzleMeasurement],
+            nozzleBaseSize = con[iNozzleBaseSize],
+            nozzleTipSize = con[iNozzleTipSize],
+            nozzleLength = con[iNozzleLength],
             nozzleTipWallThickness = con[iNozzleTipWallThickness],
             nozzleRadius = con[iNozzleRadius],
             nozzleOffset = con[iNozzleOffset],
@@ -742,7 +760,7 @@ module adapter(
         cubeSizex = max(con[iInnerStartDiameter],con[iInnerEndDiameter])*2;
         cubeSizey = max(con[iInnerStartDiameter],con[iInnerEndDiameter])*1.5;
         cubeSizez = con[iLength]+fudgeFactor*4
-          +(con[iStyle] == "nozzle"? con[iNozzleSize].z+fudgeFactor : 0)
+          +(con[iStyle] == "nozzle"? con[iNozzleLength]+fudgeFactor : 0)
           +(con[iStyle] == "mag"? con[iAlignmentDepth]: 0);
         translate([-cubeSizex/2, -cubeSizey, -fudgeFactor*2])
         cube([cubeSizex,cubeSizey,cubeSizez]);
@@ -800,10 +818,10 @@ module adapter(
 
       if(con[iStyle] == "nozzle")
       {
-        translate([(connectorPos == 1 ? position  : -position), 0,-con[iNozzleSize].z/2])
+        translate([(connectorPos == 1 ? position  : -position), 0,-con[iNozzleLength]/2])
         rotate([90,0,0])
         Caliper(on=2, messpunkt = false, help=0, h = 0.1,
-              l=con[iNozzleSize].z,
+              l=con[iNozzleLength],
               cx= 0,
               end=0,
               size = 8,
@@ -5235,8 +5253,11 @@ iFlangeScrewBorder=iFlangeScrewPosition+1;
 iFlangeScrewCount=iFlangeScrewBorder+1;
 iFlangeScrewDiameter=iFlangeScrewCount+1;
 iNozzleShape=iFlangeScrewDiameter+1;
-iNozzleSize=iNozzleShape+1;
-iNozzleTipWallThickness=iNozzleSize+1;
+iNozzleMeasurement=iNozzleShape+1;
+iNozzleBaseSize=iNozzleMeasurement+1;
+iNozzleTipSize=iNozzleBaseSize+1;
+iNozzleLength=iNozzleTipSize+1;
+iNozzleTipWallThickness=iNozzleLength+1;
 iNozzleRadius=iNozzleTipWallThickness+1;
 iNozzleOffset=iNozzleRadius+1;
 iNozzleChamferPercentage=iNozzleOffset+1;
@@ -5322,7 +5343,10 @@ module echoConnector(name, end, help){
     "iFlangeScrewCount", end[iFlangeScrewCount],
     "iFlangeScrewDiameter", end[iFlangeScrewDiameter],
     "iNozzleShape", end[iNozzleShape],
-    "iNozzleSize", end[iNozzleSize],
+    "iNozzleMeasurement", end[iNozzleMeasurement],
+    "iNozzleBaseSize", end[iNozzleBaseSize],
+    "iNozzleTipSize", end[iNozzleTipSize],
+    "iNozzleLength", end[iNozzleLength],
     "iNozzleTipWallThickness", end[iNozzleTipWallThickness],
     "iNozzleRadius", end[iNozzleRadius],
     "iNozzleOffset", end[iNozzleOffset],
@@ -5412,7 +5436,10 @@ function UserConnectorSettings(
   flangeScrewCount = 4,
   flangeScrewDiameter = 5,
   nozzleShape = "square",
-  nozzleSize = [10,5,10],
+  nozzleMeasurement = "inner",
+  nozzleBaseSize = [10,5],
+  nozzleTipSize = [0,0],
+  nozzleLength = 10,
   nozzleTipWallThickness = 0,
   nozzleRadius = 0,
   nozzleOffset = [0,0],
@@ -5469,7 +5496,10 @@ function UserConnectorSettings(
     flangeScrewCount,
     flangeScrewDiameter,
     nozzleShape,
-    nozzleSize,
+    nozzleMeasurement,
+    nozzleBaseSize,
+    nozzleTipSize,
+    nozzleLength,
     nozzleTipWallThickness,
     nozzleRadius,
     nozzleOffset,
@@ -5535,7 +5565,10 @@ function ValidateUserConnectorSettings(userSettings) =
   assert(is_num(userSettings[iFlangeScrewDiameter]) && userSettings[iFlangeScrewDiameter] >= 0, str("flangeScrewDiameter must be a non-negative number:", userSettings[iFlangeScrewDiameter]))
   assert(is_string(userSettings[iNozzleShape]), str("nozzleShape must be a string:", userSettings[iNozzleShape]))
   assert(userSettings[iNozzleShape] == "square" || userSettings[iNozzleShape] == "circle", str("nozzleShape must be 'square', or 'oval':", userSettings[iNozzleShape]))
-  assert(is_list(userSettings[iNozzleSize]) && len(userSettings[iNozzleSize]) == 3, str("nozzleSize must be a list of length 3:", userSettings[iNozzleSize]))
+  assert(userSettings[iNozzleMeasurement] == "inner" || userSettings[iNozzleMeasurement] == "outer", str("nozzleMeasurement must be 'inner' or 'outer':", userSettings[iNozzleMeasurement]))
+  assert(is_list(userSettings[iNozzleBaseSize]) && len(userSettings[iNozzleBaseSize]) == 2, str("nozzleBaseSize must be a list of length 2:", userSettings[iNozzleBaseSize]))
+  assert(is_list(userSettings[iNozzleTipSize]) && len(userSettings[iNozzleTipSize]) == 2, str("nozzleTipSize must be a list of length 2:", userSettings[iNozzleTipSize]))
+  assert(is_num(userSettings[iNozzleLength]) && userSettings[iNozzleLength] >= 0, str("nozzleLength must be a non-negative number:", userSettings[iNozzleLength]))
   assert(is_num(userSettings[iNozzleTipWallThickness]) && userSettings[iNozzleTipWallThickness] >= 0, str("nozzleTipWallThickness must be a non-negative number:", userSettings[iNozzleTipWallThickness]))
   assert(is_num(userSettings[iNozzleRadius]) && userSettings[iNozzleRadius] >= 0, str("nozzleRadius must be a non-negative number:", userSettings[iNozzleRadius]))
   assert(is_list(userSettings[iNozzleOffset]) && len(userSettings[iNozzleOffset]) == 2, str("nozzleOffset must be a list of length 2:", userSettings[iNozzleOffset]))
@@ -5692,7 +5725,10 @@ function getConnectorSettings(
         userSettings[iFlangeScrewCount],
         userSettings[iFlangeScrewDiameter],
         userSettings[iNozzleShape],
-        userSettings[iNozzleSize],
+        userSettings[iNozzleMeasurement],
+        userSettings[iNozzleBaseSize],
+        userSettings[iNozzleTipSize],
+        userSettings[iNozzleLength],
         userSettings[iNozzleTipWallThickness],
         userSettings[iNozzleRadius],
         userSettings[iNozzleOffset],
@@ -7437,7 +7473,8 @@ if(connector_nozzle_demo && $preview){
         length = 10,
         wallThickness = 2,
         nozzleShape = "square",
-        nozzleSize = [10,10,2],
+        nozzleBaseSize = [10,10],
+        nozzleLength = 2,
         nozzleTipWallThickness = 1,
         nozzleRadius = 2);
 
@@ -7447,7 +7484,8 @@ if(connector_nozzle_demo && $preview){
         length = 10,
         wallThickness = 2,
         nozzleShape = "square",
-        nozzleSize = [100,10,2],
+        nozzleBaseSize = [100,10],
+        nozzleLength = 2,
         nozzleTipWallThickness = 1,
         nozzleRadius = 2);
     }
@@ -7478,7 +7516,8 @@ if(connector_nozzle_demo && $preview){
         length = 20,
         wallThickness = 2,
         nozzleShape = render_options[iRender][0],
-        nozzleSize = render_options[iRender][1],
+        nozzleBaseSize = [render_options[iRender][1].x, render_options[iRender][1].y],
+        nozzleLength = render_options[iRender][1].z,
         nozzleTipWallThickness = render_options[iRender][2],
         nozzleRadius = render_options[iRender][3].x,
         nozzleOffset = render_options[iRender][3],
@@ -7486,6 +7525,11 @@ if(connector_nozzle_demo && $preview){
         nozzleChamferAngle = render_options[iRender][5],
         help = true);
 }
+
+function nozzleCirclePositions(nozzleShape, size, radius) = let(
+  x = size.x/2 - radius,
+  y = size.y/2 - radius)
+  nozzleShape == "square" ? [[x, y], [-x, y], [x, -y], [-x, -y]] : [[0, 0]];
 
 nozzleSettings = ["nozzle", [
   [iSettingsTaper, 0],
@@ -7497,7 +7541,10 @@ module Nozzle(
   length,
   wallThickness,
   nozzleShape,
-  nozzleSize = [0,0,0],
+  nozzleMeasurement = "inner",
+  nozzleBaseSize = [0,0],
+  nozzleTipSize = [0,0],
+  nozzleLength = 0,
   nozzleTipWallThickness,
   nozzleRadius,
   nozzleOffset = [0,0],
@@ -7510,8 +7557,10 @@ module Nozzle(
   assert(is_num(length) && length > 0, str("length must be a number greater than 0. Provided:", length));
   assert(is_num(wallThickness) && wallThickness > 0, str("wallThickness must be a number greater than 0. Provided:", wallThickness));
   assert(is_string(nozzleShape) && (nozzleShape == "square" || nozzleShape == "circle"), str("nozzleShape only supports square and circle. Provided:'", nozzleShape ,"'"));
-  assert(is_list(nozzleSize) && len(nozzleSize) == 3, str("nozzleSize must be a list of length 3. Provided:", nozzleSize));
-  //assert(is_num(nozzleSize.x) && is_num(nozzleSize.y) && is_num(nozzleSize.z) && nozzleSize.x > 0 && nozzleSize.y > 0 && nozzleSize.z >= 0, str("nozzleSize values must be numeric and nozzleSize.x/nozzleSize.y must be greater than 0. Provided:", nozzleSize));
+  assert(nozzleMeasurement == "inner" || nozzleMeasurement == "outer", str("nozzleMeasurement must be inner or outer. Provided:'", nozzleMeasurement ,"'"));
+  assert(is_list(nozzleBaseSize) && len(nozzleBaseSize) == 2, str("nozzleBaseSize must be a list of length 2. Provided:", nozzleBaseSize));
+  assert(is_list(nozzleTipSize) && len(nozzleTipSize) == 2, str("nozzleTipSize must be a list of length 2. Provided:", nozzleTipSize));
+  assert(is_num(nozzleLength) && nozzleLength >= 0, str("nozzleLength must be a number greater than or equal to 0. Provided:", nozzleLength));
   assert(is_num(nozzleTipWallThickness) && nozzleTipWallThickness >= 0, str("nozzleTipWallThickness must be a number greater than or equal to 0. Provided:", nozzleTipWallThickness));
   assert(is_num(nozzleRadius) && nozzleRadius >= 0, str("nozzleRadius must be a number greater than or equal to 0. Provided:", nozzleRadius));
   assert(is_list(nozzleOffset) && len(nozzleOffset) == 2, str("nozzleOffset must be a list of length 2. Provided:", nozzleOffset));
@@ -7522,34 +7571,53 @@ module Nozzle(
     str("nozzleChamferAngle must be between 0 and 90 degrees. Provided:", nozzleChamferAngle));
 
   innerRadius = innerStartDiameter/2;
-  _nozzleRadius = nozzleShape == "circle" && nozzleRadius == 0 ? nozzleSize.x/2
-    : nozzleShape == "square" ? min(nozzleSize.x/2, nozzleSize.y/2, nozzleRadius)
-    : nozzleRadius;
-  circlepositionx = nozzleShape == "square" ? nozzleSize.x/2 - _nozzleRadius : 0;
-  circlepositiony = nozzleShape == "square" ? nozzleSize.y/2 - _nozzleRadius : 0;
-  circlepositions = nozzleShape == "square" ?
-    [[ circlepositionx, circlepositiony ],
-    [ -circlepositionx, circlepositiony ],
-    [ circlepositionx, -circlepositiony ],
-    [ -circlepositionx, -circlepositiony ]] : [[ circlepositionx, circlepositiony ]] ;
+  tipWallThickness = nozzleTipWallThickness == 0 ? wallThickness : nozzleTipWallThickness;
 
-  nozzleWidth = (nozzleShape == "square" ? nozzleSize.x : _nozzleRadius * 2) + wallThickness*2;
-  nozzleDepth = (nozzleShape == "square" ? nozzleSize.y : _nozzleRadius * 2) + wallThickness*2;
+  //For a circle x is the diameter, the radius is only used when x is not set
+  baseDiameter = nozzleBaseSize.x > 0 ? nozzleBaseSize.x : nozzleRadius*2;
+  tipDiameter = nozzleTipSize.x > 0 ? nozzleTipSize.x : baseDiameter;
+  measuredBaseSize = nozzleShape == "square" ? nozzleBaseSize : [baseDiameter, baseDiameter];
+  //A tip size of 0 keeps the base size, so there is no taper on that axis
+  measuredTipSize = nozzleShape == "square"
+    ? [nozzleTipSize.x > 0 ? nozzleTipSize.x : nozzleBaseSize.x, nozzleTipSize.y > 0 ? nozzleTipSize.y : nozzleBaseSize.y]
+    : [tipDiameter, tipDiameter];
+
+  //The geometry is built from the opening, so outer measurements have the wall removed
+  baseWallAllowance = nozzleMeasurement == "outer" ? wallThickness : 0;
+  tipWallAllowance = nozzleMeasurement == "outer" ? tipWallThickness : 0;
+  _nozzleBaseSize = [measuredBaseSize.x - baseWallAllowance*2, measuredBaseSize.y - baseWallAllowance*2];
+  _nozzleTipSize = [measuredTipSize.x - tipWallAllowance*2, measuredTipSize.y - tipWallAllowance*2];
+  assert(nozzleMeasurement == "inner" || (_nozzleBaseSize.x > 0 && _nozzleBaseSize.y > 0 && _nozzleTipSize.x > 0 && _nozzleTipSize.y > 0),
+    str("nozzle outer size must be larger than twice the wall thickness. Base opening:", _nozzleBaseSize, " Tip opening:", _nozzleTipSize));
+
+  _nozzleRadius = nozzleShape == "square" ? min(_nozzleBaseSize.x/2, _nozzleBaseSize.y/2, max(nozzleRadius - baseWallAllowance, 0))
+    : _nozzleBaseSize.x/2;
+  circlepositions = nozzleCirclePositions(nozzleShape, _nozzleBaseSize, _nozzleRadius);
+
+  _nozzleTipRadius = nozzleShape == "square" ? min(_nozzleTipSize.x/2, _nozzleTipSize.y/2, max(nozzleRadius - tipWallAllowance, 0))
+    : _nozzleTipSize.x/2;
+  tipCirclePositions = nozzleCirclePositions(nozzleShape, _nozzleTipSize, _nozzleTipRadius);
+
+  nozzleBaseWidth = _nozzleBaseSize.x + wallThickness*2;
+  nozzleBaseDepth = _nozzleBaseSize.y + wallThickness*2;
+  nozzleWidth = _nozzleTipSize.x + wallThickness*2;
+  nozzleDepth = max(nozzleBaseDepth, _nozzleTipSize.y + wallThickness*2);
   nozzleWidthChamfer = nozzleWidth * nozzleChamferPercentage /100;
   nozzleLengthChamfer = nozzleWidthChamfer * tan(nozzleChamferAngle);
 
-  tipWallThickness = nozzleTipWallThickness == 0 ? wallThickness : nozzleTipWallThickness;
-
   widthChamfer = min(nozzleWidthChamfer, nozzleWidth);
-  lengthChamfer = min(nozzleLengthChamfer, nozzleSize.z);
+  lengthChamfer = min(nozzleLengthChamfer, nozzleLength);
+  //The chamfer is sized from the tip, extend it so it also clears a nozzle that is wider below the tip
+  chamferOverhang = max(nozzleBaseWidth - nozzleWidth, 0)/2;
 
   //todo, add correction to ensure that the thickness of the walls never reduce to less than wallthickenss1 and wallThickness2
   //using wallThickness/2 is a sloppy approximation, really need to use trig to would out the correct value
   leadin = max(fudgeFactor, wallThickness/2);
-  startOuterLeadin = innerStartDiameter > max(nozzleSize.x,nozzleSize.y) ? leadin : fudgeFactor;
-  startInnerLeadin = innerStartDiameter > max(nozzleSize.x,nozzleSize.y) ? fudgeFactor : leadin;
-  endOuterLeadin = max(nozzleSize.x,nozzleSize.y) > innerStartDiameter ? leadin : fudgeFactor;
-  endInnerLeadin = max(nozzleSize.x,nozzleSize.y) > innerStartDiameter ? fudgeFactor : leadin;
+  nozzleBaseMaxSize = max(_nozzleBaseSize.x,_nozzleBaseSize.y);
+  startOuterLeadin = innerStartDiameter < nozzleBaseMaxSize ? leadin : fudgeFactor;
+  startInnerLeadin = innerStartDiameter > nozzleBaseMaxSize ? fudgeFactor : leadin;
+  endOuterLeadin = nozzleBaseMaxSize > innerStartDiameter ? leadin : fudgeFactor;
+  endInnerLeadin = nozzleBaseMaxSize > innerStartDiameter ? fudgeFactor : leadin;
 
   difference()
   {
@@ -7568,12 +7636,14 @@ module Nozzle(
 
       // Nozzle
       translate([nozzleOffset.y,nozzleOffset.x,length + fudgeFactor])
-      hull() for (i= [ 0 : len(circlepositions) - 1 ])
+      hull()
       {
-        translate([circlepositions[i][0], circlepositions[i][1], 0])
-          cylinder(fudgeFactor, r=_nozzleRadius+wallThickness+fudgeFactor);
-        translate([circlepositions[i][0], circlepositions[i][1], nozzleSize.z])
-          cylinder(fudgeFactor, r=_nozzleRadius+tipWallThickness+fudgeFactor);
+        for (i= [ 0 : len(circlepositions) - 1 ])
+          translate([circlepositions[i][0], circlepositions[i][1], 0])
+            cylinder(fudgeFactor, r=_nozzleRadius+wallThickness+fudgeFactor);
+        for (i= [ 0 : len(tipCirclePositions) - 1 ])
+          translate([tipCirclePositions[i][0], tipCirclePositions[i][1], nozzleLength])
+            cylinder(fudgeFactor, r=_nozzleTipRadius+tipWallThickness+fudgeFactor);
       }
     }
 
@@ -7603,20 +7673,26 @@ module Nozzle(
 
       // Nozzle
       translate([nozzleOffset.y,nozzleOffset.x,length+fudgeFactor])
-      hull() for (i= [ 0 : len(circlepositions) - 1 ])
-        translate([circlepositions[i][0], circlepositions[i][1], 0])
-        cylinder(nozzleSize.z+fudgeFactor*2, r=_nozzleRadius+fudgeFactor);
+      hull()
+      {
+        for (i= [ 0 : len(circlepositions) - 1 ])
+          translate([circlepositions[i][0], circlepositions[i][1], 0])
+            cylinder(fudgeFactor, r=_nozzleRadius+fudgeFactor);
+        for (i= [ 0 : len(tipCirclePositions) - 1 ])
+          translate([tipCirclePositions[i][0], tipCirclePositions[i][1], nozzleLength+fudgeFactor])
+            cylinder(fudgeFactor, r=_nozzleTipRadius+fudgeFactor);
+      }
     }
 
     // Chamfer
     if(widthChamfer > 0 && lengthChamfer > 0)
     {
-      translate([nozzleOffset.y,nozzleOffset.x,nozzleSize.z+length+fudgeFactor*3] )
+      translate([nozzleOffset.y,nozzleOffset.x,nozzleLength+length+fudgeFactor*3] )
       rotate([90,0,180])
         linear_extrude(nozzleDepth+1, center=true)
           polygon( points = [[nozzleWidth/2-widthChamfer,0],
-                              [nozzleWidth/2+fudgeFactor*2,0],
-                              [nozzleWidth/2+fudgeFactor*2,-lengthChamfer]] );
+                              [nozzleWidth/2+chamferOverhang+fudgeFactor*2,0],
+                              [nozzleWidth/2+chamferOverhang+fudgeFactor*2,-lengthChamfer*(widthChamfer+chamferOverhang)/widthChamfer]] );
     }
   }
 
@@ -7625,7 +7701,10 @@ module Nozzle(
     "length", length,
     "wallThickness", wallThickness,
     "nozzleShape", nozzleShape,
-    "nozzleSize", nozzleSize,
+    "nozzleMeasurement", nozzleMeasurement,
+    "nozzleBaseSize", nozzleBaseSize,
+    "nozzleTipSize", nozzleTipSize,
+    "nozzleLength", nozzleLength,
     "nozzleTipWallThickness", nozzleTipWallThickness,
     "nozzleRadius", nozzleRadius,
     "nozzleOffset", nozzleOffset,
@@ -7635,8 +7714,12 @@ module Nozzle(
     "_nozzleDepth", nozzleDepth,
     "_nozzleWidthChamfer", nozzleWidthChamfer,
     "_nozzleLengthChamfer", nozzleLengthChamfer,
+    "_nozzleBaseSize", _nozzleBaseSize,
+    "_nozzleTipSize", _nozzleTipSize,
     "_nozzleRadius", _nozzleRadius,
+    "_nozzleTipRadius", _nozzleTipRadius,
     "_circlepositions", circlepositions,
+    "_tipCirclePositions", tipCirclePositions,
     ],help);
 }
 //CombinedEnd from path connector_nozzle.scad
@@ -10027,15 +10110,14 @@ module KobaltConnector(
   ];
 
   difference() {
-    HoseConnector(
-      connectorMeasurement = "inner",
-      innerStartDiameter = innerEndDiameter,
-      innerEndDiameter = innerEndDiameter,
-      length = length,
-      wallThickness = wallThickness,
-      help = help,
-      $fn = $fn
-    );
+    pipe(
+        diameter = innerEndDiameter,
+        length = length,
+        wallThickness = wallThickness,
+        chamfer1 = [0,0],
+        chamfer2 = [entryChamfer,0],
+        centerSmallerWall = false,
+        enableWallThicknessCompensation = true);
 
     if (enableRecesses && depth > 0) {
       // Upper ring recess (depth 5.50mm to 8.35mm from lip, peak at 6.925mm)
@@ -10047,18 +10129,6 @@ module KobaltConnector(
       translate([0, 0, length - 15.35])
         rotate_extrude($fn = $fn)
           polygon(points = lower_points);
-    }
-
-    if (entryChamfer > 0) {
-      translate([0, 0, length - entryChamfer]) {
-        rotate_extrude($fn = $fn) {
-          polygon(points = [
-            [innerEndDiameter / 2, -0.1],
-            [innerEndDiameter / 2 + entryChamfer + 0.1, entryChamfer + 0.1],
-            [innerEndDiameter / 2, entryChamfer + 0.1]
-          ]);
-        }
-      }
     }
   }
 }
@@ -10171,7 +10241,9 @@ connectorSettings =[
   osvacf32Settings,
   makitaMaleSettings,
   boschSanderSettings,
-  festoolCleantecLugSettings
+  festoolCleantecLugSettings,
+  rigidNxtSettings,
+  kobaltSettings,
   ];
 //CombinedEnd from path connector_common_post.scad
 
@@ -10271,7 +10343,10 @@ HoseAdapter(
     flangeScrewCount=End2_Flange_Screw_Count,
     flangeScrewDiameter=End2_Flange_Screw_Diameter,
     nozzleShape=End2_Nozzle_Shape,
-    nozzleSize=End2_Nozzle_Size,
+    nozzleMeasurement=End2_Nozzle_Measurement,
+    nozzleBaseSize=End2_Nozzle_Base_Size,
+    nozzleTipSize=End2_Nozzle_Tip_Size,
+    nozzleLength=End2_Nozzle_Length,
     nozzleTipWallThickness=End2_Nozzle_Tip_Wall_Thickness,
     nozzleRadius=End2_Nozzle_Radius,
     nozzleOffset=End2_Nozzle_Offset,
@@ -10330,7 +10405,10 @@ HoseAdapter(
     flangeScrewCount=End3_Flange_Screw_Count,
     flangeScrewDiameter=End3_Flange_Screw_Diameter,
     nozzleShape=End3_Nozzle_Shape,
-    nozzleSize=End3_Nozzle_Size,
+    nozzleMeasurement=End3_Nozzle_Measurement,
+    nozzleBaseSize=End3_Nozzle_Base_Size,
+    nozzleTipSize=End3_Nozzle_Tip_Size,
+    nozzleLength=End3_Nozzle_Length,
     nozzleTipWallThickness=End3_Nozzle_Tip_Wall_Thickness,
     nozzleRadius=End3_Nozzle_Radius,
     nozzleOffset=End3_Nozzle_Offset,

@@ -33,8 +33,11 @@ iFlangeScrewBorder=iFlangeScrewPosition+1;
 iFlangeScrewCount=iFlangeScrewBorder+1;
 iFlangeScrewDiameter=iFlangeScrewCount+1;
 iNozzleShape=iFlangeScrewDiameter+1;
-iNozzleSize=iNozzleShape+1;
-iNozzleTipWallThickness=iNozzleSize+1;
+iNozzleMeasurement=iNozzleShape+1;
+iNozzleBaseSize=iNozzleMeasurement+1;
+iNozzleTipSize=iNozzleBaseSize+1;
+iNozzleLength=iNozzleTipSize+1;
+iNozzleTipWallThickness=iNozzleLength+1;
 iNozzleRadius=iNozzleTipWallThickness+1;
 iNozzleOffset=iNozzleRadius+1;
 iNozzleChamferPercentage=iNozzleOffset+1;
@@ -120,7 +123,10 @@ module echoConnector(name, end, help){
     "iFlangeScrewCount", end[iFlangeScrewCount],
     "iFlangeScrewDiameter", end[iFlangeScrewDiameter],
     "iNozzleShape", end[iNozzleShape],
-    "iNozzleSize", end[iNozzleSize],
+    "iNozzleMeasurement", end[iNozzleMeasurement],
+    "iNozzleBaseSize", end[iNozzleBaseSize],
+    "iNozzleTipSize", end[iNozzleTipSize],
+    "iNozzleLength", end[iNozzleLength],
     "iNozzleTipWallThickness", end[iNozzleTipWallThickness],
     "iNozzleRadius", end[iNozzleRadius],
     "iNozzleOffset", end[iNozzleOffset],
@@ -210,7 +216,10 @@ function UserConnectorSettings(
   flangeScrewCount = 4,
   flangeScrewDiameter = 5,
   nozzleShape = "square",
-  nozzleSize = [10,5,10],
+  nozzleMeasurement = "inner",
+  nozzleBaseSize = [10,5],
+  nozzleTipSize = [0,0],
+  nozzleLength = 10,
   nozzleTipWallThickness = 0,
   nozzleRadius = 0,
   nozzleOffset = [0,0],
@@ -267,7 +276,10 @@ function UserConnectorSettings(
     flangeScrewCount,
     flangeScrewDiameter,
     nozzleShape,
-    nozzleSize,
+    nozzleMeasurement,
+    nozzleBaseSize,
+    nozzleTipSize,
+    nozzleLength,
     nozzleTipWallThickness,
     nozzleRadius,
     nozzleOffset,
@@ -333,7 +345,10 @@ function ValidateUserConnectorSettings(userSettings) =
   assert(is_num(userSettings[iFlangeScrewDiameter]) && userSettings[iFlangeScrewDiameter] >= 0, str("flangeScrewDiameter must be a non-negative number:", userSettings[iFlangeScrewDiameter]))
   assert(is_string(userSettings[iNozzleShape]), str("nozzleShape must be a string:", userSettings[iNozzleShape]))
   assert(userSettings[iNozzleShape] == "square" || userSettings[iNozzleShape] == "circle", str("nozzleShape must be 'square', or 'oval':", userSettings[iNozzleShape]))
-  assert(is_list(userSettings[iNozzleSize]) && len(userSettings[iNozzleSize]) == 3, str("nozzleSize must be a list of length 3:", userSettings[iNozzleSize]))
+  assert(userSettings[iNozzleMeasurement] == "inner" || userSettings[iNozzleMeasurement] == "outer", str("nozzleMeasurement must be 'inner' or 'outer':", userSettings[iNozzleMeasurement]))
+  assert(is_list(userSettings[iNozzleBaseSize]) && len(userSettings[iNozzleBaseSize]) == 2, str("nozzleBaseSize must be a list of length 2:", userSettings[iNozzleBaseSize]))
+  assert(is_list(userSettings[iNozzleTipSize]) && len(userSettings[iNozzleTipSize]) == 2, str("nozzleTipSize must be a list of length 2:", userSettings[iNozzleTipSize]))
+  assert(is_num(userSettings[iNozzleLength]) && userSettings[iNozzleLength] >= 0, str("nozzleLength must be a non-negative number:", userSettings[iNozzleLength]))
   assert(is_num(userSettings[iNozzleTipWallThickness]) && userSettings[iNozzleTipWallThickness] >= 0, str("nozzleTipWallThickness must be a non-negative number:", userSettings[iNozzleTipWallThickness]))
   assert(is_num(userSettings[iNozzleRadius]) && userSettings[iNozzleRadius] >= 0, str("nozzleRadius must be a non-negative number:", userSettings[iNozzleRadius]))
   assert(is_list(userSettings[iNozzleOffset]) && len(userSettings[iNozzleOffset]) == 2, str("nozzleOffset must be a list of length 2:", userSettings[iNozzleOffset]))
@@ -490,7 +505,10 @@ function getConnectorSettings(
         userSettings[iFlangeScrewCount],
         userSettings[iFlangeScrewDiameter],
         userSettings[iNozzleShape],
-        userSettings[iNozzleSize],
+        userSettings[iNozzleMeasurement],
+        userSettings[iNozzleBaseSize],
+        userSettings[iNozzleTipSize],
+        userSettings[iNozzleLength],
         userSettings[iNozzleTipWallThickness],
         userSettings[iNozzleRadius],
         userSettings[iNozzleOffset],

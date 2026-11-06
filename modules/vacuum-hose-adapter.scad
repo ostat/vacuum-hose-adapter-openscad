@@ -303,7 +303,10 @@ module adapter(
             length = con[iLength],
             wallThickness = con[iWallThickness],
             nozzleShape = con[iNozzleShape],
-            nozzleSize = con[iNozzleSize],
+            nozzleMeasurement = con[iNozzleMeasurement],
+            nozzleBaseSize = con[iNozzleBaseSize],
+            nozzleTipSize = con[iNozzleTipSize],
+            nozzleLength = con[iNozzleLength],
             nozzleTipWallThickness = con[iNozzleTipWallThickness],
             nozzleRadius = con[iNozzleRadius],
             nozzleOffset = con[iNozzleOffset],
@@ -320,7 +323,7 @@ module adapter(
         cubeSizex = max(con[iInnerStartDiameter],con[iInnerEndDiameter])*2;
         cubeSizey = max(con[iInnerStartDiameter],con[iInnerEndDiameter])*1.5;
         cubeSizez = con[iLength]+fudgeFactor*4
-          +(con[iStyle] == "nozzle"? con[iNozzleSize].z+fudgeFactor : 0)
+          +(con[iStyle] == "nozzle"? con[iNozzleLength]+fudgeFactor : 0)
           +(con[iStyle] == "mag"? con[iAlignmentDepth]: 0);
         translate([-cubeSizex/2, -cubeSizey, -fudgeFactor*2])
         cube([cubeSizex,cubeSizey,cubeSizez]);
@@ -378,10 +381,10 @@ module adapter(
 
       if(con[iStyle] == "nozzle")
       {
-        translate([(connectorPos == 1 ? position  : -position), 0,-con[iNozzleSize].z/2])
+        translate([(connectorPos == 1 ? position  : -position), 0,-con[iNozzleLength]/2])
         rotate([90,0,0])
         Caliper(on=2, messpunkt = false, help=0, h = 0.1,
-              l=con[iNozzleSize].z,
+              l=con[iNozzleLength],
               cx= 0,
               end=0,
               size = 8,

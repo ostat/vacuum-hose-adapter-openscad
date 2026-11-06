@@ -259,8 +259,16 @@ End2_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitche
 /* [Connector 2 - Nozzle] */
 // Is the measurement the adapter's outside or inside diameter?
 End2_Nozzle_Shape = "square"; //[square, circle]
-End2_Nozzle_Size = [10,5,10]; //0.1
+//Are the nozzle base size, tip size and radius measured on the inside or outside of the nozzle?
+End2_Nozzle_Measurement = "inner"; //[inner, outer]
+//Opening where the nozzle base ends [x, y]. Circle uses x as the diameter.
+End2_Nozzle_Base_Size = [10,5]; //0.1
+//Opening at the tip of the nozzle [x, y]. Circle uses x as the diameter. 0: same as the base size.
+End2_Nozzle_Tip_Size = [0,0]; //0.1
+//Length of the nozzle section, from the base size to the tip size.
+End2_Nozzle_Length = 10; //0.1
 End2_Nozzle_Tip_Wall_Thickness = 0; //0.1
+//Corner radius of a square nozzle. Circle only uses this when the base size x is 0.
 End2_Nozzle_Radius = 0; //0.1
 End2_Nozzle_Offset = [0,0]; //0.1
 End2_Nozzle_Chamfer_Percentage = 0; //0.1
@@ -370,8 +378,16 @@ End3_Magnet_Twist_Lock_Size = "0";  //["0":none,"3":M3,"3cnc":M3 with CNC Kitche
 /* [Connector 3 - Nozzle] */
 // Is the measurement the adapter's outside or inside diameter?
 End3_Nozzle_Shape = "square"; //[square, circle]
-End3_Nozzle_Size = [10,5,10]; //0.1
+//Are the nozzle base size, tip size and radius measured on the inside or outside of the nozzle?
+End3_Nozzle_Measurement = "inner"; //[inner, outer]
+//Opening where the nozzle base ends [x, y]. Circle uses x as the diameter.
+End3_Nozzle_Base_Size = [10,5]; //0.1
+//Opening at the tip of the nozzle [x, y]. Circle uses x as the diameter. 0: same as the base size.
+End3_Nozzle_Tip_Size = [0,0]; //0.1
+//Length of the nozzle section, from the base size to the tip size.
+End3_Nozzle_Length = 10; //0.1
 End3_Nozzle_Tip_Wall_Thickness = 0; //0.1
+//Corner radius of a square nozzle. Circle only uses this when the base size x is 0.
 End3_Nozzle_Radius = 0; //0.1
 End3_Nozzle_Offset = [0,0]; //0.1
 End3_Nozzle_Chamfer_Percentage = 0; //0.1
@@ -510,7 +526,10 @@ HoseAdapter(
     flangeScrewCount=End2_Flange_Screw_Count,
     flangeScrewDiameter=End2_Flange_Screw_Diameter,
     nozzleShape=End2_Nozzle_Shape,
-    nozzleSize=End2_Nozzle_Size,
+    nozzleMeasurement=End2_Nozzle_Measurement,
+    nozzleBaseSize=End2_Nozzle_Base_Size,
+    nozzleTipSize=End2_Nozzle_Tip_Size,
+    nozzleLength=End2_Nozzle_Length,
     nozzleTipWallThickness=End2_Nozzle_Tip_Wall_Thickness,
     nozzleRadius=End2_Nozzle_Radius,
     nozzleOffset=End2_Nozzle_Offset,
@@ -569,7 +588,10 @@ HoseAdapter(
     flangeScrewCount=End3_Flange_Screw_Count,
     flangeScrewDiameter=End3_Flange_Screw_Diameter,
     nozzleShape=End3_Nozzle_Shape,
-    nozzleSize=End3_Nozzle_Size,
+    nozzleMeasurement=End3_Nozzle_Measurement,
+    nozzleBaseSize=End3_Nozzle_Base_Size,
+    nozzleTipSize=End3_Nozzle_Tip_Size,
+    nozzleLength=End3_Nozzle_Length,
     nozzleTipWallThickness=End3_Nozzle_Tip_Wall_Thickness,
     nozzleRadius=End3_Nozzle_Radius,
     nozzleOffset=End3_Nozzle_Offset,

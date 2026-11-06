@@ -84,8 +84,11 @@ HoseAdapter(
 
 ### Nozzle Options (`style = "nozzle"`)
 - `nozzleShape`: `"round"`, `"rectangle"`, or `"oval"`.
-- `nozzleSize`: `[width, depth, height]` vector for tip opening.
-- `nozzleRadius`: Corner rounding radius (mm).
+- `nozzleMeasurement`: `"inner"` or `"outer"`. Sets whether `nozzleBaseSize`, `nozzleTipSize` and `nozzleRadius` are measured on the inside or the outside of the nozzle walls.
+- `nozzleBaseSize`: `[width, depth]` where the nozzle base ends.
+- `nozzleTipSize`: `[width, depth]` at the tip. `0` on an axis keeps the base size, so `[0,0]` gives no taper.
+- `nozzleLength`: Length of the nozzle section between the base and tip sizes (mm).
+- `nozzleRadius`: Corner rounding radius (mm). A circle nozzle only uses this as its radius when `nozzleBaseSize` x is `0`.
 - `nozzleChamferAngle`: Bevel angle at tip end (degrees).
 
 ---
