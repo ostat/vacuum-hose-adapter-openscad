@@ -1,6 +1,6 @@
 Param(
     [string]$OpenScadPath,
-    $ScadScriptFolders = @(
+    [string[]]$ScadScriptFolders = @(
             (Get-Item $MyInvocation.MyCommand.Source).Directory.Parent.FullName
             ),
     [switch]$saveResults,
