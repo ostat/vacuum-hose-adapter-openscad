@@ -100,11 +100,13 @@ function Start-ProcessWithOutputs
         executionTime = $executionTime
     }
 }
+
 function Test-OpenSCAD(
         $TargetFile,
         [bool]$saveResults = $false,
         $cmdArgsInput = '',
-        $saveAppend = '')
+        $saveAppend = '',
+        [string]$expectedErrorPattern = '')
 {
     $scadScriptPath = $TargetFile.FullName
 
@@ -129,6 +131,22 @@ function Test-OpenSCAD(
 
     write-host "openscad executionTime: $($executionResult.executionTime)"
 
+    $isExpectedFailure = -not [string]::IsNullOrWhiteSpace($expectedErrorPattern)
+    $isParserOrIncludeFailure = $executionResult.stderr -match "(?im)(parser error|syntax error|can't open include file|can't open library|unable to open file)"
+    $hasAssertionError = $executionResult.stderr -match "(?im)^error:\s*assertion\b"
+
+    if ($isExpectedFailure) {
+        $hasExpectedError = $executionResult.stderr -match $expectedErrorPattern
+        if ($executionResult.ExitCode -ne 0 -and $hasExpectedError -and $hasAssertionError -and -not $isParserOrIncludeFailure -and $executionResult.stderr -notmatch '(?im)^warning:') {
+            write-Host "Expected assertion failure observed." -ForegroundColor Green
+            return $true
+        }
+        Write-Warning "Expected assertion failure did not match criteria in $($TargetFile.Name)"
+        Write-Warning "ExitCode: $($executionResult.ExitCode)"
+        Write-Warning "stderr: $($executionResult.stderr)"
+        return $false
+    }
+
     # Check for warnings/errors
     if ($executionResult.stderr -match '(?im)^(warning|error):' -or $executionResult.ExitCode -ne 0) {
         Write-Warning "OpenSCAD warnings/errors in $($TargetFile.Name)"
@@ -140,7 +158,33 @@ function Test-OpenSCAD(
         return $true
     }
 }
+
 $ErrorActionPreference = "Stop"
+
+$repositoryRoot = (Get-Item $MyInvocation.MyCommand.Source).Directory.Parent.FullName
+$oneidaTestsFolder = Join-Path $repositoryRoot "scripts/tests"
+if (-not ($ScadScriptFolders -contains $oneidaTestsFolder)) {
+    $ScadScriptFolders += $oneidaTestsFolder
+}
+
+$oneidaExpectedFailureCases = @(
+    @{ case = "invalid_nominal_13"; pattern = "Unsupported Oneida nominal diameter" },
+    @{ case = "invalid_nominal_15"; pattern = "Unsupported Oneida nominal diameter" },
+    @{ case = "invalid_nominal_17"; pattern = "Unsupported Oneida nominal diameter" },
+    @{ case = "invalid_nominal_fractional"; pattern = "Unsupported Oneida nominal diameter" },
+    @{ case = "invalid_nominal_type"; pattern = "Oneida nominal diameter must be a positive number" },
+    @{ case = "invalid_fit_type"; pattern = "Oneida fit adjustment must be a number" },
+    @{ case = "below_min_length"; pattern = "length must be at least" },
+    @{ case = "bore_invalid"; pattern = "positive bore" },
+    @{ case = "fit_shrinks_bore"; pattern = "positive bore" },
+    @{ case = "factory_below_min_length"; pattern = "length must be 0 or at least" },
+    @{ case = "factory_unsupported_nominal"; pattern = "Unsupported Oneida nominal diameter" }
+)
+
+$oneidaDemoRelativePaths = @(
+    "demos/oneida_adapter.scad",
+    "demos/oneida_fit_ring.scad"
+)
 
 $failed = $false
 $ScadScriptFolders |ForEach-Object {
@@ -155,9 +199,19 @@ $ScadScriptFolders |ForEach-Object {
 
     Get-ChildItem -LiteralPath $ScadScriptFolder -Filter *.scad | ForEach-Object {
     $TargetFile = $_
-    if($TargetFile.BaseName -ieq 'vacuum-hose-adapter'){
+    if($TargetFile.BaseName -ieq 'oneida_expected_failures'){
+        $oneidaExpectedFailureCases | ForEach-Object {
+            $caseName = $_.case
+            $input_args = " -D `"Case=`"`"$($caseName)`"`"`""
+            $success = Test-OpenSCAD -TargetFile $TargetFile -saveResults $saveResults -cmdArgsInput $input_args -SaveAppend "_$($caseName)" -expectedErrorPattern $_.pattern
+            if(!$success){
+                $failed = $true
+            }
+        }
+    }
+    elseif($TargetFile.BaseName -ieq 'vacuum-hose-adapter'){
 
-        $styles = @('mag', 'flange', 'hose', 'dyson', 'camlock', 'dw735', 'centec_female', 'centec_male', 'osvacm32', 'osvacm', 'osvacf32', 'osvacf', 'makita_male', 'bosch_sander', 'festoolcleanteclug')
+        $styles = @('mag', 'flange', 'hose', 'dyson', 'camlock', 'dw735', 'centec_female', 'centec_male', 'osvacm32', 'osvacm', 'osvacf32', 'osvacf', 'makita_male', 'bosch_sander', 'festoolcleanteclug', 'oneida')
 
         $styles | ForEach-Object {
             $style = $_
@@ -174,6 +228,18 @@ $ScadScriptFolders |ForEach-Object {
         }
     }
 }}
+
+$oneidaDemoRelativePaths | ForEach-Object {
+    $demoFile = Get-Item -LiteralPath (Join-Path $repositoryRoot $_)
+    if($saveResults) {
+        $outputScriptFolderPath = Join-Path $demoFile.DirectoryName $outputScriptFolder
+        New-Item -ItemType Directory -Path $outputScriptFolderPath -Force | Out-Null
+    }
+    $success = Test-OpenSCAD -TargetFile $demoFile -saveResults $saveResults
+    if(!$success){
+        $failed = $true
+    }
+}
 
 if ($failed) {
     throw "OpenSCAD validation failed"

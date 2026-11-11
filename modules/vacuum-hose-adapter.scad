@@ -296,6 +296,15 @@ module adapter(
             help = help,
             $fn = $fn);
         }
+        else if(con[iStyle] == "oneida")
+        {
+          OneidaQuickClampResolvedConnector(
+            innerDiameter = con[iInnerEndDiameter],
+            length = con[iLength],
+            wallThickness = con[iWallThickness],
+            help = help,
+            $fn = $fn);
+        }
         else if(con[iStyle] == "nozzle")
         {
           Nozzle(

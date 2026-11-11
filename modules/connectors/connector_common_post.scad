@@ -12,6 +12,7 @@ connectorSettings =[
   makitaMaleSettings,
   boschSanderSettings,
   festoolCleantecLugSettings,
+  oneidaSettings,
   rigidNxtSettings,
   kobaltSettings,
   ];
