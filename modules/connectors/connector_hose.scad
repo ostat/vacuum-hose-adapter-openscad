@@ -253,11 +253,15 @@ module HoseConnector(
           gridsize = ceil(innerEndDiameter*1.4/gridspacing);
           innergridDiameter = endCapDiameter > 0 ? endCapDiameter+wallThickness*2 : 0;
 
-          pipe(
-            diameter=innergridDiameter,
-            length=endCapThickness+fudgeFactor*2,
-            wallThickness = (innerEndDiameter-(innergridDiameter))/2,
-            zPosition = -fudgeFactor);
+          if(innergridDiameter > 0)
+            pipe(
+              diameter=innergridDiameter,
+              length=endCapThickness+fudgeFactor*2,
+              wallThickness = (innerEndDiameter-(innergridDiameter))/2,
+              zPosition = -fudgeFactor);
+          else
+            translate([0,0,-fudgeFactor])
+              cylinder(h=endCapThickness+fudgeFactor*2, d=innerEndDiameter);
 
           translate([0,0,-fudgeFactor])
             HexGrid([gridsize,gridsize],gridspacing)
