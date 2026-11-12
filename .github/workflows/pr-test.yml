@@ -26,14 +26,14 @@ jobs:
           Write-Host "OS: $($PSVersionTable.OS)"
           Write-Host "Architecture: $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)"
           Write-Host "============================"
-          
+
       # Download OpenSCAD portable zip (nightly or stable)
       - name: Download OpenSCAD
         id: download_openscad
         shell: pwsh
         run: |
           #hard coding the version, as there is not 'latest' link
-          $scadversion = 'OpenSCAD-2026.02.13-x86-64'
+          $scadversion = 'OpenSCAD-2026.06.06-x86-64'
           $zipUrl = "https://files.openscad.org/snapshots/$($scadversion).zip"
           $zipPath = "$env:RUNNER_TEMP\openscad.zip"
           write-host "Downloading souce:'$($zipUrl)' to destination: '$($zipPath)'"
@@ -47,11 +47,11 @@ jobs:
           $exePath = Join-Path $extractPath "$($scadversion)\OpenSCAD.exe"
           write-host "Setting env path:'$($exePath)'"
           "OPENSCAD_PATH=$exePath" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-      
+
       # Verify OpenSCAD is available
       - name: Verify OpenSCAD
         shell: pwsh
-        env: 
+        env:
           OPENSCAD_PATH: ${{ steps.download_openscad.outputs.OPENSCAD_PATH }}
         run: |
           write-host "Executing openscad path:'$($env:OPENSCAD_PATH)'"
@@ -60,6 +60,6 @@ jobs:
       # Run your PowerShell test script
       - name: Run OpenSCAD tests
         shell: pwsh
-        env: 
+        env:
           OPENSCAD_PATH: ${{ steps.download_openscad.outputs.OPENSCAD_PATH }}
         run: pwsh ./scripts/test-render.ps1  -OpenScadPath $env:OPENSCAD_PATH
