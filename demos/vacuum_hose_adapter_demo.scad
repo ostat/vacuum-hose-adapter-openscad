@@ -165,7 +165,7 @@ defaultDemoSetting = [
   [con1_key(iconBarbsCount),      0],
   [con1_key(iconBarbsThickness),  0],
   [con1_key(iconBarbsSymmetrical),false],
-  [con1_key(iconEnableThreads),   false],
+  [con1_key(iconEnableThreads),   "disabled"],
   [con1_key(iconThreadPitch),     0],
   [con1_key(iconThreadToothAngle),30],
   [con1_key(iconThreadToothHeight),0],
@@ -224,7 +224,7 @@ defaultDemoSetting = [
   [con2_key(iconBarbsCount),      0],
   [con2_key(iconBarbsThickness),  0],
   [con2_key(iconBarbsSymmetrical),false],
-  [con2_key(iconEnableThreads),   false],
+  [con2_key(iconEnableThreads),   "disabled"],
   [con2_key(iconThreadPitch),     0],
   [con2_key(iconThreadToothAngle),30],
   [con2_key(iconThreadToothHeight),0],
@@ -274,7 +274,7 @@ defaultDemoSetting = [
   [con3_key(iconBarbsCount),      0],
   [con3_key(iconBarbsThickness),  0],
   [con3_key(iconBarbsSymmetrical),false],
-  [con3_key(iconEnableThreads),   false],
+  [con3_key(iconEnableThreads),   "disabled"],
   [con3_key(iconThreadPitch),     0],
   [con3_key(iconThreadToothAngle),30],
   [con3_key(iconThreadToothHeight),0],
@@ -340,7 +340,7 @@ function getScenario(scenario) =
       ["Magnetic Flange", [[con1_key(iconStyle), "mag"], [con1_key(iconMagnetCount),6], [con1_key(iconDiameter),45], [con1_key(iconMagnetTwistLockSize), "3cnc"], [con2_key(iconDiameter),50]]],
       ["Flange", [[con1_key(iconStyle), "flange"]]],
       ["Dyson V6 connector", [[con1_key(iconStyle),"dyson"], [itransitionAngle,45], [itransitionStyle,"hull"],[itransitionEnd2Count,2], [itransitionHullCenterHeight,45]]],
-      ["CAMLOCK connector", [[con1_key(iconStyle), "camlock"],[itransitionAngle,45], [itransitionStyle,"hull"],[itransitionEnd2Count,2], [itransitionLength,10], [itransitionHullCenter,true], [itransitionHullCenterLength,5], [itransitionHullCenterHeight,40], [itransitionHullLength,20], [irotaterender1,[0,0,-45]], [irotaterender2,[0,0,-45]]]],
+      ["CAMLOCK connector", [[con1_key(iconStyle), "camlock"],[itransitionAngle,45], [itransitionStyle,"hull"],[itransitionEnd2Count,2], [itransitionLength,10], [itransitionHullCenter,"end3"], [itransitionHullCenterLength,5], [itransitionHullCenterHeight,40], [itransitionHullLength,20], [irotaterender1,[0,0,-45]], [irotaterender2,[0,0,-45]]]],
       ["Dewalt DW735x", [[con1_key(iconStyle),"dw735"], [itransitionBendRadius,10], [itransitionStyle,"taper+bend"], [itransitionAngle,90], [con1_key(iconDiameter),80], [con2_key(iconDiameter),50]]],
       ["Centec Quick Connect Female", [[con1_key(iconStyle), "centec_female"]]],
       ["Centec Quick Connect Male", [[con1_key(iconStyle), "centec_male"]]],
@@ -404,33 +404,33 @@ function getScenario(scenario) =
     //hose settings
     //hose_demo,hose_stopthickness,hose_stoplength,hose_stopsymmetrical,hose_barbsthickness,hose_barbscount,hose_barbssymmetrical,hose_endcapthickness,hose_endcapdiameter
     : scenario == "hose_demo" ? [["Hose",5,[[],[10,-0,25],260],[[irendercount, 2],[itextposition,[0,-35,0]], [itransitionColor,deemphasize],[iend2Color,deemphasize], [con1_key(iconDiameter),40], [con1_key(iconStyle), "hose"]]],
-      ["50mm with internal stop", [[con1_key(iconDiameter), 50],[con1_key(iconStopLength), 3], [con1_key(iconStopThickness), 2],[con1_key(iconTaper), -1]]],
-      ["50mm with external stop", [[con1_key(iconDiameter), 50],[con1_key(iconStopLength), 3], [con1_key(iconStopThickness), 2],[con1_key(iconTaper), 1]]],
+      ["50mm with internal stop", [[con1_key(iconDiameter), 50],[con1_key(iconStopLength), 3], [con1_key(iconStopThickness), 2],[con1_key(iconTaper), -1],[con1_key(iconMeasurement), "inner"]]],
+      ["50mm with external stop", [[con1_key(iconDiameter), 50],[con1_key(iconStopLength), 3], [con1_key(iconStopThickness), 2],[con1_key(iconTaper), 1],[con1_key(iconMeasurement), "outer"]]],
       ["25mm with barbs", [[con1_key(iconDiameter), 25], [con1_key(iconBarbsCount), 3],[con1_key(iconMeasurement), "outer"]]],
       ["closed cap", [[con1_key(iconDiameter), 25],[con1_key(iconLength), 3], [con1_key(iconMeasurement), "inner"], [con1_key(iconEndCapThickness), 3], [con1_key(iconEndCapDiameter), 0]]],
       ["", [[con1_key(iconStyle), "hose"]]]
     ]
     : scenario == "hose_stopthickness" ? [["Stop Thickness",6,[[],[10,-0,25],260],[[irendercount, 2],[itextposition,[0,-35,0]], [itransitionColor,deemphasize],[iend2Color,deemphasize], [con1_key(iconDiameter),40],[con1_key(iconStopLength),2]]],
-        ["1mm outer", [[con1_key(iconStopThickness), 1],[con1_key(iconTaper), 1]]],
-        ["2mm outer", [[con1_key(iconStopThickness), 2],[con1_key(iconTaper), 1]]],
-        ["3mm outer", [[con1_key(iconStopThickness), 3],[con1_key(iconTaper), 1]]],
-        ["1mm inner", [[con1_key(iconStopThickness), 1],[con1_key(iconTaper), -1]]],
-        ["2mm inner", [[con1_key(iconStopThickness), 2],[con1_key(iconTaper), -1]]],
-        ["3mm inner", [[con1_key(iconStopThickness), 3],[con1_key(iconTaper), -1]]]
+        ["1mm outer", [[con1_key(iconStopThickness), 1],[con1_key(iconTaper), 1],[con1_key(iconMeasurement), "outer"]]],
+        ["2mm outer", [[con1_key(iconStopThickness), 2],[con1_key(iconTaper), 1],[con1_key(iconMeasurement), "outer"]]],
+        ["3mm outer", [[con1_key(iconStopThickness), 3],[con1_key(iconTaper), 1],[con1_key(iconMeasurement), "outer"]]],
+        ["1mm inner", [[con1_key(iconStopThickness), 1],[con1_key(iconTaper), -1],[con1_key(iconMeasurement), "inner"]]],
+        ["2mm inner", [[con1_key(iconStopThickness), 2],[con1_key(iconTaper), -1],[con1_key(iconMeasurement), "inner"]]],
+        ["3mm inner", [[con1_key(iconStopThickness), 3],[con1_key(iconTaper), -1],[con1_key(iconMeasurement), "inner"]]]
     ]
     : scenario == "hose_stoplength" ? [["Stop Length",6,[[],[10,-0,25],260],[[irendercount, 2],[itextposition,[0,-35,0]], [itransitionColor, deemphasize], [iend2Color, deemphasize], [con1_key(iconDiameter),40],[con1_key(iconStopThickness), 2]]],
-        ["2mm outer", [[con1_key(iconStopLength), 2],[con1_key(iconTaper), 1]]],
-        ["3mm outer", [[con1_key(iconStopLength), 3],[con1_key(iconTaper), 1]]],
-        ["4mm outer", [[con1_key(iconStopLength), 4],[con1_key(iconTaper), 1]]],
-        ["2mm inner", [[con1_key(iconStopLength), 2],[con1_key(iconTaper), -1]]],
-        ["3mm inner", [[con1_key(iconStopLength), 3],[con1_key(iconTaper), -1]]],
-        ["4mm inner", [[con1_key(iconStopLength), 4],[con1_key(iconTaper), -1]]]
+        ["2mm outer", [[con1_key(iconStopLength), 2],[con1_key(iconTaper), 1],[con1_key(iconMeasurement), "outer"]]],
+        ["3mm outer", [[con1_key(iconStopLength), 3],[con1_key(iconTaper), 1],[con1_key(iconMeasurement), "outer"]]],
+        ["4mm outer", [[con1_key(iconStopLength), 4],[con1_key(iconTaper), 1],[con1_key(iconMeasurement), "outer"]]],
+        ["2mm inner", [[con1_key(iconStopLength), 2],[con1_key(iconTaper), -1],[con1_key(iconMeasurement), "inner"]]],
+        ["3mm inner", [[con1_key(iconStopLength), 3],[con1_key(iconTaper), -1],[con1_key(iconMeasurement), "inner"]]],
+        ["4mm inner", [[con1_key(iconStopLength), 4],[con1_key(iconTaper), -1],[con1_key(iconMeasurement), "inner"]]]
     ]
     : scenario == "hose_stopsymmetrical" ? [["Stop Symmetrical",4,[[],[10,-0,25],260],[[irendercount, 2],[itextposition,[0,-35,0]], [itransitionColor, deemphasize], [iend2Color, deemphasize], [con1_key(iconDiameter),40], [con1_key(iconStopThickness), 2],[con1_key(iconStopLength), 3]]],
-        ["true outer", [[con1_key(iconStopSymmetrical), true],[con1_key(iconTaper), 1]]],
-        ["false outer", [[con1_key(iconStopSymmetrical), false],[con1_key(iconTaper), 1]]],
-        ["true inner", [[con1_key(iconStopSymmetrical), true],[con1_key(iconTaper), -1]]],
-        ["false inner ", [[con1_key(iconStopSymmetrical), false],[con1_key(iconTaper), -1]]]
+        ["true outer", [[con1_key(iconStopSymmetrical), true],[con1_key(iconTaper), 1],[con1_key(iconMeasurement), "outer"]]],
+        ["false outer", [[con1_key(iconStopSymmetrical), false],[con1_key(iconTaper), 1],[con1_key(iconMeasurement), "outer"]]],
+        ["true inner", [[con1_key(iconStopSymmetrical), true],[con1_key(iconTaper), -1],[con1_key(iconMeasurement), "inner"]]],
+        ["false inner ", [[con1_key(iconStopSymmetrical), false],[con1_key(iconTaper), -1],[con1_key(iconMeasurement), "inner"]]]
     ]
     : scenario == "hose_barbscount" ? [["Barbs Count",8,[[],[10,-0,25],260],[[irendercount,2],[itextposition,[0,-35,0]], [itransitionColor,deemphasize],[iend2Color,deemphasize], [con1_key(iconDiameter),40],[con1_key(iconLength),35]]],
         ["0 outer", [[con1_key(iconBarbsCount), 0],[con1_key(iconMeasurement), "outer"]]],
@@ -442,7 +442,7 @@ function getScenario(scenario) =
         ["2 inner", [[con1_key(iconBarbsCount), 2],[con1_key(iconMeasurement), "inner"]]],
         ["3 inner", [[con1_key(iconBarbsCount), 3],[con1_key(iconMeasurement), "inner"]]]
     ]
-    : scenario == "hose_threads" ? [["Threads",4,[[],[10,-0,25],260],[[irendercount,2],[itextposition,[0,-35,0]], [itransitionColor,deemphasize],[iend2Color,deemphasize], [con1_key(iconDiameter),40],[con1_key(iconLength),35], [con1_key(iconEnableThreads), true]]],
+    : scenario == "hose_threads" ? [["Threads",4,[[],[10,-0,25],260],[[irendercount,2],[itextposition,[0,-35,0]], [itransitionColor,deemphasize],[iend2Color,deemphasize], [con1_key(iconDiameter),40],[con1_key(iconLength),35], [con1_key(iconEnableThreads), "enabled"]]],
         ["small outer", [[con1_key(iconThreadPitch), 5],[con1_key(iconThreadToothAngle), 45],[con1_key(iconThreadToothHeight), 5],[con1_key(iconMeasurement), "outer"]]],
         ["small inner", [[con1_key(iconThreadPitch), 5],[con1_key(iconThreadToothAngle), 45],[con1_key(iconThreadToothHeight), 5],[con1_key(iconMeasurement), "inner"], [isliceDebug, true]]],
         ["large outer", [[con1_key(iconThreadPitch), 8],[con1_key(iconThreadToothAngle), 45],[con1_key(iconThreadToothHeight), 8],[con1_key(iconMeasurement), "outer"]]],
@@ -643,7 +643,7 @@ function getScenario(scenario) =
       ["Bent Hose Adapter", [[itransitionBendRadius,10], [itransitionAngle,45], [con2_key(iconBarbsCount),3], [con2_key(iconMeasurement),"outer"]]],
       ["Nozzle", [[itransitionStyle,"bend+taper"], [itransitionBendRadius,10], [itransitionAngle,30], [itransitionLength,3], [con2_key(iconStyle),"nozzle"], [con2_key(iconDiameter),0], [con2_key(iconNozzleShape),"square"], [con2_key(iconNozzleChamferPercentage),50], [con2_key(iconNozzleChamferAngle),45],[con2_key(iconNozzleSize),[10,5,50]]]],
       ["Double Adapter", [[itransitionAngle,45], [itransitionStyle,"hull"],[itransitionEnd2Count,2], [itransitionHullCenterHeight,45]]],
-      ["Triple Adapter", [[itransitionAngle,45], [itransitionStyle,"hull"],[itransitionEnd2Count,2], [itransitionHullCenter,true], [itransitionHullCenterHeight,45], [itransitionHullLength,20], [irotaterender1,[0,0,-45]], [irotaterender2,[0,0,-45]]]]
+      ["Triple Adapter", [[itransitionAngle,45], [itransitionStyle,"hull"],[itransitionEnd2Count,2], [itransitionHullCenter,"end3"], [itransitionHullCenterHeight,45], [itransitionHullLength,20], [irotaterender1,[0,0,-45]], [irotaterender2,[0,0,-45]]]]
     ]
     //camlock
     //camlock_sample,base_dmo
@@ -680,14 +680,14 @@ function getScenario(scenario) =
     //transition
     //transition_demo,transition_bendtaper,transition_taperbend,transition_organicbend,transition_flat,
     : scenario == "transition_demo" ? [["Transition",9,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [irenderseparation,[80,0,0]], [itransitionBendRadius,20],[itransitionAngle,20], [iend1Color, coloredDeemphasize], [iend2Color, coloredDeemphasize], [iend3Color, coloredDeemphasize]]],
-      ["hull 3", [[itransitionStyle, "hull"],[itransitionEnd2Count, 1], [itransitionAngle,45],  [itransitionHullCenter,true], [itransitionHullCenterHeight,45], [itransitionHullLength,20], [con2_key(iconDiameter), 20], [con3_key(iconDiameter), 30], [itransitionHullLength, 10]]],
+      ["hull 3", [[itransitionStyle, "hull"],[itransitionEnd2Count, 1], [itransitionAngle,45],  [itransitionHullCenter,"end3"], [itransitionHullCenterHeight,45], [itransitionHullLength,20], [con2_key(iconDiameter), 20], [con3_key(iconDiameter), 30], [itransitionHullLength, 10]]],
       ["bend+taper", [[itransitionStyle, "bend+taper"]]],
       ["taper+bend", [[itransitionStyle, "taper+bend"]]],
       ["organicbend", [[itransitionStyle, "organicbend"]]],
       ["hull 1", [[itransitionStyle, "hull"]]],
       ["hull 2", [[itransitionStyle, "hull"],[itransitionEnd2Count, 2]]],
-      ["hull 3", [[itransitionStyle, "hull"],[itransitionEnd2Count, 1], [itransitionAngle,45],  [itransitionHullCenter,true], [itransitionHullCenterHeight,45], [itransitionHullLength,20], [con2_key(iconDiameter), 20], [con3_key(iconDiameter), 30], [itransitionHullLength, 10]]],
-      ["hull 4", [[itransitionStyle, "hull"],[itransitionEnd2Count, 2], [itransitionAngle,45],  [itransitionHullCenter,true], [itransitionHullCenterHeight,45], [itransitionHullLength,20], [con2_key(iconDiameter), 20], [con3_key(iconDiameter), 30], [itransitionHullLength, 10], [irotaterender1,[0,0,-25]], [irotaterender2,[0,0,-25]]]],
+      ["hull 3", [[itransitionStyle, "hull"],[itransitionEnd2Count, 1], [itransitionAngle,45],  [itransitionHullCenter,"end3"], [itransitionHullCenterHeight,45], [itransitionHullLength,20], [con2_key(iconDiameter), 20], [con3_key(iconDiameter), 30], [itransitionHullLength, 10]]],
+      ["hull 4", [[itransitionStyle, "hull"],[itransitionEnd2Count, 2], [itransitionAngle,45],  [itransitionHullCenter,"end3"], [itransitionHullCenterHeight,45], [itransitionHullLength,20], [con2_key(iconDiameter), 20], [con3_key(iconDiameter), 30], [itransitionHullLength, 10], [irotaterender1,[0,0,-25]], [irotaterender2,[0,0,-25]]]],
       ["flat", [[itransitionStyle, "flat"]]]
     ]
 
@@ -717,12 +717,12 @@ function getScenario(scenario) =
     //transition_hull,transition_hulllength,transition_hulloffset,transition_hullcenter
     : scenario == "transition_hull" ? [["Transition Hull",4,[[60,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [irenderseparation,[100,0,0]], [itransitionBendRadius,10], [iend1Color, deemphasize], [iend2Color, deemphasize], [itransitionStyle, "hull"]]],
       ["45deg 2 end", [[itransitionAngle,45], [itransitionEnd2Count,2]]],
-      ["45deg 3 end (2 with center)", [[itransitionAngle,45], [itransitionEnd2Count,2], [itransitionHullCenter, true], [itransitionHullCenterHeight, 45], [itransitionHullLength, 20]]],
-      ["45deg 5 end (4 with center)", [[itransitionAngle,45], [itransitionEnd2Count,4], [itransitionHullCenter, true], [itransitionHullCenterHeight, 45], [itransitionHullLength, 20]]],
+      ["45deg 3 end (2 with center)", [[itransitionAngle,45], [itransitionEnd2Count,2], [itransitionHullCenter, "end3"], [itransitionHullCenterHeight, 45], [itransitionHullLength, 20]]],
+      ["45deg 5 end (4 with center)", [[itransitionAngle,45], [itransitionEnd2Count,4], [itransitionHullCenter, "end3"], [itransitionHullCenterHeight, 45], [itransitionHullLength, 20]]],
       ["90deg, 2 end", [[itransitionAngle,90], [itransitionEnd2Count,2]]],
     ]
-    : scenario == "transition_hulllength" ? [["Transition Hull Length",4,[[60,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [irenderseparation,[100,0,0]], [iend1Color, deemphasize], [iend2Color, deemphasize], [itransitionStyle, "hull"], [itransitionAngle,45], [itransitionEnd2Count,2], [itransitionHullCenter, true], [itransitionHullCenterHeight, 45], [itransitionBendRadius,10]]],
-      ["0mm", [[itransitionHullCenter, false], [itransitionHullLength, 0]]],
+    : scenario == "transition_hulllength" ? [["Transition Hull Length",4,[[60,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [irenderseparation,[100,0,0]], [iend1Color, deemphasize], [iend2Color, deemphasize], [itransitionStyle, "hull"], [itransitionAngle,45], [itransitionEnd2Count,2], [itransitionHullCenter, "end3"], [itransitionHullCenterHeight, 45], [itransitionBendRadius,10]]],
+      ["0mm", [[itransitionHullCenter, "disabled"], [itransitionHullLength, 0]]],
       ["15mm", [ [itransitionHullLength, 15]]],
       ["20mm", [ [itransitionHullLength, 20]]],
       ["30mm", [ [itransitionHullLength, 30]]],
@@ -734,10 +734,10 @@ function getScenario(scenario) =
       ["5mm", [ [itransitionHullyOffset, 5]]],
     ]
     : scenario == "transition_hullcenter" ? [["Transition Hull Center",4,[[60,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [irenderseparation,[100,0,0]], [iend1Color, deemphasize], [iend2Color, deemphasize], [itransitionStyle, "hull"], [itransitionAngle,45], [itransitionEnd2Count,2], [itransitionHullyOffset, 2],[itransitionHullLength, 15]]],
-      ["disabled", [[itransitionHullCenter, false]]],
-      ["enabled 30mm (too low)", [[itransitionHullCenter, true], [itransitionHullCenterHeight, 30]]],
-      ["enabled 40mm", [[itransitionHullCenter, true], [itransitionHullCenterHeight, 40]]],
-      ["enabled 50mm", [[itransitionHullCenter, true], [itransitionHullCenterHeight, 50]]],
+      ["disabled", [[itransitionHullCenter, "disabled"]]],
+      ["enabled 30mm (too low)", [[itransitionHullCenter, "end3"], [itransitionHullCenterHeight, 30]]],
+      ["enabled 40mm", [[itransitionHullCenter, "end3"], [itransitionHullCenterHeight, 40]]],
+      ["enabled 50mm", [[itransitionHullCenter, "end3"], [itransitionHullCenterHeight, 50]]],
      ]
 
     //transition_length,transition_angle,transition_bendradius,transition_offset,transition_EndCount
@@ -808,7 +808,7 @@ function getScenario(scenario) =
      ["", []],
      ["Pre 10mm", [[con1_key(iconExtensionLength),10]]],
      ["Pre and Post 10mm", [[con1_key(iconExtensionLength),10], [con2_key(iconExtensionLength),10]]],
-     ["Pre grid", [[con1_key(iconExtensionLength),10], [con2_key(iconExtensionLength),10], [con1_key(iconExtensionGridWallThickness),-1]]]
+     ["Pre grid", [[con1_key(iconExtensionLength),10], [con2_key(iconExtensionLength),10], [con1_key(iconExtensionGridWallThickness),2], [con1_key(iconExtensionGridSize),5]]]
     ]
     : scenario == "transitionextpre_length" ? [["Pre Transition Extension Length",3,[[90,0,0],[0,0,60],400],[[irendercount,2] ,[itextposition,[0,-30,-50]], [itransitionBendRadius,10], [irenderseparation,[80,0,0]], [iend1Color,deemphasize], [iend2Color,deemphasize]]],
       ["0mm", [[con1_key(iconExtensionLength),0]]],
@@ -888,18 +888,6 @@ function getCurrentStep(scenario, stepIndex=-1) =
     echo("getCurrentStep", currentStepSettings=currentStepSettings)
    currentStepSettings;
 
-function getSize(currentStepSettings) = let(
-  css = currentStepSettings,
-  c1 = [css[con1_key(iconDiameter)] + css[con1_key(iconWallThickness)]*2 + css[con1_key(iconTaper)]*2 +
-      (css[con1_key(iconStyle)] == "mag" ? (css[con1_key(iconMagnetDiameter)] + css[con1_key(iconMagnetBorder)]*4) + (css[con1_key(iconRing)] != "no" ? css[ialignmentUpperWidth]*2 : 0 ): 0) +
-      (css[con1_key(iconStyle)] == "flange" ? css[con1_key(iconFlangeWidth)] :0)
-      , css[con1_key(iconLength)]],
-  c2 = [css[con2_key(iconDiameter)] + css[con2_key(iconWallThickness)]*2 + css[con2_key(iconTaper)]*2 +
-      (css[con2_key(iconStyle)] == "mag" ? (css[con2_key(iconMagnetDiameter)] + css[con2_key(iconMagnetBorder)]*4) + (css[con2_key(iconRing)] != "no" ? css[ialignmentUpperWidth]*2 : 0 ): 0) +
-      (css[con2_key(iconStyle)] == "flange" ? css[con2_key(iconFlangeWidth)] :0)
-      , css[con2_key(iconLength)]],
-) [c1,c2];
-
 function getSize(css) =
   let(
     c1 = [DictGet(css, con1_key(iconDiameter)) + DictGet(css, con1_key(iconWallThickness))*2 + DictGet(css, con1_key(iconTaper))*2 +
@@ -909,7 +897,7 @@ function getSize(css) =
     c2 = [DictGet(css, con2_key(iconDiameter)) + DictGet(css, con2_key(iconWallThickness))*2 + DictGet(css, con2_key(iconTaper))*2 +
         (DictGet(css, con2_key(iconStyle)) == "mag" ? (DictGet(css, con2_key(iconMagnetDiameter)) + DictGet(css, con2_key(iconMagnetBorder))*4) + (DictGet(css, con2_key(iconRing)) != "no" ? DictGet(css, ialignmentUpperWidth)*2 : 0 ): 0) +
         (DictGet(css, con2_key(iconStyle)) == "flange" ? DictGet(css, con2_key(iconFlangeWidth)) : 0)
-      , DictGet(css, con2_key(iconLength))],
+      , DictGet(css, con2_key(iconLength))]
   ) [c1,c2];
 
 
@@ -966,9 +954,9 @@ module RenderScenario(scenario, showtext=true, stepIndex=-1, sliceDebug = false,
 
         endCapDiameter  = DictGet(currentStepSettings, con1_key(iconEndCapDiameter)),
         endCapThickness = DictGet(currentStepSettings, con1_key(iconEndCapThickness)),
-        stopThickness   = DictGet(currentStepSettings, con1_key(iconStopThickness)),
-        stopLength      = DictGet(currentStepSettings, con1_key(iconStopLength)),
-        stopSymmetrical = DictGet(currentStepSettings, con1_key(iconStopSymmetrical)),
+        extensionStopThickness   = DictGet(currentStepSettings, con1_key(iconStopThickness)),
+        extensionStopLength      = DictGet(currentStepSettings, con1_key(iconStopLength)),
+        extensionStopSymmetrical = DictGet(currentStepSettings, con1_key(iconStopSymmetrical)),
         barbsCount      = DictGet(currentStepSettings, con1_key(iconBarbsCount)),
         barbsThickness  = DictGet(currentStepSettings, con1_key(iconBarbsThickness)),
         barbsSymmetrical= DictGet(currentStepSettings, con1_key(iconBarbsSymmetrical)),
@@ -982,7 +970,7 @@ module RenderScenario(scenario, showtext=true, stepIndex=-1, sliceDebug = false,
         magnetThickness = DictGet(currentStepSettings, con1_key(iconMagnetThickness)),
         magnetBorder    = DictGet(currentStepSettings, con1_key(iconMagnetBorder)),
         magnetFlangeThickness = DictGet(currentStepSettings, con1_key(iconMagnetFlangeThickness)),
-        //alignmentRing = DictGet(currentStepSettings, con1_key(iconRing)),
+        alignmentRing = DictGet(currentStepSettings, con1_key(iconRing)),
         magnetTwistLockSize  = DictGet(currentStepSettings, con1_key(iconMagnetTwistLockSize)),
 
         flangeWidth     = DictGet(currentStepSettings, con1_key(iconFlangeWidth)),
@@ -1011,9 +999,9 @@ module RenderScenario(scenario, showtext=true, stepIndex=-1, sliceDebug = false,
 
         endCapDiameter  = DictGet(currentStepSettings, con2_key(iconEndCapDiameter)),
         endCapThickness = DictGet(currentStepSettings, con2_key(iconEndCapThickness)),
-        stopThickness = DictGet(currentStepSettings, con2_key(iconStopThickness)),
-        stopLength = DictGet(currentStepSettings, con2_key(iconStopLength)),
-        stopSymmetrical = DictGet(currentStepSettings, con2_key(iconStopSymmetrical)),
+        extensionStopThickness = DictGet(currentStepSettings, con2_key(iconStopThickness)),
+        extensionStopLength = DictGet(currentStepSettings, con2_key(iconStopLength)),
+        extensionStopSymmetrical = DictGet(currentStepSettings, con2_key(iconStopSymmetrical)),
         barbsCount = DictGet(currentStepSettings, con2_key(iconBarbsCount)),
         barbsThickness = DictGet(currentStepSettings, con2_key(iconBarbsThickness)),
         barbsSymmetrical = DictGet(currentStepSettings, con2_key(iconBarbsSymmetrical)),
@@ -1027,7 +1015,7 @@ module RenderScenario(scenario, showtext=true, stepIndex=-1, sliceDebug = false,
         magnetThickness = DictGet(currentStepSettings, con2_key(iconMagnetThickness)),
         magnetBorder = DictGet(currentStepSettings, con2_key(iconMagnetBorder)),
         magnetFlangeThickness = DictGet(currentStepSettings, con2_key(iconMagnetFlangeThickness)),
-        //ring = DictGet(currentStepSettings, con2_key(iconRing)),
+        alignmentRing = DictGet(currentStepSettings, con2_key(iconRing)),
         magnetTwistLockSize = DictGet(currentStepSettings, con2_key(iconMagnetTwistLockSize)),
 
         flangeWidth = DictGet(currentStepSettings, con2_key(iconFlangeWidth)),
@@ -1037,11 +1025,19 @@ module RenderScenario(scenario, showtext=true, stepIndex=-1, sliceDebug = false,
         flangeScrewCount = DictGet(currentStepSettings, con2_key(iconFlangeScrewCount)),
         flangeScrewDiameter = DictGet(currentStepSettings, con2_key(iconFlangeScrewDiameter)),
 
+        nozzleShape = DictGet(currentStepSettings, con2_key(iconNozzleShape)),
+        nozzleSize = DictGet(currentStepSettings, con2_key(iconNozzleSize)),
+        nozzleTipWallThickness = DictGet(currentStepSettings, con2_key(iconNozzleTipWallThickness)),
+        nozzleRadius = DictGet(currentStepSettings, con2_key(iconNozzleRadius)),
+        nozzleOffset = DictGet(currentStepSettings, con2_key(iconNozzleOffset)),
+        nozzleChamferPercentage = DictGet(currentStepSettings, con2_key(iconNozzleChamferPercentage)),
+        nozzleChamferAngle = DictGet(currentStepSettings, con2_key(iconNozzleChamferAngle)),
+
         extensionLength = DictGet(currentStepSettings, con2_key(iconExtensionLength)),
         extensionGridSize = DictGet(currentStepSettings, con2_key(iconExtensionGridSize)),
         extensionGridWallThickness = DictGet(currentStepSettings, con2_key(iconExtensionGridWallThickness)),
         extensionText = DictGet(currentStepSettings, con2_key(iconExtensionText)),
-        extensionTextSize = DictGet(currentStepSettings, con2_key(iconExtensionTextSize)),
+        extensionTextSize = DictGet(currentStepSettings, con2_key(iconExtensionTextSize))
       ),
 
       connector3 = UserConnectorSettings(
@@ -1056,9 +1052,9 @@ module RenderScenario(scenario, showtext=true, stepIndex=-1, sliceDebug = false,
 
         endCapDiameter  = DictGet(currentStepSettings, con3_key(iconEndCapDiameter)),
         endCapThickness = DictGet(currentStepSettings, con3_key(iconEndCapThickness)),
-        stopThickness = DictGet(currentStepSettings, con3_key(iconStopThickness)),
-        stopLength = DictGet(currentStepSettings, con3_key(iconStopLength)),
-        stopSymmetrical = DictGet(currentStepSettings, con3_key(iconStopSymmetrical)),
+        extensionStopThickness = DictGet(currentStepSettings, con3_key(iconStopThickness)),
+        extensionStopLength = DictGet(currentStepSettings, con3_key(iconStopLength)),
+        extensionStopSymmetrical = DictGet(currentStepSettings, con3_key(iconStopSymmetrical)),
         barbsCount = DictGet(currentStepSettings, con3_key(iconBarbsCount)),
         barbsThickness = DictGet(currentStepSettings, con3_key(iconBarbsThickness)),
         barbsSymmetrical = DictGet(currentStepSettings, con3_key(iconBarbsSymmetrical)),
@@ -1072,7 +1068,7 @@ module RenderScenario(scenario, showtext=true, stepIndex=-1, sliceDebug = false,
         magnetThickness = DictGet(currentStepSettings, con3_key(iconMagnetThickness)),
         magnetBorder = DictGet(currentStepSettings, con3_key(iconMagnetBorder)),
         magnetFlangeThickness = DictGet(currentStepSettings, con3_key(iconMagnetFlangeThickness)),
-        //ring = DictGet(currentStepSettings, con3_key(iconRing)),
+        alignmentRing = DictGet(currentStepSettings, con3_key(iconRing)),
         magnetTwistLockSize = DictGet(currentStepSettings, con3_key(iconMagnetTwistLockSize)),
 
         flangeWidth = DictGet(currentStepSettings, con3_key(iconFlangeWidth)),
@@ -1082,11 +1078,19 @@ module RenderScenario(scenario, showtext=true, stepIndex=-1, sliceDebug = false,
         flangeScrewCount = DictGet(currentStepSettings, con3_key(iconFlangeScrewCount)),
         flangeScrewDiameter = DictGet(currentStepSettings, con3_key(iconFlangeScrewDiameter)),
 
+        nozzleShape = DictGet(currentStepSettings, con3_key(iconNozzleShape)),
+        nozzleSize = DictGet(currentStepSettings, con3_key(iconNozzleSize)),
+        nozzleTipWallThickness = DictGet(currentStepSettings, con3_key(iconNozzleTipWallThickness)),
+        nozzleRadius = DictGet(currentStepSettings, con3_key(iconNozzleRadius)),
+        nozzleOffset = DictGet(currentStepSettings, con3_key(iconNozzleOffset)),
+        nozzleChamferPercentage = DictGet(currentStepSettings, con3_key(iconNozzleChamferPercentage)),
+        nozzleChamferAngle = DictGet(currentStepSettings, con3_key(iconNozzleChamferAngle)),
+
         extensionLength = DictGet(currentStepSettings, con3_key(iconExtensionLength)),
         extensionGridSize = DictGet(currentStepSettings, con3_key(iconExtensionGridSize)),
         extensionGridWallThickness = DictGet(currentStepSettings, con3_key(iconExtensionGridWallThickness)),
         extensionText = DictGet(currentStepSettings, con3_key(iconExtensionText)),
-        extensionTextSize = DictGet(currentStepSettings, con3_key(iconExtensionTextSize)),
+        extensionTextSize = DictGet(currentStepSettings, con3_key(iconExtensionTextSize))
       ),
 
       drawAlignmentRing = DictGet(currentStepSettings, idrawAlignmentRing),
@@ -1194,4 +1198,3 @@ union(){
     }
   }
 }
-
