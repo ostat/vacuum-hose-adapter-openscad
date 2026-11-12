@@ -66,7 +66,7 @@ module MagneticConnector(
     alignmentSideClearance,
     alignmentDepthClearance,
     twistLockSize,
-    roundover = true,
+    roundover = true
 )
 {
     assert(is_num(innerStartDiameter) && innerStartDiameter > 0, "innerStartDiameter must be a number greater than 0");

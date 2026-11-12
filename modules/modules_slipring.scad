@@ -22,7 +22,7 @@ if(slipring_demo){
     ring_width = 5,
     slip_clearance = 0.1,
     rounded_clearance = true,
-    taper = "notaper", //notaper, inner, outer
+    taper = "notaper" //notaper, inner, outer
     );
 
   color("lightblue")
@@ -32,7 +32,7 @@ if(slipring_demo){
     ring_width = 5,
     slip_clearance = 0.1,
     rounded_clearance = false,
-    taper = "inner", //notaper, inner, outer
+    taper = "inner" //notaper, inner, outer
     );
 
   color("pink")
@@ -42,7 +42,7 @@ if(slipring_demo){
     ring_width = 5,
     slip_clearance = 0.1,
     rounded_clearance = false,
-    taper = "outer", //notaper, inner, outer
+    taper = "outer" //notaper, inner, outer
     );
 }
 
