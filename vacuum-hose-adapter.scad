@@ -37,7 +37,7 @@ End1_Extension_Exit_Diameter = 0; //0.1
 End1_Extension_GridSize = 0;  //0.1
 //Size of the grid walls in the extension. 0: no grid, -1: uses wall thickness
 End1_Extension_GridWallThickness = 0;  //0.1
-End1_Extension_Text = "asd-\u0020-asd";
+End1_Extension_Text = "";
 End1_Extension_Text_Size = 0;
 End1_Extension_SlipRing= "disabled"; //[disabled, notaper: non tapered, inner, outer]
 End1_Extension_SlipRing_Width = 5;
