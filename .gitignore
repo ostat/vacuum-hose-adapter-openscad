@@ -24,3 +24,5 @@ generated
 *.disabled
 generated*/
 *.json
+# combined single-file builds are published as GitHub releases, not committed
+combined/

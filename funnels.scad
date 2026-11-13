@@ -81,7 +81,8 @@ spoutDiameter = SpoutDiameter < 1 ? SpoutTipDiameter : SpoutDiameter;
         nozzleShape = "circle",
         nozzleTipWallThickness = SpoutTipWallThickness,
         nozzleRadius = SpoutTipDiameter/2,
-        nozzleSize= [0,0,spoutTipLength],
+        nozzleBaseSize = [0,0],
+        nozzleLength = spoutTipLength,
         nozzleChamferPercentage = 100,
         nozzleChamferAngle = 30)
   );
