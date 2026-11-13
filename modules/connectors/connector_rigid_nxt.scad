@@ -29,8 +29,8 @@ if (rigidNxtConnector_demo) {
 }
 
 module RigidNXTConnector(
-  outerStartDiameter = nxtOuterDiameter,
-  outerEndDiameter = nxtOuterDiameter,
+  innerStartDiameter = nxtInnerDiameter,
+  innerEndDiameter = nxtInnerDiameter,
   length = nxtMinLength,
   wallThickness = nxtWallThickness,
   ridgeCount = nxtRidgeCount,
@@ -45,8 +45,8 @@ module RigidNXTConnector(
   assert(is_num(length) && length > 0, "length must be a number > 0");
   assert(is_num(wallThickness) && wallThickness > 0, "wallThickness must be a number > 0");
 
-  innerStartDiameter = outerStartDiameter - wallThickness * 2;
-  innerEndDiameter = outerEndDiameter - wallThickness * 2;
+  outerStartDiameter = innerStartDiameter + wallThickness * 2;
+  outerEndDiameter = innerEndDiameter + wallThickness * 2;
   ridgePitch = ridgeCount > 1 ? ridgeSpan / (ridgeCount - 1) : 0;
   r_base = outerStartDiameter / 2;
   r_max = r_base + ridgeHeight;
