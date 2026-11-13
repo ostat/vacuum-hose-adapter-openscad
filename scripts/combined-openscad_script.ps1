@@ -14,9 +14,20 @@
 #The injected files need to go after the config block. To detect this we look for a module call.
 #recommended to add this at the end of the config block
 # module end_of_customizer_opts() {}
+#
+#Parameters
+#  -OutputFolder  where the combined files are written (default: <repo>/combined)
+#  -Version       optional release version written into each file header (set by the release workflow)
+Param(
+    [string]$OutputFolder,
+    [string]$Version
+)
 
 $script:SourceFolder = (Get-Item $MyInvocation.MyCommand.Source).Directory.Parent.FullName
-$OutputFolder = (join-path $script:SourceFolder 'combined')
+if ([string]::IsNullOrWhiteSpace($OutputFolder)) {
+    $OutputFolder = (join-path $script:SourceFolder 'combined')
+}
+New-Item -ItemType Directory -Path $OutputFolder -Force | Out-Null
 
 $script:LinkedFiles = [ordered]@{}
 
@@ -198,6 +209,9 @@ function Save-CombinedOpenScadFile([string]$ScadFilePath, [string]$OutputFolder)
     [string[]]$resultLines = @()
     $resultLines += '///////////////////////////////////////'
     $resultLines += "//Combined version of '$($ScadFile.Name)'. Generated $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
+    if (-not [string]::IsNullOrWhiteSpace($Version)) {
+        $resultLines += "//Release $($Version) https://github.com/ostat/vacuum-hose-adapter-openscad/releases/tag/$($Version)"
+    }
     $resultLines += "//Content hash $($combinedHash)"
     $resultLines += '///////////////////////////////////////'
     $resultLines += $combinedLines

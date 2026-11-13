@@ -109,7 +109,7 @@ module slipring_profile(
   width = 5,
   tolerance = 0.3,
   rounded_clearance = true,
-  taper = "inner", //disabled, inner, outer
+  taper = "inner" //disabled, inner, outer
 ){
 
   function splitring_profile_points(dimension, angled_dimension, split_taper) = [

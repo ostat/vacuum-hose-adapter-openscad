@@ -1,67 +1,60 @@
-name: Auto Combine OpenSCAD Files
+name: Release Combined OpenSCAD Files
+
+# Builds the single-file (combined) versions of each top-level .scad and publishes
+# them as a numbered GitHub release. Nothing is committed back to the repository.
+#
+# Version format: vYYYY.MM.DD.<run number>, e.g. v2026.11.13.42
+# Newest release (stable link, always the latest build):
+#   https://github.com/ostat/vacuum-hose-adapter-openscad/releases/latest/download/vacuum-hose-adapter.scad
 
 on:
   push:
     branches:
       - main
+    paths:
+      - "**/*.scad"
+      - "scripts/combined-openscad_script.ps1"
+      - ".github/workflows/generate-combined.yaml"
+  workflow_dispatch: {}
 
 permissions:
   contents: write
 
-jobs:
-  combine:
-    runs-on: windows-latest
+concurrency:
+  group: release-combined
+  cancel-in-progress: false
 
-    # Prevent infinite loop from bot commits
-    if: github.actor != 'github-actions[bot]'
+jobs:
+  release:
+    runs-on: windows-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Dump PowerShell host info
+      - name: Determine version
+        id: version
         shell: pwsh
         run: |
-          Write-Host "=== PowerShell Host Info ==="
-          Write-Host "PowerShell version: $($PSVersionTable.PSVersion)"
-          Write-Host "Host version: $($Host.Version)"
-          Write-Host "Edition: $($PSVersionTable.PSEdition)"
-          Write-Host "OS: $($PSVersionTable.OS)"
-          Write-Host "Architecture: $([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture)"
-          Write-Host "============================"
+          $version = "v$((Get-Date).ToUniversalTime().ToString('yyyy.MM.dd')).$env:GITHUB_RUN_NUMBER"
+          Write-Host "Release version: $version"
+          "VERSION=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
       - name: Run OpenSCAD combine script
         shell: pwsh
         run: |
-          Write-Host "Running OpenSCAD combine script..."
-          pwsh ./scripts/combined-openscad_script.ps1
+          pwsh ./scripts/combined-openscad_script.ps1 -OutputFolder "$env:RUNNER_TEMP/combined" -Version "${{ steps.version.outputs.VERSION }}"
+          Get-ChildItem "$env:RUNNER_TEMP/combined"
 
-      - name: Check for changes
-        id: check_for_changes
+      - name: Create release
         shell: pwsh
-        run: |
-          if ((git status --porcelain).Length -eq 0) {
-            Write-Host "No changes detected"
-            "CHANGED=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-          }
-          else {
-            Write-Host "Changes detected"
-            Write-Host "CHANGED=true" >> $env:GITHUB_ENV
-            "CHANGED=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-          }
-
-      - name: Commit combined files
         env:
-          CHANGED: ${{ steps.check_for_changes.outputs.CHANGED }}
-        if: env.CHANGED == 'true'
-        shell: pwsh
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add .
-          git commit -m "Auto-generate combined OpenSCAD files"
-          git push
+          $version = "${{ steps.version.outputs.VERSION }}"
+          $files = (Get-ChildItem "$env:RUNNER_TEMP/combined" -Filter *.scad).FullName
+          gh release create $version $files `
+            --target $env:GITHUB_SHA `
+            --title $version `
+            --generate-notes `
+            --latest

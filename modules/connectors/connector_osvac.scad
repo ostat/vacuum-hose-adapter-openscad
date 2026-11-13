@@ -120,6 +120,7 @@ module osVacFemaleConnector(
     slotDepth = cutoutDepthx,                // Radial depth of the slot (Must clear lug radial projection)
     lockAngle = lockAngle,               // Axial size of the lug
     lockBumpDepth = cutoutBumpDepthx,          // Depth of lock bump that creates the lock when twisted
+    slotRoofChamfer = true,       // 45 degree roof above the slots, prints without overhang
     help=true);
 
   HelpTxt("osVacFemaleConnector",[

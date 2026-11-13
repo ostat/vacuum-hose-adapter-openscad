@@ -139,6 +139,7 @@ module BayonetSlotConnector(
   lockAngle = 35,               // Axial size of the lug
   lockBumpDepth = 1.6,          // Depth of lock bump that creates the lock when twisted
   hoseEndTaper = 1,
+  slotRoofChamfer = false,      // Add a 45 degree roof above the slots, so they print without overhang (face down on the bed).
   help){
   //assert(is_num(innerSubWallDiameter) && innerSubWallDiameter > 0, "innerSubWallDiameter must be positive");
   assert(is_num(length) && length > 0, "length must be positive");
@@ -175,6 +176,17 @@ module BayonetSlotConnector(
 
   cutoutArcLength = lockAngle/180*PI*(id/2+slotDepth);
 
+  // Height of the optional 45 degree roof added on top of the slots.
+  roofHeight = slotRoofChamfer ? slotDepth : 0;
+
+  // Slot cross section (x radial, y axial). The roof slopes from the slot's outer wall
+  // up to the bore, so the slot ceiling is printable without support.
+  module slotProfile(size){
+    polygon(roofHeight > 0
+      ? [[0,0],[size.x,0],[size.x,size.y],[size.x-roofHeight,size.y+roofHeight],[0,size.y+roofHeight]]
+      : [[0,0],[size.x,0],[size.x,size.y],[0,size.y]]);
+  }
+
   union(){
   difference(){
     //main pipe
@@ -199,9 +211,12 @@ module BayonetSlotConnector(
               side_radius=2,
               side_radius_outer = true, 
               side_radius_inner = false, 
-              child_size=[slotDepth*2,slotAxialHeight])
-            rounded_rectangle(size=[slotDepth*2,slotAxialHeight],
-              r=0, chamfer_r=0);
+              child_size=[slotDepth*2,slotAxialHeight+roofHeight])
+            if(roofHeight > 0)
+              slotProfile([slotDepth*2,slotAxialHeight]);
+            else
+              rounded_rectangle(size=[slotDepth*2,slotAxialHeight],
+                r=0, chamfer_r=0);
 
            lock_radius = slotDepth;
            rotate([0,0,lockAngle/2])
@@ -212,10 +227,15 @@ module BayonetSlotConnector(
               side_radius=2,
               side_radius_outer = true, 
               side_radius_inner = false, 
-              child_size=[slotDepth*2,slotAxialLength+lock_radius])
-            rounded_rectangle(size=[slotDepth*2,slotAxialLength+lock_radius],
-              r_tr=0, chamfer_tr = 0,
-              r_br=lock_radius, chamfer_br = slotDepth/4);
+              child_size=[slotDepth*2,slotAxialLength+lock_radius+roofHeight])
+            union(){
+              rounded_rectangle(size=[slotDepth*2,slotAxialLength+lock_radius],
+                r_tr=0, chamfer_tr = 0,
+                r_br=lock_radius, chamfer_br = slotDepth/4);
+              if(roofHeight > 0)
+                translate([0,slotAxialLength+lock_radius-fudgeFactor])
+                  slotProfile([slotDepth*2,fudgeFactor]);
+            }
         }
       }
     }
