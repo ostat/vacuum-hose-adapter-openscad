@@ -16,6 +16,7 @@ Official availability
  - Online: https://hose-adapter.ostat.com/vacuum-hose-adapter
  - Printables: https://www.printables.com/model/316283-vacuum-nozzles-for-all-common-hose-sizes
  - MakerWorld: https://makerworld.com/en/models/481868-parametric-vacuum-hose-connector#profileId-396315
+ - Single-file downloads (all libraries combined into one `.scad`, for desktop OpenSCAD or online customizers): [latest release](https://github.com/ostat/vacuum-hose-adapter-openscad/releases/latest), e.g. [vacuum-hose-adapter.scad](https://github.com/ostat/vacuum-hose-adapter-openscad/releases/latest/download/vacuum-hose-adapter.scad)
 
 # Documentation
 Official documentation

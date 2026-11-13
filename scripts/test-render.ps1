@@ -157,12 +157,34 @@ $ScadScriptFolders |ForEach-Object {
     $TargetFile = $_
     if($TargetFile.BaseName -ieq 'vacuum-hose-adapter'){
 
-        $styles = @('mag', 'flange', 'hose', 'dyson', 'camlock', 'dw735', 'centec_female', 'centec_male', 'osvacm32', 'osvacm', 'osvacf32', 'osvacf', 'makita_male', 'bosch_sander', 'festoolcleanteclug')
+        # Every connector style, rendered as End 1. Add new connector styles here.
+        $styles = @('mag', 'flange', 'hose', 'dyson', 'camlock', 'dw735', 'centec_female', 'centec_male', 'osvacm32', 'osvacm', 'osvacf32', 'osvacf', 'makita_male', 'bosch_sander', 'festoolcleanteclug', 'kobalt', 'rigid_nxt', 'nozzle')
 
         $styles | ForEach-Object {
             $style = $_
             $input_args  = " -D `"End1_Style=`"`"$($style)`"`"`""
             $success = Test-OpenSCAD -TargetFile $TargetFile -saveResults $saveResults -cmdArgsInput $input_args -SaveAppend $style
+            if(!$success){
+                $failed = $true
+            }
+        }
+
+        # Transition scenarios, name = OpenSCAD -D arguments. Add new transition styles and options here.
+        $transitions = [ordered]@{
+            'transition_flat'             = ' -D "Transition_Style=""flat"""'
+            'transition_bend_taper'       = ' -D "Transition_Style=""bend+taper""" -D "Transition_Angle=45"'
+            'transition_bend_taper_multi' = ' -D "Transition_Style=""bend+taper""" -D "Transition_Angle=45" -D "Transition_End2_Count=2"'
+            'transition_taper_bend'       = ' -D "Transition_Style=""taper+bend""" -D "Transition_Angle=45"'
+            'transition_organicbend'      = ' -D "Transition_Style=""organicbend""" -D "Transition_Angle=45"'
+            'transition_hull'             = ' -D "Transition_Style=""hull""" -D "Transition_Angle=30" -D "Transition_End2_Count=3"'
+            'transition_hull_center'      = ' -D "Transition_Style=""hull""" -D "Transition_Angle=40" -D "Transition_End2_Count=4" -D "Transition_HullCenter=""end3"""'
+            'transition_inline'           = ' -D "Transition_Style=""inline""" -D "Transition_End2_Count=3"'
+            'transition_inline_end3'      = ' -D "Transition_Style=""inline""" -D "Transition_End2_Count=4" -D "Transition_Inline_End3_Positions=[1,3]" -D "Transition_HullLength=10"'
+        }
+
+        $transitions.Keys | ForEach-Object {
+            $name = $_
+            $success = Test-OpenSCAD -TargetFile $TargetFile -saveResults $saveResults -cmdArgsInput $transitions[$name] -SaveAppend $name
             if(!$success){
                 $failed = $true
             }

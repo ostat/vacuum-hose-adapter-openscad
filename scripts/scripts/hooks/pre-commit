@@ -20,19 +20,12 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
-echo "Running OpenSCAD compile script..."
+# Combined files are no longer committed; they are published as GitHub releases
+# by .github/workflows/generate-combined.yaml. Running the combine script here
+# only checks that combining still works.
+echo "Running OpenSCAD combine script..."
 powershell.exe -ExecutionPolicy Bypass -File scripts/combined-openscad_script.ps1
 if [ $? -ne 0 ]; then
-  echo "Compile failed. Commit aborted."
+  echo "Combine failed. Commit aborted."
   exit 1
 fi
-
-# dont commit if its the dev branch
-case "$BRANCH" in
-  dev/*)
-    echo "Pre-commit hook skipped on branch $BRANCH"
-    exit 0
-    ;;
-esac
-
-git add combined/

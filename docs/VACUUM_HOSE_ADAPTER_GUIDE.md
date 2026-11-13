@@ -28,11 +28,17 @@ The entry function for constructing dual-connector adapters is `HoseAdapter()`. 
 HoseAdapter(
   connector1 = UserConnectorSettings(...),
   connector2 = UserConnectorSettings(...),
-  transitionStyle = "bend+taper", // "flat", "taper+bend", "bend+taper", "organicbend", "hull", "none"
+  transitionStyle = "bend+taper", // "flat", "taper+bend", "bend+taper", "organicbend", "hull", "inline", "none"
   transitionLength = 0,            // Length of transition section in mm
   transitionBendRadius = 0,        // Bend radius in mm
   transitionAngle = 0,             // Angle of transition bend in degrees
   transitionOffset = [0, 0],       // [X, Y] offset in mm
+
+  // Multiple connectors ("hull" and "inline")
+  transitionEnd2Count = 1,         // Number of end 2 connectors
+  transitionHullLength = 0,        // Length of each connector tube beyond the hull in mm
+  transitionInlineSpacing = 5,     // "inline": gap between the outer walls of neighbouring connectors in mm
+  transitionInlineEnd3Positions = [], // "inline": positions (1 based) that use connector3 instead of connector2, e.g. [1, 3]
   
   sliceDebug = false,              // Cutaway view for debugging interior
   showCaliper = false,             // Render dimension calipers
