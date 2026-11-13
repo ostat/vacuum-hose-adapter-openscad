@@ -652,7 +652,8 @@ Pivot(messpunkt=messpunkt,p0=translate,active=[1,1,1,1,norm(translate)]);
         translate(in!=2&&in!=3?[-translate.x,0]:[0,-translate.y])rotate(in?in==2?90:in==3?-90:180:0){
         MKlon(tx=l/2){
            T(end?end==4?-line/2:+line/2:0) square([line,s],center=true);
-           if(end)rotate(end==4?180:0)Pfeil([0,arrowL],b=[line,l2],center=[-1,1],name=false);
+            // Outward arrowheads must overlap their marker, not meet it at only one point.
+            if(end)T(end==4?-line/2:0)rotate(end==4?180:0)Pfeil([0,arrowL],b=[line,l2],center=[-1,1],name=false);
         }
         if(textOut) square([l,line],true); // Verbindung Pfeile
 // text pos

@@ -106,7 +106,9 @@ function Test-OpenSCAD(
         [bool]$saveResults = $false,
         $cmdArgsInput = '',
         $saveAppend = '',
-        [string]$expectedErrorPattern = '')
+        [string]$expectedErrorPattern = '',
+        [string]$AllowedWarningRegex = '',
+        [ValidateSet('Manifold', 'CGAL')][string]$Backend = 'Manifold')
 {
     $scadScriptPath = $TargetFile.FullName
 
@@ -123,7 +125,7 @@ function Test-OpenSCAD(
     $cmdArgs += $cmdArgsInput
     $cmdArgs += " --export-format binstl"
     $cmdArgs += " --enable textmetrics"
-    $cmdArgs += " --backend Manifold"
+    $cmdArgs += " --backend $Backend"
 
     $cmdArgs += " $($scadScriptPath)"
     Write-Host  $cmdArgs
@@ -147,8 +149,13 @@ function Test-OpenSCAD(
         return $false
     }
 
+    $stderrForValidation = $executionResult.stderr
+    if(-not [string]::IsNullOrWhiteSpace($AllowedWarningRegex)) {
+        $stderrForValidation = (($executionResult.stderr -split "`r?`n") | Where-Object { $_ -notmatch $AllowedWarningRegex }) -join "`n"
+    }
+
     # Check for warnings/errors
-    if ($executionResult.stderr -match '(?im)^(warning|error):' -or $executionResult.ExitCode -ne 0) {
+    if ($stderrForValidation -match '(?im)^(warning|error):' -or $executionResult.ExitCode -ne 0) {
         Write-Warning "OpenSCAD warnings/errors in $($TargetFile.Name)"
         write-warning "stderr: $($executionResult.stderr)"
         return $false
@@ -198,57 +205,95 @@ $ScadScriptFolders |ForEach-Object {
     }
 
     Get-ChildItem -LiteralPath $ScadScriptFolder -Filter *.scad | ForEach-Object {
-    $TargetFile = $_
-    if($TargetFile.BaseName -ieq 'oneida_expected_failures'){
-        $oneidaExpectedFailureCases | ForEach-Object {
-            $caseName = $_.case
-            $input_args = " -D `"Case=`"`"$($caseName)`"`"`""
-            $success = Test-OpenSCAD -TargetFile $TargetFile -saveResults $saveResults -cmdArgsInput $input_args -SaveAppend "_$($caseName)" -expectedErrorPattern $_.pattern
+        $TargetFile = $_
+        if($TargetFile.BaseName -ieq 'oneida_expected_failures'){
+            $oneidaExpectedFailureCases | ForEach-Object {
+                $caseName = $_.case
+                $input_args = " -D `"Case=`"`"$($caseName)`"`"`""
+                $success = Test-OpenSCAD -TargetFile $TargetFile -saveResults $saveResults -cmdArgsInput $input_args -SaveAppend "_$($caseName)" -expectedErrorPattern $_.pattern
+                if(!$success){
+                    $failed = $true
+                }
+            }
+        }
+        elseif($TargetFile.BaseName -ieq 'caliper_geometry'){
+            foreach ($case in 0..15) {
+                $success = Test-OpenSCAD -TargetFile $TargetFile -saveResults $saveResults -Backend CGAL -cmdArgsInput " -D `"Case=$case`"" -SaveAppend "-case$case"
+                if(!$success){
+                    $failed = $true
+                }
+            }
+        }
+        elseif($TargetFile.BaseName -ieq 'vacuum-hose-adapter'){
+            $styles = @('mag', 'flange', 'hose', 'dyson', 'camlock', 'dw735', 'centec_female', 'centec_male', 'osvacm32', 'osvacm', 'osvacf32', 'osvacf', 'makita_male', 'bosch_sander', 'festoolcleanteclug', 'oneida', 'kobalt', 'rigid_nxt', 'nozzle')
+
+            $styles | ForEach-Object {
+                $style = $_
+                $input_args  = " -D `"End1_Style=`"`"$($style)`"`"`""
+                $success = Test-OpenSCAD -TargetFile $TargetFile -saveResults $saveResults -cmdArgsInput $input_args -SaveAppend $style
+                if(!$success){
+                    $failed = $true
+                }
+            }
+            # Transition scenarios, name = OpenSCAD -D arguments. Add new transition styles and options here.
+            $transitions = [ordered]@{
+                'transition_flat'             = ' -D "Transition_Style=""flat"""'
+                'transition_bend_taper'       = ' -D "Transition_Style=""bend+taper""" -D "Transition_Angle=45"'
+                'transition_bend_taper_multi' = ' -D "Transition_Style=""bend+taper""" -D "Transition_Angle=45" -D "Transition_End2_Count=2"'
+                'transition_taper_bend'       = ' -D "Transition_Style=""taper+bend""" -D "Transition_Angle=45"'
+                'transition_organicbend'      = ' -D "Transition_Style=""organicbend""" -D "Transition_Angle=45"'
+                'transition_hull'             = ' -D "Transition_Style=""hull""" -D "Transition_Angle=30" -D "Transition_End2_Count=3"'
+                'transition_hull_center'      = ' -D "Transition_Style=""hull""" -D "Transition_Angle=40" -D "Transition_End2_Count=4" -D "Transition_HullCenter=""end3"""'
+                'transition_inline'           = ' -D "Transition_Style=""inline""" -D "Transition_End2_Count=3"'
+                'transition_inline_end3'      = ' -D "Transition_Style=""inline""" -D "Transition_End2_Count=4" -D "Transition_Inline_End3_Positions=[1,3]" -D "Transition_HullLength=10"'
+            }
+
+            $transitions.Keys | ForEach-Object {
+                $name = $_
+                $success = Test-OpenSCAD -TargetFile $TargetFile -saveResults $saveResults -cmdArgsInput $transitions[$name] -SaveAppend $name
+                if(!$success){
+                    $failed = $true
+                }
+            }
+        } else {
+            $success = Test-OpenSCAD -TargetFile $TargetFile -saveResults $saveResults
             if(!$success){
                 $failed = $true
             }
         }
     }
-    elseif($TargetFile.BaseName -ieq 'vacuum-hose-adapter'){
 
-        $styles = @('mag', 'flange', 'hose', 'dyson', 'camlock', 'dw735', 'centec_female', 'centec_male', 'osvacm32', 'osvacm', 'osvacf32', 'osvacf', 'makita_male', 'bosch_sander', 'festoolcleanteclug', 'oneida', 'kobalt', 'rigid_nxt', 'nozzle')
+    $demoFile = Join-Path $ScadScriptFolder 'demos/vacuum_hose_adapter_demo.scad'
+    if (Test-Path -LiteralPath $demoFile) {
+        $demoTarget = Get-Item -LiteralPath $demoFile
+        $demoAllowedWarningRegex = '(?i)^WARNING:\s+Viewall and autocenter disabled in favor of \$vp\*'
+        $demoCommonArgs = " -D `"setViewPort=false`""
+        $demoCases = @(
+            @{ Name = 'demo-overview'; Args = "$demoCommonArgs -D `"scenario=`"`"demo`"`"`"" },
+            @{ Name = 'demo-derived'; Args = "$demoCommonArgs -D `"scenario=`"`"demo2`"`"`"" },
+            @{ Name = 'threads-outer'; Args = "$demoCommonArgs -D `"scenario=`"`"hose_threads`"`"`" -D `"`$t=0`"" },
+            @{ Name = 'threads-inner'; Args = "$demoCommonArgs -D `"scenario=`"`"hose_threads`"`"`" -D `"`$t=0.33`"" },
+            @{ Name = 'stop-outer'; Args = "$demoCommonArgs -D `"scenario=`"`"hose_stoplength`"`"`" -D `"`$t=0`"" },
+            @{ Name = 'stop-inner'; Args = "$demoCommonArgs -D `"scenario=`"`"hose_stoplength`"`"`" -D `"`$t=1`"" },
+            @{ Name = 'stop-symmetry'; Args = "$demoCommonArgs -D `"scenario=`"`"hose_stopsymmetrical`"`"`" -D `"`$t=0`"" },
+            @{ Name = 'magnetic-alignment'; Args = "$demoCommonArgs -D `"scenario=`"`"magnetic_alignmentring`"`"`" -D `"`$t=0.66`"" },
+            @{ Name = 'nozzle'; Args = "$demoCommonArgs -D `"scenario=`"`"nozzle_demo`"`"`" -D `"`$t=0.5`"" },
+            @{ Name = 'nozzle-size'; Args = "$demoCommonArgs -D `"scenario=`"`"nozzle_size`"`"`" -D `"`$t=1`"" },
+            @{ Name = 'transition-hull-center'; Args = "$demoCommonArgs -D `"scenario=`"`"transition_hullcenter`"`"`" -D `"`$t=0.75`"" },
+            @{ Name = 'extension-grid-pre'; Args = "$demoCommonArgs -D `"scenario=`"`"transitionextpre_gridSize`"`"`" -D `"`$t=1`"" },
+            @{ Name = 'extension-grid-post'; Args = "$demoCommonArgs -D `"scenario=`"`"transitionextpost_wallthickness`"`"`" -D `"`$t=1`"" },
+            @{ Name = 'extension-overview-grid'; Args = "$demoCommonArgs -D `"scenario=`"`"transitionext_demo`"`"`" -D `"`$t=1`"" }
+        )
 
-        $styles | ForEach-Object {
-            $style = $_
-            $input_args  = " -D `"End1_Style=`"`"$($style)`"`"`""
-            $success = Test-OpenSCAD -TargetFile $TargetFile -saveResults $saveResults -cmdArgsInput $input_args -SaveAppend $style
+        $demoCases | ForEach-Object {
+            $demoCase = $_
+            $success = Test-OpenSCAD -TargetFile $demoTarget -saveResults $saveResults -cmdArgsInput $demoCase.Args -SaveAppend ("-" + $demoCase.Name) -AllowedWarningRegex $demoAllowedWarningRegex
             if(!$success){
                 $failed = $true
             }
-        }
-
-        # Transition scenarios, name = OpenSCAD -D arguments. Add new transition styles and options here.
-        $transitions = [ordered]@{
-            'transition_flat'             = ' -D "Transition_Style=""flat"""'
-            'transition_bend_taper'       = ' -D "Transition_Style=""bend+taper""" -D "Transition_Angle=45"'
-            'transition_bend_taper_multi' = ' -D "Transition_Style=""bend+taper""" -D "Transition_Angle=45" -D "Transition_End2_Count=2"'
-            'transition_taper_bend'       = ' -D "Transition_Style=""taper+bend""" -D "Transition_Angle=45"'
-            'transition_organicbend'      = ' -D "Transition_Style=""organicbend""" -D "Transition_Angle=45"'
-            'transition_hull'             = ' -D "Transition_Style=""hull""" -D "Transition_Angle=30" -D "Transition_End2_Count=3"'
-            'transition_hull_center'      = ' -D "Transition_Style=""hull""" -D "Transition_Angle=40" -D "Transition_End2_Count=4" -D "Transition_HullCenter=""end3"""'
-            'transition_inline'           = ' -D "Transition_Style=""inline""" -D "Transition_End2_Count=3"'
-            'transition_inline_end3'      = ' -D "Transition_Style=""inline""" -D "Transition_End2_Count=4" -D "Transition_Inline_End3_Positions=[1,3]" -D "Transition_HullLength=10"'
-        }
-
-        $transitions.Keys | ForEach-Object {
-            $name = $_
-            $success = Test-OpenSCAD -TargetFile $TargetFile -saveResults $saveResults -cmdArgsInput $transitions[$name] -SaveAppend $name
-            if(!$success){
-                $failed = $true
-            }
-        }
-    } else {
-        $success = Test-OpenSCAD -TargetFile $TargetFile -saveResults $saveResults
-        if(!$success){
-            $failed = $true
         }
     }
-}}
+}
 
 $oneidaDemoRelativePaths | ForEach-Object {
     $demoFile = Get-Item -LiteralPath (Join-Path $repositoryRoot $_)
