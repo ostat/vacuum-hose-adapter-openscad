@@ -1,6 +1,6 @@
 ///////////////////////////////////////
-//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-11-13 18:32
-//Content hash B64FF15BAB27DD77E2F6BD1C26C616A60BC1B9D414626A0DA90FB0EE5373506A
+//Combined version of 'vacuum-hose-adapter-basic.scad'. Generated 2026-11-13 08:42
+//Content hash A8C9EB4BB1DBE8AFFFB7F20D9921F2F7B88F4EF9B7E03122D1BDFBA5A5236FEB
 ///////////////////////////////////////
 // Hose connector
 // version 2024-04-30
@@ -149,24 +149,6 @@ function getColor(colorSetting, defaultColor) =
   let(
     c = colorSetting[0] == "" ? defaultColor : colorSetting[0],
     a = is_num(colorSetting[1]) && colorSetting[1] >=0 && colorSetting[1] <=1 ? colorSetting[1] : 1) [c, a];
-
-//Sum of the first count items in a list.
-function inlineSumFirst(list, count) = count <= 0 ? 0 : list[count-1] + inlineSumFirst(list, count-1);
-
-//For each inline connector position (1 based), is it end 3. All other positions are end 2.
-function inlineConnectorIsEnd3(count, end3Positions) =
-  [for (i = [1:count]) len([for (p = end3Positions) if (p == i) p]) > 0];
-
-//X position of the centre of each inline connector. The row is centred on the z axis.
-//diameters: outer diameter of each connector
-//spacing: gap between the outer walls of neighbouring connectors
-function inlineConnectorPositions(diameters, spacing) =
-  assert(is_list(diameters) && len(diameters) > 0, "diameters must be a non-empty list")
-  assert(is_num(spacing), "spacing must be a number")
-  let(
-    count = len(diameters),
-    totalWidth = inlineSumFirst(diameters, count) + spacing * (count-1))
-  [for (i = [0:count-1]) inlineSumFirst(diameters, i) + diameters[i]/2 + spacing*i - totalWidth/2];
 
 function renderModeEnabled(mode) =
   assert(mode == "disable" || mode == "enable" || mode == "preview only",
@@ -406,6 +388,7 @@ module adapter(
           translate([0, 0, con[iLength]])
           mirror ([0,0,1])
           RigidNXTConnector(
+            innerEndDiameter = con[iInnerEndDiameter],
             length = con[iLength],
             wallThickness = con[iWallThickness],
             help = help,
@@ -831,9 +814,6 @@ module transition(
   hullCenter,
   centerHeight,
   Offset,
-  inlineInnerDiameters = [],
-  inlineWallThicknesses = [],
-  inlinePositions = [],
   debug = false,
   transitionColor = ["LightGreen",1],
   showCaliper = false,
@@ -896,18 +876,6 @@ module transition(
           addCenter = hullCenter,
           centerHeight= centerHeight
         );
-      }
-      else if(style == "inline")
-      {
-        color(transitionColor[0], transitionColor[1])
-        InlinePipeHull(
-          inner1PipeRadius = connector1InnerEndDiameter/2,
-          end1WallThickness = connector1WallThickness,
-          outletInnerRadii = [for (d = inlineInnerDiameters) d/2],
-          outletWallThicknesses = inlineWallThicknesses,
-          outletPositions = inlinePositions,
-          lengthInHull = lengthInHull,
-          lengthOutHull = hullLength);
       }
       else if(style == "bend+taper")
       {
@@ -1002,9 +970,7 @@ module transition(
       }
     }
     if(debug){
-      cubeSize = max(concat(
-        [connector1InnerEndDiameter, connector2InnerStartDiameter],
-        [for (p = inlinePositions) abs(p)*2]))*3;
+      cubeSize = max(connector1InnerEndDiameter,connector2InnerStartDiameter)*3;
       translate([-cubeSize/2, -cubeSize , -fudgeFactor*2])
           cube([cubeSize, cubeSize, cubeSize ]);
       //translate([-100/2, -200, -fudgeFactor*2])
@@ -1041,9 +1007,6 @@ module transition(
     "hullCenter", hullCenter,
     "centerHeight", centerHeight,
     "offset", Offset,
-    "inlineInnerDiameters", inlineInnerDiameters,
-    "inlineWallThicknesses", inlineWallThicknesses,
-    "inlinePositions", inlinePositions,
     "debug", debug]
     ,help);
 }
@@ -1072,8 +1035,6 @@ module HoseAdapter(
   transitionHullyOffset = 0,
   transitionHullCenter = 0,
   transitionHullCenterHeight= 0,
-  transitionInlineSpacing = 5,
-  transitionInlineEnd3Positions = [],
 
   drawAlignmentRing = "no",
   alignmentDepth = 2,
@@ -1133,11 +1094,11 @@ module HoseAdapter(
 
   echoConnector("end1", end1, help);
   echoConnector("end2", end2, help);
-  echoConnector("end3", end3, transitionHullCenter == "end3" || (transitionStyle == "inline" && len(transitionInlineEnd3Positions) > 0) ? help : false);
+  echoConnector("end3", end3, transitionHullCenter == "end3" ? help : false);
 
   //Transition settings
   // transitionLength is not wanted for sweep
-  _transitionAngle = (transitionStyle == "flat" || transitionStyle == "inline") ? 0 : transitionAngle;
+  _transitionAngle = (transitionStyle == "flat") ? 0 : transitionAngle;
   _transitionStyle = _transitionAngle == 0 && transitionStyle == "organicbend" ? "bend+taper" : transitionStyle;
 
   echo("_transitionLength", _transitionLength=_transitionLength, end1_iInterfaceOuterDiameter=end1[iInterfaceOuterDiameter], end2iInterfaceOuterDiameter=end2[iInterfaceOuterDiameter], end1iInterfaceInnerDiameter=end1[iInterfaceInnerDiameter], end2iInterfaceInnerDiameter=end2[iInterfaceInnerDiameter]);
@@ -1198,34 +1159,11 @@ module HoseAdapter(
       //For organic bend only
       taperedAverageDiameter = (max(end1[iInterfaceOuterDiameter],end2[iOuterStartDiameter])*2 + min(end1[iInterfaceOuterDiameter],end2[iOuterStartDiameter]))/3;
 
-      //inline settings, the end 2 connectors are placed in a row along the x axis.
-      //Positions listed in transitionInlineEnd3Positions (1 based) use end 3 instead of end 2.
-      assert(is_list(transitionInlineEnd3Positions), "transitionInlineEnd3Positions must be a list");
-      assert(_transitionStyle != "inline"
-        || len([for (p = transitionInlineEnd3Positions) if (!is_num(p) || p != floor(p) || p < 1 || p > transitionEnd2Count) p]) == 0,
-        str("transitionInlineEnd3Positions must be whole numbers from 1 to transitionEnd2Count (", transitionEnd2Count, "). Provided:", transitionInlineEnd3Positions));
-      assert(is_num(transitionInlineSpacing), "transitionInlineSpacing must be a number");
-      inlineIsEnd3 = inlineConnectorIsEnd3(transitionEnd2Count, transitionInlineEnd3Positions);
-      inlineInnerDiameters = [for (isEnd3 = inlineIsEnd3) isEnd3 ? end3[iInterfaceInnerDiameter] : end2[iInterfaceInnerDiameter]];
-      inlineOuterDiameters = [for (isEnd3 = inlineIsEnd3) isEnd3 ? end3[iInterfaceOuterDiameter] : end2[iInterfaceOuterDiameter]];
-      inlineWallThicknesses = [for (isEnd3 = inlineIsEnd3) isEnd3 ? end3[iInterfaceWallThickness] : end2[iInterfaceWallThickness]];
-      inlinePositions = inlineConnectorPositions(inlineOuterDiameters, transitionInlineSpacing);
-      inlineRowWidth = inlineSumFirst(inlineOuterDiameters, transitionEnd2Count) + transitionInlineSpacing * (transitionEnd2Count-1);
-      // With automatic length, the hull walls are approximately 45 degrees.
-      inlineLengthInHull = transitionLength == 0
-        ? max(
-            abs(inlineRowWidth - end1[iInterfaceOuterDiameter])/2,
-            abs(max(inlineOuterDiameters) - end1[iInterfaceOuterDiameter])/2)
-          + (end1[iInterfaceWallThickness]/2 + max(inlineWallThicknesses)/2)
-        : transitionLength;
-
       hoseSpacer = end2[iWallThickness];
       shapeOverlap = ((end1[iInterfaceOuterDiameter]/2-hoseSpacer)-(cos(_transitionAngle)*end2[iInterfaceOuterDiameter]))/sin(_transitionAngle);
       lengthInHull = _transitionStyle == "hull"
         ? (shapeOverlap > 0 ? 0 : shapeOverlap * -1) + _transitionLength
-        : _transitionStyle == "inline"
-          ? inlineLengthInHull
-          : 0;
+        : 0;
       transitionCenterHeight = transitionHullCenterHeight == 0 ? lengthInHull * 2 : transitionHullCenterHeight;
 
       //Push end horizontially out from verticle center line
@@ -1350,65 +1288,13 @@ module HoseAdapter(
           hullCenter = transitionHullCenter != "disabled",
           centerHeight = transitionCenterHeight,
           Offset = transitionOffset,
-          inlineInnerDiameters = inlineInnerDiameters,
-          inlineWallThicknesses = inlineWallThicknesses,
-          inlinePositions = inlinePositions,
           debug = sliceDebug,
           transitionColor = getColor(transitionColor, DefaultTransitionColor),
           showCaliper = showCaliper,
           help = help);
 
-        // Create the inline end connectors, each position is end 2 unless listed in transitionInlineEnd3Positions.
-        if(_transitionStyle == "inline")
-        {
-          for (i = [0:transitionEnd2Count-1])
-          {
-            let(active_end = inlineIsEnd3[i] ? end3 : end2)
-            if(active_end[iLength] > 0)
-            translate([inlinePositions[i], 0, end1[iInterfaceLength] + lengthInHull + transitionHullLength + inlineWallThicknesses[i]])
-            union(){
-              translate([0, 0, active_end[iExtensionTotalLength]])
-              mirror([0,0,1])
-              mirror([0,1,0])
-              transitionExtension(
-                connector = inlineIsEnd3[i] ? 3 : 2,
-                connectorMeasurement = active_end[iMeasurement],
-                innerDiameter = active_end[iInnerEndDiameter],
-                exitDiameter = active_end[iInterfaceInnerDiameter],
-                taperLength = active_end[iExtensionTaperLength],
-                wallThickness = active_end[iWallThickness],
-                length = active_end[iExtensionLength],
-                stopLength = active_end[iExtensionStopLength],
-                stopWidth = active_end[iExtensionStopThickness],
-                stopSymmetrical = active_end[iExtensionStopSymmetrical],
-                gridSize = active_end[iExtensionGridSize],
-                gridWallThickness = active_end[iExtensionGridWallThickness],
-                txt = active_end[iExtensionText],
-                txtSize=active_end[iExtensionTextSize],
-                extensionSlipRing=active_end[iExtensionSlipRing],
-                extensionSlipRingWidth=active_end[iExtensionSlipRingWidth],
-                extensionSlipRingSupport=active_end[iExtensionSlipRingSupport],
-                extensionSlipRingSupportSize=active_end[iExtensionSlipRingSupportSize],
-                extensionSlipRingSupportSpacing=active_end[iExtensionSlipRingSupportSpacing],
-                transitionColor = getColor(extensionColor, inlineIsEnd3[i] ? DefaultEnd3ExtensionColor : DefaultEnd2ExtensionColor),
-                debug = sliceDebug,
-                showCaliper = showCaliper,
-                help = help);
-
-              translate([0, 0, active_end[iExtensionTotalLength]])
-              adapter(
-                con = active_end,
-                connectorPos = inlineIsEnd3[i] ? 3 : 2,
-                transitionAngle =_transitionAngle,
-                debug = sliceDebug,
-                showCaliper = i == 0 ? showCaliper : false,
-                help = help);
-            }
-          }
-        }
-
         // Create the end connector
-        if(_transitionStyle != "inline" && end2[iLength] > 0)
+        if(end2[iLength] > 0)
         {
           taperBeforeBend = _transitionStyle == "bend+taper"
             && bendPipeDiameter != end1[iInterfaceInnerDiameter];
@@ -3890,87 +3776,6 @@ module BentPipeHull(
           r=inner1PipeRadius,
           h=fudgeFactor*2);
 
-  }
-}
-
-// Creates a multi-end junction body with the outlet ports in a single row along the x axis.
-// Parameters:
-// inner1PipeRadius: Inner radius of the primary (end1) port.
-// end1WallThickness: Wall thickness at the primary port.
-// outletInnerRadii: Inner radius of each outlet port.
-// outletWallThicknesses: Wall thickness of each outlet port.
-// outletPositions: X position of the centre of each outlet port.
-// lengthInHull: Height of the hull blend region.
-// lengthOutHull: Extra length added beyond hull on each outlet port.
-module InlinePipeHull(
-    inner1PipeRadius,
-    end1WallThickness,
-    outletInnerRadii = [],
-    outletWallThicknesses = [],
-    outletPositions = [],
-    lengthInHull = 0,
-    lengthOutHull = 0
-)
-{
-  assert(is_num(inner1PipeRadius), "inner1PipeRadius must be a number");
-  assert(is_num(end1WallThickness), "end1WallThickness must be a number");
-  assert(is_list(outletInnerRadii) && len(outletInnerRadii) > 0, "outletInnerRadii must be a non-empty list");
-  assert(is_list(outletWallThicknesses) && len(outletWallThicknesses) == len(outletInnerRadii), "outletWallThicknesses must be a list the same length as outletInnerRadii");
-  assert(is_list(outletPositions) && len(outletPositions) == len(outletInnerRadii), "outletPositions must be a list the same length as outletInnerRadii");
-  assert(is_num(lengthInHull) && lengthInHull > 0, str("lengthInHull must be a number > 0. Provided:", lengthInHull));
-  assert(is_num(lengthOutHull), "lengthOutHull must be a number");
-
-  outer1PipeRadius = inner1PipeRadius + end1WallThickness;
-  end1BaseHeight = end1WallThickness;
-  outletCount = len(outletInnerRadii);
-
-  difference(){
-    //Outer shape
-    union(){
-      //The main body hull shape
-      hull(){
-        for (i = [0:outletCount-1])
-        {
-          //Outlets
-          translate([outletPositions[i], 0, lengthInHull])
-          cylinder(r=outletInnerRadii[i]+outletWallThicknesses[i], h=outletWallThicknesses[i]);
-        }
-
-        //end1
-        cylinder(r=outer1PipeRadius, h=end1BaseHeight+fudgeFactor);
-      }
-
-      //Extensions tubes
-      for (i = [0:outletCount-1])
-      {
-        translate([outletPositions[i], 0, lengthInHull])
-        cylinder(r=outletInnerRadii[i]+outletWallThicknesses[i], h=lengthOutHull+outletWallThicknesses[i]+fudgeFactor);
-      }
-    }
-
-    //inner/negative shape
-    union(){
-      //The Inner Main body hull shape
-      hull(){
-        for (i = [0:outletCount-1])
-        {
-          //Outlets
-          translate([outletPositions[i], 0, -outletWallThicknesses[i]+fudgeFactor+lengthInHull])
-          cylinder(r=outletInnerRadii[i], h=outletWallThicknesses[i]+fudgeFactor*2);
-        }
-
-        //End 1
-        translate([0, 0, -fudgeFactor])
-        cylinder(r=inner1PipeRadius, h=end1BaseHeight+fudgeFactor*2);
-      }
-
-      //Extension tubes
-      for (i = [0:outletCount-1])
-      {
-        translate([outletPositions[i], 0, -outletWallThicknesses[i]+fudgeFactor+lengthInHull])
-        cylinder(r=outletInnerRadii[i], h=lengthOutHull+outletWallThicknesses[i]*2+fudgeFactor*2);
-      }
-    }
   }
 }
 
