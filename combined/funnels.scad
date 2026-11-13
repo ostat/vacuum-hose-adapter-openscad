@@ -1,5 +1,5 @@
 ///////////////////////////////////////
-//Combined version of 'funnels.scad'. Generated 2026-11-13 18:32
+//Combined version of 'funnels.scad'. Generated 2026-11-13 18:41
 //Content hash 0FBDCAD02FEF94A86A4C727D967182E57DB3B7E8D644198D7CDB0D93F11FF6C4
 ///////////////////////////////////////
 // funnel
