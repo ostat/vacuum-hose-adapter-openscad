@@ -35,6 +35,17 @@ Intended for connection between two hoses or a hose and a tool exhaust.
 * Length: The length of the connection end.
 * Taper: the hose connection can be tapered to allow for a tighter fit.
 
+### Oneida quick-clamp connection
+Compatible with Oneida Quick-Clamp ducting using nominal inch sizes.
+An external quick clamp captures the printed beaded rim to join it to mating
+ductwork. The clamp is separate hardware and is not printed by this module.
+
+#### Main settings
+* Style: `oneida` in the Customizer; use `OneidaConnectorSettings()` when embedding the library.
+* Nominal diameter: use inch values in the exact list `3,4,5,6,7,8,9,10,11,12,14,16,18` (for example `OneidaConnectorSettings(connector=1, diameter=[0,5])`).
+* `fitAdjustment` (mm): Oneida-local diametral fit adjustment; positive increases mating diameters, negative reduces them.
+* 5-inch nominal is physically verified. Other nominal sizes are fixed-offset extrapolations and are not manufacturer-guaranteed.
+
 ### Flat connection
 Intended for connection to a tool. To achieve this the transition section is set
 to flat, the transition length becomes the thickness. The flat area will be from
@@ -88,6 +99,10 @@ documentation][openscad_save_params] for more information.
 ## Sample files
 The file [vacuum-hose-adapter-samples.scad](vacuum-hose-adapter-samples.scad
 "more info"), has a few sample configurations to highlight the intended usages.
+
+### Oneida examples
+* [demos/oneida_adapter.scad](demos/oneida_adapter.scad): straight 5-inch Oneida to 4-inch hose adapter using `OneidaConnectorSettings()`.
+* [demos/oneida_fit_ring.scad](demos/oneida_fit_ring.scad): bed-oriented Oneida fit ring using `OneidaQuickClampConnector()` with nominal API values.
 
 ### 50mm hose to 30mm hose
 An adapter to connect a 50mm (internal diameter) hose to a 30mm (internal
